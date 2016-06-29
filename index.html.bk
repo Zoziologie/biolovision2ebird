@@ -1,1 +1,242 @@
-.
+<div class="container-fluid">
+<div class="row">
+<div class="col-sm-12">
+<h2>What is it ?</h2>
+<p>Biolovision2eBird convert data recorded on biolovision website (<a href="http://www.ornitho.ch/" target="_blank">ornitho.ch</a>, <a href="http://www.faune-alsace.org/" target="_blank">faune-alsace.org</a>,...) to the <a href="http://help.ebird.org/customer/portal/articles/973915-uploading-data-to-ebird#ebird-record-format-specifications" target="_blank">eBird Record Format</a>. The main purpose of this code is for me to record my checklit on NaturList and have also the data on eBird.</p>
+<p>A little bit of javascript language is needed to personalized your checklist. Don't be afraid, it's quite easy!</p>
+<h2>How it works?</h2>
+<ol>
+	<li><b>Query your biolovision data</b>: You can directly export your ornitho.ch data using the link below.(You will have to be login on the website.You can also go on the website and do a query of your data only and export them in .txt: <img src="http://files.biolovision.net/common/images/icons/txt.gif" alt="txt" />. (we'll try to make it work for the other format too</li>
+	<li><b>Upload</b>: Drag the file on the dropbox zone (or click on the zone to open the input window). This will create a <a href="http://www.w3schools.com/js/js_arrays.asp" target="_blank">javascript list (also called array)</a> <code>data</code>, where each element of the list <code>data[i]</code> store all the information of your biolovision record. For exemple the name of the first bird of the list can be access with <code>data[0].NAMESPECIES</code> (yes, javascript start counting from 0, not 1, and the dot let you access the property of a <a href="http://www.w3schools.com/js/js_objects.asp" target="_blank">javascript object</a>). Below is a search bar which list all the possible information of the record you can use.</li>
+	<li><b>Match Column: </b>The next think to do is to match the biolovision properties (see search bar below for a list of them )to the <a href="http://help.ebird.org/customer/portal/articles/973915-uploading-data-to-ebird#ebird-record-format-specifications" target="_blank">eBird properties</a>. The way it is done is through looping over the biolovision data (<code>d=data[0],data[1], ..., data[-1]</code>), and using the matching table below to assign the value to eBird column. This value is the last column ('Input') and can be a text (put single quote ', eg: 'casual'), biolovision property (eg: d.PLACE), or a more complexe JavaScript fonction. This column will be evaluated in Javascript, so make sure it is valid (use '' for simple text).</li>
+
+</ol>
+<h2>The main challenge</h2>
+<p>This is still a very early beta version which should work if you are not very difficult. The main challenge of the conversion is how both system handle location of list/checklist: biolovision location is max 1km² while eBird hotspot can be several dozen km². </p>
+<h2>Final Notes</h2>
+<p>Please, note that eBird import module has some issue in recognizing bird name. I've created a patch so that biolovision bird name are translated into the eBird Common Name but still it doesn't recognize some/all of them. You only have to do the matching once, then, it seems that eBird learn it for the next time  (to be checked).</p>
+<p>I would suggest querying on biolovision all the data of the <i>same</i> checklist, overwrite the general checklist parameters with the first data (<code>data[0]</code>)instead of individual entry (<code>d</code>) (eg:<code>data[0].COORD_LAT</code>)</p>
+</div>
+</div>
+<div class="row">
+<div class="col-sm-3 text-center"> 
+[<a href="http://www.ornitho.ch/index.php?m_id=97&sp_DChoice=offset&sp_DOffset=1&sp_SChoice=all&sp_PChoice=all&sp_OnlyMyData=1&sp_FChoice=export&sp_FExportFormat=TXT">last day</a>]
+</div>
+<div class="col-sm-3 text-center"> 
+[<a href="http://www.ornitho.ch/index.php?m_id=97&sp_DChoice=offset&sp_DOffset=3&sp_SChoice=all&sp_PChoice=all&sp_OnlyMyData=1&sp_FChoice=export&sp_FExportFormat=TXT">last 3 days</a>]
+</div>
+<div class="col-sm-3 text-center"> 
+[<a href="http://www.ornitho.ch/index.php?m_id=97&sp_DChoice=offset&sp_DOffset=7&sp_SChoice=all&sp_PChoice=all&sp_OnlyMyData=1&sp_FChoice=export&sp_FExportFormat=TXT">last week</a>]
+</div>
+<div class="col-sm-3 text-center"> 
+[<a href="http://www.ornitho.ch/index.php?m_id=97&sp_DChoice=offset&sp_DOffset=30&sp_SChoice=all&sp_PChoice=all&sp_OnlyMyData=1&sp_FChoice=export&sp_FExportFormat=TXT">last month</a>]
+</div>
+</div>
+</div>
+
+
+
+<div id='drobox-outer'>
+<div id='dropbox'>
+Drop file here or click to upload
+<input id="upload" type="file" style="display:none;"/>
+</div>
+</div>
+
+<div class="container">
+<div class="row">
+<div class="col-md-12 text-center"> 
+<button type="button" class="btn" id="btn-show">Show/Edit the Matching Table</button>
+</div>
+</div>
+</div>
+
+<div class="container hidden" id="div-ebird-col">
+<div class="row">
+<div class="col-md-4"><p>Search:</p></div>
+<div class="col-md-8">
+<div class="form-group">
+  <select class="selectpicker" data-show-subtext="true" data-live-search="true" data-container="html" title="Search possible field" data-width="auto" data-size="5" >
+<optgroup label="Sighting">
+    <option data-subtext='ID ornitho.ch' >ID_SIGHTING</option>
+<option data-subtext='ID Espèce Biolovision'>ID_SPECIES</option>
+<option data-subtext='Espèce'>NAME_SPECIES</option>
+<option data-subtext='Nom latin'>LATIN_SPECIES</option>
+<option data-subtext='Groupe taxonomique'>TAXONOMY_NAME</option>
+<option data-subtext='Famille'>FAMILY_NAME</option>
+<option data-subtext='Ordre systématique'>SYS_ORDER</option>
+<option data-subtext='Date'>DATE</option>
+<option data-subtext='Jour'>DATE_DAY</option>
+<option data-subtext='Mois'>DATE_MONTH</option>
+<option data-subtext='Année'>DATE_YEAR</option>
+<option data-subtext='Jour de l année'>DATE_JDAY</option>
+<option data-subtext='Pentade'>DATE_PENTADE</option>
+<option data-subtext='Décade'>DATE_DECADE</option>
+<option data-subtext='numéro de la semaine'>DATE_WEEK</option>
+<option data-subtext='Heure début'>TIME_START</option>
+<option data-subtext='Heure de début'>TIME_START_HOUR</option>
+<option data-subtext='Minute de début'>TIME_START_MIN</option>
+<option data-subtext='Heure fin'>TIME_STOP</option>
+<option data-subtext='Heure de fin'>TIME_STOP_HOUR</option>
+<option data-subtext='Minute de fin'>TIME_STOP_MIN</option>
+<option data-subtext='Liste complète ?'>FULL_FORM</option>
+<option data-subtext='Horaire'>TIMING</option>
+</optgroup>
+<optgroup label="Place">
+<option data-subtext='ID Lieu-dit'>ID_PLACE</option>
+<option data-subtext='Lieu-dit'>PLACE</option>
+<option data-subtext='Commune'>MUNICIPALITY</option>
+<option data-subtext='Canton'>COUNTY</option>
+<option data-subtext='Pays'>COUNTRY</option>
+<option data-subtext='Coordonnée X'>COORD_X</option>
+<option data-subtext='Coordonnée Y'>COORD_Y</option>
+<option data-subtext='Latitude (N)'>COORD_LAT</option>
+<option data-subtext='Longitude (E)'>COORD_LON</option>
+<option data-subtext='latitude (DMS)'>COORD_LAT_DMS</option>
+<option data-subtext='longitude (DMS)'>COORD_LON_DMS</option>
+<option data-subtext='fuseau UTM Nord'>COORD_F</option>
+<option data-subtext='UTM X [m]'>COORD_E</option>
+<option data-subtext='UTM Y [m]'>COORD_N</option>
+<option data-subtext='Type de localisation'>PRECISION</option>
+<option data-subtext='Altitude'>ALTITUDE</option>
+<option data-subtext='Maille'>GRID_NAME</option>
+<option data-subtext='Estimation'>ESTIMATION_CODE</option>
+<option data-subtext='Nombre'>TOTAL_COUNT</option>
+<option data-subtext='Détails'>DETAIL</option>
+<option data-subtext='Code atlas'>ATLAS_CODE</option>
+<option data-subtext='Protégée'>HIDDEN</option>
+<option data-subtext='Vérification'>ADMIN_HIDDEN</option>
+<option data-subtext='CAvS'>COMMITTEE_CAVS</option>
+<option data-subtext='SEARCH_EXPORT_SPECIES_SHEET_ATLAS_13_16'>SEARCH_EXPORT_SPECIES_SHEET_ATLAS_13_16</option>
+<option data-subtext='SEARCH_EXPORT_SPECIES_SHEET_ID_FAUNA_EUROPEA'>SEARCH_EXPORT_SPECIES_SHEET_ID_FAUNA_EUROPEA</option>
+<option data-subtext='SEARCH_EXPORT_SPECIES_SHEET_ID_CSCF'>SEARCH_EXPORT_SPECIES_SHEET_ID_CSCF</option>
+<option data-subtext='SEARCH_EXPORT_SPECIES_SHEET_ID_FNAT'>SEARCH_EXPORT_SPECIES_SHEET_ID_FNAT</option>
+</optgroup>
+<optgroup label="Observers">
+<option data-subtext='Prénom'>SURNAME</option>
+<option data-subtext='Nom'>NAME</option>
+<option data-subtext='Prénom transmetteur'>TRA_SURNAME</option>
+<option data-subtext='Nom transmetteur'>TRA_NAME</option>
+<option data-subtext='Deuxième main'>SECOND_HAND</option>
+<option data-subtext='Remarque'>COMMENT</option>
+<option data-subtext='Remarque privée'>PRIVATE_COMMENT</option>
+<option data-subtext='Commentaire'>DAILY_TEXT_COMMENT_REM</option>
+<option data-subtext='Date d insertion'>INSERT_DATE</option>
+<option data-subtext='Date de dernière modification'>UPDATE_DATE</option>
+<option data-subtext='Protocole'>PROTOCOL_NAME</option>
+<option data-subtext='Contient des détails bague'>HAS_RING_INFO</option>
+</optgroup>
+  </select>
+</div>
+</div>
+</div>
+  <table class="table" >
+    <thead>
+      <tr>
+        <th>Column Name</th>
+        <th>Detail</th>
+        <th>Input</th>
+      </tr>
+    </thead>
+    <tbody>
+<tr>
+    <td>Common Name</td>
+    <td>Common name of the species. We use a patch to convert biolovision species ID to eBird common name. Don't change this value</td>
+    <td><input type="text" class="form-control ebird-col" id="common-name" value="jQuery.grep(patch, function(e){ return e.id == d.ID_SPECIES; })[0].PRIMARY_COM_NAME"></td>
+  </tr>
+  <tr>
+    <td>Genus</td>
+    <td>Latin genus of the species. not required</td>
+    <td><input type="text" class="form-control ebird-col" id="genus" value=""></td>
+  </tr>
+  <tr>
+    <td>Species</td>
+    <td>Latin species name. not required </td>
+    <td><input type="text" class="form-control ebird-col" id="species" value=""></td>
+  </tr>
+  <tr>
+    <td>Number</td>
+    <td>Number of individu. Record as ‘present’ if not an integer.</td>
+    <td><input type="text" class="form-control ebird-col" id="number" value="d.TOTAL_COUNT"></td>
+  </tr>
+  <tr>
+    <td>Species Comments</td>
+    <td>Free text comments about the observation </td>
+    <td><input type="text" class="form-control ebird-col" id="species-comments" value="d.ESTIMATION_CODE + d.COMMENT + d.ID_SIGHTING"></td>
+  </tr>
+  <tr>
+    <td>Location Name</td>
+    <td>User-defined name of the location</td>
+    <td><input type="text" class="form-control ebird-col" id="place" value="d.PLACE"></td>
+  </tr>
+  <tr>
+    <td>Latitude</td>
+    <td>Latitude of the location, in decimal degrees</td>
+    <td><input type="text" class="form-control ebird-col" id="latitude" value="d.COORD_LAT"></td>
+  </tr>
+  <tr>
+    <td>Longitude</td>
+    <td>Longitude of the location, in decimal degrees</td>
+    <td><input type="text" class="form-control ebird-col" id="longitude" value="d.COORD_LON"></td>
+  </tr>
+  <tr>
+    <td>Date</td>
+    <td>The date these observations were made </td>
+    <td><input type="text" class="form-control ebird-col" id="date" value="d.DATE_MONTH+'/'+d.DATE_DAY+'/'+d.DATE_YEAR"></td>
+  </tr>
+  <tr>
+    <td>Start Time</td>
+    <td></td>
+    <td><input type="text" class="form-control ebird-col" id="start-time" value="d.TIME_START"></td>
+  </tr>
+  <tr>
+    <td>State/Province</td>
+    <td>State/province where these observations were made.</td>
+    <td><input type="text" class="form-control ebird-col" id="state" value="d.COUNTY"></td>
+  </tr>
+  <tr>
+    <td>Country Code</td>
+    <td>The country where these observations were made. </td>
+    <td><input type="text" class="form-control ebird-col" id="country" value="'CH'"></td>
+  </tr>
+  <tr>
+    <td>Protocol</td>
+    <td>"casual", "stationary", "traveling", "area" </td>
+    <td><input type="text" class="form-control ebird-col" id="protocol" value="'casual'"></td>
+  </tr>
+  <tr>
+    <td>Number of Observers</td>
+    <td>>0</td>
+    <td><input type="text" class="form-control ebird-col" id="nb-observer" value=""></td>
+  </tr>
+  <tr>
+    <td>Duration</td>
+    <td>In minutes 0<DURATION<1440</td>
+    <td><input type="text" class="form-control ebird-col" id="duration" value="(parseInt(d.TIME_STOP_HOUR)*60-parseInt(d.TIME_START_HOUR)*60+parseInt(d.TIME_STOP_MIN)-parseInt(d.TIME_START_MIN)).toString()"></td>
+  </tr>
+  <tr>
+    <td>All observations reported?</td>
+    <td>'Y' or 'N'</td>
+    <td><input type="text" class="form-control ebird-col" id="all_observation" value="if(d.FULL_FORM=='Oui'){'Y'}else{'N'}"></td>
+  </tr>
+  <tr>
+    <td>Effort Distance Miles</td>
+    <td></td>
+    <td><input type="text" class="form-control ebird-col" id="effort-distance" value=""></td>
+  </tr>
+  <tr>
+    <td>Effort area acres</td>
+    <td></td>
+    <td><input type="text" class="form-control ebird-col" id="effort-area" value=""></td>
+  </tr>
+  <tr>
+    <td>Submission Comments</td>
+    <td>Free text comments</td>
+    <td><input type="text" class="form-control ebird-col" id="submission-comments" value="'Altitude: '+d.ALTITUDE+'m   '+d.DAILY_TEXT_COMMENT_REM"></td>
+  </tr>
+    </tbody>
+  </table>
+</div>
+
+
+
