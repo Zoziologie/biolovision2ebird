@@ -1,7 +1,13 @@
+var patch;
+jQuery.getJSON("http://zoziologie.raphaelnussbaumer.com/wp-content/plugins/biolovision2eBird/patch_ornitho2eBird.json", function(data){
+        patch = data;
+});
+
 var data;
 var meta;
 var ebr;
 var str;
+var d;
 
 function getebr(){
     ebr={};
@@ -19,10 +25,12 @@ function handleFiles(files) {
             });
             data=papaparse.data;
             meta = papaparse.meta;
+            d = data[0];
             str='';
             papaparse.data.forEach( function(d) { 
                jQuery.each(ebr, function(idx,val){
                    //d.DATE= d.DATE.replace(/\./g,'/')
+                   
                    if (val){
                        str=str+eval(val)+',';
                    } else if(val==""){
@@ -64,6 +72,12 @@ jQuery(document).ready(function(){
     dropbox.addEventListener("dragenter", dragenter, false);
     dropbox.addEventListener("dragover", dragover, false);
     dropbox.addEventListener("drop", drop, false);
+    dropbox.addEventListener("click", function(){
+        jQuery("#upload").click();
+    });
+    document.getElementById('upload').onchange = function(e){
+        handleFiles(e.target.files)
+    }
 
     jQuery("#btn-show").click(function() {
         jQuery("#div-ebird-col").toggleClass('hidden');

@@ -2,6 +2,7 @@
     padding: 10px;
     border: 1px solid #ccc;
     margin-bottom: 20px;
+    margin-top:20px;
 }
 #dropbox{
     font-size: x-large;
@@ -10,8 +11,10 @@
     padding: 25px;
     text-align: center;
     color: #bbb;
+    cursor: pointer;
 }
-#btn-show margin-bottom: 20px;
+#btn-show{
+margin-bottom: 20px;
 }
 .bootstrap-select.btn-group.bs-container .dropdown-menu{
     z-index: 999999;
