@@ -4345,7 +4345,7 @@
     "english": "Common Redpoll",
     "EN": "common redpoll",
     "SCI_NAME": "Acanthis flammea",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Common Redpoll (flammea/rostrata)",
     "SPECIES_CODE": "comred"
   },
@@ -4355,7 +4355,7 @@
     "english": "Citril Finch",
     "EN": "citril finch",
     "SCI_NAME": "Serinus citrinella",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Citril Finch",
     "SPECIES_CODE": "citfin1"
   },
@@ -4365,7 +4365,7 @@
     "english": "European Serin",
     "EN": "european serin",
     "SCI_NAME": "Serinus serinus",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "European Serin",
     "SPECIES_CODE": "eurser1"
   },
@@ -4375,7 +4375,7 @@
     "english": "Domestic Canary",
     "EN": "domestic canary",
     "SCI_NAME": "Serinus sp.",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "canary sp.",
     "SPECIES_CODE": "canary1"
   },
@@ -4385,7 +4385,7 @@
     "english": "Eurasian Bullfinch",
     "EN": "eurasian bullfinch",
     "SCI_NAME": "Pyrrhula pyrrhula",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Eurasian Bullfinch",
     "SPECIES_CODE": "eurbul"
   },
@@ -4395,7 +4395,7 @@
     "english": "Common Rosefinch",
     "EN": "common rosefinch",
     "SCI_NAME": "Carpodacus erythrinus",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Common Rosefinch",
     "SPECIES_CODE": "comros"
   },
@@ -4405,7 +4405,7 @@
     "english": "Red Crossbill",
     "EN": "red crossbill",
     "SCI_NAME": "Loxia curvirostra",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Red Crossbill",
     "SPECIES_CODE": "redcro"
   },
@@ -4415,7 +4415,7 @@
     "english": "Two-barred Crossbill",
     "EN": "two barred crossbill",
     "SCI_NAME": "Loxia leucoptera",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Two-barred Crossbill",
     "SPECIES_CODE": "whwcro"
   },
@@ -4425,7 +4425,7 @@
     "english": "Common Chaffinch",
     "EN": "common chaffinch",
     "SCI_NAME": "Fringilla coelebs",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Common Chaffinch",
     "SPECIES_CODE": "comcha"
   },
@@ -4435,7 +4435,7 @@
     "english": "Brambling",
     "EN": "brambling",
     "SCI_NAME": "Fringilla montifringilla",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Brambling",
     "SPECIES_CODE": "brambl"
   },
@@ -4445,7 +4445,7 @@
     "english": "Corn Bunting",
     "EN": "corn bunting",
     "SCI_NAME": "Emberiza calandra",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Corn Bunting",
     "SPECIES_CODE": "corbun1"
   },
@@ -4455,7 +4455,7 @@
     "english": "Yellowhammer",
     "EN": "yellowhammer",
     "SCI_NAME": "Emberiza citrinella",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Yellowhammer",
     "SPECIES_CODE": "yellow2"
   },
@@ -4465,7 +4465,7 @@
     "english": "Pine Bunting",
     "EN": "pine bunting",
     "SCI_NAME": "Emberiza leucocephalos",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Pine Bunting",
     "SPECIES_CODE": "pinbun"
   },
@@ -4475,7 +4475,7 @@
     "english": "Black-headed Bunting",
     "EN": "black headed bunting",
     "SCI_NAME": "Emberiza melanocephala",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Black-headed Bunting",
     "SPECIES_CODE": "blhbun1"
   },
@@ -4485,7 +4485,7 @@
     "english": "Cirl Bunting",
     "EN": "cirl bunting",
     "SCI_NAME": "Emberiza cirlus",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Cirl Bunting",
     "SPECIES_CODE": "cirbun1"
   },
@@ -4495,7 +4495,7 @@
     "english": "Ortolan Bunting",
     "EN": "ortolan bunting",
     "SCI_NAME": "Emberiza hortulana",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Ortolan Bunting",
     "SPECIES_CODE": "ortbun1"
   },
@@ -4505,7 +4505,7 @@
     "english": "Rock Bunting",
     "EN": "rock bunting",
     "SCI_NAME": "Emberiza cia",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Rock Bunting",
     "SPECIES_CODE": "rocbun1"
   },
@@ -4515,7 +4515,7 @@
     "english": "Rustic Bunting",
     "EN": "rustic bunting",
     "SCI_NAME": "Emberiza rustica",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Rustic Bunting",
     "SPECIES_CODE": "rusbun"
   },
@@ -4525,7 +4525,7 @@
     "english": "Little Bunting",
     "EN": "little bunting",
     "SCI_NAME": "Emberiza pusilla",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Little Bunting",
     "SPECIES_CODE": "litbun"
   },
@@ -4535,7 +4535,7 @@
     "english": "Common Reed Bunting",
     "EN": "common reed bunting",
     "SCI_NAME": "Emberiza schoeniclus",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Common Reed Bunting",
     "SPECIES_CODE": "reebun"
   },
@@ -4545,7 +4545,7 @@
     "english": "Lapland Bunting",
     "EN": "lapland bunting",
     "SCI_NAME": "Calcarius lapponicus",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Lapland Longspur",
     "SPECIES_CODE": "laplon"
   },
@@ -4555,7 +4555,7 @@
     "english": "Snow Bunting",
     "EN": "snow bunting",
     "SCI_NAME": "Plectrophenax nivalis",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Snow Bunting",
     "SPECIES_CODE": "snobun"
   },
@@ -4565,7 +4565,7 @@
     "english": "Cockatiel",
     "EN": "cockatiel",
     "SCI_NAME": "Nymphicus hollandicus",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Cockatiel",
     "SPECIES_CODE": "cockat"
   },
@@ -4575,7 +4575,7 @@
     "english": "Pale-headed Rosella",
     "EN": "pale headed rosella",
     "SCI_NAME": "Platycercus adscitus",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Pale-headed Rosella",
     "SPECIES_CODE": "pahros1"
   },
@@ -4585,7 +4585,7 @@
     "english": "Budgerigar",
     "EN": "budgerigar",
     "SCI_NAME": "Melopsittacus undulatus",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Budgerigar",
     "SPECIES_CODE": "budger"
   },
@@ -4595,7 +4595,7 @@
     "english": "Rose-ringed Parakeet",
     "EN": "rose ringed parakeet",
     "SCI_NAME": "Psittacula krameri",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Rose-ringed Parakeet",
     "SPECIES_CODE": "rorpar"
   },
@@ -4605,7 +4605,7 @@
     "english": "Plum-headed Parakeet",
     "EN": "plum headed parakeet",
     "SCI_NAME": "Psittacula cyanocephala",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Plum-headed Parakeet",
     "SPECIES_CODE": "plhpar1"
   },
@@ -4615,7 +4615,7 @@
     "english": "Turquoise-fronted Amazon",
     "EN": "turquoise fronted amazon",
     "SCI_NAME": "Amazona aestiva",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Turquoise-fronted Amazon",
     "SPECIES_CODE": "bufpar"
   },
@@ -4625,7 +4625,7 @@
     "english": "Red-billed Leiothrix",
     "EN": "red billed leiothrix",
     "SCI_NAME": "Leiothrix lutea",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Red-billed Leiothrix",
     "SPECIES_CODE": "reblei"
   },
@@ -4635,7 +4635,7 @@
     "english": "Black-headed Weaver",
     "EN": "black headed weaver",
     "SCI_NAME": "Ploceus melanocephalus",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Black-headed Weaver",
     "SPECIES_CODE": "blhwea1"
   },
@@ -4645,7 +4645,7 @@
     "english": "Yellow-crowned Bishop",
     "EN": "yellow crowned bishop",
     "SCI_NAME": "Euplectes afer",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Yellow-crowned Bishop",
     "SPECIES_CODE": "yecbis"
   },
@@ -4655,7 +4655,7 @@
     "english": "Red Avadavat",
     "EN": "red avadavat",
     "SCI_NAME": "Amandava amandava",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Red Avadavat",
     "SPECIES_CODE": "redava"
   },
@@ -4665,7 +4665,7 @@
     "english": "Zebra Finch",
     "EN": "zebra finch",
     "SCI_NAME": "Taeniopygia guttata",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Zebra Finch",
     "SPECIES_CODE": "zebfin2"
   },
@@ -4675,7 +4675,7 @@
     "english": "Northern Cardinal",
     "EN": "northern cardinal",
     "SCI_NAME": "Cardinalis cardinalis",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Northern Cardinal",
     "SPECIES_CODE": "norcar"
   },
@@ -4685,7 +4685,7 @@
     "english": "Rosy-faced Lovebird",
     "EN": "rosy faced lovebird",
     "SCI_NAME": "Agapornis roseicollis",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Rosy-faced Lovebird",
     "SPECIES_CODE": "peflov"
   },
@@ -4695,7 +4695,7 @@
     "english": "Monk Parakeet",
     "EN": "monk parakeet",
     "SCI_NAME": "Myiopsitta monachus",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Monk/Cliff Parakeet",
     "SPECIES_CODE": "monpar"
   },
@@ -4705,7 +4705,7 @@
     "english": "Senegal Parrot",
     "EN": "senegal parrot",
     "SCI_NAME": "Poicephalus senegalus",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Senegal Parrot",
     "SPECIES_CODE": "senpar"
   },
@@ -4715,7 +4715,7 @@
     "english": "Turkey Vulture",
     "EN": "turkey vulture",
     "SCI_NAME": "Cathartes aura",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Turkey Vulture",
     "SPECIES_CODE": "turvul"
   },
@@ -4725,7 +4725,7 @@
     "english": "Speckled Pigeon",
     "EN": "speckled pigeon",
     "SCI_NAME": "Columba guinea",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Speckled Pigeon",
     "SPECIES_CODE": "spepig1"
   },
@@ -4735,7 +4735,7 @@
     "english": "Masked Laughingthrush",
     "EN": "masked laughingthrush",
     "SCI_NAME": "Garrulax perspicillatus",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Masked Laughingthrush",
     "SPECIES_CODE": "maslau1"
   },
@@ -4745,7 +4745,7 @@
     "english": "Trumpeter Finch",
     "EN": "trumpeter finch",
     "SCI_NAME": "Bucanetes githagineus",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Trumpeter Finch",
     "SPECIES_CODE": "trufin2"
   },
@@ -4755,7 +4755,7 @@
     "english": "Common Waxbill",
     "EN": "common waxbill",
     "SCI_NAME": "Estrilda astrild",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Common Waxbill",
     "SPECIES_CODE": "comwax"
   },
@@ -4765,7 +4765,7 @@
     "english": "Green Jay",
     "EN": "green jay",
     "SCI_NAME": "Cyanocorax yncas",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Green/Inca Jay",
     "SPECIES_CODE": "grnjay"
   },
@@ -4775,7 +4775,7 @@
     "english": "Laughing Gull",
     "EN": "laughing gull",
     "SCI_NAME": "Leucophaeus atricilla",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Laughing Gull",
     "SPECIES_CODE": "laugul"
   },
@@ -4785,7 +4785,7 @@
     "english": "Grey Parrot",
     "EN": "grey parrot",
     "SCI_NAME": "Psittacus erithacus",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Grey/Timneh Parrot",
     "SPECIES_CODE": "grepar"
   },
@@ -4795,7 +4795,7 @@
     "english": "Eastern Rosella",
     "EN": "eastern rosella",
     "SCI_NAME": "Platycercus eximius",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Eastern Rosella",
     "SPECIES_CODE": "easros1"
   },
@@ -4805,7 +4805,7 @@
     "english": "Hamerkop",
     "EN": "hamerkop",
     "SCI_NAME": "Scopus umbretta",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Hamerkop",
     "SPECIES_CODE": "hamerk1"
   },
@@ -4815,7 +4815,7 @@
     "english": "Isabelline Shrike",
     "EN": "isabelline shrike",
     "SCI_NAME": "Lanius isabellinus",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Isabelline Shrike",
     "SPECIES_CODE": "isashr1"
   },
@@ -4825,7 +4825,7 @@
     "english": "Sacred Ibis",
     "EN": "sacred ibis",
     "SCI_NAME": "Threskiornis aethiopicus",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "African/Malagasy Sacred Ibis",
     "SPECIES_CODE": "sacibi1"
   },
@@ -4835,7 +4835,7 @@
     "english": "Macqueen's Bustard",
     "EN": "macqueen s bustard",
     "SCI_NAME": "Chlamydotis macqueenii",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Macqueen's Bustard",
     "SPECIES_CODE": "macbus1"
   },
@@ -4845,7 +4845,7 @@
     "english": "Pacific Golden Plover",
     "EN": "pacific golden plover",
     "SCI_NAME": "Pluvialis fulva",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Pacific Golden Plover",
     "SPECIES_CODE": "pagplo"
   },
@@ -4855,7 +4855,7 @@
     "english": "Franklin's Gull",
     "EN": "franklin s gull",
     "SCI_NAME": "Leucophaeus pipixcan",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Franklin's Gull",
     "SPECIES_CODE": "fragul"
   },
@@ -4865,7 +4865,7 @@
     "english": "Fischer's Lovebird",
     "EN": "fischer s lovebird",
     "SCI_NAME": "Agapornis fischeri",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Fischer's Lovebird",
     "SPECIES_CODE": "fislov1"
   },
@@ -4875,7 +4875,7 @@
     "english": "Yellow-collared Lovebird",
     "EN": "yellow collared lovebird",
     "SCI_NAME": "Agapornis personatus",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Yellow-collared Lovebird",
     "SPECIES_CODE": "yeclov"
   },
@@ -4885,7 +4885,7 @@
     "english": "Steppe Eagle",
     "EN": "steppe eagle",
     "SCI_NAME": "Aquila nipalensis",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Steppe Eagle",
     "SPECIES_CODE": "steeag1"
   },
@@ -4895,7 +4895,7 @@
     "english": "Steppe Buzzard",
     "EN": "steppe buzzard",
     "SCI_NAME": "Buteo buteo vulpinus/menetriesi",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Common Buzzard (Steppe)",
     "SPECIES_CODE": "combuz5"
   },
@@ -4905,7 +4905,7 @@
     "english": "California Quail",
     "EN": "california quail",
     "SCI_NAME": "Callipepla californica",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "California Quail",
     "SPECIES_CODE": "calqua"
   },
@@ -4915,7 +4915,7 @@
     "english": "White-throated Munia",
     "EN": "white throated munia",
     "SCI_NAME": "Euodice malabarica",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Indian Silverbill",
     "SPECIES_CODE": "indsil"
   },
@@ -4925,7 +4925,7 @@
     "english": "Semicollared Flycatcher",
     "EN": "semicollared flycatcher",
     "SCI_NAME": "Ficedula semitorquata",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Semicollared Flycatcher",
     "SPECIES_CODE": "semfly1"
   },
@@ -4935,7 +4935,7 @@
     "english": "Northern Bald Ibis",
     "EN": "northern bald ibis",
     "SCI_NAME": "Geronticus eremita",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Northern Bald Ibis",
     "SPECIES_CODE": "waldra1"
   },
@@ -4945,7 +4945,7 @@
     "english": "Lesser Black-backed Gull (L.f.fuscus)",
     "EN": "lesser black backed gull  l f fuscus",
     "SCI_NAME": "Larus fuscus fuscus",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Lesser Black-backed Gull (fuscus)",
     "SPECIES_CODE": "lbbgul1"
   },
@@ -4955,7 +4955,7 @@
     "english": "Bonaparte's Gull",
     "EN": "bonaparte s gull",
     "SCI_NAME": "Chroicocephalus philadelphia",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Bonaparte's Gull",
     "SPECIES_CODE": "bongul"
   },
@@ -4965,7 +4965,7 @@
     "english": "Blue-cheeked Bee-eater",
     "EN": "blue cheeked bee eater",
     "SCI_NAME": "Merops persicus",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Blue-cheeked Bee-eater",
     "SPECIES_CODE": "bcbeat1"
   },
@@ -4975,7 +4975,7 @@
     "english": "Namaqua Dove",
     "EN": "namaqua dove",
     "SCI_NAME": "Oena capensis",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Namaqua Dove",
     "SPECIES_CODE": "namdov1"
   },
@@ -4985,7 +4985,7 @@
     "english": "Hume's Leaf Warbler",
     "EN": "hume s leaf warbler",
     "SCI_NAME": "Phylloscopus humei",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Hume's Leaf Warbler",
     "SPECIES_CODE": "humwar1"
   },
@@ -4995,7 +4995,7 @@
     "english": "Pallas?s Leaf Warbler",
     "EN": "pallass leaf warbler",
     "SCI_NAME": "Phylloscopus proregulus",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Pallas's Leaf Warbler",
     "SPECIES_CODE": "palwar5"
   },
@@ -5005,7 +5005,7 @@
     "english": "Siberian Stonechat",
     "EN": "siberian stonechat",
     "SCI_NAME": "Saxicola maurus",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Siberian/Stejneger's Stonechat",
     "SPECIES_CODE": "sibsto1"
   },
@@ -5015,7 +5015,7 @@
     "english": "African Collared Dove",
     "EN": "african collared dove",
     "SCI_NAME": "Streptopelia roseogrisea",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "African Collared Dove",
     "SPECIES_CODE": "afcdov1"
   },
@@ -5025,7 +5025,7 @@
     "english": "Spotless Starling",
     "EN": "spotless starling",
     "SCI_NAME": "Sturnus unicolor",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Spotless Starling",
     "SPECIES_CODE": "sposta1"
   },
@@ -5035,7 +5035,7 @@
     "english": "Reeves's Pheasant",
     "EN": "reeves s pheasant",
     "SCI_NAME": "Syrmaticus reevesii",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Reeves's Pheasant",
     "SPECIES_CODE": "reephe1"
   },
@@ -5045,7 +5045,7 @@
     "english": "Solitary Sandpiper",
     "EN": "solitary sandpiper",
     "SCI_NAME": "Tringa solitaria",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Solitary Sandpiper",
     "SPECIES_CODE": "solsan"
   },
@@ -5055,7 +5055,7 @@
     "english": "Rueppell's Griffon",
     "EN": "rueppell s griffon",
     "SCI_NAME": "Gyps rueppelli",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "R?ppell's Vulture",
     "SPECIES_CODE": "ruegri1"
   },
@@ -5065,7 +5065,7 @@
     "english": "unidentified Diver",
     "EN": "unidentified diver",
     "SCI_NAME": "Gavia sp.",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "loon sp.",
     "SPECIES_CODE": "loon"
   },
@@ -5075,7 +5075,7 @@
     "english": "Abdim's Stork",
     "EN": "abdim s stork",
     "SCI_NAME": "Ciconia abdimii",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Abdim's Stork",
     "SPECIES_CODE": "abdsto1"
   },
@@ -5085,7 +5085,7 @@
     "english": "Japanese Quail",
     "EN": "japanese quail",
     "SCI_NAME": "Coturnix japonica",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Japanese Quail",
     "SPECIES_CODE": "japqua"
   },
@@ -5095,7 +5095,7 @@
     "english": "unidentified Gull",
     "EN": "unidentified gull",
     "SCI_NAME": "Larus sp.",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Larus sp.",
     "SPECIES_CODE": "larus1"
   },
@@ -5105,7 +5105,7 @@
     "english": "Eurasian Reed or Marsh Warbler",
     "EN": "eurasian reed or marsh warbler",
     "SCI_NAME": "Acrocephalus palustris/scirpaceus",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Marsh Warbler/Eurasian Reed Warbler",
     "SPECIES_CODE": "y00624"
   },
@@ -5115,7 +5115,7 @@
     "english": "Chestnut-tailed Starling",
     "EN": "chestnut tailed starling",
     "SCI_NAME": "Sturnia malabarica",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Chestnut-tailed Starling",
     "SPECIES_CODE": "chtsta2"
   },
@@ -5125,7 +5125,7 @@
     "english": "Scarlet Ibis",
     "EN": "scarlet ibis",
     "SCI_NAME": "Eudocimus ruber",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Scarlet Ibis",
     "SPECIES_CODE": "scaibi"
   },
@@ -5135,7 +5135,7 @@
     "english": "unidentified raptor",
     "EN": "unidentified raptor",
     "SCI_NAME": "Accipitriformes/Falconiformes sp.",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "diurnal raptor sp.",
     "SPECIES_CODE": "diurap1"
   },
@@ -5145,7 +5145,7 @@
     "english": "unidentified Passerine",
     "EN": "unidentified passerine",
     "SCI_NAME": "Passeriformes sp.",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "passerine sp.",
     "SPECIES_CODE": "passer1"
   },
@@ -5155,7 +5155,7 @@
     "english": "Alexandrine Parakeet",
     "EN": "alexandrine parakeet",
     "SCI_NAME": "Psittacula eupatria",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Alexandrine Parakeet",
     "SPECIES_CODE": "alepar2"
   },
@@ -5165,7 +5165,7 @@
     "english": "Common / Arctic Tern",
     "EN": "common   arctic tern",
     "SCI_NAME": "Sterna hirundo/paradisaea",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Common/Arctic Tern",
     "SPECIES_CODE": "y00317"
   },
@@ -5175,7 +5175,7 @@
     "english": "Eclectus Parrot",
     "EN": "eclectus parrot",
     "SCI_NAME": "Eclectus roratus",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Eclectus Parrot",
     "SPECIES_CODE": "eclpar"
   },
@@ -5185,7 +5185,7 @@
     "english": "Grey-headed Lovebird",
     "EN": "grey headed lovebird",
     "SCI_NAME": "Agapornis canus",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Grey-headed Lovebird",
     "SPECIES_CODE": "gyhlov1"
   },
@@ -5195,7 +5195,7 @@
     "english": "Sulphur-crested Cockatoo",
     "EN": "sulphur crested cockatoo",
     "SCI_NAME": "Cacatua galerita",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Sulphur-crested Cockatoo",
     "SPECIES_CODE": "succoc"
   },
@@ -5205,7 +5205,7 @@
     "english": "Burrowing Parakeet",
     "EN": "burrowing parakeet",
     "SCI_NAME": "Cyanoliseus patagonus",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Burrowing Parrot",
     "SPECIES_CODE": "burpar"
   },
@@ -5215,7 +5215,7 @@
     "english": "Diamond Dove",
     "EN": "diamond dove",
     "SCI_NAME": "Geopelia cuneata",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Diamond Dove",
     "SPECIES_CODE": "diadov1"
   },
@@ -5225,7 +5225,7 @@
     "english": "Iberian Chiffchaff",
     "EN": "iberian chiffchaff",
     "SCI_NAME": "Phylloscopus ibericus",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Iberian Chiffchaff",
     "SPECIES_CODE": "ibechi2"
   },
@@ -5235,7 +5235,7 @@
     "english": "Crimson Rosella",
     "EN": "crimson rosella",
     "SCI_NAME": "Platycercus elegans",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Crimson Rosella",
     "SPECIES_CODE": "criros2"
   },
@@ -5245,7 +5245,7 @@
     "english": "Red-rumped Parrot",
     "EN": "red rumped parrot",
     "SCI_NAME": "Psephotus haematonotus",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Red-rumped Parrot",
     "SPECIES_CODE": "rerpar1"
   },
@@ -5255,7 +5255,7 @@
     "english": "Lady Amherst's Pheasant",
     "EN": "lady amherst s pheasant",
     "SCI_NAME": "Chrysolophus amherstiae",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Lady Amherst's Pheasant",
     "SPECIES_CODE": "laaphe1"
   },
@@ -5265,7 +5265,7 @@
     "english": "Common Pochard x Ferruginous Duck",
     "EN": "common pochard_x_ferruginous duck  hybrid",
     "SCI_NAME": "Aythya ferina x nyroca",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Common Pochard x Ferruginous Duck (hybrid)",
     "SPECIES_CODE": "x00764"
   },
@@ -5275,7 +5275,7 @@
     "english": "Heuglin's Gull",
     "EN": "heuglin s gull",
     "SCI_NAME": "Larus fuscus heuglini",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Lesser Black-backed Gull (Heuglin's)",
     "SPECIES_CODE": "lbbgul4"
   },
@@ -5285,7 +5285,7 @@
     "english": "Bimaculated Lark",
     "EN": "bimaculated lark",
     "SCI_NAME": "Melanocorypha bimaculata",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Bimaculated Lark",
     "SPECIES_CODE": "bimlar1"
   },
@@ -5295,7 +5295,7 @@
     "english": "White-headed Long-tailed Tit (A.c.caudatus)",
     "EN": "white headed long tailed tit  a c caudatus",
     "SCI_NAME": "Aegithalos caudatus caudatus",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Long-tailed Tit (caudatus)",
     "SPECIES_CODE": "lottit2"
   },
@@ -5305,7 +5305,7 @@
     "english": "Italian x House Sparrow",
     "EN": "italian x house sparrow",
     "SCI_NAME": "Passer domesticus x hispaniolensis",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "House x Spanish Sparrow (hybrid)",
     "SPECIES_CODE": "x00645"
   },
@@ -5315,7 +5315,7 @@
     "english": "Cackling Goose",
     "EN": "cackling goose",
     "SCI_NAME": "Branta hutchinsii",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Cackling Goose",
     "SPECIES_CODE": "cacgoo1"
   },
@@ -5325,7 +5325,7 @@
     "english": "Siberian-type Chiffchaff",
     "EN": "#N/A",
     "SCI_NAME": "Phylloscopus collybita tristis",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Common Chiffchaff (Siberian)",
     "SPECIES_CODE": "comchi4"
   },
@@ -5335,7 +5335,7 @@
     "english": "Lesser / Greater Spotted Eagle",
     "EN": "lesser   greater spotted eagle",
     "SCI_NAME": "Clanga pomarina/clanga",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Lesser/Greater Spotted Eagle",
     "SPECIES_CODE": "y00718"
   },
@@ -5345,7 +5345,7 @@
     "english": "Song Sparrow",
     "EN": "song sparrow",
     "SCI_NAME": "Melospiza melodia",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Song Sparrow",
     "SPECIES_CODE": "sonspa"
   },
@@ -5355,7 +5355,7 @@
     "english": "Woodchat x Red-backed Shrike",
     "EN": "woodchat x red backed shrike",
     "SCI_NAME": "Lanius sp.",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "shrike sp.",
     "SPECIES_CODE": "shrike"
   },
@@ -5365,7 +5365,7 @@
     "english": "Tufted x Ferruginous Duck",
     "EN": "ferruginous_x_tufted duck",
     "SCI_NAME": "Aythya sp.",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Aythya sp.",
     "SPECIES_CODE": "aythya1"
   },
@@ -5375,7 +5375,7 @@
     "english": "Helmeted Guineafowl",
     "EN": "helmeted guineafowl",
     "SCI_NAME": "Numida meleagris",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Helmeted Guineafowl",
     "SPECIES_CODE": "helgui"
   },
@@ -5385,7 +5385,7 @@
     "english": "Pied Crow",
     "EN": "pied crow",
     "SCI_NAME": "Corvus albus",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Pied Crow",
     "SPECIES_CODE": "piecro1"
   },
@@ -5395,7 +5395,7 @@
     "english": "Eurasian Teal / Garganey",
     "EN": "eurasian teal   garganey",
     "SCI_NAME": "Anas querquedula/crecca",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Garganey/Eurasian/Green-winged Teal",
     "SPECIES_CODE": "y00766"
   },
@@ -5405,7 +5405,7 @@
     "english": "Black Grouse x Capercaillie",
     "EN": "black grouse x capercaillie",
     "SCI_NAME": "Phasianinae sp.",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "pheasant sp.",
     "SPECIES_CODE": "pheasa1"
   },
@@ -5425,7 +5425,7 @@
     "english": "Orinoco Goose",
     "EN": "orinoco goose",
     "SCI_NAME": "Oressochen jubatus",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Orinoco Goose",
     "SPECIES_CODE": "origoo1"
   },
@@ -5435,7 +5435,7 @@
     "english": "Willow Tit",
     "EN": "willow tit",
     "SCI_NAME": "Poecile montanus",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Willow Tit",
     "SPECIES_CODE": "wiltit1"
   },
@@ -5445,7 +5445,7 @@
     "english": "Alpine Willow Tit",
     "EN": "alpine willow tit",
     "SCI_NAME": "Poecile montanus [montanus Group]",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Willow Tit (Willow)",
     "SPECIES_CODE": "wiltit2"
   },
@@ -5455,7 +5455,7 @@
     "english": "Red-crested Finch",
     "EN": "#N/A",
     "SCI_NAME": "Coryphospingus cucullatus",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Red Pileated Finch",
     "SPECIES_CODE": "recfin1"
   },
@@ -5465,7 +5465,7 @@
     "english": "Hooded Siskin",
     "EN": "#N/A",
     "SCI_NAME": "Spinus magellanicus",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Hooded Siskin",
     "SPECIES_CODE": "hoosis1"
   },
@@ -5475,7 +5475,7 @@
     "english": "Green-cheeked Parakeet",
     "EN": "green cheeked parakeet",
     "SCI_NAME": "Pyrrhura molinae",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Green-cheeked Parakeet",
     "SPECIES_CODE": "gncpar"
   },
@@ -5485,7 +5485,7 @@
     "english": "Spectacled Owl",
     "EN": "#N/A",
     "SCI_NAME": "Pulsatrix perspicillata",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Spectacled Owl",
     "SPECIES_CODE": "speowl1"
   },
@@ -5495,7 +5495,7 @@
     "english": "Psittacidae sp.",
     "EN": "psittacidae sp",
     "SCI_NAME": "Psittacula sp.",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Psittacula sp.",
     "SPECIES_CODE": "psitta1"
   },
@@ -5505,7 +5505,7 @@
     "english": "Brown Teal",
     "EN": "brown teal",
     "SCI_NAME": "Anas aucklandica",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Auckland Teal",
     "SPECIES_CODE": "auitea1"
   },
@@ -5515,7 +5515,7 @@
     "english": "New Zealand Scaup",
     "EN": "new zealand scaup",
     "SCI_NAME": "Aythya novaeseelandiae",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "New Zealand Scaup",
     "SPECIES_CODE": "nezsca1"
   },
@@ -5525,7 +5525,7 @@
     "english": "Western Yellow Wagtail (M.f. flavissima / lutea)",
     "EN": "western yellow wagtail  m f  flavissima   lutea",
     "SCI_NAME": "Motacilla flava flavissima/lutea",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Western Yellow Wagtail (flavissima/lutea)",
     "SPECIES_CODE": "weywag13"
   },
@@ -5535,7 +5535,7 @@
     "english": "White-eared Bulbul",
     "EN": "white eared bulbul",
     "SCI_NAME": "Pycnonotus leucotis",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "White-eared Bulbul",
     "SPECIES_CODE": "whebul1"
   },
@@ -5545,7 +5545,7 @@
     "english": "Vinous-throated Parrotbill",
     "EN": "vinous throated parrotbill",
     "SCI_NAME": "Sinosuthora webbiana",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Vinous-throated Parrotbill",
     "SPECIES_CODE": "vitpar1"
   },
@@ -5555,7 +5555,7 @@
     "english": "Philippine Duck",
     "EN": "philippine duck",
     "SCI_NAME": "Anas luzonica",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Philippine Duck",
     "SPECIES_CODE": "phiduc1"
   },
@@ -5565,7 +5565,7 @@
     "english": "Great White x Dalmatian Pelican",
     "EN": "great white x dalmatian pelican",
     "SCI_NAME": "Pelecanus sp.",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "pelican sp.",
     "SPECIES_CODE": "pelica1"
   },
@@ -5575,7 +5575,7 @@
     "english": "Pacific Loon",
     "EN": "#N/A",
     "SCI_NAME": "Gavia pacifica",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Pacific Loon",
     "SPECIES_CODE": "pacloo"
   },
@@ -5585,7 +5585,7 @@
     "english": "Violet Turaco",
     "EN": "#N/A",
     "SCI_NAME": "Musophaga violacea",
-    "PRIMARY_COM_NAME": 0,
+    "PRIMARY_COM_NAME": "",
     "en_IOC": "Violet Turaco",
     "SPECIES_CODE": "viotur1"
   }
