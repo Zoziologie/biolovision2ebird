@@ -2,113 +2,113 @@
 	"id": "common_name",
 	"tooltip": "Common name of the species. We use a patch to convert biolovision species ID to eBird common name. Don't change this value",
 	"label": "Common Name",
-	"code": "jQuery.grep(patch, function(e){ return e.id == d.ID_SPECIES; })[0].PRIMARY_COM_NAME"
+	"code": "var eBird_bird = jQuery.grep(eBird_birds_list, function(eBird_bird){\n return eBird_bird.id == d.ID_SPECIES; \n})\ return eBird_bird[0].PRIMARY_COM_NAME"
 },
 {
 	"id": "genus",
 	"tooltip": "Latin genus of the species.",
 	"label": "Genus",
-	"code": ""
+	"code": "return ''"
 },
 {
 	"id": "species",
 	"tooltip": "Latin species name.",
 	"label": "Species",
-	"code": ""
+	"code": "return ''"
 },
 {
 	"id": "number",
 	"tooltip": "Number of individu. Record as ‘present’ if not an integer.",
 	"label": "Number",
-	"code": "d.TOTAL_COUNT"
+	"code": "return d.TOTAL_COUNT"
 },
 {
 	"id": "species_comments",
 	"tooltip": "Free text comments about the observation ",
 	"label": "Species Comments",
-	"code": "d.ESTIMATION_CODE + d.COMMENT + d.ID_SIGHTING"
+	"code": "return d.ESTIMATION_CODE + d.COMMENT + d.ID_SIGHTING"
 },
 {
 	"id": "location_name",
 	"tooltip": "User-defined name of the location",
 	"label": "Location Name",
-	"code": "d.PLACE"
+	"code": "return d.PLACE"
 },
 {
 	"id": "latitude",
 	"tooltip": "Latitude of the location, in decimal degrees",
 	"label": "Latitude",
-	"code": "d.COORD_LAT"
+	"code": "return d.COORD_LAT"
 },
 {
 	"id": "longitude",
 	"tooltip": "Longitude of the location, in decimal degrees",
 	"label": "Longitude",
-	"code": "d.COORD_LON"
+	"code": "return d.COORD_LON"
 },
 {
 	"id": "date",
 	"tooltip": "The date these observations were made ",
 	"label": "Date",
-	"code": "d.DATE_MONTH+'/'+d.DATE_DAY+'/'+d.DATE_YEAR"
+	"code": "return d.DATE_MONTH+'/'+d.DATE_DAY+'/'+d.DATE_YEAR"
 },
 {
 	"id": "start_time",
 	"tooltip": "",
 	"label": "Start Time",
-	"code": "d.TIME_START"
+	"code": "return d.TIME_START"
 },
 {
 	"id": "state",
 	"tooltip": "State/province where these observations were made.",
 	"label": "State/Province",
-	"code": "d.COUNTY"
+	"code": "return d.COUNTY"
 },
 {
 	"id": "country",
 	"tooltip": "The country where these observations were made.",
 	"label": "Country code",
-	"code": "CH"
+	"code": "if (d.COUNRTY==='Switzerland') {\n return 'CH' \n } else {\n return '' \n}"
 },
 {
 	"id": "protocol",
 	"tooltip": "casual, stationary, area",
 	"label": "Protocol",
-	"code": "'casual'"
+	"code": "return 'casual'"
 },
 {
 	"id": "nb_observer",
 	"tooltip": "<0",
 	"label": "Number of Observers",
-	"code": ""
+	"code": "return ''"
 },
 {
 	"id": "duration",
 	"tooltip": "In minutes 0<DURATION<1440",
 	"label": "Duration",
-	"code": "(parseInt(d.TIME_STOP_HOUR)*60-parseInt(d.TIME_START_HOUR)*60+parseInt(d.TIME_STOP_MIN)-parseInt(d.TIME_START_MIN)).toString()"
+	"code": "return (parseInt(d.TIME_STOP_HOUR)*60-parseInt(d.TIME_START_HOUR)*60+parseInt(d.TIME_STOP_MIN)-parseInt(d.TIME_START_MIN)).toString()"
 },
 {
 	"id": "all_observation",
 	"tooltip": "'Y' or 'N'",
 	"label": "All observations reported?",
-	"code": "if(d.FULL_FORM=='Oui'){'Y'}else{'N'}"
+	"code": "if(d.FULL_FORM=='Oui'\n){\n return'Y'\n}else{\n return 'N'\n}"
 },
 {
 	"id": "effort_distance",
 	"tooltip": "",
 	"label": "Effort Distance Miles",
-	"code": ""
+	"code": "return ''"
 },
 {
 	"id": "effort_area",
 	"tooltip": "",
 	"label": "Effort area acres",
-	"code": ""
+	"code": "return ''"
 },
 {
 	"id": "submission_comments",
 	"tooltip": "Free text comments",
 	"label": "Submission Comments",
-	"code": "'Altitude: '+d.ALTITUDE+'m   '+d.DAILY_TEXT_COMMENT_REM"
+	"code": "return 'Altitude: '+d.ALTITUDE+'m   '+d.DAILY_TEXT_COMMENT_REM"
 }]
