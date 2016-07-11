@@ -1,3 +1,7 @@
+.fusion-header-wrapper {
+      /* position: relative; */
+    z-index: 0!important;
+}
 #drobox-outer{
     padding: 10px;
     border: 1px solid #ccc;
@@ -14,8 +18,18 @@
     cursor: pointer;
 }
 #btn-show{
-margin-bottom: 20px;
+    margin-bottom: 20px;
 }
 .bootstrap-select.btn-group.bs-container .dropdown-menu{
     z-index: 999999;
+}
+#instruction{
+    border: 2px #e5e5e5 solid;
+    padding-right: 20px;
+    padding-left: 20px;
+    margin-bottom: 10px;
+}
+.CodeMirror {
+    border: 1px solid #eee;
+    height: auto;
 }

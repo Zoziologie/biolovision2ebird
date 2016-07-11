@@ -16,6 +16,7 @@
   ],
   "dependencies": {
     "papaparse": "^4.1.2",
-    "bootstrap-select": "^1.10.0"
+    "bootstrap-select": "^1.10.0",
+    "codemirror": "^5.16.0"
   }
 }

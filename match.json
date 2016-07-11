@@ -1,8 +1,14 @@
 [{
+    "id": "global_variable",
+    "label":"global variable",
+    "tooltip": "You can change value in d which will be available everywher after",
+    "code": "//Define the precision in text\nif(d.ESTIMATION_CODE=='>') {\n\td.PRECISION='minimum';\n} else if (d.ESTIMATION_CODE=='') {\n\td.PRECISION='exact';\n} else if (d.ESTIMATION_CODE=='~') {\n\td.PRECISION='estimation';\n} else {\n\td.PRECISION='not counted';\n\td.TOTAL_COUNT='x';\n}\n\n//Define "
+},
+{
 	"id": "common_name",
 	"tooltip": "Common name of the species. We use a patch to convert biolovision species ID to eBird common name. Don't change this value",
 	"label": "Common Name",
-	"code": "var eBird_bird = jQuery.grep(eBird_birds_list, function(eBird_bird){\n return eBird_bird.id == d.ID_SPECIES; \n})\ return eBird_bird[0].PRIMARY_COM_NAME"
+	"code": "var eBird_bird = jQuery.grep(eBird_birds_list, function(eBird_bird){\n\treturn eBird_bird.id == d.ID_SPECIES; \n})\nreturn eBird_bird[0].PRIMARY_COM_NAME"
 },
 {
 	"id": "genus",
@@ -26,7 +32,7 @@
 	"id": "species_comments",
 	"tooltip": "Free text comments about the observation ",
 	"label": "Species Comments",
-	"code": "return d.ESTIMATION_CODE + d.COMMENT + d.ID_SIGHTING"
+	"code": "var c='';\nc = c +'Count precision: '+d.PRECISION+'<br>';\nif(d.DETAIL!=''){c = c + 'Specie detail: ' + d.DETAIL + '<br>';}\nif(d.COMMENT!=''){c = c + 'Specie Comment: ' + d.COMMENT + '<br>';}\nc = c + 'Ornitho Link: <a href=\"http://www.ornitho.ch/index.php?m_id=54&id='+d.ID_SIGHTING+'\">'+d.ID_SIGHTING+'</a><br>';\nif(d.TIMING!=''){c = c+'Time of observation: '+d.TIMING+'<br>';}\nc = c+'Exact coordinate: <a href=\"http://maps.google.com?q='+d.COORD_LAT+','+d.COORD_LON+'&t=k\">'+ d.COORD_LAT_DMS+' '+d.COORD_LON_DMS+'</a><br>';\nreturn c"
 },
 {
 	"id": "location_name",
@@ -56,7 +62,7 @@
 	"id": "start_time",
 	"tooltip": "",
 	"label": "Start Time",
-	"code": "return d.TIME_START"
+	"code": "if(d.TIME_START=='00:00') {\n\treturn ''\n} else {\n\t return d.TIME_START}"
 },
 {
 	"id": "state",
@@ -68,13 +74,13 @@
 	"id": "country",
 	"tooltip": "The country where these observations were made.",
 	"label": "Country code",
-	"code": "if (d.COUNRTY==='Switzerland') {\n return 'CH' \n } else {\n return '' \n}"
+	"code": "if (d.COUNRTY==='Switzerland') {\n\treturn 'CH' \n} else {\n\treturn '' \n}"
 },
 {
 	"id": "protocol",
-	"tooltip": "casual, stationary, area",
+	"tooltip": "casual, traveling, stationary or area",
 	"label": "Protocol",
-	"code": "return 'casual'"
+	"code": "if (d.TIME_START=='00:00') {\n\treturn 'casual' \n} else {\n\treturn 'traveling'}\n//Possible value: casual, stationary, traveling, or area"
 },
 {
 	"id": "nb_observer",
@@ -92,13 +98,13 @@
 	"id": "all_observation",
 	"tooltip": "'Y' or 'N'",
 	"label": "All observations reported?",
-	"code": "if(d.FULL_FORM=='Oui'\n){\n return'Y'\n}else{\n return 'N'\n}"
+	"code": "if(d.FULL_FORM=='Oui'){\n\treturn'Y'\n}else{\n\treturn 'N'\n}"
 },
 {
 	"id": "effort_distance",
 	"tooltip": "",
 	"label": "Effort Distance Miles",
-	"code": "return ''"
+	"code": "return ''//(km/1.60934).toString()"
 },
 {
 	"id": "effort_area",
@@ -110,5 +116,5 @@
 	"id": "submission_comments",
 	"tooltip": "Free text comments",
 	"label": "Submission Comments",
-	"code": "return 'Altitude: '+d.ALTITUDE+'m   '+d.DAILY_TEXT_COMMENT_REM"
+	"code": "var c='';\nc=c+d.DAILY_TEXT_COMMENT_REM+'<br>';\nc=c+'Checklist Imported from <a href=\"http://www.ornitho.ch/\">ornitho.ch</a> with <a href=\"http://zoziologie.raphaelnussbaumer.com/biolovision2ebird/\">biolovision2eBird</a>';\nreturn c"
 }]
