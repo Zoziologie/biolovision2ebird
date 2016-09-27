@@ -2,7 +2,7 @@
     "id": "global_variable",
     "label":"global variable",
     "tooltip": "You can change value in d which will be available everywher after",
-    "code": "//Define the precision in text\nif(d.ESTIMATION_CODE=='>') {\n\td.PRECISION='minimum';\n} else if (d.ESTIMATION_CODE=='') {\n\td.PRECISION='exact';\n} else if (d.ESTIMATION_CODE=='~') {\n\td.PRECISION='estimation';\n} else {\n\td.PRECISION='not counted';\n\td.TOTAL_COUNT='x';\n}\n\n//Define "
+    "code": "//Define the precision in text\nif(d.ESTIMATION_CODE=='>') {\n\td.PRECISION='>';\n} else if (d.ESTIMATION_CODE=='') {\n\td.PRECISION='=';\n} else if (d.ESTIMATION_CODE=='~') {\n\td.PRECISION='~';\n} else {\n\td.PRECISION='';\n\td.TOTAL_COUNT='x';\n}\n"
 },
 {
 	"id": "common_name",
@@ -32,7 +32,8 @@
 	"id": "species_comments",
 	"tooltip": "Free text comments about the observation ",
 	"label": "Species Comments",
-	"code": "var c='';\nc = c +'Count precision: '+d.PRECISION+'<br>';\nif(d.DETAIL!=''){c = c + 'Specie detail: ' + d.DETAIL + '<br>';}\nif(d.COMMENT!=''){c = c + 'Specie Comment: ' + d.COMMENT + '<br>';}\nc = c + 'Ornitho Link: <a href=\"http://www.ornitho.ch/index.php?m_id=54&id='+d.ID_SIGHTING+'\">'+d.ID_SIGHTING+'</a><br>';\nif(d.TIMING!=''){c = c+'Time of observation: '+d.TIMING+'<br>';}\nc = c+'Exact coordinate: <a href=\"http://maps.google.com?q='+d.COORD_LAT+','+d.COORD_LON+'&t=k\">'+ d.COORD_LAT_DMS+' '+d.COORD_LON_DMS+'</a><br>';\nreturn c"
+	"code": "var c='';\nc = c + d.PRECISION+d.TOTAL_COUNT+' ind.';\nif(d.DETAIL!=''){c = c + ' - ' + d.DETAIL;}\nif(d.TIMING!=''){c = c+' - '+d.TIMING+'';}\nc = c+' - <a href=\"http://maps.google.com?q='+d.COORD_LAT+','+d.COORD_LON+'&t=k\">'+ d.COORD_LAT_DMS+' '+d.COORD_LON_DMS+'</a>';\nc = c + ' - <a href=\"http://www.ornitho.ch/index.php?m_id=54&id='+d.ID_SIGHTING+'\">ornitho.ch</a>';\nif(d.COMMENT!=''){c = c + '<br>' + d.COMMENT;}\nreturn c",
+	"code_l": "var c='';\nc = c +'Count precision: '+d.PRECISION+d.TOTAL_COUNT+'<br>';\nif(d.DETAIL!=''){c = c + 'Specie detail: ' + d.DETAIL + '<br>';}\nif(d.COMMENT!=''){c = c + 'Specie Comment: ' + d.COMMENT + '<br>';}\nc = c + 'Ornitho Link: <a href=\"http://www.ornitho.ch/index.php?m_id=54&id='+d.ID_SIGHTING+'\">'+d.ID_SIGHTING+'</a><br>';\nif(d.TIMING!=''){c = c+'Time of observation: '+d.TIMING+'<br>';}\nc = c+'Exact coordinate: <a href=\"http://maps.google.com?q='+d.COORD_LAT+','+d.COORD_LON+'&t=k\">'+ d.COORD_LAT_DMS+' '+d.COORD_LON_DMS+'</a><br>';\nreturn c"
 },
 {
 	"id": "location_name",
@@ -116,5 +117,5 @@
 	"id": "submission_comments",
 	"tooltip": "Free text comments",
 	"label": "Submission Comments",
-	"code": "var c='';\nc=c+d.DAILY_TEXT_COMMENT_REM+'<br>';\nc=c+'Checklist Imported from <a href=\"http://www.ornitho.ch/\">ornitho.ch</a> with <a href=\"http://zoziologie.raphaelnussbaumer.com/biolovision2ebird/\">biolovision2eBird</a>';\nreturn c"
+	"code": "var c='';\nc=c+d.DAILY_TEXT_COMMENT_REM+'<br>';\nc=c+'<a href=\"https://github.com/Rafnuss/eBird-Checklist-Path/blob/master/.geojson\">Map of Observation</a><br>'\nc=c+'Checklist Imported from <a href=\"http://www.ornitho.ch/\">ornitho.ch</a> with <a href=\"http://zoziologie.raphaelnussbaumer.com/biolovision2ebird/\">biolovision2eBird</a>';\nreturn c"
 }]
