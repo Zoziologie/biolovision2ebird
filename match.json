@@ -99,7 +99,7 @@
 	"id": "all_observation",
 	"tooltip": "'Y' or 'N'",
 	"label": "All observations reported?",
-	"code": "if(d.FULL_FORM=='Oui'){\n\treturn'Y'\n}else{\n\treturn 'N'\n}"
+	"code": "if(d.FULL_FORM=='1'){\n\treturn'Y'\n}else{\n\treturn 'N'\n}"
 },
 {
 	"id": "effort_distance",
@@ -117,5 +117,5 @@
 	"id": "submission_comments",
 	"tooltip": "Free text comments",
 	"label": "Submission Comments",
-	"code": "var c='';\nc=c+d.DAILY_TEXT_COMMENT_REM+'<br>';\nc=c+'<a href=\"https://github.com/Rafnuss/eBird-Checklist-Path/blob/master/.geojson\">Map of Observation</a><br>'\nc=c+'Checklist Imported from <a href=\"http://www.ornitho.ch/\">ornitho.ch</a> with <a href=\"http://zoziologie.raphaelnussbaumer.com/biolovision2ebird/\">biolovision2eBird</a>';\nreturn c"
+	"code": "var c='';\nc=c+d.DAILY_TEXT_COMMENT_REM+'<br>';\nc=c+'<a href=\"https://github.com/Rafnuss/eBird-Checklist-Path/blob/master/.geojson\"><img src=\"'+staticLink+'\"></a><br>'\nc=c+'Checklist Imported from <a href=\"http://www.ornitho.ch/\">ornitho.ch</a> with <a href=\"http://zoziologie.raphaelnussbaumer.com/biolovision2ebird/\">biolovision2eBird</a>';\nreturn c"
 }]
