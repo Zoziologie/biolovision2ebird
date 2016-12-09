@@ -33,7 +33,7 @@ label {
 	font-size: x-large;
 	border: 2px dashed #bbb;
 	border-radius: 5px;
-	padding: 25px;
+	padding: 50px;
 	text-align: center;
 	color: #bbb;
 	cursor: pointer;
@@ -70,4 +70,7 @@ input[type="text"].form-control {
     margin: auto;
     padding: 10px;
     border: 1px solid #ebebeb;
+}
+.leaflet-popup-content{
+    text-align: center;
 }
