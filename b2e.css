@@ -179,7 +179,7 @@ input:checked + .sliderOF:before {
 	cursor: move; /* fallback if grab cursor is unsupported */
 	cursor: grab;
 	cursor: -moz-grab;
-	cursor: -webkit-grab;
+	cursor: -webkit-grab;¨
 }
 .label:active { 
 	cursor: grabbing;
@@ -198,4 +198,29 @@ input:checked + .sliderOF:before {
 }
 .slider-selection {
 	background: #2196F3;
+}
+.slider-handle{
+	cursor: pointer;
+}
+.input-number{
+	width: 75px;
+	text-align: center;
+}
+.input-group{
+	padding-left: 10px;	
+}
+#zoom{
+	width: 50px;	
+}
+#cmt-sp-preview-sp{
+	padding-left: 10px;	
+}
+#selHotspot{
+    height: 46px;
+	font-size: 18px;
+    font-weight: 400;
+    line-height: 1.3333333;
+        text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
 }
