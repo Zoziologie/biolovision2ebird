@@ -1,4 +1,3 @@
-
 // Load conversion taxonomie biolovision - eBird
 var eBird_birds_list;
 jQuery.getJSON("http://zoziologie.raphaelnussbaumer.com/wp-content/plugins/biolovision2eBird/patch_ornitho2eBird.json", function(data){
@@ -127,7 +126,7 @@ function staticLink(form){
 	sl += form.staticmap.lat + ","
 	sl +=  form.staticmap.zoom + "/"
 	sl += "800x450@2x.png"
-	sl += "?access_token=" + L.MakiMarkers.accessToken
+	sl += "?access_token=" + token.mapbox
 	return sl
 }
 
@@ -310,7 +309,7 @@ function CreateGist(form, callback){
 		url: 'https://api.github.com/gists',
 		type: 'POST',
 		beforeSend: function(xhr) { 
-			xhr.setRequestHeader("Authorization", "token nnn"); 
+			xhr.setRequestHeader("Authorization", "token "+token.github); 
 		},
 		data: JSON.stringify(gist),
 	}).done(function(response) {
@@ -450,7 +449,7 @@ function ProcessSightings(data) {
 	
 	// Initiate map
 	modalmap = L.map('modal-map');
-	L.tileLayer.provider('MapBox', {id: 'rafnuss.npl3amec', accessToken:L.MakiMarkers.accessToken}).addTo(modalmap)
+	L.tileLayer.provider('MapBox', {id: 'rafnuss.npl3amec', accessToken: token.mapbox}).addTo(modalmap)
 	modalfLayer = new L.FeatureGroup().addTo(modalmap);
 	new L.Control.Draw({
 		position: 'topright',
@@ -649,7 +648,7 @@ function ProcessForms(data) {
 		}).addTo(form.map);
 
 		L.control.layers({
-			'MapBox': L.tileLayer.provider('MapBox', {id: 'rafnuss.npl3amec', accessToken:L.MakiMarkers.accessToken}).addTo(form.map),
+			'MapBox': L.tileLayer.provider('MapBox', {id: 'rafnuss.npl3amec', accessToken:token.mapbox}).addTo(form.map),
 			'OpenStreetMap' : L.tileLayer.provider('OpenStreetMap.Mapnik'),
 			'Swisstopo': new L.TileLayer('https://wmts10.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-farbe/default/current/3857/{z}/{x}/{y}.jpeg', {
 				layer: 'ch.swisstopo.pixelkarte-farbe-pk1000.noscale',
@@ -879,7 +878,7 @@ function ProcessForms(data) {
 
 		//Add control
 		L.control.layers({
-			'MapBox': L.tileLayer.provider('MapBox', {id: 'rafnuss.npl3amec', accessToken:L.MakiMarkers.accessToken}).addTo(form.map),
+			'MapBox': L.tileLayer.provider('MapBox', {id: 'rafnuss.npl3amec', accessToken:token.mapbox}).addTo(form.map),
 			'OpenStreetMap' : L.tileLayer.provider('OpenStreetMap.Mapnik'),
 			'Swisstopo': new L.TileLayer('https://wmts10.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-farbe/default/current/3857/{z}/{x}/{y}.jpeg', {
 				layer: 'ch.swisstopo.pixelkarte-farbe-pk1000.noscale',
@@ -1268,7 +1267,7 @@ jQuery(document).ready(function(){
 	jQuery('#button-download-biolovision').click( Export );
 
 	// Map
-	L.MakiMarkers.accessToken = '';
+	L.MakiMarkers.accessToken = token.mapbox;
 
 	// To me remove....
 	//jQuery('#button-download-biolovision').hide()
