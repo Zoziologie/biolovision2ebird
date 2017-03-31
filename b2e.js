@@ -6,34 +6,66 @@ jQuery.getJSON("http://zoziologie.raphaelnussbaumer.com/wp-content/plugins/biolo
 });
 
 // Variable to put in workspace
-var data, meta, csv_content, d, matchCode, reader, code_list=[],eBird_label=[],table=[],modalmap,modalsLayer, modalfLayer;
+var data, csv_content, code_list=[],eBird_label=[],table=[],modalmap,modalsLayer, modalfLayer, form;
 
-var marker_color = [['red','#D63E2A','white'], ['orange','#f69730','white'], ['green','#72B026','white'], ['blue','#38A9DC','white'], ['purple','#CD50B5','white'], ['darkred','#A23336','white'], ['darkgreen','728224','white'], ['darkpuple','#593869','white'], ['cadetblue','#436877','white'], ['red','#D63E2A','black'], ['orange','#f69730','black'], ['green','#72B026','black'], ['blue','#38A9DC','black'], ['purple','#CD50B5','black'], ['darkred','#A23336','black'], ['darkgreen','728224','black'], ['darkpuple','#593869','black'], ['cadetblue','#436877','black']];
+var marker_color = [['white','#ffffff','black'],['red','#D63E2A','white'], ['orange','#f69730','white'], ['green','#72B026','white'], ['blue','#38A9DC','white'], ['purple','#CD50B5','white'], ['darkred','#A23336','white'], ['darkgreen','#728224','white'], ['darkpurple','#593869','white'], ['cadetblue','#436877','white'], ['red','#D63E2A','black'], ['orange','#f69730','black'], ['green','#72B026','black'], ['blue','#38A9DC','black'], ['purple','#CD50B5','black'], ['darkred','#A23336','black'], ['darkgreen','728224','black'], ['darkpuple','#593869','black'], ['cadetblue','#436877','black']];
+
+var atlas_code = {
+'1':'Species heard or observed within safe dates, but not in suitable breeding habitat.',
+'2':'Species heard or observed within safe dates, and in suitable breeding habitat',
+'3':'Territorial behavior, including counter singing males, territorial singing (repeatedly singing from same locations within an area), drumming in woodpeckers, or aggressive interactions between same-sex individuals of same species ',
+'4':'Pair (male and female) within safe dates, and in suitable breeding habitat',
+'5':'Pair (male and female) present at the same location 2 or more days apart',
+'6':'Courtship behavior (aerial displays, courtship feeding) or copulation',
+'7':'Visiting probable nest site',
+'8':'Agitated behavior and/or anxiety calls from an adult, suggesting presence of nearby nest or young',
+'9':'Brood patch (Note: code only applies to birds observed in hand and is reserved for experienced birder only)',
+'10':'Nest building observed at nest site (Note: for nest building by wrens, woodpeckers, kingfisher...)',
+'11':'Distraction display (especially injury feigning, such as broken wing display) or attacking/dive-bombing humans in defense of unobserved nest or young',
+'12':'Used nest (occupied within period of survey); includes inactive nests',
+'13':'Recently fledged young that are incapable of sustained flight',
+'14':'Occupied nest, but contents not observed; adults entering and remaining for a period of time, then leaving or exchanging duties',
+'15':'Adult carrying a fecal sac',
+'16':'Adult carrying food for young',
+'17':'Eggshells found below nest',
+'18':'Nest with adult incubating',
+'19':'Nest with nestlings or eggs',
+'30':'Possible breeding',
+'40':'Probable breeding',
+'50':'Confirmed breeding',
+'99':'Species not recorded despite active search',
+}
 
 function color(s,form){
 	color_gradient = ['#fff','#352A87', '#363093', '#3637A0', '#353DAD', '#3243BA', '#2C4AC7', '#2053D4', '#0F5CDD', '#0363E1', '#0268E1', '#046DE0', '#0871DE', '#0D75DC', '#1079DA', '#127DD8', '#1481D6', '#1485D4', '#1389D3', '#108ED2', '#0C93D2', '#0998D1', '#079CCF', '#06A0CD', '#06A4CA', '#06A7C6', '#07A9C2', '#0AACBE', '#0FAEB9', '#15B1B4', '#1DB3AF', '#25B5A9', '#2EB7A4', '#38B99E', '#42BB98', '#4DBC92', '#59BD8C', '#65BE86', '#71BF80', '#7CBF7B', '#87BF77', '#92BF73', '#9CBF6F', '#A5BE6B', '#AEBE67', '#B7BD64', '#C0BC60', '#C8BC5D', '#D1BB59', '#D9BA56', '#E1B952', '#E9B94E', '#F1B94A', '#F8BB44', '#FDBE3D', '#FFC337', '#FEC832', '#FCCE2E', '#FAD32A', '#F7D826', '#F5DE21', '#F5E41D', '#F5EB18', '#F6F313', '#F9FB0E'];
 	var t = moment(s.observers.observer.timing["@ISO8601"]).hour()*60+moment(s.observers.observer.timing["@ISO8601"]).minute();
 	var start = moment(form.date).hour()*60+moment(form.date).minute();
 	var r = Math.round(  (t - start )/form.duration * (color_gradient.length-1) )+1;
-	r= (r<0) ? 0 : r;
-	r= (r>=color_gradient.length) ? color_gradient.length-1 : r;
+	r = (r<0 || isNaN(r)) ? 0 : r;
+	r = (r>=color_gradient.length) ? color_gradient.length-1 : r;
 	return color_gradient[r].split('#')[1]
 }
 
 
 function previewComment(form){
 	var html = jQuery('#f-'+form.id+' #comments').val() +'<br>';
+	if (jQuery('#f-'+form.id+' #check-weather').is(':checked') ){
+		html += form.weather;
+	} 
 	if (jQuery('#f-'+form.id+' #check-static-map').is(':checked')){
-		html += '<img src="'+staticLink(form)+'" style="max-width:600px;width:100%"><br>'
-		form.zoomSlider.enable()
+		html += '<a href="'+form.gist+'" target="_blank">'
+		html += '<img src="'+staticLink(form)+'" style="max-width:600px;width:100%"></a><br>'
+		jQuery('#f-'+form.id+ ' #zoom').attr('disabled', false);
+		jQuery('#f-'+form.id+ ".btn-number").attr('disabled', false);
 		form.layer.msm.addTo(form.map);
 		jQuery('#center-map').removeClass('disabled')
 	} else {
-		form.zoomSlider.disable()
+		jQuery('#f-'+form.id+ ' #zoom').attr('disabled', true);
+		jQuery('#f-'+form.id+ ".btn-number").attr('disabled', true);
 		form.layer.msm.removeFrom(form.map);
 		jQuery('#center-map').addClass('disabled')
 	}
-	html += 'Checklist Imported from <a href=\"http://www.ornitho.ch/\">ornitho.ch</a> with <a href=\"http://zoziologie.raphaelnussbaumer.com/biolovision2ebird/\">biolovision2eBird</a>';
+	html += '<br>Imported with <a href=\"http://zoziologie.raphaelnussbaumer.com/biolovision2ebird/\" target=\"_blank\">biolovision2eBird</a>';
 	jQuery('#f-'+form.id+' #comments-preview').html(html);
 	form.comment=html;
 };
@@ -43,27 +75,54 @@ function SpComment(form,s){
 	jQuery(cmt).find('span').each(function(){
 		jQuery(this).replaceWith(eval(jQuery(this).attr('value')));
 	})
-	return cmt.text().replace(/	/g,'')
+	cmt = cmt.text().replace(/	/g,'');
+	cmt = cmt.replace(/<br><br><br>/g,'<br>');
+	cmt = cmt.replace(/<br><br>/g,'<br>');
+	if (cmt.slice(-4, 999) == '<br>'){
+		cmt = cmt.slice(0, -4);
+	}
+	return cmt
 }
 
 function staticLink(form){
-	var fs = form.layer.edit.toGeoJSON().features.concat(form.layer.sightings.toGeoJSON().features);
+	var limit=3300;
+
+	var fs = form.layer.sightings.toGeoJSON();
+	form.layer.edit.toGeoJSON().features.forEach(function(f){
+		fs.features.push(f);
+	})
+	
 	var sl = "https://api.mapbox.com/v4/mapbox.streets/"
-	fs.forEach(function(f){
-		if (f.geometry.type==="Point") {
-			sl += "pin-"+f.properties['marker-size']+"-"+f.properties['marker-symbol']+"+"+f.properties['marker-color']+"("+f.geometry.coordinates[0]+","+f.geometry.coordinates[1]+"),"
-		} else if (f.geometry.type==="LineString") {
+	fs.features.forEach(function(f){
+		if (f.geometry.type==="LineString" && sl.length<limit) {
 			var coord = f.geometry.coordinates.slice();
 			coord.forEach(function(c,id){
 				var a = c[0];
 				c[0] = c[1];
 				c[1] =a;
 			})
-			sl += "path("+encodeURIComponent(L.PolylineUtil.encode(coord , 5))+"),"
+			sl += "path-5+AD8533("+encodeURIComponent(L.PolylineUtil.encode(coord , 5))+"),"
+		}
+	});
+
+	var duplicate=[];
+	fs.features.forEach(function(f){
+		if (f.geometry.type==="Point") {
+			var d=false;
+			for (var i = 0, l=duplicate.length; i < l; i++) {
+				if ( duplicate[i][0] ==  f.geometry.coordinates[0] && duplicate[i][1] ==  f.geometry.coordinates[1]) {
+					d=true;
+					break;
+				}
+			}
+			if (!d && sl.length<limit){
+				duplicate.push(f.geometry.coordinates)
+				sl += "pin-"+f.properties['marker-size']+"-"+f.properties['marker-symbol']+"+"+f.properties['marker-color']+"("+f.geometry.coordinates[0]+","+f.geometry.coordinates[1]+"),"
+			}
 		}
 	})
+
 	sl = sl.substring(0, sl.length - 1);
-	
 	sl += "/"+form.staticmap.lng + ","
 	sl += form.staticmap.lat + ","
 	sl +=  form.staticmap.zoom + "/"
@@ -79,18 +138,12 @@ function previewSpComment(form){
 }
 
 function urleBird(LatLngBounds){
+	var dist = LatLngBounds.getNorthEast().distanceTo(LatLngBounds.getSouthWest())/1000; // m -> km
+	dist = Math.max(5,Math.round(dist*2)).toString();
 	return 'http://ebird.org/ws1.1/ref/hotspot/geo?\
 	lng='+LatLngBounds.getCenter().lng+'&\
 	lat='+LatLngBounds.getCenter().lat+'&\
-	dist='+Math.round(LatLngBounds.getNorthEast().distanceTo(LatLngBounds.getSouthWest())/500).toString()+'&fmt=xml';
-}
-
-function ExportGeojson(){
-	var downloadLink = document.createElement("a");
-	var blob = new Blob([JSON.stringify(geojsonLayer.toGeoJSON(), null, 2)], {type: "application/json"});
-	downloadLink.href = URL.createObjectURL(blob);
-	downloadLink.download = d.DATE_YEAR+d.DATE_MONTH+d.DATE_DAY+'_'+d.PLACE.replace(/\ /g,'_')+".geojson";
-	downloadLink.click();
+	dist='+dist+'&fmt=xml';
 }
 
 function getBoundsZoomLevel(bounds, mapDim) {
@@ -127,7 +180,7 @@ function Makemarker(s){
 	<b>Specie:</b> '+s.species.name +'(<i>'+s.species.latin_name+'</i>)<br>'+'\
 	<b>Place:</b> '+s.place.name+' / '+s.place.municipality+' ('+s.place.county+') - '+s.place.altitude+'m<br>\
 	<b>Observation:</b> '+ s.observers.observer.estimation_code + s.observers.observer.count + ' ind.<br>\
-	<b>ID</b>: <a href="http://www.'+ jQuery('#sel-website').val() +'/index.php?m_id=54&id='+s.observers.observer.id_sighting+'" target="_blank">'+s.observers.observer.id_sighting+'</a>';
+	<b>ID</b>: <a href="http://'+ jQuery('#sel-website').val() +'/index.php?m_id=54&id='+s.observers.observer.id_sighting+'" target="_blank">'+s.observers.observer.id_sighting+'</a>';
 	if (s.observers.observer.medias){
 		if (!Array.isArray(s.observers.observer.medias.media)){
 			s.observers.observer.medias.media= [s.observers.observer.medias.media];
@@ -152,6 +205,7 @@ function Makemarker(s){
 	feature.properties = feature.properties || {};
 	feature.properties['date'] = s.observers.observer.timing['#text'];
 	feature.properties['specie'] = s.species.name;
+	feature.properties['latin'] = s.species.latin_name;
 	feature.properties['place'] = s.place.name+' / '+s.place.municipality+' ('+s.place.county+') - '+s.place.altitude+'m';
 	feature.properties['observer'] = s.observers.observer.name;
 	feature.properties['count'] = s.observers.observer.count;
@@ -162,6 +216,7 @@ function Makemarker(s){
 	feature.properties['marker-size'] = s['marker-size'];
 	feature.properties['marker-symbol'] = s['marker-symbol'];
 	feature.properties['description'] = description;
+	feature.properties['link'] = 'http://'+jQuery('#sel-website').val()+'/index.php?m_id=54&id='+s.observers.observer.id_sighting;
 	return mark
 }
 
@@ -174,26 +229,30 @@ function Form2Table(f){
 	f.sightings.sighting.forEach( function(s) {
 		var eBird_bird = jQuery.grep(eBird_birds_list, function(e){ return e.id == s.species['@id'] })
 
+		if (eBird_bird.length<1){
+			console.log(s)
+		}
+
 		var row = {
 			common_name: eBird_bird[0].PRIMARY_COM_NAME,
 			genus:'',
 			specie:'',
 			count: s.observers.observer.count,
-			specie_comment:SpComment(f,s).replace(/"/g,'""'),
+			specie_comment:SpComment(f,s).replace(/"/g,'""').replace(/[\n\r]+/g, ''),
 			location:f.name,
 			lat:f.lat,
 			lng:f.lon,
 			date:moment(f.date).format('MM/DD/YYYY'),
 			start_time:moment(f.date).format('HH:mm'),
-			state:s.place.county,
-			country: (s.place.country) ? s.place.country : 'CH',
+			state:'',//s.place.county,
+			country: '',//(s.place.country) ? s.place.country : 'CH',
 			protocol: f.protocol,
 			party_size: f['party-size'],
 			duration:f.duration,
 			full_form: f.full_form ? 'Y' : 'N',
 			distance:f.distance,
 			area:'',
-			form_comment:f.comment.replace(/"/g,'""'),
+			form_comment:f.comment.replace(/"/g,'""').replace(/[\n\r]+/g, ''),
 		};
 		if (row.common_name==''){alert('Common Name cannot be empty!');};
 		if (row.location==''){alert('Location Name cannot be empty!');};
@@ -231,56 +290,89 @@ function Table2CSV(table) {
 	return str;
 }
 
-function singleExport(form){
-	var table = Form2Table(form);
-	/*var html = '<div class="row"><table class="table table-condensed table-responsive"><thead><tr>';
-	for (var header in table[0]) {
-		if (table[0].hasOwnProperty(header)) {
-			html += '<th>'+header+'</th>'
-		}
-	}
-	html += '</tr></thead><tbody>';
-	table.forEach(function(t){
-		html += '<tr>'
-		for (var header in t) {
-			if (t.hasOwnProperty(header)) {
-				html += '<td>'+t[header]+'</td>'
-			}
-		}
-		html += '</tr>'
+function CreateGist(form, callback){
+
+	var fs = form.layer.sightings.toGeoJSON();
+	form.layer.edit.toGeoJSON().features.forEach(function(f){
+		fs.features.push(f);
 	})
-	html += '</tbody></table></div>';
-	jQuery( "#f-" + form.id ).append( html);
-	*/
-	csv = Table2CSV(table);
-	// create and open file and link
-	var downloadLink = document.createElement("a");
-	var blob = new Blob(["\ufeff", csv]);
-	downloadLink.href = URL.createObjectURL(blob);
-	downloadLink.download = form.name.replace(/\ /g,'_')+".csv";
-	document.body.appendChild(downloadLink);
-	downloadLink.click();
-	document.body.removeChild(downloadLink);
+
+	var filename= (form.name+'-'+form.date).replace(/[^a-z0-9_\-]/gi, '_').toLowerCase()+".geojson";
+	var gist = {
+		"description": form.name +", "+ form.date,
+		"public": true,
+		"files": {}
+	}
+	gist.files[filename] = { "content": JSON.stringify(fs) };
+
+
+	jQuery.ajax({ 
+		url: 'https://api.github.com/gists',
+		type: 'POST',
+		beforeSend: function(xhr) { 
+			xhr.setRequestHeader("Authorization", "token nnn"); 
+		},
+		data: JSON.stringify(gist),
+	}).done(function(response) {
+		console.log(response);
+		form.gist='http://zoziologie.raphaelnussbaumer.com/geojson/?'+encodeURIComponent(response.files[filename].raw_url)
+		previewComment(form)
+		callback()
+	}).fail( function( jqXHR, textStatus, errorThrown) {
+		console.log(fs)
+		console.log(jqXHR)
+		alert('Error with the Gist Map: '+ errorThrown )
+		previewComment(form)
+		callback()
+    	//callback()
+  	});
+
+}
+
+function singleExport(form){
+	CreateGist(form, function(){
+		var table = Form2Table(form);
+		csv = Table2CSV(table);
+		var downloadLink = document.createElement("a");
+		downloadLink.setAttribute('type','text/csv')
+		downloadLink.setAttribute('target','_blank')
+		var blob = new Blob(["\ufeff", csv],{type: 'text/csv'});
+		downloadLink.href = URL.createObjectURL(blob);
+		downloadLink.download = form.name.replace(/[^a-z0-9_\-]/gi, '_').toLowerCase()+'-'+form.date+".csv";
+		document.body.appendChild(downloadLink);
+		downloadLink.click();
+		document.body.removeChild(downloadLink);
+	})
 }
 
 function Export(){
 	var table=[];
 	var filename ='';
-	data.forms.form.forEach( function(f) {
-		t = Form2Table(f);
-		table = table.concat(t);
-		filename += f.name + '_';
-	})
-
-	csv = Table2CSV(table);
-	// create and open file and link
-	var downloadLink = document.createElement("a");
-	var blob = new Blob(["\ufeff", csv]);
-	downloadLink.href = URL.createObjectURL(blob);
-	downloadLink.download = filename.replace(/\ /g,'_')+".csv";
-	document.body.appendChild(downloadLink);
-	downloadLink.click();
-	document.body.removeChild(downloadLink);
+	var i=0;
+	data.forms.form.forEach( function(form,i) {
+		CreateGist(form, function(){
+			t = Form2Table(form);
+			table = table.concat(t);
+			filename += form.name + '_';
+			i+=1;
+			setTimeout(function() {
+				console.log(i)
+				if (i == data.forms.form.length){
+					console.log('ok')
+					csv = Table2CSV(table);
+					var downloadLink = document.createElement("a");
+					downloadLink.setAttribute('type','text/csv')
+					downloadLink.setAttribute('target','_blank')
+					var blob = new Blob(["\ufeff", csv],{type: 'text/csv'});
+					downloadLink.href = URL.createObjectURL(blob);
+					downloadLink.download = filename.replace(/[^a-z0-9_\-]/gi, '_').toLowerCase()+'-'+form.date+".csv";
+					document.body.appendChild(downloadLink);
+					downloadLink.click();
+					document.body.removeChild(downloadLink);
+				}
+			},1)
+		})
+	});
 }
 
 
@@ -296,17 +388,17 @@ function handleFile(file){
 		reader.onload = function(){
 			var xml = xml2json(jQuery.parseXML(reader.result)).replace('undefined','')
 			data = jQuery.parseJSON(xml).data
-			if (data.forms){
-				InitiateForms(data)
-			}
+			
+			InitiateForms(data)
 			if (data.sightings) {
-				ProcessSightings(data)
-				jQuery('#c1').hide("slow",function(){
-					jQuery('#c2').show("slow");	
+				jQuery('#c1').slideUp("slow",function(){
+					jQuery('#c2').slideDown("slow",function(){
+						ProcessSightings(data)
+					});
 				});
-			} else if (data.forms){
-				jQuery('#c1').hide("slow",function(){
-					jQuery('#c2').show("slow",function(){
+			} else if (data.forms.form.length>0){
+				jQuery('#c1').slideUp("slow",function(){
+					jQuery('#c3').slideDown("slow",function(){
 						ProcessForms(data)
 					});	
 				});
@@ -322,12 +414,19 @@ function handleFile(file){
 }
 
 function InitiateForms(data){
+	if (!data.forms){
+		data.forms = {};
+		data.forms.form = [];
+	}
 	if (!Array.isArray(data.forms.form)){ 
 		data.forms.form = [data.forms.form] 
 	}
 	data.forms.form.forEach(function(f,idx){
-		f.color = marker_color[idx];
-		f.id=idx;
+		if (!Array.isArray(f.sightings.sighting)){ 
+			f.sightings.sighting = [f.sightings.sighting] 
+		}
+		f.color = marker_color[idx+1];
+		f.id=idx+1;
 		f.name=f.sightings.sighting[0].place.name;
 		f.time_start = moment(f.time_start,"HH:mm").format("HH:mm") // 9:1 -> 09:01
 	});
@@ -335,11 +434,20 @@ function InitiateForms(data){
 }
 
 function ProcessSightings(data) {
+	data.forms.form.unshift({ // Create the checklist for Non-Assigned
+		name: 'Non-Assigned',
+		id:0,
+		color: marker_color[0],
+		sightings: {sighting:[]},
+		marker: NaN,
+		full_form: false
+	})
+	data.forms.n += 1;
+
 	if (!Array.isArray(data.sightings.sighting)){ 
 		data.sightings.sighting = [data.sightings.sighting] 
 	}
-	jQuery('#modal-sigthings').modal('show');
-
+	
 	// Initiate map
 	modalmap = L.map('modal-map');
 	L.tileLayer.provider('MapBox', {id: 'rafnuss.npl3amec', accessToken:L.MakiMarkers.accessToken}).addTo(modalmap)
@@ -367,7 +475,7 @@ function ProcessSightings(data) {
 			var form = {
 				id: data.forms.n,
 				color:marker_color[data.forms.n],
-				name: 'New List ' + data.forms.form.length.toString(),
+				name: 'New List ' + data.forms.n.toString(),
 				sightings: {sighting:[]},
 				marker: e.layer,
 				full_form: false
@@ -378,12 +486,26 @@ function ProcessSightings(data) {
 				icon: 'list',
 				markerColor: form.color[0],
 				iconColor: form.color[2]
-			})).bindPopup(form.name).addTo(modalfLayer);
+			})).on('click',function(){
+				jQuery('#selHotspot').val(form.id).change();
+			}).addTo(modalfLayer);
 			e.layer.id = form.id;
+			jQuery('#selHotspot').append(jQuery('<option>', {value: form.id, text: form.name, style: "background-color:"+form.color[1]+";color:"+form.color[2]+";"}));
+			jQuery('#selHotspot').val(form.id).change();
 		} else if (e.layerType === 'rectangle'){
 			modalsLayer.eachLayer(function(l){
 				if (e.layer.getBounds().contains(l.getLatLng())){
-					l.fireEvent('click');
+					data.sightings.sighting.forEach(function(s){
+						if (l.feature.properties['id'] == s.observers.observer.id_sighting){
+							data.forms.form.forEach(function(f){
+								if (f.id==jQuery('#selHotspot').val()){
+									s['marker-color'] = f.color[1];
+									s.form = f.id;
+									l.setIcon(Makemarker(s).options.icon)
+								}
+							})
+						}
+					})
 				}
 			})
 		}
@@ -392,40 +514,32 @@ function ProcessSightings(data) {
 			data.forms.form.forEach(function(f,idx){
 				if (f.id == l.id){
 					data.forms.form.splice(idx,1);
+					jQuery("#selHotspot option[value='"+f.id+"']").remove();
+					jQuery('#selHotspot').change();
 				}
 			})
 		})
-	});
-	jQuery('#modal-sigthings').on('shown.bs.modal', function(){
-		setTimeout(function() {
-			modalmap.invalidateSize();
-			modalmap.fitBounds(modalsLayer.getBounds());
-		}, 1);
-	}).on('hidden.bs.modal', function(){
-		data.sightings.sighting.forEach(function(s){
-			data.forms.form.forEach(function(f){
-				if (s['marker-color'] == f.color[1]){
-					f.sightings.sighting.push(s);
-				}
-			})
-		})
-		ProcessForms(data)
 	});
 
 	// Import Form
-	data.forms.form.forEach(function(f){
-		var m = L.marker([f.lat, f.lon],{
-			title: f.name,
-			alt: f.name,
-			icon: L.AwesomeMarkers.icon({
-				icon: 'list',
-				markerColor: f.color[0],
-				iconColor: f.color[2]
+	data.forms.form.forEach(function(form,idx){
+		if (idx>0){
+			var m = L.marker([form.lat, form.lon],{
+				title: form.name,
+				alt: form.name,
+				icon: L.AwesomeMarkers.icon({
+					icon: 'list',
+					markerColor: form.color[0],
+					iconColor: form.color[2]
+				})
 			})
-		})
-		m.id=f.id;
-		f.marker=m;
-		m.addTo(modalfLayer).bindPopup(f.name);
+			m.id=form.id;
+			form.marker=m;
+			m.addTo(modalfLayer).on('click',function(){
+				jQuery('#selHotspot').val(form.id).change();
+			})
+		}
+		jQuery('#selHotspot').append(jQuery('<option>', {value: form.id, text: form.name, style: "background-color:"+form.color[1]+";color:"+form.color[2]+";"}));
 	});
 
 	// Import Sigthings
@@ -438,26 +552,68 @@ function ProcessSightings(data) {
 	}
 
 	data.sightings.sighting.forEach(function(s){
+		if(s.observers.observer.estimation_code=='MINIMUM') {
+			s.observers.observer.estimation_code='>';
+		} else if (s.observers.observer.estimation_code=='EXACT_VALUE') {
+			s.observers.observer.estimation_code='=';
+		} else if (s.observers.observer.estimation_code=='ESTIMATION') {
+			s.observers.observer.estimation_code='~';
+		} else if (s.observers.observer.estimation_code=='NO_VALUE') {
+			s.observers.observer.estimation_code=''
+			s.observers.observer.count='x'
+		}
 		s['marker-symbol'] = (s.observers.observer.count < 99) ? s.observers.observer.count : 'x';
-		s['marker-color'] ='#fff';
+		s['marker-color'] = data.forms.form[0].color[1];
 		s['marker-size'] = 's';
+		s.form = 0;
 		var m = Makemarker(s);
-		m.form = 0;
-		m.on('click', function(e) {
-			if (data.forms) {
-				if (e.target.form > data.forms.form.length-1){
-					e.target.form = 0;
-					s['marker-color'] = '#fff'
-				} else {
-					e.target.form += 1;
-					s['marker-color'] = data.forms.form[e.target.form-1].color[1];
-				}
-				e.target.setIcon(Makemarker(s).options.icon)
-			} else {
-				alert('You first need to create a list')
-			}
-		}).addTo(modalsLayer);
+		m.addTo(modalsLayer);
 	})
+
+	jQuery('#selHotspot').change(function(opt){
+		data.forms.form.forEach(function(f,idx){
+			if (f.id == jQuery(opt.target).val()){
+				jQuery('#selHotspot').css('background-color',f.color[0])
+				jQuery('#selHotspot').css('color',f.color[2])
+			}
+		})
+	})
+
+	jQuery('#button-process').click(function(){
+		data.sightings.sighting.forEach(function(s){
+			data.forms.form.forEach(function(f){
+				if (s.form == f.id){
+					f.sightings.sighting.push(s);
+				}
+			})
+		})
+		jQuery('#c2').slideUp("slow",function(){
+			jQuery('#c3').slideDown("slow",function(){
+				ProcessForms(data)
+			});	
+		});
+	});
+
+	var modalDrawRectangle = new L.Draw.Rectangle(modalmap);
+	jQuery('#button-select-hotspot').click(function(){
+		modalDrawRectangle.enable();
+	})
+	var modalDrawMarker = new L.Draw.Marker(modalmap);
+	jQuery('#button-create-hotspot').click(function(){
+		modalDrawMarker.enable();
+	})
+
+	setTimeout(function() {
+		modalmap.invalidateSize();
+		modalmap.fitBounds(modalsLayer.getBounds());
+		//jQuery('.leaflet-draw-draw-rectangle').hide();
+		//jQuery('.leaflet-draw-draw-marker').hide();
+		jQuery('.leaflet-draw-toolbar-top').hide();
+		jQuery('#selHotspot').change();
+	}, 1);
+
+
+	
 };
 
 
@@ -470,149 +626,247 @@ function ProcessForms(data) {
 		}
 	}
 
+	//Add unasgined checklist
+	if (data.forms.form[0].id==0){
+		var form=data.forms.form[0];
+		jQuery( "#c3 .nav-tabs" ).append( "<li class='active' id='li-f-"+form.id+"'><a href='#f-"+form.id+"' data-toggle='tab'>"+form.name+"</a>" );
+		jQuery( "#c3 .tab-content" ).append( "<div class='tab-pane active' id='f-"+form.id+"'></div>" );
+		jQuery( "#f-" + form.id ).append( '\
+			<div class="row">\
+				<div class="form-group col-sm-12">\
+					<p>These are all sightings which do not belong to any checklists. They won t be imported in eBird. If there is an error, you ll have to start again.</p>\
+					<p>Click on the other menus to see the other checklists. </p>\
+				</div>\
+				<div class="form-group col-sm-12">\
+					<div class="map" id="map-f-'+form.id+'"></div>\
+				</div>\
+			</div>\
+		');
+		form.map = L.map('map-f-'+form.id);
+		form.layer = L.markerClusterGroup({
+			showCoverageOnHover: false,
+			maxClusterRadius:70,
+		}).addTo(form.map);
+
+		L.control.layers({
+			'MapBox': L.tileLayer.provider('MapBox', {id: 'rafnuss.npl3amec', accessToken:L.MakiMarkers.accessToken}).addTo(form.map),
+			'OpenStreetMap' : L.tileLayer.provider('OpenStreetMap.Mapnik'),
+			'Swisstopo': new L.TileLayer('https://wmts10.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-farbe/default/current/3857/{z}/{x}/{y}.jpeg', {
+				layer: 'ch.swisstopo.pixelkarte-farbe-pk1000.noscale',
+				maxZoom: 17,
+				attribution: 'Map data &copy; 2015 swisstopo',
+			})
+		},null,{collapsed:true}).addTo(form.map);
+
+		form.sightings.sighting.forEach(function(s,id) {
+			var m = Makemarker(s);
+			m.addTo(form.layer);
+			if (id === form.sightings.sighting.length-1){
+				form.map.fitBounds(form.layer.getBounds());
+			}
+		})
+		data.forms.form.shift()
+	}
+
+	// Add true checklist
 	data.forms.form.forEach(function(form,idx){
-		if ( form['@id']){
+		if ( form['@id']){ // Legit form
 			var duration = moment.utc(moment(form.time_stop,"HH:mm").diff(moment(form.time_start,"HH:mm"))).format('HH:mm');
 			form.duration = parseInt(duration.split(':')[0])*60+parseInt(duration.split(':')[1]);
 			form.date = moment(form.sightings.sighting[0].date['@ISO8601']).format('YYYY-MM-DD')+'T'+form.time_start;
 			form.full_form= (form.full_form=='1') ? true : false;
-		} else {
-			form.duration ='60';
-			form.date = form.sightings.sighting[0].observers.observer.timing['@ISO8601'].split('+')[0];
+		} else { // form from incidental sighting
+			var timings = form.sightings.sighting.map(function(s){ 
+				return moment(s.observers.observer.timing['@ISO8601'].split('+')[0])
+			}).filter(function(t){
+				return t.format('HH:mm')!='00:00'
+			})
+			var begining = timings.reduce(function (a, b) { return a < b ? a : b; }); 
+			var end = timings.reduce(function (a, b) { return a > b ? a : b; }); 
+			form.duration = Math.round((end-begining)/60/1000).toString();
+			form.duration = form.duration<60*24? form.duration : 60*24-1;
+			form.date = begining.format('YYYY-MM-DDTHH:mm');
 		}
 		form.distance=0;
 		form.protocol='Stationary';
 		form['party-size']='1';
 		form.staticmap={};
+		form.gist='#';
 		if (form.marker){
 			form.lon=form.marker.getLatLng().lng;
 			form.lat=form.marker.getLatLng().lat;
 		}
-
+		jQuery.get('http://api.wunderground.com/api/b097b9712f359043/history_'+moment(form.date).format('YYYYMMDD')+'/q/'+form.lat+','+form.lon+'.json',function(data){
+			var w = data.history.dailysummary[0];
+			var whtml= '<b>Temp.</b>:'+w.meantempm+'°C ('+w.mintempm+'/'+w.maxtempm +')';
+			whtml += ' - <b>Prec.</b>: '+w.precipm+ 'mm';
+			whtml += w.snow=='0' ? '':' (snow)'; 
+			whtml += ' - <b>Wind</b>: '+w.meanwdire+' '+w.meanwindspdm+ 'km/h ('+w.minwspdm+'/'+w.maxwspdm+')';
+			whtml += ' - <b>Humidity</b>: '+w.humidity;
+			//whtml += w.fog ? 'fog':''; 
+			//whtml += w.hail ? 'hail':''; 
+			form.weather=whtml;
+			previewComment(form)
+		})
+		jQuery.get( 'http://nominatim.openstreetmap.org/reverse?lat='+form.lat.toString()+'&lon='+form.lon.toString(), function( xml ) {
+			var json = jQuery.parseJSON(xml2json(xml).replace('undefined',''))
+			form.country = json.reversegeocode.addressparts.country_code;
+		});
+		
+		/* REMOVE?
 		form.specie_comment="var c='';\
 		c = c + o.estimation_code+o.count+' ind.';\
 		if(!o.detail){c = c + ' - ' + o.detail;}\n\
-		if(!o.timing['@ISO8601']){c = c+' - '+moment(o.timing['@ISO8601']).format('HH:mm');}\n\
-		c = c+' - <a href=\"http://maps.google.com?q='+o.coord_lat+','+o.coord_lon+'&t=k\">'+ s.place.name +'</a>';\n\
-		c = c + ' - <a href=\"http://www.ornitho.ch/index.php?m_id=54&id='+o['@id']+'\">ornitho.ch</a>';\n\
+		if(o.timing['@ISO8601'] != '00:00'){c = c+' - '+moment(o.timing['@ISO8601']).format('HH:mm');}\n\
+		c = c+' - <a href=\"http://maps.google.com?q='+o.coord_lat+','+o.coord_lon+'&t=k\" target=\"_blank\">'+ s.place.name +'</a>';\n\
+		c = c + ' - <a href=\"http://'+jQuery('#sel-website').val()+'/index.php?m_id=54&id='+o['@id']+'\" target=\"_blank\">ID</a>';\n\
 		return c";
-		jQuery( "#c2 .nav-tabs" ).append( "<li class='active' id='li-f-"+form.id+"'><a href='#f-"+form.id+"' data-toggle='tab'>"+form.name+"</a>" );
-		jQuery( "#c2 .tab-content" ).append( "<div class='tab-pane active' id='f-"+form.id+"'></div>" );
+		*/
+		
 
+		jQuery( "#c3 .nav-tabs" ).append( "<li class='active' id='li-f-"+form.id+"'><a href='#f-"+form.id+"' data-toggle='tab'>"+form.name+"</a>" );
+		jQuery( "#c3 .tab-content" ).append( "<div class='tab-pane active' id='f-"+form.id+"'></div>" );
 		jQuery( "#f-" + form.id ).append( '\
 			<form class="form">\
-			<div class="row">\
-			<div class="col-lg-12">\
-			<div class="form-group col-lg-4">\
-			<label for="location">Location:</label>\
-			<input type="text" class="form-control" id="location" value="'+form.name+'">\
-			</div>\
-			<div class="form-group col-lg-4">\
-			<label for="date">Date:</label>\
-			<input type="datetime-local" class="form-control" id="date" value="'+form.date+'">\
-			</div>\
-			<div class="form-group col-lg-4">\
-			<label for="observation-type">Observation Type:</label>\
-			<select class="form-control" id="observation-type">\
-			<option>Traveling</option>\
-			<option>Stationary</option>\
-			<option>Historical</option>\
-			<option>Incidental</option>\
-			</select>\
-			</div>\
-			<div class="form-group col-lg-3">\
-			<label class="control-label" for="duration">Duration ( min.):</label> \
-			<input type="number" class="form-control" id="duration" value="'+form.duration+'">\
-			</div>\
-			<div class="form-group col-lg-3">\
-			<label for="distance">Distance (km):</label>\
-			<input type="number" class="form-control" id="distance" value="'+form.distance+'">\
-			</div>\
-			<div class="form-group col-lg-3">\
-			<label for="party-size">Party size:</label>\
-			<input type="number" class="form-control" id="party-size" value="'+form['party-size']+'">\
-			</div>\
-			<div class="form-group col-lg-3">\
-			<label>Complete Checklit:</label>\
-			<div class="checkbox">\
-			<div class="col-lg-3 text-right">\
-			NO\
-			</div>\
-			<div class="col-lg-6 text-center">\
-			<label class="switch"><input type="checkbox" checked="checked" id="check-fullform"><div class="sliderOF round"></div></label>\
-			</div>\
-			<div class=" col-lg-3 text-left">\
-			YES\
-			</div>\
-			</div>\
-			</div>\
-			</div>\
-			</div>\
-			<div class="row">\
-			<div class="col-lg-12">\
-			<div class="form-group col-lg-6">\
-			<label for="cmt-sp-ct-bt-'+ form.id+'">Species Comment:</label>\
-			<div id="cmt-sp">\
-			<div class="cmt-sp-ct cmt-sp-ct-tp" id="cmt-sp-ct-tp-'+ form.id+'">\
-			<span class="label label-default" contenteditable="false" value="s.observers.observer.timing.text">Timing (full)</span>\
-			<span class="label label-default" contenteditable="false" value="moment(s.observers.observer.timing[\'@ISO8601\']).format(\'dd-MM-YYYY HH:mm\')">Timing (condensed)</span>\
-			<span class="label label-default" contenteditable="false" value="moment(s.observers.observer.timing[\'@ISO8601\']).format(\'HH:mm\')">Time</span>\
-			<span class="label label-default" contenteditable="false" value="s.observers.observer.id_sighting">ID sighting</span>\
-			<span class="label label-default" contenteditable="false" value="s.observers.observer.estimation_code">Estimation code</span>\
-			<span class="label label-default" contenteditable="false" value="s.observers.observer.count">Count</span>\
-			<span class="label label-default" contenteditable="false" value="s.observers.observer.coord_lat">Latitude</span>\
-			<span class="label label-default" contenteditable="false" value="s.observers.observer.coord_lon">Longitude</span>\
-			</div>\
-			<div class="cmt-sp-ct cmt-sp-ct-bt" id="cmt-sp-ct-bt-'+ form.id+'" contenteditable="true">\
-			<span class="label label-default" contenteditable="false" value="s.observers.observer.estimation_code">Estimation code</span>\
-			<span class="label label-default" contenteditable="false" value="s.observers.observer.count">Count</span> ind. - <span class="label label-default" contenteditable="false" value="moment(s.observers.observer.timing[\'@ISO8601\']).format(\'hh:mm\')">Time</span> - &lt;a href="http://maps.google.com?q=<span class="label label-default" contenteditable="false" value="s.observers.observer.coord_lat">Latitude</span>,<span class="label label-default" contenteditable="false" value="s.observers.observer.coord_lon">Longitude</span>&t=k" target="_blank" &gt;<span class="label label-default" contenteditable="false" value="s.observers.observer.coord_lat">Latitude</span>,<span class="label label-default" contenteditable="false" value="s.observers.observer.coord_lon">Longitude</span>&lt;/a&gt; - &lt;a href="http://www.ornitho.ch/index.php?m_id=54&id=<span class="label label-default" contenteditable="false" value="s.observers.observer.id_sighting">ID sighting</span>" target="_blank">ornitho.ch&lt;/a&gt;\
-			</div>\
-			</div>\
-			<div>\
-			<label>Exemple:</label>\
-			<div class="form-group">\
-			<select id="cmt-sp-preview-sp">\
-			</select>\
-			</div>\
-			<div id="cmt-sp-preview"></div>\
-			</div>\
-			</div>\
-			<div class="form-group col-lg-6">\
-			<label for="comments">Checklist Comment:</label>\
-			<textarea class="form-control" rows="3"  id="comments">'+(form.comment || "") +'</textarea>\
-			<div class="checkbox">\
-			<label><input type="checkbox" checked="checked" id="check-static-map"> Include static map</label>\
-			</div>\
-			<div class="row">\
-			<div class="form-group col-lg-4">\
-			<button type="button" class="btn btn-link .btn-xs" id="center-map" title="Set static map automaticaly with sightings location">Center map</button>\
-			</div>\
-			<div class="form-group col-lg-8">\
-			Zoom:\
-			<input id="zoomSlider" data-slider-id="zoomSlider" type="text" data-slider-min="0" data-slider-max="22" data-slider-step="1" data-slider-value="14"/>\
-			</div>\
-			</div>\
-			<label>Preview:</label>\
-			<div id="comments-preview"></div>\
-			</div>\
-			</div>\
-			</div>\
-			<div class="row">\
-			<div class="form-group col-sm-12">\
-			<div class="map" id="map-f-'+form.id+'"></div>\
-			</div>\
-			<div class="form-group col-sm-12"> \
-			<div class="text-center">\
-			<button type="button" class="btn btn-default" id="singleExport-'+form.id+'">Export only this checklist</button>\
-			</div>\
-			</div>\
-			</div>\
+				<div class="row">\
+					<div class="form-group col-lg-6">\
+						<div class="form-group col-lg-6">\
+							<label for="location">Location:</label>\
+							<input type="text" class="form-control" id="location" value="'+form.name+'">\
+						</div>\
+						<div class="form-group col-lg-6">\
+							<label for="date">Date:</label>\
+							<input type="datetime-local" class="form-control" id="date" value="'+form.date+'">\
+						</div>\
+						<div class="form-group col-lg-6">\
+							<label for="observation-type">Observation Type:</label>\
+							<select class="form-control" id="observation-type">\
+								<option>Traveling</option>\
+								<option>Stationary</option>\
+								<option>Historical</option>\
+								<option>Incidental</option>\
+							</select>\
+						</div>\
+						<div class="form-group col-lg-6">\
+							<label>Complete Checklit:</label>\
+							<div class="checkbox">\
+								<div class="col-lg-3 text-right">\
+									NO\
+								</div>\
+								<div class="col-lg-6 text-center">\
+									<label class="switch"><input type="checkbox" checked="checked" id="check-fullform"><div class="sliderOF round"></div></label>\
+								</div>\
+								<div class=" col-lg-3 text-left">\
+									YES\
+								</div>\
+							</div>\
+						</div>\
+						<div class="form-group col-lg-4">\
+							<label class="control-label" for="duration">Duration ( min.):</label> \
+							<input type="number" class="form-control" id="duration" value="'+form.duration+'">\
+						</div>\
+						<div class="form-group col-lg-4">\
+							<label for="distance">Distance (km):</label>\
+							<input type="number" class="form-control" id="distance" value="'+form.distance+'">\
+						</div>\
+						<div class="form-group col-lg-4">\
+							<label for="party-size">Party size:</label>\
+							<input type="number" class="form-control" id="party-size" value="'+form['party-size']+'">\
+						</div>\
+						<div class="form-group col-lg-12">\
+							<label for="cmt-sp-ct-bt-'+ form.id+'">Species Comment:</label>\
+							<div id="cmt-sp">\
+								<div class="cmt-sp-ct cmt-sp-ct-tp" id="cmt-sp-ct-tp-'+ form.id+'">\
+									<span class="label label-default" contenteditable="false" value="s.observers.observer.timing.text">Timing (full)</span>\
+									<span class="label label-default" contenteditable="false" value="moment(s.observers.observer.timing[\'@ISO8601\']).format(\'dd-MM-YYYY HH:mm\')">Timing (condensed)</span>\
+									<span class="label label-default" contenteditable="false" value="moment(s.observers.observer.timing[\'@ISO8601\']).format(\'HH:mm\')">Time</span>\
+									<span class="label label-default" contenteditable="false" value="s.observers.observer.id_sighting">ID sighting</span>\
+									<span class="label label-default" contenteditable="false" value="s.observers.observer.estimation_code">Estimation code</span>\
+									<span class="label label-default" contenteditable="false" value="s.observers.observer.count">Count</span>\
+									<span class="label label-default" contenteditable="false" value="s.observers.observer.coord_lat">Latitude</span>\
+									<span class="label label-default" contenteditable="false" value="s.observers.observer.coord_lon">Longitude</span>\
+									<span class="label label-default" contenteditable="false" value="s.observers.observer.comment">Comment</span>\
+									<span class="label label-default" contenteditable="false" value="s.observers.observer.details">Detail</span>\
+									<span class="label label-default" contenteditable="false" value="s.observers.observer.atlas_code">Atlas code</span>\
+								</div>\
+								<div class="cmt-sp-ct cmt-sp-ct-bt" id="cmt-sp-ct-bt-'+ form.id+'" contenteditable="true">\
+									<span class="label label-default" contenteditable="false" value="s.observers.observer.estimation_code">Estimation code</span>\
+									<span class="label label-default" contenteditable="false" value="s.observers.observer.count">Count</span> ind. - <span class="label label-default" contenteditable="false" value="moment(s.observers.observer.timing[\'@ISO8601\']).format(\'HH:mm\')">Time</span> - &lt;a href="http://maps.google.com?q=<span class="label label-default" contenteditable="false" value="s.observers.observer.coord_lat">Latitude</span>,<span class="label label-default" contenteditable="false" value="s.observers.observer.coord_lon">Longitude</span>&t=k" target="_blank" &gt;<span class="label label-default" contenteditable="false" value="s.observers.observer.coord_lat">Latitude</span>,<span class="label label-default" contenteditable="false" value="s.observers.observer.coord_lon">Longitude</span>&lt;/a&gt; - &lt;a href="http://'+jQuery('#sel-website').val()+'/index.php?m_id=54&id=<span class="label label-default" contenteditable="false" value="s.observers.observer.id_sighting">ID sighting</span>" target="_blank">'+jQuery('#sel-website').val()+'&lt;/a&gt;\
+									<br>&lt;br&gt;<span class="label label-default" contenteditable="false" value="s.observers.observer.comment">Comment</span>\
+									<br>&lt;br&gt;<span class="label label-default" contenteditable="false" value="s.observers.observer.details">Detail</span>\
+									<br>&lt;br&gt;<span class="label label-default" contenteditable="false" value="s.observers.observer.atlas_code">Atlas code</span>\
+								</div>\
+							</div>\
+						</div>\
+						<div class="form-group col-lg-12">\
+							<label>Exemple:  </label>\
+							<div class="form-group" style=" display: inline-block;">\
+								<select id="cmt-sp-preview-sp"></select>\
+							</div>\
+							<div id="cmt-sp-preview"></div>\
+						</div>\
+					</div>\
+					<div class="form-group col-lg-6">\
+						<div class="row">\
+							<label for="comments">Checklist Comment:</label>\
+							<textarea class="form-control" rows="3"  id="comments">'+(form.comment || "") +'</textarea>\
+						</div>\
+						<div class="row checkbox">\
+							<label><input type="checkbox" checked="checked" id="check-static-map"> Include static map</label>\
+						</div>\
+						<div class="row">\
+							<div class="col-lg-5 form-inline">\
+								<label for="zoom">Zoom:</label>\
+								<div class="input-group">\
+									<span class="input-group-btn">\
+										<button type="button" class="btn btn-default btn-number" data-type="minus">\
+											<span class="glyphicon glyphicon-minus"></span>\
+										</button>\
+									</span>\
+									<input type="text" id="zoom" class="form-control input-number" value="1" min="1" max="21">\
+									<span class="input-group-btn">\
+										<button type="button" class="btn btn-default btn-number" data-type="plus">\
+											<span class="glyphicon glyphicon-plus"></span>\
+										</button>\
+									</span>\
+								</div>\
+							</div>\
+							<div class="col-lg-3">\
+								<button type="button" class="btn btn-default center-block" id="center-map" title="Set static map automaticaly with sightings location">Center map</button>\
+							</div>\
+							<div class="col-lg-4">\
+								<button type="button" class="btn btn-default center-block" id="button-geojson">Export GeoJson</button>\
+							</div>\
+						</div>\
+						<div class="row checkbox">\
+							<label><input type="checkbox" checked="checked" id="check-weather"> Include weather</label>\
+						</div>\
+						<div class="row">\
+							<label>Preview:</label>\
+							<div id="comments-preview"></div>\
+						</div>\
+					</div>\
+				</div>\
+				<div class="row">\
+					<div class="form-group col-sm-12">\
+						<div class="map" id="map-f-'+form.id+'"></div>\
+					</div>\
+					<div class="form-group col-sm-12"> \
+						<div class="text-center">\
+							<button type="button" class="btn btn-default" id="singleExport-'+form.id+'">Export only this checklist</button>\
+						</div>\
+					</div>\
+				</div>\
 			</form>\
 			');
 
+
+
+
+
+
 		// Create Map
 		form.map = L.map('map-f-'+form.id);
-
 		// Create Layers
 		form.layer={};
 		form.layer.hotspots=L.featureGroup().addTo(form.map)
@@ -625,22 +879,23 @@ function ProcessForms(data) {
 
 		//Add control
 		L.control.layers({
-			'MapBox': L.tileLayer.provider('MapBox', {id: 'rafnuss.npl3amec', accessToken:L.MakiMarkers.accessToken}),
+			'MapBox': L.tileLayer.provider('MapBox', {id: 'rafnuss.npl3amec', accessToken:L.MakiMarkers.accessToken}).addTo(form.map),
 			'OpenStreetMap' : L.tileLayer.provider('OpenStreetMap.Mapnik'),
 			'Swisstopo': new L.TileLayer('https://wmts10.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-farbe/default/current/3857/{z}/{x}/{y}.jpeg', {
 				layer: 'ch.swisstopo.pixelkarte-farbe-pk1000.noscale',
 				maxZoom: 17,
 				attribution: 'Map data &copy; 2015 swisstopo',
-			}).addTo(form.map)
+			})
 		},null,{collapsed:true}).addTo(form.map);
 		new L.Control.Draw({
 			position: 'topright',
 			draw: {
 				polyline: { 
 					shapeOptions: {
-						color: '#000',
-						weight: 2,
-						opacity: 1
+						color: '#ad8533',
+						weight: 5,
+						opacity: 1,
+						dashArray: "20, 10, 10, 10"
 					}
 				},
 				polygon: false,
@@ -694,6 +949,37 @@ function ProcessForms(data) {
 				s.observers.observer.count='x'
 			}
 
+			if (!s.observers.observer.comment){
+				s.observers.observer.comment='';
+			}
+			if (!s.observers.observer.details){
+				s.observers.observer.details='';
+			} else{
+				if (!Array.isArray(s.observers.observer.details.detail)){ 
+					s.observers.observer.details.detail = [s.observers.observer.details.detail];
+				}
+				var details='';
+				s.observers.observer.details.detail.forEach(function(d,id){
+					details += d.count +'x ';
+					if (d.sex["@id"]!='U'){
+						details += d.sex["#text"] + ' ';
+					}
+					if (d.age["@id"]!='U'){
+						details += d.age["#text"];
+					}
+					if (id!=s.observers.observer.details.detail.length-1){
+						details += ' / '; 
+					}
+				})
+				s.observers.observer.details = details;
+			}
+			if (!s.observers.observer.atlas_code){
+				s.observers.observer.atlas_code = '';
+			} else {
+				s.observers.observer.atlas_code = atlas_code[s.observers.observer.atlas_code['#text']] + '(Atlas code: '+s.observers.observer.atlas_code['#text']+')';
+			}
+
+
 			s['marker-symbol'] = (s.observers.observer.count < 99) ? s.observers.observer.count : 'x';
 			s['marker-color'] = color(s,form);
 			s['marker-size'] = 'm';
@@ -724,7 +1010,6 @@ function ProcessForms(data) {
 			}
 		})
 
-		
 		// Load local hotspot
 		jQuery.get( urleBird( form.layer.all.getBounds() ), function( xml ) {
 			var json = jQuery.parseJSON(xml2json(xml).replace('undefined',''))
@@ -750,10 +1035,15 @@ function ProcessForms(data) {
 						<a href="http://ebird.org/ebird/hotspot/'+h['loc-id']+'" target="_blank" title="See on eBird">View on eBird</a>');
 					popup.on('click', '#setLocation', function() {
 						form.name = jQuery(this).html();
-						jQuery('#f-'+form.id+' #location').val(form.name)
-						jQuery('#li-f-'+form.id+' a').html(form.name)
-						jQuery(this).html('Done!')
-						//form.map.closePopup();
+						jQuery('#f-'+form.id+' #location').val(form.name);
+						jQuery('#li-f-'+form.id+' a').html(form.name);
+						form.lat = h.lat;
+						form.lon = h.lng;
+						jQuery.get( 'http://nominatim.openstreetmap.org/reverse?lat='+form.lat.toString()+'&lon='+form.lon.toString(), function( xml ) {
+							var json = jQuery.parseJSON(xml2json(xml).replace('undefined',''))
+							form.country = json.reversegeocode.addressparts.country_code;
+						});
+						form.map.closePopup();
 					});
 					mark.addTo(form.layer.hotspots).bindPopup(popup[0]);
 				})
@@ -761,15 +1051,18 @@ function ProcessForms(data) {
 			form.map.fitBounds(form.layer.all.getBounds());
 		});
 
+
+
 		// Add Listener
 		jQuery('#f-'+form.id+' #location').keyup( function(){ 
-			setLoc(form.id, jQuery(this).val() ) 
+			form.name = jQuery(this).val();
+			jQuery('#li-f-'+form.id+' a').html(form.name)
 		});
 		jQuery('#f-'+form.id+' #date').change( function(){ 
 			form.date = jQuery(this).val()
 		});
 		jQuery('#f-'+form.id+' #observation-type').change( function(){ 
-			form['observation-type'] = jQuery(this).val();
+			form.protocol = jQuery(this).val();
 		});
 		jQuery('#f-'+form.id+' #duration').change( function(){ 
 			form.duration = jQuery(this).val();
@@ -799,6 +1092,21 @@ function ProcessForms(data) {
 		jQuery('#f-'+form.id+' #check-static-map').change( function(){
 			previewComment(form);
 		});
+		jQuery('#f-'+form.id+' #check-weather').change( function(){
+			previewComment(form);
+		});
+		jQuery('#f-'+form.id+' #button-geojson').click( function(){
+			var fs = form.layer.sightings.toGeoJSON();
+			form.layer.edit.toGeoJSON().features.forEach(function(f){
+				fs.features.push(f);
+			})
+			var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(fs));
+			var link = document.createElement("a");
+			link.setAttribute("href",     dataStr     );
+			link.setAttribute("download", form.name.replace(' ','_')+".json");
+			document.body.appendChild(link);
+			link.click();
+		})
 		dragula([document.getElementById('cmt-sp-ct-tp-'+ form.id), document.getElementById('cmt-sp-ct-bt-'+ form.id)], {
 			copy: function (el, source) {
 				return source === document.getElementById('cmt-sp-ct-tp-'+ form.id)
@@ -814,22 +1122,42 @@ function ProcessForms(data) {
 				text: s.species.name
 			}));
 		})
-		jQuery('#center-map').click(function(){
+		jQuery('#f-'+form.id+' #center-map').click(function(){
 			form.staticmap.lng = form.layer.sightings.getBounds().getCenter().lng;
 			form.staticmap.lat = form.layer.sightings.getBounds().getCenter().lat;
 			form.staticmap.zoom = getBoundsZoomLevel(L.featureGroup([form.layer.edit, form.layer.sightings]).getBounds(), { height: 450, width: 800 })
 			form.layer.msm.setLatLng(form.layer.sightings.getBounds().getCenter());
-
 			previewComment(form)
 		})
-		form.zoomSlider = jQuery('#zoomSlider').slider({
-			formatter: function(value) {
-				return 'Current value: ' + value;
+
+		jQuery('#f-'+form.id+' .btn-number').click(function(e){
+			var input = jQuery('#f-'+form.id+ ' #zoom');
+			if(jQuery(this).attr('data-type') == 'minus') {
+				input.val(+input.val()-1);
+			} else if(jQuery(this).attr('data-type') == 'plus') {
+				input.val(+input.val()+1);
 			}
-		}).on('change', function(evt){
-			form.staticmap.zoom = form.zoomSlider.getValue();
+			input.change();
+		});
+		jQuery('#f-'+form.id+ ' #zoom').on('change', function() {
+			var input = jQuery('#f-'+form.id+ ' #zoom');
+			if(input.val() <= input.attr('min')) {
+				jQuery(".btn-number[data-type='minus']").attr('disabled', true);
+				input.val(input.attr('min'));
+			} else {
+				jQuery(".btn-number[data-type='minus']").attr('disabled', false);
+			}
+			if(input.val() >= input.attr('max')) {
+				jQuery(".btn-number[data-type='plus']").attr('disabled', true);
+				input.val(input.attr('max'));
+			} else {
+				jQuery(".btn-number[data-type='plus']").attr('disabled', false);
+			}
+			form.staticmap.zoom = input.val();
 			previewComment(form);
-		}).data('slider');
+		})
+		jQuery('#f-'+form.id+ ' #zoom').val(form.staticmap.zoom);
+
 		document.getElementById('cmt-sp-ct-bt-'+ form.id).addEventListener("input", function(){
 			previewSpComment(form)
 		}, false);
@@ -848,6 +1176,11 @@ function ProcessForms(data) {
 		document.getElementById("singleExport-"+form.id).addEventListener("click", function(){
 			singleExport(form);
 		});
+		jQuery('#li-f-'+form.id).on('click',function(){
+			setTimeout(function() {
+				form.map.invalidateSize();
+			},1);
+		})
 
 		// Initiate 
 		previewSpComment(form);
@@ -874,7 +1207,7 @@ function ProcessForms(data) {
 
 
 jQuery(document).ready(function(){  
-
+	
 	/* c1: Download biolovision data*/  
 	//Define daptepicker
 	jQuery('#input-date-from').datetimepicker({
@@ -885,19 +1218,28 @@ jQuery(document).ready(function(){
 		format: 'DD.MM.YYYY',
 		showTodayButton:true,
 	})
-	// Button to download data
-	jQuery('#link-id').click( function(){
+	var downloadfx = function(){
 		if (jQuery('input[type=radio][value=offset]').prop("checked")){
 			var DChoice='offset';
 		} else {
 			var DChoice='range';
 		}
-		window.open("http://www."+jQuery('#sel-website').val()+"/index.php?m_id=97&sp_DChoice=" + DChoice + "&sp_DFrom="+jQuery('#input-date-from').val()+"&sp_DTo="+jQuery('#input-date-to').val()+"&sp_DOffset="+ jQuery('#date_ago').val() +"&sp_SChoice=all&sp_PChoice=all&sp_OnlyMyData=1&sp_FChoice=export&sp_FExportFormat=XML")
-	});
+		window.open("http://"+jQuery('#sel-website').val()+"/index.php?m_id=97&sp_DChoice=" + DChoice + "&sp_DFrom="+jQuery('#input-date-from').val()+"&sp_DTo="+jQuery('#input-date-to').val()+"&sp_DOffset="+ jQuery('#date_ago').val() +"&sp_SChoice=all&sp_PChoice=all&sp_OnlyMyData=1&sp_FChoice=export&sp_FExportFormat=XML")
+	}
+	jQuery("#sel-website").keyup(function(e){if(e.keyCode == 13){downloadfx();}});
+	jQuery("#date_ago").keyup(function(e){if(e.keyCode == 13){downloadfx();}});
+	jQuery("#input-date-from").keyup(function(e){if(e.keyCode == 13){downloadfx();}});
+	jQuery("#input-date-to").keyup(function(e){if(e.keyCode == 13){downloadfx();}});
+	jQuery('#link-id').click( downloadfx );
+	jQuery('#date_ago').on('focus',function(){
+		jQuery('input[type="radio"][value="offset"]').click()
+	})
+	jQuery('.input-daterange input').on('focus',function(){
+		jQuery('input[type="radio"][value="range"]').click()
+	})
 
 
-
-	/* c2: Upload file*/ 
+	/* Upload file*/ 
 	// Drag and drop
 	dropbox = document.getElementById("dropbox");
 	dropbox.addEventListener("dragenter", function(e){
@@ -928,5 +1270,6 @@ jQuery(document).ready(function(){
 	// Map
 	L.MakiMarkers.accessToken = '';
 
-
+	// To me remove....
+	//jQuery('#button-download-biolovision').hide()
 });

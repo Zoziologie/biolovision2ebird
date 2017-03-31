@@ -5150,6 +5150,16 @@
       "SPECIES_CODE":"passer1"
    },
    {
+      "id":1204,
+      "latin":"Turdus sp.",
+      "english":"unidentified Thrush",
+      "EN":"unidentified Thrush",
+      "SCI_NAME":"Turdus sp.",
+      "PRIMARY_COM_NAME":"unidentified Thrush",
+      "en_IOC":"Turdus sp.",
+      "SPECIES_CODE":"turdus1"
+   },
+   {
       "id":1205,
       "latin":"Psittacula eupatria",
       "english":"Alexandrine Parakeet",
