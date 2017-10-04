@@ -1,6 +1,6 @@
 // Load conversion taxonomie biolovision - eBird
 var eBird_birds_list;
-jQuery.getJSON("http://zoziologie.raphaelnussbaumer.com/wp-content/plugins/biolovision2eBird/patch_ornitho2eBird.json", function(data){
+jQuery.getJSON("https://zoziologie.raphaelnussbaumer.com/wp-content/plugins/biolovision2eBird/patch_ornitho2eBird.min.json", function(data){
 	eBird_birds_list = data;
 });
 
@@ -38,13 +38,28 @@ var atlas_code = {
 function color(s,form){
 	color_gradient = ['#fff','#352A87', '#363093', '#3637A0', '#353DAD', '#3243BA', '#2C4AC7', '#2053D4', '#0F5CDD', '#0363E1', '#0268E1', '#046DE0', '#0871DE', '#0D75DC', '#1079DA', '#127DD8', '#1481D6', '#1485D4', '#1389D3', '#108ED2', '#0C93D2', '#0998D1', '#079CCF', '#06A0CD', '#06A4CA', '#06A7C6', '#07A9C2', '#0AACBE', '#0FAEB9', '#15B1B4', '#1DB3AF', '#25B5A9', '#2EB7A4', '#38B99E', '#42BB98', '#4DBC92', '#59BD8C', '#65BE86', '#71BF80', '#7CBF7B', '#87BF77', '#92BF73', '#9CBF6F', '#A5BE6B', '#AEBE67', '#B7BD64', '#C0BC60', '#C8BC5D', '#D1BB59', '#D9BA56', '#E1B952', '#E9B94E', '#F1B94A', '#F8BB44', '#FDBE3D', '#FFC337', '#FEC832', '#FCCE2E', '#FAD32A', '#F7D826', '#F5DE21', '#F5E41D', '#F5EB18', '#F6F313', '#F9FB0E'];
 	var t = moment(s.observers.observer.timing["@ISO8601"]).hour()*60+moment(s.observers.observer.timing["@ISO8601"]).minute();
-	var start = moment(form.date).hour()*60+moment(form.date).minute();
+	var start = parseInt(form.time_start.split(':')[0])*60 + parseInt(form.time_start.split(':')[1]);
 	var r = Math.round(  (t - start )/form.duration * (color_gradient.length-1) )+1;
 	r = (r<0 || isNaN(r)) ? 0 : r;
 	r = (r>=color_gradient.length) ? color_gradient.length-1 : r;
 	return color_gradient[r].split('#')[1]
 }
 
+function csvJSON(csv){
+	var lines=csv.split("\n");
+	var result = [];
+	var headers=lines[0].split("\t");
+	for(var i=1;i<lines.length;i++){
+		var obj = {};
+		var currentline=lines[i].split("\t");
+		for(var j=0;j<headers.length;j++){
+			obj[headers[j]] = currentline[j];
+		}
+		result.push(obj);
+	}
+	//return result; //JavaScript object
+	return JSON.stringify(result); //JSON
+}
 
 function previewComment(form){
 	var html = jQuery('#f-'+form.id+' #comments').val() +'<br>';
@@ -64,7 +79,7 @@ function previewComment(form){
 		form.layer.msm.removeFrom(form.map);
 		jQuery('#center-map').addClass('disabled')
 	}
-	html += '<br>Imported with <a href=\"http://zoziologie.raphaelnussbaumer.com/biolovision2ebird/\" target=\"_blank\">biolovision2eBird</a>';
+	html += '<br>Imported with <a href=\"https://zoziologie.raphaelnussbaumer.com/biolovision2ebird/\" target=\"_blank\">biolovision2eBird</a>';
 	jQuery('#f-'+form.id+' #comments-preview').html(html);
 	form.comment=html;
 };
@@ -139,7 +154,7 @@ function previewSpComment(form){
 function urleBird(LatLngBounds){
 	var dist = LatLngBounds.getNorthEast().distanceTo(LatLngBounds.getSouthWest())/1000; // m -> km
 	dist = Math.max(5,Math.round(dist*2)).toString();
-	return 'http://ebird.org/ws1.1/ref/hotspot/geo?\
+	return 'https://ebird.org/ws1.1/ref/hotspot/geo?\
 	lng='+LatLngBounds.getCenter().lng+'&\
 	lat='+LatLngBounds.getCenter().lat+'&\
 	dist='+dist+'&fmt=xml';
@@ -224,12 +239,15 @@ function Makemarker(s){
 //                EXPORT FUNCTIONS
 //____________________________________________________
 function Form2Table(f){
-	table=[]
+	table=[];
+	alert_sp=[];
 	f.sightings.sighting.forEach( function(s) {
 		var eBird_bird = jQuery.grep(eBird_birds_list, function(e){ return e.id == s.species['@id'] })
 
 		if (eBird_bird.length<1){
-			console.log(s)
+			alert_sp.push(s.species.name);
+			eBird_bird.push([]);
+			eBird_bird[0].PRIMARY_COM_NAME = s.species.name;
 		}
 
 		var row = {
@@ -241,25 +259,25 @@ function Form2Table(f){
 			location:f.name,
 			lat:f.lat,
 			lng:f.lon,
-			date:moment(f.date).format('MM/DD/YYYY'),
-			start_time:moment(f.date).format('HH:mm'),
+			date: moment(f.date).format('MM/DD/YYYY'),
+			start_time: f.time_start,
 			state:'',//s.place.county,
 			country: '',//(s.place.country) ? s.place.country : 'CH',
 			protocol: f.protocol,
 			party_size: f['party-size'],
-			duration:f.duration,
+			duration:f.duration>0 ? f.duration : '',
 			full_form: f.full_form ? 'Y' : 'N',
-			distance:f.distance,
+			distance: (f.distance*0.621371)>0 ? (f.distance*0.621371).toString() : '',
 			area:'',
 			form_comment:f.comment.replace(/"/g,'""').replace(/[\n\r]+/g, ''),
 		};
-		if (row.common_name==''){alert('Common Name cannot be empty!');};
-		if (row.location==''){alert('Location Name cannot be empty!');};
-		if (row.date==''){alert('Date cannot be empty!');};
-		if (row.protocol=='traveling' && row['Number of Observers']==''){alert('With traveling protocal, Number of Observers must be set!');};
-		if (row.protocol=='traveling' && row['Effort Distance Miles']==''){alert('With traveling protocal, Effort Distance Miles must be set!');};
 		table.push(row)
 	})
+
+	if (alert_sp.length>0){
+		alert('One or more specie(s) do(es) not exist in the current system. You might have more work on eBird to match these species. Please report the error at rafnuss@gmail.com. \n' + alert_sp.join(', ') )
+	}
+
 	// Check for duplicate
 	for (i=table.length-1;i>=0;i--){
 		for (j=table.length-1;j>i;j--){
@@ -314,7 +332,7 @@ function CreateGist(form, callback){
 		data: JSON.stringify(gist),
 	}).done(function(response) {
 		console.log(response);
-		form.gist='http://zoziologie.raphaelnussbaumer.com/geojson/?'+encodeURIComponent(response.files[filename].raw_url)
+		form.gist='https://zoziologie.raphaelnussbaumer.com/geojson/?'+encodeURIComponent(response.files[filename].raw_url)
 		previewComment(form)
 		callback()
 	}).fail( function( jqXHR, textStatus, errorThrown) {
@@ -329,48 +347,56 @@ function CreateGist(form, callback){
 }
 
 function singleExport(form){
-	CreateGist(form, function(){
-		var table = Form2Table(form);
-		csv = Table2CSV(table);
-		var downloadLink = document.createElement("a");
-		downloadLink.setAttribute('type','text/csv')
-		downloadLink.setAttribute('target','_blank')
-		var blob = new Blob(["\ufeff", csv],{type: 'text/csv'});
-		downloadLink.href = URL.createObjectURL(blob);
-		downloadLink.download = form.name.replace(/[^a-z0-9_\-]/gi, '_').toLowerCase()+'-'+form.date+".csv";
-		document.body.appendChild(downloadLink);
-		downloadLink.click();
-		document.body.removeChild(downloadLink);
-	})
+	if (jQuery('#f-'+form.id + ' .form-group.has-error').length > 0) {
+		alert('Form '+form.name+' has error(s). It will not be exported!')
+	} else {
+		CreateGist(form, function(){
+			var table = Form2Table(form);
+			csv = Table2CSV(table);
+			var downloadLink = document.createElement("a");
+			downloadLink.setAttribute('type','text/csv')
+			downloadLink.setAttribute('target','_blank')
+			var blob = new Blob(["\ufeff", csv],{type: 'text/csv'});
+			downloadLink.href = URL.createObjectURL(blob);
+			downloadLink.download = form.name.replace(/[^a-z0-9_\-]/gi, '_').toLowerCase()+'-'+form.date+".csv";
+			document.body.appendChild(downloadLink);
+			downloadLink.click();
+			document.body.removeChild(downloadLink);
+		})
+	}
 }
 
 function Export(){
 	var table=[];
 	var filename ='';
 	var i=0;
+
 	data.forms.form.forEach( function(form,i) {
-		CreateGist(form, function(){
-			t = Form2Table(form);
-			table = table.concat(t);
-			filename += form.name + '_';
-			i+=1;
-			setTimeout(function() {
-				console.log(i)
-				if (i == data.forms.form.length){
-					console.log('ok')
-					csv = Table2CSV(table);
-					var downloadLink = document.createElement("a");
-					downloadLink.setAttribute('type','text/csv')
-					downloadLink.setAttribute('target','_blank')
-					var blob = new Blob(["\ufeff", csv],{type: 'text/csv'});
-					downloadLink.href = URL.createObjectURL(blob);
-					downloadLink.download = filename.replace(/[^a-z0-9_\-]/gi, '_').toLowerCase()+'-'+form.date+".csv";
-					document.body.appendChild(downloadLink);
-					downloadLink.click();
-					document.body.removeChild(downloadLink);
-				}
-			},1)
-		})
+		if (jQuery('#f-'+form.id + ' .form-group.has-error').length > 0) {
+			alert('Form '+form.name+' has error(s). It will not be exported!')
+		} else {
+			CreateGist(form, function(){
+				i+=1;
+				t = Form2Table(form);
+				table = table.concat(t);
+				filename += form.name + '_';
+				setTimeout(function() {
+					if (i == data.forms.form.length){
+						console.log(i)
+						csv = Table2CSV(table);
+						var downloadLink = document.createElement("a");
+						downloadLink.setAttribute('type','text/csv')
+						downloadLink.setAttribute('target','_blank')
+						var blob = new Blob(["\ufeff", csv],{type: 'text/csv'});
+						downloadLink.href = URL.createObjectURL(blob);
+						downloadLink.download = filename.replace(/[^a-z0-9_\-]/gi, '_').toLowerCase().slice(0,50) +'-'+form.date+".csv";
+						document.body.appendChild(downloadLink);
+						downloadLink.click();
+						document.body.removeChild(downloadLink);
+					}
+				},1000)
+			})
+		}
 	});
 }
 
@@ -405,7 +431,68 @@ function handleFile(file){
 				alert('Empty File. Try again!')
 				return
 			}
+		}
+	} else if (file.name.split('.').pop().toLowerCase() === 'txt'){
+		reader = new FileReader();
+		reader.readAsText(file);//,'ISO-8859-15');
+		reader.onload = function(){
+			var sightings = jQuery.parseJSON(csvJSON(reader.result));
 
+			if (!('Year' in sightings[0])){
+				alert('Not a correct file. Maybe try to export in English')
+				return;
+			}
+			data={};
+			data.sightings={};
+			data.sightings.sighting=[];
+
+			InitiateForms(data)
+
+			sightings.forEach(function(s){
+				ns={
+					date:{
+						'@ISO8601': new Date(s.Year, s.Month-1, s.Day, s.Timing.split(':')[0], (s.Timing.split(':')[1] ? s.Timing.split(':')[1] : '')).toISOString(), //to convert
+					},
+					observers:{
+						observer:{
+							count: s.Number,
+							estimation_code: s.Estimation,
+							id_sighting: s['ID ornitho.ch'],
+							coord_lat: s['Latitude (N)'],
+							coord_lon: s['Longitude (E)'],
+							comment: s.Comment,
+							details:{
+								detail: []//s.Details == "" ? [] : []
+							},
+							timing:{
+								'@ISO8601': new Date(s.Year, s.Month-1, s.Day, s.Timing.split(':')[0], (s.Timing.split(':')[1] ? s.Timing.split(':')[1] : '')).toISOString(),
+							},
+							atlas_code:{
+								'#text': s.ATLAS_CODE
+							}
+						}
+					},
+					place:{
+						altitude: s.ALTITUDE,
+						name: (('Lieu_dit' in s) ? s['Lieu_dit'] : (('Site' in s) ? s.Site : ''))
+					},
+					species:{
+						'latin_name': s['Latin name'],
+						name: s.Species,
+					}
+				};
+				data.sightings.sighting.push(ns);
+			})
+
+			jQuery('#c1').slideUp("slow",function(){
+					jQuery('#c2').slideDown("slow",function(){
+						ProcessSightings(data)
+					});
+				});
+			/*} else {
+				alert('Empty File. Try again!')
+				return
+			}*/
 		}
 	} else {
 		alert('Wrong file type. Need to be xml. Try again!')
@@ -474,7 +561,7 @@ function ProcessSightings(data) {
 			var form = {
 				id: data.forms.n,
 				color:marker_color[data.forms.n],
-				name: 'New List ' + data.forms.n.toString(),
+				name: 'New List ' + data.forms.n.toString() +' '+ e.layer.getLatLng().toString().split('LatLng')[1],
 				sightings: {sighting:[]},
 				marker: e.layer,
 				full_form: false
@@ -670,24 +757,37 @@ function ProcessForms(data) {
 	// Add true checklist
 	data.forms.form.forEach(function(form,idx){
 		if ( form['@id']){ // Legit form
+			form.date = moment(form.sightings.sighting[0].date['@ISO8601']).format('YYYY-MM-DD')
 			var duration = moment.utc(moment(form.time_stop,"HH:mm").diff(moment(form.time_start,"HH:mm"))).format('HH:mm');
 			form.duration = parseInt(duration.split(':')[0])*60+parseInt(duration.split(':')[1]);
-			form.date = moment(form.sightings.sighting[0].date['@ISO8601']).format('YYYY-MM-DD')+'T'+form.time_start;
 			form.full_form= (form.full_form=='1') ? true : false;
+			form.protocol='Stationary';
 		} else { // form from incidental sighting
-			var timings = form.sightings.sighting.map(function(s){ 
-				return moment(s.observers.observer.timing['@ISO8601'].split('+')[0])
-			}).filter(function(t){
-				return t.format('HH:mm')!='00:00'
+			var dates = form.sightings.sighting.map(function(s){ 
+				return moment(s.observers.observer.timing['@ISO8601']).format('YYYY-MM-DD')
 			})
-			var begining = timings.reduce(function (a, b) { return a < b ? a : b; }); 
-			var end = timings.reduce(function (a, b) { return a > b ? a : b; }); 
-			form.duration = Math.round((end-begining)/60/1000).toString();
-			form.duration = form.duration<60*24? form.duration : 60*24-1;
-			form.date = begining.format('YYYY-MM-DDTHH:mm');
+			form.date = dates.reduce(function(a, b){ return (a === b) ? a : ''; });
+			if (!form.date){
+				alert('Sigthings of form "' + form.name +'" do not come from the same day. We cannot process such data. Restart the process and aggregate only data from the same day.')
+				window.location.reload(false); 
+			}
+			var times = form.sightings.sighting.map(function(s){ 
+				return moment(s.observers.observer.timing['@ISO8601']).format('HH:mm')
+			}).filter(function(t){
+				return t !='00:00'
+			})
+			if (times.length>0){
+				form.time_start = times.reduce(function (a, b) { return moment(a,'HH:mm') < moment(b,'HH:mm') ? a : b; }); 
+				form.time_stop = times.reduce(function (a, b) { return moment(a,'HH:mm') > moment(b,'HH:mm') ? a : b; }); 
+				var duration = moment.utc(moment(form.time_stop,"HH:mm").diff(moment(form.time_start,"HH:mm"))).format('HH:mm');
+				form.duration = parseInt(duration.split(':')[0])*60+parseInt(duration.split(':')[1]);
+			} else {
+				form.duration = '';
+				form.time_start = '';
+			}
+			form.protocol='Incidental';
 		}
-		form.distance=0;
-		form.protocol='Stationary';
+		form.distance='';
 		form['party-size']='1';
 		form.staticmap={};
 		form.gist='#';
@@ -695,7 +795,7 @@ function ProcessForms(data) {
 			form.lon=form.marker.getLatLng().lng;
 			form.lat=form.marker.getLatLng().lat;
 		}
-		jQuery.get('http://api.wunderground.com/api/b097b9712f359043/history_'+moment(form.date).format('YYYYMMDD')+'/q/'+form.lat+','+form.lon+'.json',function(data){
+		jQuery.get('https://api.wunderground.com/api/b097b9712f359043/history_'+moment(form.date).format('YYYYMMDD')+'/q/'+form.lat+','+form.lon+'.json',function(data){
 			var w = data.history.dailysummary[0];
 			var whtml= '<b>Temp.</b>:'+w.meantempm+'°C ('+w.mintempm+'/'+w.maxtempm +')';
 			whtml += ' - <b>Prec.</b>: '+w.precipm+ 'mm';
@@ -707,7 +807,7 @@ function ProcessForms(data) {
 			form.weather=whtml;
 			previewComment(form)
 		})
-		jQuery.get( 'http://nominatim.openstreetmap.org/reverse?lat='+form.lat.toString()+'&lon='+form.lon.toString(), function( xml ) {
+		jQuery.get( 'https://nominatim.openstreetmap.org/reverse?lat='+form.lat.toString()+'&lon='+form.lon.toString(), function( xml ) {
 			var json = jQuery.parseJSON(xml2json(xml).replace('undefined',''))
 			form.country = json.reversegeocode.addressparts.country_code;
 		});
@@ -726,51 +826,68 @@ function ProcessForms(data) {
 		jQuery( "#c3 .nav-tabs" ).append( "<li class='active' id='li-f-"+form.id+"'><a href='#f-"+form.id+"' data-toggle='tab'>"+form.name+"</a>" );
 		jQuery( "#c3 .tab-content" ).append( "<div class='tab-pane active' id='f-"+form.id+"'></div>" );
 		jQuery( "#f-" + form.id ).append( '\
-			<form class="form">\
+			<form class="form" data-toggle="validator" >\
 				<div class="row">\
 					<div class="form-group col-lg-6">\
-						<div class="form-group col-lg-6">\
-							<label for="location">Location:</label>\
-							<input type="text" class="form-control" id="location" value="'+form.name+'">\
+						<div class="row">\
+							<div class="form-group col-lg-5">\
+								<label for="location" class="control-label">Location:</label>\
+								<input type="text" class="form-control" id="location" value="'+form.name+'" required>\
+								<div class="help-block with-errors"></div>\
+							</div>\
+							<div class="form-group col-lg-4">\
+								<label class="control-label" for="date">Date:</label> \
+								<input type="date" class="form-control" id="date" value="'+form.date+'" required>\
+								<div class="help-block with-errors"></div>\
+							</div>\
+							<div class="form-group col-lg-3">\
+								<label class="control-label" for="time">Time:</label>\
+								<input type="time" class="form-control" id="time" value="'+form.time_start+'" data-timeOK>\
+								<div class="help-block with-errors"></div>\
+							</div>\
 						</div>\
-						<div class="form-group col-lg-6">\
-							<label for="date">Date:</label>\
-							<input type="datetime-local" class="form-control" id="date" value="'+form.date+'">\
-						</div>\
-						<div class="form-group col-lg-6">\
-							<label for="observation-type">Observation Type:</label>\
-							<select class="form-control" id="observation-type">\
-								<option>Traveling</option>\
-								<option>Stationary</option>\
-								<option>Historical</option>\
-								<option>Incidental</option>\
-							</select>\
-						</div>\
-						<div class="form-group col-lg-6">\
-							<label>Complete Checklit:</label>\
-							<div class="checkbox">\
-								<div class="col-lg-3 text-right">\
-									NO\
-								</div>\
-								<div class="col-lg-6 text-center">\
-									<label class="switch"><input type="checkbox" checked="checked" id="check-fullform"><div class="sliderOF round"></div></label>\
-								</div>\
-								<div class=" col-lg-3 text-left">\
-									YES\
+						<div class="row">\
+							<div class="form-group col-lg-6">\
+								<label for="observation-type">Observation Type:</label>\
+								<select class="form-control" id="observation-type" required>\
+									<option>Traveling</option>\
+									<option>Stationary</option>\
+									<option>Historical</option>\
+									<option>Incidental</option>\
+								</select>\
+								<div class="help-block with-errors"></div>\
+							</div>\
+							<div class="form-group col-lg-6">\
+								<label>Complete Checklist:</label>\
+								<div class="checkbox">\
+									<div class="col-lg-3 text-right">\
+										NO\
+									</div>\
+									<div class="col-lg-6 text-center">\
+										<label class="switch"><input type="checkbox" checked="checked" id="check-fullform"><div class="sliderOF round"></div></label>\
+									</div>\
+									<div class=" col-lg-3 text-left">\
+										YES\
+									</div>\
 								</div>\
 							</div>\
 						</div>\
-						<div class="form-group col-lg-4">\
-							<label class="control-label" for="duration">Duration ( min.):</label> \
-							<input type="number" class="form-control" id="duration" value="'+form.duration+'">\
-						</div>\
-						<div class="form-group col-lg-4">\
-							<label for="distance">Distance (km):</label>\
-							<input type="number" class="form-control" id="distance" value="'+form.distance+'">\
-						</div>\
-						<div class="form-group col-lg-4">\
-							<label for="party-size">Party size:</label>\
-							<input type="number" class="form-control" id="party-size" value="'+form['party-size']+'">\
+						<div class="row">\
+							<div class="form-group col-lg-4">\
+								<label class="control-label" for="duration">Duration ( min.):</label> \
+								<input type="number" class="form-control" id="duration" value="'+parseInt(form.duration).toString()+'" min="0" step=".1" max="1440" data-durationOK>\
+								<div class="help-block with-errors"></div>\
+							</div>\
+							<div class="form-group col-lg-4">\
+								<label class="control-label" for="distance">Distance (km):</label>\
+								<input type="number" class="form-control" id="distance" value="'+form.distance+'" min="0" step=".00001" max="999" data-distanceOK>\
+								<div class="help-block with-errors"></div>\
+							</div>\
+							<div class="form-group col-lg-4">\
+								<label class="control-label" for="party-size">Party size:</label>\
+								<input type="number" class="form-control" id="party-size" value="'+form['party-size']+'" min="1" max="99" required>\
+								<div class="help-block with-errors"></div>\
+							</div>\
 						</div>\
 						<div class="form-group col-lg-12">\
 							<label for="cmt-sp-ct-bt-'+ form.id+'">Species Comment:</label>\
@@ -925,10 +1042,9 @@ function ProcessForms(data) {
 			var popup = jQuery('<div/>') 
 			popup.html('Set Distance to: <button type="button" class="btn btn-default" id="setDistance">'+(totalDistance/1000).toFixed(2).toString()+'</button> km');
 			popup.on('click', '#setDistance', function() {
-				form.distance = jQuery(this).html();
-				form.protocol = 'Traveling';
-				jQuery('#f-'+form.id+' #distance').val(form.distance)
-				jQuery('#f-'+form.id+' #observation-type').val(form.protocol)
+				jQuery('#f-'+form.id+' #observation-type').val('Traveling')
+				jQuery('#f-'+form.id+' #distance').val(jQuery(this).html())
+				jQuery('#f-'+form.id+' #observation-type').change()
 			});
 			e.layer.bindPopup(popup[0]).openPopup();
 			form.map.fitBounds(form.layer.all.getBounds());
@@ -992,7 +1108,7 @@ function ProcessForms(data) {
 				form.staticmap.lat = form.layer.sightings.getBounds().getCenter().lat;
 				form.layer.msm = L.marker([form.staticmap.lat,form.staticmap.lng], {
 					icon:L.icon({
-						iconUrl: 'http://zoziologie.raphaelnussbaumer.com/wp-content/uploads/2016/12/Untitled.png',
+						iconUrl: 'https://zoziologie.raphaelnussbaumer.com/wp-content/plugins/improvedBiolovisionVisualisation/Untitled.png',
 						iconSize:     [60, 60],
 						iconAnchor:   [30, 30], 
 						popupAnchor:  [-30, 0]
@@ -1022,7 +1138,7 @@ function ProcessForms(data) {
 						title: h['loc-name'],
 						alt: h['loc-name'],
 						icon: L.icon({
-							iconUrl: "http://ebird.org/content/eBirdCommon/images/google/markers/eb_marker_hotspot_2.png",
+							iconUrl: "https://zoziologie.raphaelnussbaumer.com/wp-content/plugins/improvedBiolovisionVisualisation/hotspot-icon-hotspot.png",
 							iconAnchor: [15, 19],
 							popupAnchor: [0, -19],
 						})
@@ -1031,14 +1147,14 @@ function ProcessForms(data) {
 					popup.html('\
 						Set Location of the Checklist with the eBird hostpot:<br>\
 						<button type="button" class="btn btn-default" id="setLocation" title="Define as location of the checklist">'+h['loc-name']+'</button><br>\
-						<a href="http://ebird.org/ebird/hotspot/'+h['loc-id']+'" target="_blank" title="See on eBird">View on eBird</a>');
+						<a href="https://ebird.org/ebird/hotspot/'+h['loc-id']+'" target="_blank" title="See on eBird">View on eBird</a>');
 					popup.on('click', '#setLocation', function() {
 						form.name = jQuery(this).html();
 						jQuery('#f-'+form.id+' #location').val(form.name);
 						jQuery('#li-f-'+form.id+' a').html(form.name);
 						form.lat = h.lat;
 						form.lon = h.lng;
-						jQuery.get( 'http://nominatim.openstreetmap.org/reverse?lat='+form.lat.toString()+'&lon='+form.lon.toString(), function( xml ) {
+						jQuery.get( 'https://nominatim.openstreetmap.org/reverse?lat='+form.lat.toString()+'&lon='+form.lon.toString(), function( xml ) {
 							var json = jQuery.parseJSON(xml2json(xml).replace('undefined',''))
 							form.country = json.reversegeocode.addressparts.country_code;
 						});
@@ -1056,30 +1172,83 @@ function ProcessForms(data) {
 		jQuery('#f-'+form.id+' #location').keyup( function(){ 
 			form.name = jQuery(this).val();
 			jQuery('#li-f-'+form.id+' a').html(form.name)
+			if (!form.name){
+				jQuery(this).parent().addClass('has-error');
+			} else{
+				jQuery(this).parent().removeClass('has-error');
+			}
 		});
 		jQuery('#f-'+form.id+' #date').change( function(){ 
-			form.date = jQuery(this).val()
+			form.date = jQuery(this).val();
+			if (!form.date || !/^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$/.test(form.date)  ){
+				jQuery(this).parent().addClass('has-error');
+			} else{
+				jQuery(this).parent().removeClass('has-error');
+			}
+		});
+		jQuery('#f-'+form.id+' #time').change( function(){ 
+			form.time_start = jQuery(this).val();
+			if (form.protocol == 'Stationary' || form.protocol == 'Traveling'){
+				if (!form.time_start || !/^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/.test(form.time_start)){
+					jQuery(this).parent().addClass('has-error');
+				} else{
+					jQuery(this).parent().removeClass('has-error');
+				}
+			} else {
+				jQuery(this).parent().removeClass('has-error');
+			}
 		});
 		jQuery('#f-'+form.id+' #observation-type').change( function(){ 
 			form.protocol = jQuery(this).val();
+			if (form.protocol == 'Incidental'){
+				jQuery('#f-'+form.id+' #check-fullform').prop("checked",false)
+				jQuery('#f-'+form.id+' #check-fullform').change();
+			}
+			jQuery('#f-'+form.id+' #time').change()
+			jQuery('#f-'+form.id+' #duration').change();
+			jQuery('#f-'+form.id+' #distance').change();
 		});
 		jQuery('#f-'+form.id+' #duration').change( function(){ 
 			form.duration = jQuery(this).val();
+			jQuery(this).parent().removeClass('has-error');
+			if (form.protocol == 'Incidental'){
+				jQuery(this).prop('disabled', true);
+			} else {
+				jQuery(this).prop('disabled', false);
+			}
+			if ( (form.protocol == 'Traveling' || form.protocol == 'Stationary') && (!form.duration || form.duration<=0) ){
+				jQuery(this).parent().addClass('has-error');
+			}
 		});
 		jQuery('#f-'+form.id+' #distance').change( function(){ 
 			form.distance = jQuery(this).val();
+			jQuery(this).parent().removeClass('has-error');
+			if (form.protocol == 'Traveling' || form.protocol == 'Historical' ){
+				jQuery(this).prop('disabled', false);
+			} else{
+				jQuery(this).prop('disabled', true);
+			}
+			if (form.protocol == 'Traveling' && (!form.distance || form.distance<=0)){
+				jQuery(this).parent().addClass('has-error');
+			}
 		});
-		jQuery('#f-'+form.id+' #observation-type').val(form.protocol)
 		jQuery('#f-'+form.id+' #party-size').change( function(){ 
 			form['party-size'] = jQuery(this).val();
+			if (!form['party-size'] || form['party-size']<1){
+				jQuery(this).parent().addClass('has-error');
+			} else{
+				jQuery(this).parent().removeClass('has-error');
+			}
 		});
 		jQuery('#f-'+form.id+' #check-fullform').change( function(){
 			if (jQuery(this).is(':checked')){
-				form.full_form = '1'
+				form.full_form = true
 			} else{
-				form.full_form = '0'
+				form.full_form = false
 			}
 		})
+		jQuery('#f-'+form.id+' #observation-type').val(form.protocol).change();
+
 		if (form.full_form) {
 			jQuery('#f-'+form.id+' #check-fullform').prop("checked")
 		} else {
@@ -1271,4 +1440,5 @@ jQuery(document).ready(function(){
 
 	// To me remove....
 	//jQuery('#button-download-biolovision').hide()
+
 });

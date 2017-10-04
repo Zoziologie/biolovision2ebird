@@ -4910,6 +4910,16 @@
       "SPECIES_CODE":"calqua"
    },
    {
+      "id":1043,
+      "latin":"Colinus virginianus",
+      "english":"Northern Bobwhite",
+      "EN":"Northern Bobwhite",
+      "SCI_NAME":"Colinus virginianus",
+      "PRIMARY_COM_NAME":"Northern Bobwhite",
+      "en_IOC":"Northern Bobwhite",
+      "SPECIES_CODE":"norbob"
+   },
+   {
       "id":1053,
       "latin":"Euodice malabarica",
       "english":"White-throated Munia",
