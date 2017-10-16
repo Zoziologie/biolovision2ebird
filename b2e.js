@@ -413,8 +413,9 @@ function handleFile(file){
 		reader.onload = function(){
 			var xml = xml2json(jQuery.parseXML(reader.result)).replace('undefined','')
 			data = jQuery.parseJSON(xml).data
-			
+
 			InitiateForms(data)
+			jQuery('html, body').css('overflow-y','auto');
 			if (data.sightings) {
 				jQuery('#c1').slideUp("slow",function(){
 					jQuery('#c2').slideDown("slow",function(){
@@ -1108,10 +1109,10 @@ function ProcessForms(data) {
 				form.staticmap.lat = form.layer.sightings.getBounds().getCenter().lat;
 				form.layer.msm = L.marker([form.staticmap.lat,form.staticmap.lng], {
 					icon:L.icon({
-						iconUrl: 'https://zoziologie.raphaelnussbaumer.com/wp-content/plugins/improvedBiolovisionVisualisation/Untitled.png',
-						iconSize:     [60, 60],
-						iconAnchor:   [30, 30], 
-						popupAnchor:  [-30, 0]
+						iconUrl: 'https://zoziologie.raphaelnussbaumer.com/wp-content/uploads/2017/10/Maps-Center-Direction-icon.png',
+						iconSize:     [40, 40],
+						iconAnchor:   [20, 20], 
+						popupAnchor:  [-20, 0]
 					}),
 					draggable:true,
 					title:'Static Map center',
