@@ -10,34 +10,34 @@ var data, csv_content, code_list=[],eBird_label=[],table=[],modalmap,modalsLayer
 var marker_color = [['white','#ffffff','black'],['red','#D63E2A','white'], ['orange','#f69730','white'], ['green','#72B026','white'], ['blue','#38A9DC','white'], ['purple','#CD50B5','white'], ['darkred','#A23336','white'], ['darkgreen','#728224','white'], ['darkpurple','#593869','white'], ['cadetblue','#436877','white'], ['red','#D63E2A','black'], ['orange','#f69730','black'], ['green','#72B026','black'], ['blue','#38A9DC','black'], ['purple','#CD50B5','black'], ['darkred','#A23336','black'], ['darkgreen','728224','black'], ['darkpuple','#593869','black'], ['cadetblue','#436877','black']];
 
 var atlas_code = {
-'1':'Species heard or observed within safe dates, but not in suitable breeding habitat.',
-'2':'Species heard or observed within safe dates, and in suitable breeding habitat',
-'3':'Territorial behavior, including counter singing males, territorial singing (repeatedly singing from same locations within an area), drumming in woodpeckers, or aggressive interactions between same-sex individuals of same species ',
-'4':'Pair (male and female) within safe dates, and in suitable breeding habitat',
-'5':'Pair (male and female) present at the same location 2 or more days apart',
-'6':'Courtship behavior (aerial displays, courtship feeding) or copulation',
-'7':'Visiting probable nest site',
-'8':'Agitated behavior and/or anxiety calls from an adult, suggesting presence of nearby nest or young',
-'9':'Brood patch (Note: code only applies to birds observed in hand and is reserved for experienced birder only)',
-'10':'Nest building observed at nest site (Note: for nest building by wrens, woodpeckers, kingfisher...)',
-'11':'Distraction display (especially injury feigning, such as broken wing display) or attacking/dive-bombing humans in defense of unobserved nest or young',
-'12':'Used nest (occupied within period of survey); includes inactive nests',
-'13':'Recently fledged young that are incapable of sustained flight',
-'14':'Occupied nest, but contents not observed; adults entering and remaining for a period of time, then leaving or exchanging duties',
-'15':'Adult carrying a fecal sac',
-'16':'Adult carrying food for young',
-'17':'Eggshells found below nest',
-'18':'Nest with adult incubating',
-'19':'Nest with nestlings or eggs',
-'30':'Possible breeding',
-'40':'Probable breeding',
-'50':'Confirmed breeding',
-'99':'Species not recorded despite active search',
+	'1':'Species heard or observed within safe dates, but not in suitable breeding habitat.',
+	'2':'Species heard or observed within safe dates, and in suitable breeding habitat',
+	'3':'Territorial behavior, including counter singing males, territorial singing (repeatedly singing from same locations within an area), drumming in woodpeckers, or aggressive interactions between same-sex individuals of same species ',
+	'4':'Pair (male and female) within safe dates, and in suitable breeding habitat',
+	'5':'Pair (male and female) present at the same location 2 or more days apart',
+	'6':'Courtship behavior (aerial displays, courtship feeding) or copulation',
+	'7':'Visiting probable nest site',
+	'8':'Agitated behavior and/or anxiety calls from an adult, suggesting presence of nearby nest or young',
+	'9':'Brood patch (Note: code only applies to birds observed in hand and is reserved for experienced birder only)',
+	'10':'Nest building observed at nest site (Note: for nest building by wrens, woodpeckers, kingfisher...)',
+	'11':'Distraction display (especially injury feigning, such as broken wing display) or attacking/dive-bombing humans in defense of unobserved nest or young',
+	'12':'Used nest (occupied within period of survey); includes inactive nests',
+	'13':'Recently fledged young that are incapable of sustained flight',
+	'14':'Occupied nest, but contents not observed; adults entering and remaining for a period of time, then leaving or exchanging duties',
+	'15':'Adult carrying a fecal sac',
+	'16':'Adult carrying food for young',
+	'17':'Eggshells found below nest',
+	'18':'Nest with adult incubating',
+	'19':'Nest with nestlings or eggs',
+	'30':'Possible breeding',
+	'40':'Probable breeding',
+	'50':'Confirmed breeding',
+	'99':'Species not recorded despite active search',
 }
 
 function color(s,form){
 	color_gradient = ['#fff','#352A87', '#363093', '#3637A0', '#353DAD', '#3243BA', '#2C4AC7', '#2053D4', '#0F5CDD', '#0363E1', '#0268E1', '#046DE0', '#0871DE', '#0D75DC', '#1079DA', '#127DD8', '#1481D6', '#1485D4', '#1389D3', '#108ED2', '#0C93D2', '#0998D1', '#079CCF', '#06A0CD', '#06A4CA', '#06A7C6', '#07A9C2', '#0AACBE', '#0FAEB9', '#15B1B4', '#1DB3AF', '#25B5A9', '#2EB7A4', '#38B99E', '#42BB98', '#4DBC92', '#59BD8C', '#65BE86', '#71BF80', '#7CBF7B', '#87BF77', '#92BF73', '#9CBF6F', '#A5BE6B', '#AEBE67', '#B7BD64', '#C0BC60', '#C8BC5D', '#D1BB59', '#D9BA56', '#E1B952', '#E9B94E', '#F1B94A', '#F8BB44', '#FDBE3D', '#FFC337', '#FEC832', '#FCCE2E', '#FAD32A', '#F7D826', '#F5DE21', '#F5E41D', '#F5EB18', '#F6F313', '#F9FB0E'];
-	var t = moment(s.observers.observer.timing["@ISO8601"]).hour()*60+moment(s.observers.observer.timing["@ISO8601"]).minute();
+	var t = moment(s.observers[0].timing["@ISO8601"]).hour()*60+moment(s.observers[0].timing["@ISO8601"]).minute();
 	var start = parseInt(form.time_start.split(':')[0])*60 + parseInt(form.time_start.split(':')[1]);
 	var r = Math.round(  (t - start )/form.duration * (color_gradient.length-1) )+1;
 	r = (r<0 || isNaN(r)) ? 0 : r;
@@ -146,7 +146,7 @@ function staticLink(form){
 }
 
 function previewSpComment(form){
-	s=form.sightings.sighting[jQuery('#f-'+form.id+' #cmt-sp-preview-sp').val()]
+	s=form.sightings[jQuery('#f-'+form.id+' #cmt-sp-preview-sp').val()]
 	cmt = SpComment(form,s)
 	jQuery('#f-'+form.id+' #cmt-sp-preview').html(cmt)
 }
@@ -189,23 +189,20 @@ function getBoundsZoomLevel(bounds, mapDim) {
 }
 
 function Makemarker(s){
-	var title = s.observers.observer.count+' '+s.species.name;
-	var description = '<b>Date:</b> '+s.observers.observer.timing['#text'] + '<br>\
+	var title = s.observers[0].count+' '+s.species.name;
+	var description = '<b>Date:</b> '+s.observers[0].timing['#text'] + '<br>\
 	<b>Specie:</b> '+s.species.name +'(<i>'+s.species.latin_name+'</i>)<br>'+'\
 	<b>Place:</b> '+s.place.name+' / '+s.place.municipality+' ('+s.place.county+') - '+s.place.altitude+'m<br>\
-	<b>Observation:</b> '+ s.observers.observer.estimation_code + s.observers.observer.count + ' ind.<br>\
-	<b>ID</b>: <a href="http://'+ jQuery('#sel-website').val() +'/index.php?m_id=54&id='+s.observers.observer.id_sighting+'" target="_blank">'+s.observers.observer.id_sighting+'</a>';
-	if (s.observers.observer.medias){
-		if (!Array.isArray(s.observers.observer.medias.media)){
-			s.observers.observer.medias.media= [s.observers.observer.medias.media];
-		}
-		s.observers.observer.medias.media.forEach(function(m){
+	<b>Observation:</b> '+ s.observers[0].estimation_code + s.observers[0].count + ' ind.<br>\
+	<b>ID</b>: <a href="http://'+ jQuery('#sel-website').val() +'/index.php?m_id=54&id='+s.observers[0].id_sighting+'" target="_blank">'+s.observers[0].id_sighting+'</a>';
+	if (s.observers[0].medias){
+		s.observers[0].medias.forEach(function(m){
 			var link = m.path+'/'+m.filename;
 			description += '<br><a href="'+link+'"><img src="'+link+'"></a>'
 		})
 	}
 
-	var mark = L.marker([s.observers.observer.coord_lat,s.observers.observer.coord_lon],{
+	var mark = L.marker([s.observers[0].coord_lat,s.observers[0].coord_lon],{
 		title: title,
 		alt: title,
 		icon: L.MakiMarkers.icon({
@@ -217,20 +214,20 @@ function Makemarker(s){
 	var feature = mark.feature = mark.feature || {};
 	feature.type = "Feature";
 	feature.properties = feature.properties || {};
-	feature.properties['date'] = s.observers.observer.timing['#text'];
+	feature.properties['date'] = s.observers[0].timing['#text'];
 	feature.properties['specie'] = s.species.name;
 	feature.properties['latin'] = s.species.latin_name;
 	feature.properties['place'] = s.place.name+' / '+s.place.municipality+' ('+s.place.county+') - '+s.place.altitude+'m';
-	feature.properties['observer'] = s.observers.observer.name;
-	feature.properties['count'] = s.observers.observer.count;
+	feature.properties['observer'] = s.observers[0].name;
+	feature.properties['count'] = s.observers[0].count;
 	feature.properties['comment'] = '';
-	feature.properties['img'] = '';//s.observers.observer.medias.media.path;
-	feature.properties['id'] = s.observers.observer.id_sighting;
+	feature.properties['img'] = '';//s.observers[0].medias.path;
+	feature.properties['id'] = s.observers[0].id_sighting;
 	feature.properties['marker-color'] = s['marker-color'];
 	feature.properties['marker-size'] = s['marker-size'];
 	feature.properties['marker-symbol'] = s['marker-symbol'];
 	feature.properties['description'] = description;
-	feature.properties['link'] = 'http://'+jQuery('#sel-website').val()+'/index.php?m_id=54&id='+s.observers.observer.id_sighting;
+	feature.properties['link'] = 'http://'+jQuery('#sel-website').val()+'/index.php?m_id=54&id='+s.observers[0].id_sighting;
 	return mark
 }
 
@@ -241,7 +238,7 @@ function Makemarker(s){
 function Form2Table(f){
 	table=[];
 	alert_sp=[];
-	f.sightings.sighting.forEach( function(s) {
+	f.sightings.forEach( function(s) {
 		var eBird_bird = jQuery.grep(eBird_birds_list, function(e){ return e.id == s.species['@id'] })
 
 		if (eBird_bird.length<1){
@@ -254,7 +251,7 @@ function Form2Table(f){
 			common_name: eBird_bird[0].PRIMARY_COM_NAME,
 			genus:'',
 			specie:'',
-			count: s.observers.observer.count,
+			count: s.observers[0].count,
 			specie_comment:SpComment(f,s).replace(/"/g,'""').replace(/[\n\r]+/g, ''),
 			location:f.name,
 			lat:f.lat,
@@ -342,7 +339,7 @@ function CreateGist(form, callback){
 		previewComment(form)
 		callback()
     	//callback()
-  	});
+    });
 
 }
 
@@ -371,7 +368,7 @@ function Export(){
 	var filename ='';
 	var i=0;
 
-	data.forms.form.forEach( function(form,i) {
+	data.forms.forEach( function(form,i) {
 		if (jQuery('#f-'+form.id + ' .form-group.has-error').length > 0) {
 			alert('Form '+form.name+' has error(s). It will not be exported!')
 		} else {
@@ -381,7 +378,7 @@ function Export(){
 				table = table.concat(t);
 				filename += form.name + '_';
 				setTimeout(function() {
-					if (i == data.forms.form.length){
+					if (i == data.forms.length){
 						console.log(i)
 						csv = Table2CSV(table);
 						var downloadLink = document.createElement("a");
@@ -407,72 +404,66 @@ function Export(){
 //____________________________________________________
 
 function handleFile(file){
-	if (file.name.split('.').pop().toLowerCase() === 'xml'){
-		reader = new FileReader();
-		reader.readAsText(file);//,'ISO-8859-15');
-		reader.onload = function(){
-			var xml = xml2json(jQuery.parseXML(reader.result)).replace('undefined','')
-			data = jQuery.parseJSON(xml).data
+	var ext = file.name.split('.').pop().toLowerCase();
+	if (['json','xml','csv','txt'].indexOf(ext) == -1){// File type not accepted 
+		return;
+	}
 
+	reader = new FileReader();
+	reader.readAsText(file);//,'ISO-8859-15');
+	reader.onload = function(){
+		if (ext == 'json'){
+			data = jQuery.parseJSON(reader.result).data
 			InitiateForms(data)
-			jQuery('html, body').css('overflow-y','auto');
-			if (data.sightings) {
-				jQuery('#c1').slideUp("slow",function(){
-					jQuery('#c2').slideDown("slow",function(){
-						ProcessSightings(data)
-					});
-				});
-			} else if (data.forms.form.length>0){
-				jQuery('#c1').slideUp("slow",function(){
-					jQuery('#c3').slideDown("slow",function(){
-						ProcessForms(data)
-					});	
-				});
-			} else {
-				alert('Empty File. Try again!')
-				return
+		} else if ( ext == 'xml' ){
+			var xml_string = reader.result;
+			var duplicate = ['sighting','form','media','observer','detail'];
+			for (i = 0; i < duplicate.length; i++) { 
+				var re = new RegExp('<'+duplicate[i]+'s>', 'g');
+				var re2 = new RegExp('<'+duplicate[i]+'s ', 'g');
+				var re3 = new RegExp('</'+duplicate[i]+'s>', 'g');
+				xml_string = xml_string.replace(re,'').replace(re2,'').replace(re3,'')
+				var re = new RegExp('<'+duplicate[i]+'>', 'g');
+				var re2 = new RegExp('<'+duplicate[i]+' ', 'g');
+				var re3 = new RegExp('</'+duplicate[i]+'>', 'g');
+				xml_string = xml_string.replace(re,'<'+duplicate[i]+'s>').replace(re2,'<'+duplicate[i]+'s ').replace(re3,'</'+duplicate[i]+'s>')
 			}
-		}
-	} else if (file.name.split('.').pop().toLowerCase() === 'txt'){
-		reader = new FileReader();
-		reader.readAsText(file);//,'ISO-8859-15');
-		reader.onload = function(){
+			var xml = xml2json(jQuery.parseXML(xml_string)).replace('undefined','')
+			data = jQuery.parseJSON(xml).data
+			if (!Array.isArray(data.forms)){ data.forms = [data.forms] }
+			if (!Array.isArray(data.sightings)){ data.sightings = [data.sightings] }
+			InitiateForms(data)
+		} else if (ext == 'txt'){
 			var sightings = jQuery.parseJSON(csvJSON(reader.result));
-
 			if (!('Year' in sightings[0])){
 				alert('Not a correct file. Maybe try to export in English')
 				return;
 			}
 			data={};
-			data.sightings={};
-			data.sightings.sighting=[];
+			data.sightings=[];
 
 			InitiateForms(data)
 
 			sightings.forEach(function(s){
 				ns={
 					date:{
-						'@ISO8601': new Date(s.Year, s.Month-1, s.Day, s.Timing.split(':')[0], (s.Timing.split(':')[1] ? s.Timing.split(':')[1] : '')).toISOString(), //to convert
+						'@ISO8601': new Date(s.Year, s.Month-1, s.Day, s.Timing.split(':')[0], (s.Timing.split(':')[1] ? s.Timing.split(':')[1] : '')).toISOString(),
 					},
-					observers:{
-						observer:{
-							count: s.Number,
-							estimation_code: s.Estimation,
-							id_sighting: s['ID ornitho.ch'],
-							coord_lat: s['Latitude (N)'],
-							coord_lon: s['Longitude (E)'],
-							comment: s.Comment,
-							details:{
-								detail: []//s.Details == "" ? [] : []
-							},
-							timing:{
-								'@ISO8601': new Date(s.Year, s.Month-1, s.Day, s.Timing.split(':')[0], (s.Timing.split(':')[1] ? s.Timing.split(':')[1] : '')).toISOString(),
-							},
-							atlas_code:{
-								'#text': s.ATLAS_CODE
-							}
-						}
-					},
+					observers:[{
+						count: s.Number,
+						estimation_code: s.Estimation,
+						id_sighting: s['ID ornitho.ch'],
+						coord_lat: s['Latitude (N)'],
+						coord_lon: s['Longitude (E)'],
+						comment: s.Comment,
+						details:{
+							detail: []
+						},
+						timing:{
+							'@ISO8601': new Date(s.Year, s.Month-1, s.Day, s.Timing.split(':')[0], (s.Timing.split(':')[1] ? s.Timing.split(':')[1] : '')).toISOString(),
+						},
+						atlas_code:{'#text': s.ATLAS_CODE}
+					}],
 					place:{
 						altitude: s.ALTITUDE,
 						name: (('Lieu_dit' in s) ? s['Lieu_dit'] : (('Site' in s) ? s.Site : ''))
@@ -482,58 +473,111 @@ function handleFile(file){
 						name: s.Species,
 					}
 				};
-				data.sightings.sighting.push(ns);
+				data.sightings.push(ns);
 			})
+		} else if (ext == 'csv') {
+			var sightings = jQuery.parseJSON(csvJSON(reader.result).replace(/\\"/g,''))
+			sightings.splice(-1,1);
 
-			jQuery('#c1').slideUp("slow",function(){
-					jQuery('#c2').slideDown("slow",function(){
-						ProcessSightings(data)
-					});
-				});
-			/*} else {
-				alert('Empty File. Try again!')
-				return
-			}*/
+			if (!('LEVEL' in sightings[0])){
+				alert('Not a correct file. Maybe try to export in English')
+				return;
+			}
+			data={};
+			data.sightings={};
+			data.sightings=[];
+
+			InitiateForms(data)
+
+			sightings.forEach(function(s){
+				ns={
+					date:{
+						'@ISO8601': new Date(s.Date.split('-')[0], s.Date.split('-')[1], s.Date.split('-')[2]-1, s.Time.split(':')[0], (s.Time.split(':')[1] ? s.Time.split(':')[1] : '')).toISOString(), 
+					},
+					observers:[{
+						count: s.Number,
+						estimation_code: s['meaning of number'],
+						id_sighting: s.id,
+						coord_lat: s.lat.replace(',','.'),
+						coord_lon: s.Lng.replace(',','.'),
+						comment: 'unknown'==s.method ? s.remarks : s.remarks+', '+s.method+', '+s.Activity,
+						details:{
+							detail: [{
+								count: "1",
+								sex: {
+									"-id": 'unknown' == s.sex ? "U" : 'X',
+									"#text": s.sex
+								},
+								age: {
+									"-id":  'unknown' == s.sex ? "U" : 'X',
+									"#text": s.sex
+								},
+							}]
+						},
+						timing:{
+							'@ISO8601': new Date(s.Date.split('-')[0], s.Date.split('-')[1], s.Date.split('-')[2]-1, s.Time.split(':')[0], (s.Time.split(':')[1] ? s.Time.split(':')[1] : '')).toISOString(),
+						},
+						atlas_code:{
+							'#text': ''
+						}
+					}],
+					place:{
+						county: s.Province,
+						name: s.Area,
+						municipality: s.municipal
+					},
+					species:{
+						'latin_name': s['Scientific name'],
+						name: s.name,
+					}
+				};
+				data.sightings.push(ns);
+			})
 		}
-	} else {
-		alert('Wrong file type. Need to be xml. Try again!')
+
+		jQuery('html, body').css('overflow-y','auto');
+		if (data.sightings) {
+			jQuery('#c1').slideUp("slow",function(){
+				jQuery('#c2').slideDown("slow",function(){
+					ProcessSightings(data)
+				});
+			});
+		} else if (data.forms.length>0){
+			jQuery('#c1').slideUp("slow",function(){
+				jQuery('#c3').slideDown("slow",function(){
+					ProcessForms(data)
+				});	
+			});
+		} else {
+			alert('Empty File. Try again!')
+			return
+		}
 	}
 }
 
 function InitiateForms(data){
 	if (!data.forms){
-		data.forms = {};
-		data.forms.form = [];
+		data.forms = [];
 	}
-	if (!Array.isArray(data.forms.form)){ 
-		data.forms.form = [data.forms.form] 
-	}
-	data.forms.form.forEach(function(f,idx){
-		if (!Array.isArray(f.sightings.sighting)){ 
-			f.sightings.sighting = [f.sightings.sighting] 
-		}
+	data.forms.forEach(function(f,idx){
 		f.color = marker_color[idx+1];
 		f.id=idx+1;
-		f.name=f.sightings.sighting[0].place.name;
+		f.name=f.sightings[0].place.name;
 		f.time_start = moment(f.time_start,"HH:mm").format("HH:mm") // 9:1 -> 09:01
 	});
-	data.forms.n=data.forms.form.length-1;
+	data.forms.n=data.forms.length-1;
 }
 
 function ProcessSightings(data) {
-	data.forms.form.unshift({ // Create the checklist for Non-Assigned
+	data.forms.unshift({ // Create the checklist for Non-Assigned
 		name: 'Non-Assigned',
 		id:0,
 		color: marker_color[0],
-		sightings: {sighting:[]},
+		sightings: [],
 		marker: NaN,
 		full_form: false
 	})
 	data.forms.n += 1;
-
-	if (!Array.isArray(data.sightings.sighting)){ 
-		data.sightings.sighting = [data.sightings.sighting] 
-	}
 	
 	// Initiate map
 	modalmap = L.map('modal-map');
@@ -567,7 +611,7 @@ function ProcessSightings(data) {
 				marker: e.layer,
 				full_form: false
 			}
-			data.forms.form.push(form)
+			data.forms.push(form)
 			// update marker
 			e.layer.setIcon(L.AwesomeMarkers.icon({
 				icon: 'list',
@@ -582,9 +626,9 @@ function ProcessSightings(data) {
 		} else if (e.layerType === 'rectangle'){
 			modalsLayer.eachLayer(function(l){
 				if (e.layer.getBounds().contains(l.getLatLng())){
-					data.sightings.sighting.forEach(function(s){
-						if (l.feature.properties['id'] == s.observers.observer.id_sighting){
-							data.forms.form.forEach(function(f){
+					data.sightings.forEach(function(s){
+						if (l.feature.properties['id'] == s.observers[0].id_sighting){
+							data.forms.forEach(function(f){
 								if (f.id==jQuery('#selHotspot').val()){
 									s['marker-color'] = f.color[1];
 									s.form = f.id;
@@ -598,9 +642,9 @@ function ProcessSightings(data) {
 		}
 	}).on('draw:deleted', function(e){
 		e.layers.eachLayer(function(l){
-			data.forms.form.forEach(function(f,idx){
+			data.forms.forEach(function(f,idx){
 				if (f.id == l.id){
-					data.forms.form.splice(idx,1);
+					data.forms.splice(idx,1);
 					jQuery("#selHotspot option[value='"+f.id+"']").remove();
 					jQuery('#selHotspot').change();
 				}
@@ -609,7 +653,7 @@ function ProcessSightings(data) {
 	});
 
 	// Import Form
-	data.forms.form.forEach(function(form,idx){
+	data.forms.forEach(function(form,idx){
 		if (idx>0){
 			var m = L.marker([form.lat, form.lon],{
 				title: form.name,
@@ -634,23 +678,20 @@ function ProcessSightings(data) {
 		showCoverageOnHover: false,
 		maxClusterRadius:70,
 	}).addTo(modalmap);
-	if (!Array.isArray(data.sightings.sighting)){
-		data.sightings.sighting = [data.sightings.sighting]
-	}
 
-	data.sightings.sighting.forEach(function(s){
-		if(s.observers.observer.estimation_code=='MINIMUM') {
-			s.observers.observer.estimation_code='>';
-		} else if (s.observers.observer.estimation_code=='EXACT_VALUE') {
-			s.observers.observer.estimation_code='=';
-		} else if (s.observers.observer.estimation_code=='ESTIMATION') {
-			s.observers.observer.estimation_code='~';
-		} else if (s.observers.observer.estimation_code=='NO_VALUE') {
-			s.observers.observer.estimation_code=''
-			s.observers.observer.count='x'
+	data.sightings.forEach(function(s){
+		if(s.observers[0].estimation_code=='MINIMUM') {
+			s.observers[0].estimation_code='>';
+		} else if (s.observers[0].estimation_code=='EXACT_VALUE') {
+			s.observers[0].estimation_code='=';
+		} else if (s.observers[0].estimation_code=='ESTIMATION') {
+			s.observers[0].estimation_code='~';
+		} else if (s.observers[0].estimation_code=='NO_VALUE') {
+			s.observers[0].estimation_code=''
+			s.observers[0].count='x'
 		}
-		s['marker-symbol'] = (s.observers.observer.count < 99) ? s.observers.observer.count : 'x';
-		s['marker-color'] = data.forms.form[0].color[1];
+		s['marker-symbol'] = (s.observers[0].count < 99) ? s.observers[0].count : 'x';
+		s['marker-color'] = data.forms[0].color[1];
 		s['marker-size'] = 's';
 		s.form = 0;
 		var m = Makemarker(s);
@@ -658,7 +699,7 @@ function ProcessSightings(data) {
 	})
 
 	jQuery('#selHotspot').change(function(opt){
-		data.forms.form.forEach(function(f,idx){
+		data.forms.forEach(function(f,idx){
 			if (f.id == jQuery(opt.target).val()){
 				jQuery('#selHotspot').css('background-color',f.color[0])
 				jQuery('#selHotspot').css('color',f.color[2])
@@ -667,10 +708,10 @@ function ProcessSightings(data) {
 	})
 
 	jQuery('#button-process').click(function(){
-		data.sightings.sighting.forEach(function(s){
-			data.forms.form.forEach(function(f){
+		data.sightings.forEach(function(s){
+			data.forms.forEach(function(f){
 				if (s.form == f.id){
-					f.sightings.sighting.push(s);
+					f.sightings.push(s);
 				}
 			})
 		})
@@ -706,29 +747,29 @@ function ProcessSightings(data) {
 
 function ProcessForms(data) {
 	// delete forms with empty sightings
-	var i = data.forms.form.length
+	var i = data.forms.length
 	while (i--) {
-		if (!data.forms.form[i].sightings.sighting[0]) {
-			data.forms.form.splice(i, 1);
+		if (!data.forms[i].sightings[0]) {
+			data.forms.splice(i, 1);
 		}
 	}
 
 	//Add unasgined checklist
-	if (data.forms.form[0].id==0){
-		var form=data.forms.form[0];
+	if (data.forms[0].id==0){
+		var form=data.forms[0];
 		jQuery( "#c3 .nav-tabs" ).append( "<li class='active' id='li-f-"+form.id+"'><a href='#f-"+form.id+"' data-toggle='tab'>"+form.name+"</a>" );
 		jQuery( "#c3 .tab-content" ).append( "<div class='tab-pane active' id='f-"+form.id+"'></div>" );
 		jQuery( "#f-" + form.id ).append( '\
 			<div class="row">\
-				<div class="form-group col-sm-12">\
-					<p>These are all sightings which do not belong to any checklists. They won t be imported in eBird. If there is an error, you ll have to start again.</p>\
-					<p>Click on the other menus to see the other checklists. </p>\
-				</div>\
-				<div class="form-group col-sm-12">\
-					<div class="map" id="map-f-'+form.id+'"></div>\
-				</div>\
+			<div class="form-group col-sm-12">\
+			<p>These are all sightings which do not belong to any checklists. They won t be imported in eBird. If there is an error, you ll have to start again.</p>\
+			<p>Click on the other menus to see the other checklists. </p>\
 			</div>\
-		');
+			<div class="form-group col-sm-12">\
+			<div class="map" id="map-f-'+form.id+'"></div>\
+			</div>\
+			</div>\
+			');
 		form.map = L.map('map-f-'+form.id);
 		form.layer = L.markerClusterGroup({
 			showCoverageOnHover: false,
@@ -745,35 +786,35 @@ function ProcessForms(data) {
 			})
 		},null,{collapsed:true}).addTo(form.map);
 
-		form.sightings.sighting.forEach(function(s,id) {
+		form.sightings.forEach(function(s,id) {
 			var m = Makemarker(s);
 			m.addTo(form.layer);
-			if (id === form.sightings.sighting.length-1){
+			if (id === form.sightings.length-1){
 				form.map.fitBounds(form.layer.getBounds());
 			}
 		})
-		data.forms.form.shift()
+		data.forms.shift()
 	}
 
 	// Add true checklist
-	data.forms.form.forEach(function(form,idx){
+	data.forms.forEach(function(form,idx){
 		if ( form['@id']){ // Legit form
-			form.date = moment(form.sightings.sighting[0].date['@ISO8601']).format('YYYY-MM-DD')
+			form.date = moment(form.sightings[0].date['@ISO8601']).format('YYYY-MM-DD')
 			var duration = moment.utc(moment(form.time_stop,"HH:mm").diff(moment(form.time_start,"HH:mm"))).format('HH:mm');
 			form.duration = parseInt(duration.split(':')[0])*60+parseInt(duration.split(':')[1]);
 			form.full_form= (form.full_form=='1') ? true : false;
 			form.protocol='Stationary';
 		} else { // form from incidental sighting
-			var dates = form.sightings.sighting.map(function(s){ 
-				return moment(s.observers.observer.timing['@ISO8601']).format('YYYY-MM-DD')
+			var dates = form.sightings.map(function(s){ 
+				return moment(s.observers[0].timing['@ISO8601']).format('YYYY-MM-DD')
 			})
 			form.date = dates.reduce(function(a, b){ return (a === b) ? a : ''; });
 			if (!form.date){
 				alert('Sigthings of form "' + form.name +'" do not come from the same day. We cannot process such data. Restart the process and aggregate only data from the same day.')
 				window.location.reload(false); 
 			}
-			var times = form.sightings.sighting.map(function(s){ 
-				return moment(s.observers.observer.timing['@ISO8601']).format('HH:mm')
+			var times = form.sightings.map(function(s){ 
+				return moment(s.observers[0].timing['@ISO8601']).format('HH:mm')
 			}).filter(function(t){
 				return t !='00:00'
 			})
@@ -828,152 +869,152 @@ function ProcessForms(data) {
 		jQuery( "#c3 .tab-content" ).append( "<div class='tab-pane active' id='f-"+form.id+"'></div>" );
 		jQuery( "#f-" + form.id ).append( '\
 			<form class="form" data-toggle="validator" >\
-				<div class="row">\
-					<div class="form-group col-lg-6">\
-						<div class="row">\
-							<div class="form-group col-lg-5">\
-								<label for="location" class="control-label">Location:</label>\
-								<input type="text" class="form-control" id="location" value="'+form.name+'" required>\
-								<div class="help-block with-errors"></div>\
-							</div>\
-							<div class="form-group col-lg-4">\
-								<label class="control-label" for="date">Date:</label> \
-								<input type="date" class="form-control" id="date" value="'+form.date+'" required>\
-								<div class="help-block with-errors"></div>\
-							</div>\
-							<div class="form-group col-lg-3">\
-								<label class="control-label" for="time">Time:</label>\
-								<input type="time" class="form-control" id="time" value="'+form.time_start+'" data-timeOK>\
-								<div class="help-block with-errors"></div>\
-							</div>\
-						</div>\
-						<div class="row">\
-							<div class="form-group col-lg-6">\
-								<label for="observation-type">Observation Type:</label>\
-								<select class="form-control" id="observation-type" required>\
-									<option>Traveling</option>\
-									<option>Stationary</option>\
-									<option>Historical</option>\
-									<option>Incidental</option>\
-								</select>\
-								<div class="help-block with-errors"></div>\
-							</div>\
-							<div class="form-group col-lg-6">\
-								<label>Complete Checklist:</label>\
-								<div class="checkbox">\
-									<div class="col-lg-3 text-right">\
-										NO\
-									</div>\
-									<div class="col-lg-6 text-center">\
-										<label class="switch"><input type="checkbox" checked="checked" id="check-fullform"><div class="sliderOF round"></div></label>\
-									</div>\
-									<div class=" col-lg-3 text-left">\
-										YES\
-									</div>\
-								</div>\
-							</div>\
-						</div>\
-						<div class="row">\
-							<div class="form-group col-lg-4">\
-								<label class="control-label" for="duration">Duration ( min.):</label> \
-								<input type="number" class="form-control" id="duration" value="'+parseInt(form.duration).toString()+'" min="0" step=".1" max="1440" data-durationOK>\
-								<div class="help-block with-errors"></div>\
-							</div>\
-							<div class="form-group col-lg-4">\
-								<label class="control-label" for="distance">Distance (km):</label>\
-								<input type="number" class="form-control" id="distance" value="'+form.distance+'" min="0" step=".00001" max="999" data-distanceOK>\
-								<div class="help-block with-errors"></div>\
-							</div>\
-							<div class="form-group col-lg-4">\
-								<label class="control-label" for="party-size">Party size:</label>\
-								<input type="number" class="form-control" id="party-size" value="'+form['party-size']+'" min="1" max="99" required>\
-								<div class="help-block with-errors"></div>\
-							</div>\
-						</div>\
-						<div class="form-group col-lg-12">\
-							<label for="cmt-sp-ct-bt-'+ form.id+'">Species Comment:</label>\
-							<div id="cmt-sp">\
-								<div class="cmt-sp-ct cmt-sp-ct-tp" id="cmt-sp-ct-tp-'+ form.id+'">\
-									<span class="label label-default" contenteditable="false" value="s.observers.observer.timing.text">Timing (full)</span>\
-									<span class="label label-default" contenteditable="false" value="moment(s.observers.observer.timing[\'@ISO8601\']).format(\'dd-MM-YYYY HH:mm\')">Timing (condensed)</span>\
-									<span class="label label-default" contenteditable="false" value="moment(s.observers.observer.timing[\'@ISO8601\']).format(\'HH:mm\')">Time</span>\
-									<span class="label label-default" contenteditable="false" value="s.observers.observer.id_sighting">ID sighting</span>\
-									<span class="label label-default" contenteditable="false" value="s.observers.observer.estimation_code">Estimation code</span>\
-									<span class="label label-default" contenteditable="false" value="s.observers.observer.count">Count</span>\
-									<span class="label label-default" contenteditable="false" value="s.observers.observer.coord_lat">Latitude</span>\
-									<span class="label label-default" contenteditable="false" value="s.observers.observer.coord_lon">Longitude</span>\
-									<span class="label label-default" contenteditable="false" value="s.observers.observer.comment">Comment</span>\
-									<span class="label label-default" contenteditable="false" value="s.observers.observer.details">Detail</span>\
-									<span class="label label-default" contenteditable="false" value="s.observers.observer.atlas_code">Atlas code</span>\
-								</div>\
-								<div class="cmt-sp-ct cmt-sp-ct-bt" id="cmt-sp-ct-bt-'+ form.id+'" contenteditable="true">\
-									<span class="label label-default" contenteditable="false" value="s.observers.observer.estimation_code">Estimation code</span>\
-									<span class="label label-default" contenteditable="false" value="s.observers.observer.count">Count</span> ind. - <span class="label label-default" contenteditable="false" value="moment(s.observers.observer.timing[\'@ISO8601\']).format(\'HH:mm\')">Time</span> - &lt;a href="http://maps.google.com?q=<span class="label label-default" contenteditable="false" value="s.observers.observer.coord_lat">Latitude</span>,<span class="label label-default" contenteditable="false" value="s.observers.observer.coord_lon">Longitude</span>&t=k" target="_blank" &gt;<span class="label label-default" contenteditable="false" value="s.observers.observer.coord_lat">Latitude</span>,<span class="label label-default" contenteditable="false" value="s.observers.observer.coord_lon">Longitude</span>&lt;/a&gt; - &lt;a href="http://'+jQuery('#sel-website').val()+'/index.php?m_id=54&id=<span class="label label-default" contenteditable="false" value="s.observers.observer.id_sighting">ID sighting</span>" target="_blank">'+jQuery('#sel-website').val()+'&lt;/a&gt;\
-									<br>&lt;br&gt;<span class="label label-default" contenteditable="false" value="s.observers.observer.comment">Comment</span>\
-									<br>&lt;br&gt;<span class="label label-default" contenteditable="false" value="s.observers.observer.details">Detail</span>\
-									<br>&lt;br&gt;<span class="label label-default" contenteditable="false" value="s.observers.observer.atlas_code">Atlas code</span>\
-								</div>\
-							</div>\
-						</div>\
-						<div class="form-group col-lg-12">\
-							<label>Exemple:  </label>\
-							<div class="form-group" style=" display: inline-block;">\
-								<select id="cmt-sp-preview-sp"></select>\
-							</div>\
-							<div id="cmt-sp-preview"></div>\
-						</div>\
-					</div>\
-					<div class="form-group col-lg-6">\
-						<div class="row">\
-							<label for="comments">Checklist Comment:</label>\
-							<textarea class="form-control" rows="3"  id="comments">'+(form.comment || "") +'</textarea>\
-						</div>\
-						<div class="row checkbox">\
-							<label><input type="checkbox" checked="checked" id="check-static-map"> Include static map</label>\
-						</div>\
-						<div class="row">\
-							<div class="col-lg-5 form-inline">\
-								<label for="zoom">Zoom:</label>\
-								<div class="input-group">\
-									<span class="input-group-btn">\
-										<button type="button" class="btn btn-default btn-number" data-type="minus">\
-											<span class="glyphicon glyphicon-minus"></span>\
-										</button>\
-									</span>\
-									<input type="text" id="zoom" class="form-control input-number" value="1" min="1" max="21">\
-									<span class="input-group-btn">\
-										<button type="button" class="btn btn-default btn-number" data-type="plus">\
-											<span class="glyphicon glyphicon-plus"></span>\
-										</button>\
-									</span>\
-								</div>\
-							</div>\
-							<div class="col-lg-3">\
-								<button type="button" class="btn btn-default center-block" id="center-map" title="Set static map automaticaly with sightings location">Center map</button>\
-							</div>\
-							<div class="col-lg-4">\
-								<button type="button" class="btn btn-default center-block" id="button-geojson">Export GeoJson</button>\
-							</div>\
-						</div>\
-						<div class="row checkbox">\
-							<label><input type="checkbox" checked="checked" id="check-weather"> Include weather</label>\
-						</div>\
-						<div class="row">\
-							<label>Preview:</label>\
-							<div id="comments-preview"></div>\
-						</div>\
-					</div>\
-				</div>\
-				<div class="row">\
-					<div class="form-group col-sm-12">\
-						<div class="map" id="map-f-'+form.id+'"></div>\
-					</div>\
-					<div class="form-group col-sm-12"> \
-						<div class="text-center">\
-							<button type="button" class="btn btn-default" id="singleExport-'+form.id+'">Export only this checklist</button>\
-						</div>\
-					</div>\
-				</div>\
+			<div class="row">\
+			<div class="form-group col-lg-6">\
+			<div class="row">\
+			<div class="form-group col-lg-5">\
+			<label for="location" class="control-label">Location:</label>\
+			<input type="text" class="form-control" id="location" value="'+form.name+'" required>\
+			<div class="help-block with-errors"></div>\
+			</div>\
+			<div class="form-group col-lg-4">\
+			<label class="control-label" for="date">Date:</label> \
+			<input type="date" class="form-control" id="date" value="'+form.date+'" required>\
+			<div class="help-block with-errors"></div>\
+			</div>\
+			<div class="form-group col-lg-3">\
+			<label class="control-label" for="time">Time:</label>\
+			<input type="time" class="form-control" id="time" value="'+form.time_start+'" data-timeOK>\
+			<div class="help-block with-errors"></div>\
+			</div>\
+			</div>\
+			<div class="row">\
+			<div class="form-group col-lg-6">\
+			<label for="observation-type">Observation Type:</label>\
+			<select class="form-control" id="observation-type" required>\
+			<option>Traveling</option>\
+			<option>Stationary</option>\
+			<option>Historical</option>\
+			<option>Incidental</option>\
+			</select>\
+			<div class="help-block with-errors"></div>\
+			</div>\
+			<div class="form-group col-lg-6">\
+			<label>Complete Checklist:</label>\
+			<div class="checkbox">\
+			<div class="col-lg-3 text-right">\
+			NO\
+			</div>\
+			<div class="col-lg-6 text-center">\
+			<label class="switch"><input type="checkbox" checked="checked" id="check-fullform"><div class="sliderOF round"></div></label>\
+			</div>\
+			<div class=" col-lg-3 text-left">\
+			YES\
+			</div>\
+			</div>\
+			</div>\
+			</div>\
+			<div class="row">\
+			<div class="form-group col-lg-4">\
+			<label class="control-label" for="duration">Duration ( min.):</label> \
+			<input type="number" class="form-control" id="duration" value="'+parseInt(form.duration).toString()+'" min="0" step=".1" max="1440" data-durationOK>\
+			<div class="help-block with-errors"></div>\
+			</div>\
+			<div class="form-group col-lg-4">\
+			<label class="control-label" for="distance">Distance (km):</label>\
+			<input type="number" class="form-control" id="distance" value="'+form.distance+'" min="0" step=".00001" max="999" data-distanceOK>\
+			<div class="help-block with-errors"></div>\
+			</div>\
+			<div class="form-group col-lg-4">\
+			<label class="control-label" for="party-size">Party size:</label>\
+			<input type="number" class="form-control" id="party-size" value="'+form['party-size']+'" min="1" max="99" required>\
+			<div class="help-block with-errors"></div>\
+			</div>\
+			</div>\
+			<div class="form-group col-lg-12">\
+			<label for="cmt-sp-ct-bt-'+ form.id+'">Species Comment:</label>\
+			<div id="cmt-sp">\
+			<div class="cmt-sp-ct cmt-sp-ct-tp" id="cmt-sp-ct-tp-'+ form.id+'">\
+			<span class="label label-default" contenteditable="false" value="s.observers[0].timing.text">Timing (full)</span>\
+			<span class="label label-default" contenteditable="false" value="moment(s.observers[0].timing[\'@ISO8601\']).format(\'dd-MM-YYYY HH:mm\')">Timing (condensed)</span>\
+			<span class="label label-default" contenteditable="false" value="moment(s.observers[0].timing[\'@ISO8601\']).format(\'HH:mm\')">Time</span>\
+			<span class="label label-default" contenteditable="false" value="s.observers[0].id_sighting">ID sighting</span>\
+			<span class="label label-default" contenteditable="false" value="s.observers[0].estimation_code">Estimation code</span>\
+			<span class="label label-default" contenteditable="false" value="s.observers[0].count">Count</span>\
+			<span class="label label-default" contenteditable="false" value="s.observers[0].coord_lat">Latitude</span>\
+			<span class="label label-default" contenteditable="false" value="s.observers[0].coord_lon">Longitude</span>\
+			<span class="label label-default" contenteditable="false" value="s.observers[0].comment">Comment</span>\
+			<span class="label label-default" contenteditable="false" value="s.observers[0].details">Detail</span>\
+			<span class="label label-default" contenteditable="false" value="s.observers[0].atlas_code">Atlas code</span>\
+			</div>\
+			<div class="cmt-sp-ct cmt-sp-ct-bt" id="cmt-sp-ct-bt-'+ form.id+'" contenteditable="true">\
+			<span class="label label-default" contenteditable="false" value="s.observers[0].estimation_code">Estimation code</span>\
+			<span class="label label-default" contenteditable="false" value="s.observers[0].count">Count</span> ind. - <span class="label label-default" contenteditable="false" value="moment(s.observers[0].timing[\'@ISO8601\']).format(\'HH:mm\')">Time</span> - &lt;a href="http://maps.google.com?q=<span class="label label-default" contenteditable="false" value="s.observers[0].coord_lat">Latitude</span>,<span class="label label-default" contenteditable="false" value="s.observers[0].coord_lon">Longitude</span>&t=k" target="_blank" &gt;<span class="label label-default" contenteditable="false" value="s.observers[0].coord_lat">Latitude</span>,<span class="label label-default" contenteditable="false" value="s.observers[0].coord_lon">Longitude</span>&lt;/a&gt; - &lt;a href="http://'+jQuery('#sel-website').val()+'/index.php?m_id=54&id=<span class="label label-default" contenteditable="false" value="s.observers[0].id_sighting">ID sighting</span>" target="_blank">'+jQuery('#sel-website').val()+'&lt;/a&gt;\
+			<br>&lt;br&gt;<span class="label label-default" contenteditable="false" value="s.observers[0].comment">Comment</span>\
+			<br>&lt;br&gt;<span class="label label-default" contenteditable="false" value="s.observers[0].details">Detail</span>\
+			<br>&lt;br&gt;<span class="label label-default" contenteditable="false" value="s.observers[0].atlas_code">Atlas code</span>\
+			</div>\
+			</div>\
+			</div>\
+			<div class="form-group col-lg-12">\
+			<label>Exemple:  </label>\
+			<div class="form-group" style=" display: inline-block;">\
+			<select id="cmt-sp-preview-sp"></select>\
+			</div>\
+			<div id="cmt-sp-preview"></div>\
+			</div>\
+			</div>\
+			<div class="form-group col-lg-6">\
+			<div class="row">\
+			<label for="comments">Checklist Comment:</label>\
+			<textarea class="form-control" rows="3"  id="comments">'+(form.comment || "") +'</textarea>\
+			</div>\
+			<div class="row checkbox">\
+			<label><input type="checkbox" checked="checked" id="check-static-map"> Include static map</label>\
+			</div>\
+			<div class="row">\
+			<div class="col-lg-5 form-inline">\
+			<label for="zoom">Zoom:</label>\
+			<div class="input-group">\
+			<span class="input-group-btn">\
+			<button type="button" class="btn btn-default btn-number" data-type="minus">\
+			<span class="glyphicon glyphicon-minus"></span>\
+			</button>\
+			</span>\
+			<input type="text" id="zoom" class="form-control input-number" value="1" min="1" max="21">\
+			<span class="input-group-btn">\
+			<button type="button" class="btn btn-default btn-number" data-type="plus">\
+			<span class="glyphicon glyphicon-plus"></span>\
+			</button>\
+			</span>\
+			</div>\
+			</div>\
+			<div class="col-lg-3">\
+			<button type="button" class="btn btn-default center-block" id="center-map" title="Set static map automaticaly with sightings location">Center map</button>\
+			</div>\
+			<div class="col-lg-4">\
+			<button type="button" class="btn btn-default center-block" id="button-geojson">Export GeoJson</button>\
+			</div>\
+			</div>\
+			<div class="row checkbox">\
+			<label><input type="checkbox" checked="checked" id="check-weather"> Include weather</label>\
+			</div>\
+			<div class="row">\
+			<label>Preview:</label>\
+			<div id="comments-preview"></div>\
+			</div>\
+			</div>\
+			</div>\
+			<div class="row">\
+			<div class="form-group col-sm-12">\
+			<div class="map" id="map-f-'+form.id+'"></div>\
+			</div>\
+			<div class="form-group col-sm-12"> \
+			<div class="text-center">\
+			<button type="button" class="btn btn-default" id="singleExport-'+form.id+'">Export only this checklist</button>\
+			</div>\
+			</div>\
+			</div>\
 			</form>\
 			');
 
@@ -1053,29 +1094,26 @@ function ProcessForms(data) {
 		});
 
 		// Import Sightings
-		form.sightings.sighting.forEach(function(s,id) {
-			if(s.observers.observer.estimation_code=='MINIMUM') {
-				s.observers.observer.estimation_code='>';
-			} else if (s.observers.observer.estimation_code=='EXACT_VALUE') {
-				s.observers.observer.estimation_code='=';
-			} else if (s.observers.observer.estimation_code=='ESTIMATION') {
-				s.observers.observer.estimation_code='~';
-			} else if (s.observers.observer.estimation_code=='NO_VALUE') {
-				s.observers.observer.estimation_code=''
-				s.observers.observer.count='x'
+		form.sightings.forEach(function(s,id) {
+			if(s.observers[0].estimation_code=='MINIMUM') {
+				s.observers[0].estimation_code='>';
+			} else if (s.observers[0].estimation_code=='EXACT_VALUE') {
+				s.observers[0].estimation_code='=';
+			} else if (s.observers[0].estimation_code=='ESTIMATION') {
+				s.observers[0].estimation_code='~';
+			} else if (s.observers[0].estimation_code=='NO_VALUE') {
+				s.observers[0].estimation_code=''
+				s.observers[0].count='x'
 			}
 
-			if (!s.observers.observer.comment){
-				s.observers.observer.comment='';
+			if (!s.observers[0].comment){
+				s.observers[0].comment='';
 			}
-			if (!s.observers.observer.details){
-				s.observers.observer.details='';
+			if (!s.observers[0].details){
+				s.observers[0].details='';
 			} else{
-				if (!Array.isArray(s.observers.observer.details.detail)){ 
-					s.observers.observer.details.detail = [s.observers.observer.details.detail];
-				}
 				var details='';
-				s.observers.observer.details.detail.forEach(function(d,id){
+				s.observers[0].details.forEach(function(d,id){
 					details += d.count +'x ';
 					if (d.sex["@id"]!='U'){
 						details += d.sex["#text"] + ' ';
@@ -1083,27 +1121,27 @@ function ProcessForms(data) {
 					if (d.age["@id"]!='U'){
 						details += d.age["#text"];
 					}
-					if (id!=s.observers.observer.details.detail.length-1){
+					if (id!=s.observers[0].details.length-1){
 						details += ' / '; 
 					}
 				})
-				s.observers.observer.details = details;
+				s.observers[0].details = details;
 			}
-			if (!s.observers.observer.atlas_code){
-				s.observers.observer.atlas_code = '';
+			if (!s.observers[0].atlas_code){
+				s.observers[0].atlas_code = '';
 			} else {
-				s.observers.observer.atlas_code = atlas_code[s.observers.observer.atlas_code['#text']] + '(Atlas code: '+s.observers.observer.atlas_code['#text']+')';
+				s.observers[0].atlas_code = atlas_code[s.observers[0].atlas_code['#text']] + '(Atlas code: '+s.observers[0].atlas_code['#text']+')';
 			}
 
 
-			s['marker-symbol'] = (s.observers.observer.count < 99) ? s.observers.observer.count : 'x';
+			s['marker-symbol'] = (s.observers[0].count < 99) ? s.observers[0].count : 'x';
 			s['marker-color'] = color(s,form);
 			s['marker-size'] = 'm';
 			var m = Makemarker(s);
 			m.addTo(form.layer.sightings);
 
 			// when finish
-			if (id === form.sightings.sighting.length-1){
+			if (id === form.sightings.length-1){
 				form.map.fitBounds(form.layer.all.getBounds());
 				form.staticmap.lng = form.layer.sightings.getBounds().getCenter().lng;
 				form.staticmap.lat = form.layer.sightings.getBounds().getCenter().lat;
@@ -1285,7 +1323,7 @@ function ProcessForms(data) {
 			},
 			removeOnSpill: true
 		});
-		form.sightings.sighting.forEach( function(s,id){
+		form.sightings.forEach( function(s,id){
 			jQuery('#f-'+form.id+' #cmt-sp-preview-sp').append(jQuery('<option>', {
 				value: id,
 				text: s.species.name
@@ -1390,10 +1428,26 @@ jQuery(document).ready(function(){
 	var downloadfx = function(){
 		if (jQuery('input[type=radio][value=offset]').prop("checked")){
 			var DChoice='offset';
+			var d_t = new Date;
+			var d_f = new Date;
+			d_f.setDate(d_f.getDate()-parseFloat(jQuery('#date_ago').val())+1);
 		} else {
 			var DChoice='range';
+			
+			d_f_l = jQuery('#input-date-from').val().split('.');
+			var d_f = new Date([d_f_l[2], d_f_l[1], d_f_l[0]].join('-'));
+			d_t_l = jQuery('#input-date-to').val().split('.');
+			var d_t = new Date([d_t_l[2], d_t_l[1], d_t_l[0]].join('-'));
 		}
-		window.open("http://"+jQuery('#sel-website').val()+"/index.php?m_id=97&sp_DChoice=" + DChoice + "&sp_DFrom="+jQuery('#input-date-from').val()+"&sp_DTo="+jQuery('#input-date-to').val()+"&sp_DOffset="+ jQuery('#date_ago').val() +"&sp_SChoice=all&sp_PChoice=all&sp_OnlyMyData=1&sp_FChoice=export&sp_FExportFormat=XML")
+
+		if (jQuery('#sel-website').val().includes("faune-france") ){
+			window.open("http://"+jQuery('#sel-website').val()+"/index.php?m_id=97&sp_DChoice=" + DChoice + "&sp_DFrom="+jQuery('#input-date-from').val()+"&sp_DTo="+jQuery('#input-date-to').val()+"&sp_DOffset="+ jQuery('#date_ago').val() +"&sp_SChoice=all&sp_PChoice=all&sp_OnlyMyData=1&sp_FChoice=export&sp_FExportFormat=JSON")
+		} else if (jQuery('#sel-website').val().includes("faune") || jQuery('#sel-website').val().includes("ornitho") || jQuery('#sel-website').val().includes("lpo")){
+			window.open("http://"+jQuery('#sel-website').val()+"/index.php?m_id=97&sp_DChoice=" + DChoice + "&sp_DFrom="+jQuery('#input-date-from').val()+"&sp_DTo="+jQuery('#input-date-to').val()+"&sp_DOffset="+ jQuery('#date_ago').val() +"&sp_SChoice=all&sp_PChoice=all&sp_OnlyMyData=1&sp_FChoice=export&sp_FExportFormat=XML")
+		} else if (jQuery('#sel-website').val().includes("observation") || jQuery('#sel-website').val().includes("waarneming")) {
+			var d = new Date(jQuery('#input-date-from').val());
+			window.open("https://"+jQuery('#sel-website').val()+"/export/user_export7.php?datum_va="+d_f.toISOString().split('T')[0]+"&datum_tm="+d_t.toISOString().split('T')[0]+"&diergroep=1&gebied=0&tag=0&zz=0&soort=0&simple=0&a[]=&k[]=")
+		}
 	}
 	jQuery("#sel-website").keyup(function(e){if(e.keyCode == 13){downloadfx();}});
 	jQuery("#date_ago").keyup(function(e){if(e.keyCode == 13){downloadfx();}});

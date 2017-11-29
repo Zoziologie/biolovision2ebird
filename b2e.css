@@ -16,7 +16,7 @@
 /* c1: Dowonload biolovision; */
 #date_ago {
 	display: inline;
-	width: 66%;
+	width: 50%;
 }
 .checkbox+.checkbox, .radio+.radio {
 	margin-top: 10px;
