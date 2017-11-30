@@ -428,10 +428,30 @@ function handleFile(file){
 				var re3 = new RegExp('</'+duplicate[i]+'>', 'g');
 				xml_string = xml_string.replace(re,'<'+duplicate[i]+'s>').replace(re2,'<'+duplicate[i]+'s ').replace(re3,'</'+duplicate[i]+'s>')
 			}
-			var xml = xml2json(jQuery.parseXML(xml_string)).replace('undefined','')
-			data = jQuery.parseJSON(xml).data
+			data = jQuery.parseJSON(xml2json(jQuery.parseXML(xml_string)).replace('undefined','')).data;
+			if (!data.forms && !data.sightings){
+				alert('Empty file. No data available or wrong file')
+				return
+			}
+			if (typeof data.forms == 'undefined') { data.forms =[] }
+			if (typeof data.sightings == 'undefined') { data.sightings =[] }
 			if (!Array.isArray(data.forms)){ data.forms = [data.forms] }
+			data.forms.forEach(function(f){
+				if (!Array.isArray(f.sightings)){ f.sightings = [f.sightings] }
+				f.sightings.forEach(function(s){
+					if (!Array.isArray(s.observers)){ s.observers = [s.observers] }
+					s.observers.forEach(function(o){
+						if (!Array.isArray(s.details)){ s.details = [s.details] }
+					})
+				})
+			})
 			if (!Array.isArray(data.sightings)){ data.sightings = [data.sightings] }
+			data.sightings.forEach(function(s){
+				if (!Array.isArray(s.observers)){ s.observers = [s.observers] }
+				s.observers.forEach(function(o){
+					if (!Array.isArray(s.details)){ s.details = [s.details] }
+				})
+			})
 			InitiateForms(data)
 		} else if (ext == 'txt'){
 			var sightings = jQuery.parseJSON(csvJSON(reader.result));
@@ -456,9 +476,7 @@ function handleFile(file){
 						coord_lat: s['Latitude (N)'],
 						coord_lon: s['Longitude (E)'],
 						comment: s.Comment,
-						details:{
-							detail: []
-						},
+						details:[],
 						timing:{
 							'@ISO8601': new Date(s.Year, s.Month-1, s.Day, s.Timing.split(':')[0], (s.Timing.split(':')[1] ? s.Timing.split(':')[1] : '')).toISOString(),
 						},
@@ -501,19 +519,17 @@ function handleFile(file){
 						coord_lat: s.lat.replace(',','.'),
 						coord_lon: s.Lng.replace(',','.'),
 						comment: 'unknown'==s.method ? s.remarks : s.remarks+', '+s.method+', '+s.Activity,
-						details:{
-							detail: [{
-								count: "1",
-								sex: {
-									"-id": 'unknown' == s.sex ? "U" : 'X',
-									"#text": s.sex
-								},
-								age: {
-									"-id":  'unknown' == s.sex ? "U" : 'X',
-									"#text": s.sex
-								},
-							}]
-						},
+						details:[{
+							count: "1",
+							sex: {
+								"-id": 'unknown' == s.sex ? "U" : 'X',
+								"#text": s.sex
+							},
+							age: {
+								"-id":  'unknown' == s.sex ? "U" : 'X',
+								"#text": s.sex
+							},
+						}],
 						timing:{
 							'@ISO8601': new Date(s.Date.split('-')[0], s.Date.split('-')[1], s.Date.split('-')[2]-1, s.Time.split(':')[0], (s.Time.split(':')[1] ? s.Time.split(':')[1] : '')).toISOString(),
 						},
@@ -549,7 +565,7 @@ function handleFile(file){
 				});	
 			});
 		} else {
-			alert('Empty File. Try again!')
+			alert('Wrong filetype, accepted: xml, json, csv')
 			return
 		}
 	}
@@ -607,7 +623,7 @@ function ProcessSightings(data) {
 				id: data.forms.n,
 				color:marker_color[data.forms.n],
 				name: 'New List ' + data.forms.n.toString() +' '+ e.layer.getLatLng().toString().split('LatLng')[1],
-				sightings: {sighting:[]},
+				sightings: [],
 				marker: e.layer,
 				full_form: false
 			}
