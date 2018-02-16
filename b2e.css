@@ -1,4 +1,7 @@
 /*General Strucutre*/
+.container{
+	max-width: 100%;
+}
 #c2{
 	display: none;
 }
