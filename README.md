@@ -3,7 +3,7 @@ Convert Biolovision data from any website (ornitho, faune-...) to an import file
 
 [DEMO](https://zoziologie.raphaelnussbaumer.com/biolovision2ebird/)
 
-![Example](https://github.com/Zoziologie/biolovision2eBird/blob/master/b2e.gif)
+![Example](https://raw.githubusercontent.com/Zoziologie/biolovision2eBird/master/b2e.gif)
 
 ## Step 1: Import data
 <img src="https://zoziologie.raphaelnussbaumer.com/wp-content/uploads/2018/02/Capture_b1.png">
