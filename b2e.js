@@ -1140,16 +1140,18 @@ function ProcessForms(data) {
 			if (!s.observers[0].details){
 				s.observers[0].details='';
 			} else{
-				var details='';
-				var d = s.observers[0].details;
-				details += d.count +'x ';
-				if (d.sex["@id"]!='U'){
-					details += d.sex["#text"] + ' ';
-				}
-				if (d.age["@id"]!='U'){
-					details += d.age["#text"];
-				}
-				s.observers[0].details = details;
+				var details=[];
+				s.observers[0].details.forEach(function(d){
+					detail = d.count +'x ';
+					if (d.sex["@id"]!='U'){
+						detail += d.sex["#text"];
+					}
+					if (d.age["@id"]!='U'){
+						detail += ' '+d.age["#text"];
+					}
+					details.push(detail)
+				})
+				s.observers[0].details = details.join(', ');
 			}
 			if (!s.observers[0].atlas_code){
 				s.observers[0].atlas_code = '';
