@@ -235,3 +235,6 @@ input:checked + .sliderOF:before {
 	top: 0px;
 	margin-bottom: 20px;
 }
+input[type="number"]{
+	color: #555 !important;
+}

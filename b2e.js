@@ -1,12 +1,22 @@
+//____________________________________________________
+//                Biolovision2eBird
+//____________________________________________________
+// This script goes with the website zoziologie.raphaelnussbaumer.com/biolovision2ebird to generate eBird csv import file from any biolovision websites
+
+
+
+//____________________________________________________
+//                DECLARE VARIABLE
+//____________________________________________________
+
 // Load conversion taxonomie biolovision - eBird
 var eBird_birds_list;
 jQuery.getJSON("https://zoziologie.raphaelnussbaumer.com/wp-content/plugins/biolovision2eBird/patch_ornitho2eBird.min.json", function(data){
 	eBird_birds_list = data;
 });
 
-// Variable to put in workspace
-var data, csv_content, code_list=[],eBird_label=[],table=[],modalmap,modalsLayer, modalfLayer, form;
 
+// Color for markers to create/merge checklist
 var marker_color = [['white','#ffffff','black'],['red','#D63E2A','white'], ['orange','#f69730','white'], ['green','#72B026','white'], ['blue','#38A9DC','white'], ['purple','#CD50B5','white'], ['darkred','#A23336','white'], ['darkgreen','#728224','white'], ['darkpurple','#593869','white'], ['cadetblue','#436877','white'], ['red','#D63E2A','black'], ['orange','#f69730','black'], ['green','#72B026','black'], ['blue','#38A9DC','black'], ['purple','#CD50B5','black'], ['darkred','#A23336','black'], ['darkgreen','728224','black'], ['darkpuple','#593869','black'], ['cadetblue','#436877','black']];
 
 var atlas_code = {
@@ -35,6 +45,21 @@ var atlas_code = {
 	'99':'Species not recorded despite active search',
 }
 
+
+
+
+
+
+
+
+
+
+//____________________________________________________
+//                RANDOM and DIVERS FUNCTIONS
+//____________________________________________________
+
+
+// color of the marker in the static map export
 function color(s,form){
 	color_gradient = ['#fff','#352A87', '#363093', '#3637A0', '#353DAD', '#3243BA', '#2C4AC7', '#2053D4', '#0F5CDD', '#0363E1', '#0268E1', '#046DE0', '#0871DE', '#0D75DC', '#1079DA', '#127DD8', '#1481D6', '#1485D4', '#1389D3', '#108ED2', '#0C93D2', '#0998D1', '#079CCF', '#06A0CD', '#06A4CA', '#06A7C6', '#07A9C2', '#0AACBE', '#0FAEB9', '#15B1B4', '#1DB3AF', '#25B5A9', '#2EB7A4', '#38B99E', '#42BB98', '#4DBC92', '#59BD8C', '#65BE86', '#71BF80', '#7CBF7B', '#87BF77', '#92BF73', '#9CBF6F', '#A5BE6B', '#AEBE67', '#B7BD64', '#C0BC60', '#C8BC5D', '#D1BB59', '#D9BA56', '#E1B952', '#E9B94E', '#F1B94A', '#F8BB44', '#FDBE3D', '#FFC337', '#FEC832', '#FCCE2E', '#FAD32A', '#F7D826', '#F5DE21', '#F5E41D', '#F5EB18', '#F6F313', '#F9FB0E'];
 	var t = moment.unix(s.date["@timestamp"]).hour()*60+moment.unix(s.date["@timestamp"]).minute();
@@ -45,6 +70,7 @@ function color(s,form){
 	return color_gradient[r].split('#')[1]
 }
 
+// convert csv to JSON
 function csvJSON(csv){
 	var lines=csv.split("\n");
 	var result = [];
@@ -57,10 +83,23 @@ function csvJSON(csv){
 		}
 		result.push(obj);
 	}
-	//return result; //JavaScript object
-	return JSON.stringify(result); //JSON
+	return JSON.stringify(result);
 }
 
+// convert coordinate from 46.3523462133 to 46°56'34''
+function deg_to_dms(deg) {
+   var d = Math.floor (deg);
+   var minfloat = (deg-d)*60;
+   var m = Math.floor(minfloat);
+   var secfloat = (minfloat-m)*60;
+   var s = Math.round(secfloat);
+   // After rounding, the seconds might become 60. These two if-tests are not necessary if no rounding is done.
+   if (s==60) { m++; s=0; }
+   if (m==60) { d++; m=0; }
+   return (d + "°" + m + "'" + s+'"');
+}
+
+// Create the general comment of checklist
 function previewComment(form){
 	var html = jQuery('#f-'+form.id+' #comments').val() +'<br>';
 	if (jQuery('#f-'+form.id+' #check-weather').is(':checked') ){
@@ -84,6 +123,7 @@ function previewComment(form){
 	form.comment=html;
 };
 
+// Create the specie comment 
 function SpComment(form,s){
 	var cmt = jQuery("<div></div>").append(jQuery('#cmt-sp-ct-bt-'+ form.id).html());
 	jQuery(cmt).find('span').each(function(){
@@ -98,14 +138,20 @@ function SpComment(form,s){
 	return cmt
 }
 
+// Display specie comment 
+function previewSpComment(form){
+	s=form.sightings[jQuery('#f-'+form.id+' #cmt-sp-preview-sp').val()]
+	cmt = SpComment(form,s)
+	jQuery('#f-'+form.id+' #cmt-sp-preview').html(cmt)
+}
+
+// Create the static map for a form
 function staticLink(form){
 	var limit=3300;
-
 	var fs = form.layer.sightings.toGeoJSON();
 	form.layer.edit.toGeoJSON().features.forEach(function(f){
 		fs.features.push(f);
 	})
-	
 	var sl = "https://api.mapbox.com/v4/mapbox.streets/"
 	fs.features.forEach(function(f){
 		if (f.geometry.type==="LineString" && sl.length<limit) {
@@ -118,7 +164,6 @@ function staticLink(form){
 			sl += "path-5+AD8533("+encodeURIComponent(L.PolylineUtil.encode(coord , 5))+"),"
 		}
 	});
-
 	var duplicate=[];
 	fs.features.forEach(function(f){
 		if (f.geometry.type==="Point") {
@@ -135,7 +180,6 @@ function staticLink(form){
 			}
 		}
 	})
-
 	sl = sl.substring(0, sl.length - 1);
 	sl += "/"+form.staticmap.lng + ","
 	sl += form.staticmap.lat + ","
@@ -145,49 +189,24 @@ function staticLink(form){
 	return sl
 }
 
-function previewSpComment(form){
-	s=form.sightings[jQuery('#f-'+form.id+' #cmt-sp-preview-sp').val()]
-	cmt = SpComment(form,s)
-	jQuery('#f-'+form.id+' #cmt-sp-preview').html(cmt)
-}
-
-function urleBird(LatLngBounds){
-	var dist = LatLngBounds.getNorthEast().distanceTo(LatLngBounds.getSouthWest())/1000; // m -> km
-	dist = Math.max(5,Math.round(dist*2)).toString();
-	return 'https://ebird.org/ws1.1/ref/hotspot/geo?\
-	lng='+LatLngBounds.getCenter().lng+'&\
-	lat='+LatLngBounds.getCenter().lat+'&\
-	dist='+dist+'&fmt=xml';
-}
-
+//Find zoom for static map
 function getBoundsZoomLevel(bounds, mapDim) {
 	var WORLD_DIM = { height: 256, width: 256 };
 	var ZOOM_MAX = 21;
-
 	function latRad(lat) {
 		var sin = Math.sin(lat * Math.PI / 180);
 		var radX2 = Math.log((1 + sin) / (1 - sin)) / 2;
 		return Math.max(Math.min(radX2, Math.PI), -Math.PI) / 2;
 	}
-
-	function zoom(mapPx, worldPx, fraction) {
-		return Math.floor(Math.log(mapPx / worldPx / fraction) / Math.LN2);
-	}
-
-	var ne = bounds.getNorthEast();
-	var sw = bounds.getSouthWest();
-
-	var latFraction = (latRad(ne.lat) - latRad(sw.lat)) / Math.PI;
-
-	var lngDiff = ne.lng - sw.lng;
+	var lngDiff = bounds.getNorthEast().lng - bounds.getSouthWest().lng;
+	var latFraction = latRad(lngDiff) / Math.PI;
 	var lngFraction = ((lngDiff < 0) ? (lngDiff + 360) : lngDiff) / 360;
-
-	var latZoom = zoom(mapDim.height, WORLD_DIM.height, latFraction);
-	var lngZoom = zoom(mapDim.width, WORLD_DIM.width, lngFraction);
-
+	var latZoom = Math.floor(Math.log(mapDim.height / WORLD_DIM.height / latFraction) / Math.LN2);
+	var lngZoom = Math.floor(Math.log(mapDim.width / WORLD_DIM.width / lngFraction) / Math.LN2);
 	return Math.min(latZoom, lngZoom, ZOOM_MAX);
 }
 
+// Create marker for sigthing in the assigement of checklists
 function Makemarker(s){
 	var title = s.observers[0].count+' '+(s.species.name || s.species.bird_name);
 	var description = '<b>Date:</b> '+moment.unix(s.date["@timestamp"]).format('DD.MM.YYYY HH:MM') + '<br>\
@@ -199,7 +218,6 @@ function Makemarker(s){
 		var link = s.observers[0].medias.path+'/'+s.observers[0].medias.filename;
 		description += '<br><a href="'+link+'"><img src="'+link+'"></a>'
 	}
-
 	var mark = L.marker([s.observers[0].coord_lat,s.observers[0].coord_lon],{
 		title: title,
 		alt: title,
@@ -230,9 +248,28 @@ function Makemarker(s){
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //____________________________________________________
 //                EXPORT FUNCTIONS
 //____________________________________________________
+
+// Genreate table 
 function Form2Table(f){
 	table=[];
 	alert_sp=[];
@@ -303,12 +340,10 @@ function Table2CSV(table) {
 }
 
 function CreateGist(form, callback){
-
 	var fs = form.layer.sightings.toGeoJSON();
 	form.layer.edit.toGeoJSON().features.forEach(function(f){
 		fs.features.push(f);
 	})
-
 	var filename= (form.name+'-'+form.date).replace(/[^a-z0-9_\-]/gi, '_').toLowerCase()+".geojson";
 	var gist = {
 		"description": form.name +", "+ form.date,
@@ -316,8 +351,6 @@ function CreateGist(form, callback){
 		"files": {}
 	}
 	gist.files[filename] = { "content": JSON.stringify(fs) };
-
-
 	jQuery.ajax({ 
 		url: 'https://api.github.com/gists',
 		type: 'POST',
@@ -336,9 +369,7 @@ function CreateGist(form, callback){
 		alert('Error with the Gist Map: '+ errorThrown )
 		previewComment(form)
 		callback()
-    	//callback()
     });
-
 }
 
 function singleExport(form){
@@ -365,7 +396,6 @@ function Export(){
 	var table=[];
 	var filename ='';
 	var i=0;
-
 	data.forms.forEach( function(form,i) {
 		if (jQuery('#f-'+form.id + ' .form-group.has-error').length > 0) {
 			alert('Form '+form.name+' has error(s). It will not be exported!')
@@ -397,9 +427,27 @@ function Export(){
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //____________________________________________________
 //                CREATE FUNCTIONS
 //____________________________________________________
+// handleFile() -> InitiateForms() -> ProcessSightings() -> ProcessForm()
+//                                 -> ProcessForm()
+
+
 
 function handleFile(file){
 	var ext = file.name.split('.').pop().toLowerCase();
@@ -412,7 +460,8 @@ function handleFile(file){
 	reader.onload = function(){
 		if (ext == 'json'){
 			data = jQuery.parseJSON(reader.result).data;
-			data.forms.forEach(function(f){ // Time is not included in s.date... 
+			// Time is not included in s.date, take it form s.observers.timing
+			data.forms.forEach(function(f){ 
 				f.sightings.forEach(function(s){
 					s.date=s.observers[0].timing;
 				})
@@ -420,25 +469,25 @@ function handleFile(file){
 			data.sightings.forEach(function(s){
 				s.date=s.observers[0].timing;
 			})
-			InitiateForms(data)
 		} else if ( ext == 'xml' ){
 			var xml_string = reader.result;
 			var duplicate = ['sighting','form','media','observer','detail'];
-			for (i = 0; i < duplicate.length; i++) { 
-				var re = new RegExp('<'+duplicate[i]+'s>', 'g');
-				var re2 = new RegExp('<'+duplicate[i]+'s ', 'g');
-				var re3 = new RegExp('</'+duplicate[i]+'s>', 'g');
+			duplicate.forEach(function(dup){
+				var re = new RegExp('<'+dup+'s>', 'g');
+				var re2 = new RegExp('<'+dup+'s ', 'g');
+				var re3 = new RegExp('</'+dup+'s>', 'g');
 				xml_string = xml_string.replace(re,'').replace(re2,'').replace(re3,'')
-				var re = new RegExp('<'+duplicate[i]+'>', 'g');
-				var re2 = new RegExp('<'+duplicate[i]+' ', 'g');
-				var re3 = new RegExp('</'+duplicate[i]+'>', 'g');
-				xml_string = xml_string.replace(re,'<'+duplicate[i]+'s>').replace(re2,'<'+duplicate[i]+'s ').replace(re3,'</'+duplicate[i]+'s>')
-			}
+				var re = new RegExp('<'+dup+'>', 'g');
+				var re2 = new RegExp('<'+dup+' ', 'g');
+				var re3 = new RegExp('</'+dup+'>', 'g');
+				xml_string = xml_string.replace(re,'<'+dup+'s>').replace(re2,'<'+dup+'s ').replace(re3,'</'+dup+'s>')
+			})
 			data = jQuery.parseJSON(xml2json(jQuery.parseXML(xml_string)).replace('undefined','')).data;
 			if (!data.forms && !data.sightings){
 				alert('Empty file. No data available or wrong file')
 				return
 			}
+			// Convert form, sightings, observer and detail to array if empty or only one present
 			if (!data.forms) { data.forms =[] }
 			if (!data.sightings) { data.sightings =[] }
 			if (!Array.isArray(data.forms)){ data.forms = [data.forms] }
@@ -447,7 +496,8 @@ function handleFile(file){
 				f.sightings.forEach(function(s){
 					if (!Array.isArray(s.observers)){ s.observers = [s.observers] }
 					s.observers.forEach(function(o){
-						if (!Array.isArray(s.details)){ s.details = [s.details] }
+						if (!o.details) { o.details =[] }
+						if (!Array.isArray(o.details)){ o.details = [o.details] }
 					})
 					s.date=s.observers[0].timing;
 				})
@@ -456,14 +506,15 @@ function handleFile(file){
 			data.sightings.forEach(function(s){
 				if (!Array.isArray(s.observers)){ s.observers = [s.observers] }
 				s.observers.forEach(function(o){
-					if (!Array.isArray(s.details)){ s.details = [s.details] }
+					if (!o.details) { o.details =[] }
+					if (!Array.isArray(o.details)){ o.details = [o.details] }
 				})
 				s.date=s.observers[0].timing;
 			})
-			InitiateForms(data)
 		} else if (ext == 'txt'){
 			alert('txt not accepted!')
 			return
+			/*
 			var sightings = jQuery.parseJSON(csvJSON(reader.result));
 			if (!('Year' in sightings[0])){
 				alert('Not a correct file. Maybe try to export in English')
@@ -504,8 +555,11 @@ function handleFile(file){
 				};
 				data.sightings.push(ns);
 			})
+			*/
 		} else if (ext == 'csv') {
 			alert('Time ISO8601 has to be changed to timestamp')
+			return
+			/*
 			var sightings = jQuery.parseJSON(csvJSON(reader.result).replace(/\\"/g,''))
 			sightings.splice(-1,1);
 
@@ -561,7 +615,16 @@ function handleFile(file){
 				};
 				data.sightings.push(ns);
 			})
+			*/
 		}
+
+		data.forms.forEach(function(f,idx){
+			f.color = marker_color[idx+1];
+			f.id=idx+1;
+			f.name=f.sightings[0].place.name;
+			f.time_start = moment(f.time_start,"HH:mm").format("HH:mm") // 9:1 -> 09:01
+		});
+		data.forms.n=data.forms.length-1;
 
 		jQuery('html, body').css('overflow-y','auto');
 		if (data.sightings.length>0) {
@@ -577,24 +640,12 @@ function handleFile(file){
 				});	
 			});
 		} else {
-			alert('Wrong filetype, accepted: xml, json, csv')
+			alert('Empty file')
 			return
 		}
 	}
 }
 
-function InitiateForms(data){
-	if (!data.forms){
-		data.forms = [];
-	}
-	data.forms.forEach(function(f,idx){
-		f.color = marker_color[idx+1];
-		f.id=idx+1;
-		f.name=f.sightings[0].place.name;
-		f.time_start = moment(f.time_start,"HH:mm").format("HH:mm") // 9:1 -> 09:01
-	});
-	data.forms.n=data.forms.length-1;
-}
 
 function ProcessSightings(data) {
 	data.forms.unshift({ // Create the checklist for Non-Assigned
@@ -708,16 +759,6 @@ function ProcessSightings(data) {
 	}).addTo(modalmap);
 
 	data.sightings.forEach(function(s){
-		if(s.observers[0].estimation_code=='MINIMUM') {
-			s.observers[0].estimation_code='>';
-		} else if (s.observers[0].estimation_code=='EXACT_VALUE') {
-			s.observers[0].estimation_code='=';
-		} else if (s.observers[0].estimation_code=='ESTIMATION') {
-			s.observers[0].estimation_code='~';
-		} else if (s.observers[0].estimation_code=='NO_VALUE') {
-			s.observers[0].estimation_code=''
-			s.observers[0].count='x'
-		}
 		s['marker-symbol'] = (s.observers[0].count < 99) ? s.observers[0].count : 'x';
 		s['marker-color'] = data.forms[0].color[1];
 		s['marker-size'] = 's';
@@ -762,8 +803,6 @@ function ProcessSightings(data) {
 	setTimeout(function() {
 		modalmap.invalidateSize();
 		modalmap.fitBounds(modalsLayer.getBounds());
-		//jQuery('.leaflet-draw-draw-rectangle').hide();
-		//jQuery('.leaflet-draw-draw-marker').hide();
 		jQuery('.leaflet-draw-toolbar-top').hide();
 		jQuery('#selHotspot').change();
 	}, 1);
@@ -826,6 +865,8 @@ function ProcessForms(data) {
 
 	// Add true checklist
 	data.forms.forEach(function(form,idx){
+
+		// Change the imported form structure to suit our need. First depending on if it's a 'legit' form or not and then for both.
 		if ( form['@id']){ // Legit form
 			form.date = moment.unix(form.sightings[0].date['@timestamp']).format('YYYY-MM-DD')
 			var duration = moment.utc(moment(form.time_stop,"HH:mm").diff(moment(form.time_start,"HH:mm"))).format('HH:mm');
@@ -857,6 +898,43 @@ function ProcessForms(data) {
 			}
 			form.protocol='Incidental';
 		}
+		form.sightings.forEach(function(s){
+			if(s.observers[0].estimation_code=='MINIMUM') {
+				s.observers[0].estimation_code='>';
+			} else if (s.observers[0].estimation_code=='EXACT_VALUE') {
+				s.observers[0].estimation_code='=';
+			} else if (s.observers[0].estimation_code=='ESTIMATION') {
+				s.observers[0].estimation_code='~';
+			} else if (s.observers[0].estimation_code=='NO_VALUE') {
+				s.observers[0].estimation_code=''
+				s.observers[0].count='x'
+			}
+			s.observers[0].coord_lat_str = deg_to_dms(s.observers[0].coord_lat);
+			s.observers[0].coord_lon_str = deg_to_dms(s.observers[0].coord_lon);
+
+			if (!s.observers[0].details){
+				s.observers[0].details = '';
+			} else {
+				var details=[];
+				s.observers[0].details.forEach(function(d){
+					detail = d.count +'x ';
+					if (d.sex["@id"]!='U'){
+						detail += d.sex["#text"];
+					}
+					if (d.age["@id"]!='U'){
+						detail += ' '+d.age["#text"];
+					}
+					details.push(detail)
+				})
+				s.observers[0].details = details.join(', ');
+			}
+			if (!s.observers[0].atlas_code){
+				s.observers[0].atlas_code = '';
+			} else {
+				s.observers[0].atlas_code = atlas_code[s.observers[0].atlas_code['#text']] + '(Atlas code: '+s.observers[0].atlas_code['#text']+')';
+			}
+
+		})
 		form.distance='';
 		form['party-size']='1';
 		form.staticmap={};
@@ -865,6 +943,7 @@ function ProcessForms(data) {
 			form.lon=form.marker.getLatLng().lng;
 			form.lat=form.marker.getLatLng().lat;
 		}
+		form.weather='';
 		jQuery.get('https://api.wunderground.com/api/b097b9712f359043/history_'+moment(form.date).format('YYYYMMDD')+'/q/'+form.lat+','+form.lon+'.json',function(data){
 			var w = data.history.dailysummary[0];
 			var whtml= '<b>Temp.</b>:'+w.meantempm+'°C ('+w.mintempm+'/'+w.maxtempm +')';
@@ -874,7 +953,7 @@ function ProcessForms(data) {
 			whtml += ' - <b>Humidity</b>: '+w.humidity;
 			//whtml += w.fog ? 'fog':''; 
 			//whtml += w.hail ? 'hail':''; 
-			form.weather=whtml;
+			form.weather= whtml;
 			previewComment(form)
 		})
 		jQuery.get( 'https://nominatim.openstreetmap.org/reverse?lat='+form.lat.toString()+'&lon='+form.lon.toString(), function( xml ) {
@@ -969,15 +1048,17 @@ function ProcessForms(data) {
 			<span class="label label-default" contenteditable="false" value="(s.observers[0].id_sighting || s.observers[0].id_universal)">ID sighting</span>\
 			<span class="label label-default" contenteditable="false" value="s.observers[0].estimation_code">Estimation code</span>\
 			<span class="label label-default" contenteditable="false" value="s.observers[0].count">Count</span>\
-			<span class="label label-default" contenteditable="false" value="s.observers[0].coord_lat">Latitude</span>\
-			<span class="label label-default" contenteditable="false" value="s.observers[0].coord_lon">Longitude</span>\
+			<span class="label label-default" contenteditable="false" value="s.observers[0].coord_lat">Latitude DD</span>\
+			<span class="label label-default" contenteditable="false" value="s.observers[0].coord_lon">Longitude DD</span>\
+			<span class="label label-default" contenteditable="false" value="s.observers[0].coord_lat_str">Latitude DMS</span>\
+			<span class="label label-default" contenteditable="false" value="s.observers[0].coord_lon_str">Longitude DMS</span>\
 			<span class="label label-default" contenteditable="false" value="s.observers[0].comment">Comment</span>\
 			<span class="label label-default" contenteditable="false" value="s.observers[0].details">Detail</span>\
 			<span class="label label-default" contenteditable="false" value="s.observers[0].atlas_code">Atlas code</span>\
 			</div>\
 			<div class="cmt-sp-ct cmt-sp-ct-bt" id="cmt-sp-ct-bt-'+ form.id+'" contenteditable="true">\
 			<span class="label label-default" contenteditable="false" value="s.observers[0].estimation_code">Estimation code</span>\
-			<span class="label label-default" contenteditable="false" value="s.observers[0].count">Count</span> ind. - <span class="label label-default" contenteditable="false" value="moment.unix(s.date[\'@timestamp\']).format(\'HH:mm\')">Time</span> - &lt;a href="http://maps.google.com?q=<span class="label label-default" contenteditable="false" value="s.observers[0].coord_lat">Latitude</span>,<span class="label label-default" contenteditable="false" value="s.observers[0].coord_lon">Longitude</span>&t=k" target="_blank" &gt;<span class="label label-default" contenteditable="false" value="s.observers[0].coord_lat">Latitude</span>,<span class="label label-default" contenteditable="false" value="s.observers[0].coord_lon">Longitude</span>&lt;/a&gt; - &lt;a href="http://'+jQuery('#sel-website').val()+'/index.php?m_id=54&id=<span class="label label-default" contenteditable="false" value="(s.observers[0].id_sighting || s.observers[0].id_universal)">ID sighting</span>" target="_blank">'+jQuery('#sel-website').val()+'&lt;/a&gt;\
+			<span class="label label-default" contenteditable="false" value="s.observers[0].count">Count</span> ind. - <span class="label label-default" contenteditable="false" value="moment.unix(s.date[\'@timestamp\']).format(\'HH:mm\')">Time</span> - &lt;a href="http://maps.google.com?q=<span class="label label-default" contenteditable="false" value="s.observers[0].coord_lat">Latitude DD</span>,<span class="label label-default" contenteditable="false" value="s.observers[0].coord_lon">Longitude DD</span>&t=k" target="_blank" &gt;<span class="label label-default" contenteditable="false" value="s.observers[0].coord_lat_str">Latitude DMS</span>N <span class="label label-default" contenteditable="false" value="s.observers[0].coord_lon_str">Longitude DMS</span>E&lt;/a&gt; - &lt;a href="http://'+jQuery('#sel-website').val()+'/index.php?m_id=54&id=<span class="label label-default" contenteditable="false" value="(s.observers[0].id_sighting || s.observers[0].id_universal)">ID sighting</span>" target="_blank">'+jQuery('#sel-website').val()+'&lt;/a&gt;\
 			<br>&lt;br&gt;<span class="label label-default" contenteditable="false" value="s.observers[0].comment">Comment</span>\
 			<br>&lt;br&gt;<span class="label label-default" contenteditable="false" value="s.observers[0].details">Detail</span>\
 			<br>&lt;br&gt;<span class="label label-default" contenteditable="false" value="s.observers[0].atlas_code">Atlas code</span>\
@@ -1045,9 +1126,6 @@ function ProcessForms(data) {
 			</div>\
 			</form>\
 			');
-
-
-
 
 
 
@@ -1123,43 +1201,6 @@ function ProcessForms(data) {
 
 		// Import Sightings
 		form.sightings.forEach(function(s,id) {
-			if(s.observers[0].estimation_code=='MINIMUM') {
-				s.observers[0].estimation_code='>';
-			} else if (s.observers[0].estimation_code=='EXACT_VALUE') {
-				s.observers[0].estimation_code='=';
-			} else if (s.observers[0].estimation_code=='ESTIMATION') {
-				s.observers[0].estimation_code='~';
-			} else if (s.observers[0].estimation_code=='NO_VALUE') {
-				s.observers[0].estimation_code=''
-				s.observers[0].count='x'
-			}
-
-			if (!s.observers[0].comment){
-				s.observers[0].comment='';
-			}
-			if (!s.observers[0].details){
-				s.observers[0].details='';
-			} else{
-				var details=[];
-				s.observers[0].details.forEach(function(d){
-					detail = d.count +'x ';
-					if (d.sex["@id"]!='U'){
-						detail += d.sex["#text"];
-					}
-					if (d.age["@id"]!='U'){
-						detail += ' '+d.age["#text"];
-					}
-					details.push(detail)
-				})
-				s.observers[0].details = details.join(', ');
-			}
-			if (!s.observers[0].atlas_code){
-				s.observers[0].atlas_code = '';
-			} else {
-				s.observers[0].atlas_code = atlas_code[s.observers[0].atlas_code['#text']] + '(Atlas code: '+s.observers[0].atlas_code['#text']+')';
-			}
-
-
 			s['marker-symbol'] = (s.observers[0].count < 99) ? s.observers[0].count : 'x';
 			s['marker-color'] = color(s,form);
 			s['marker-size'] = 'm';
@@ -1190,8 +1231,13 @@ function ProcessForms(data) {
 			}
 		})
 
+		var LatLngBounds = form.layer.all.getBounds();
+		var dist = LatLngBounds.getNorthEast().distanceTo(LatLngBounds.getSouthWest())/1000; // m -> km
+		dist = Math.max(5,Math.round(dist*2)).toString();
+	 	var urlebird = 'https://ebird.org/ws1.1/ref/hotspot/geo?lng='+LatLngBounds.getCenter().lng+'&lat='+LatLngBounds.getCenter().lat+'&dist='+dist+'&fmt=xml';
+
 		// Load local hotspot
-		jQuery.get( urleBird( form.layer.all.getBounds() ), function( xml ) {
+		jQuery.get( urlebird, function( xml ) {
 			var json = jQuery.parseJSON(xml2json(xml).replace('undefined',''))
 			if (json.response.result){
 				var hotspots=json.response.result.location;
@@ -1439,6 +1485,35 @@ function ProcessForms(data) {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//____________________________________________________
+//                PAGE FUNCTIONS
+//____________________________________________________
+
+// Variable to put in workspace
+var data, csv_content, code_list=[],eBird_label=[],table=[],modalmap,modalsLayer, modalfLayer, form;
+
 jQuery(document).ready(function(){  
 	
 	/* c1: Download biolovision data*/  
@@ -1459,7 +1534,6 @@ jQuery(document).ready(function(){
 			d_f.setDate(d_f.getDate()-parseFloat(jQuery('#date_ago').val())+1);
 		} else {
 			var DChoice='range';
-			
 			d_f_l = jQuery('#input-date-from').val().split('.');
 			var d_f = new Date([d_f_l[2], d_f_l[1], d_f_l[0]].join('-'));
 			d_t_l = jQuery('#input-date-to').val().split('.');
@@ -1474,7 +1548,6 @@ jQuery(document).ready(function(){
 			var d = new Date(jQuery('#input-date-from').val());
 			window.open("https://"+jQuery('#sel-website').val()+"/export/user_export7.php?datum_va="+d_f.toISOString().split('T')[0]+"&datum_tm="+d_t.toISOString().split('T')[0]+"&diergroep=1&gebied=0&tag=0&zz=0&soort=0&simple=0&a[]=&k[]=")
 		} else if (jQuery('#sel-website').val().includes("data.biolovision.net") ){
-			
 			window.open("http://"+jQuery('#sel-website').val()+"/index.php?m_id=1351&content=search&start_date="+moment(d_f).format('DD.MM.YYYY')+"&stop_date="+moment(d_t).format('DD.MM.YYYY'))
 		}
 	}
@@ -1515,14 +1588,10 @@ jQuery(document).ready(function(){
 	}
 
 	/* c3: Result*/
-
 	// Button to write to file
 	jQuery('#button-download-biolovision').click( Export );
 
 	// Map
 	L.MakiMarkers.accessToken = token.mapbox;
-
-	// To me remove....
-	//jQuery('#button-download-biolovision').hide()
 
 });
