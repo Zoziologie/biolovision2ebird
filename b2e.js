@@ -460,14 +460,17 @@ function handleFile(file){
 	reader.onload = function(){
 		if (ext == 'json'){
 			data = jQuery.parseJSON(reader.result).data;
+			// Two types of JSON can be imported: faune-france or biolovision.data
+			if (data.form==undefined) {data.form=[];}
+			if (data.sightings==undefined) {data.sightings=[];}
 			// Time is not included in s.date, take it form s.observers.timing
 			data.forms.forEach(function(f){ 
 				f.sightings.forEach(function(s){
-					s.date=s.observers[0].timing;
+					if (s.date==undefined) {s.date=s.observers[0].timing;}
 				})
 			})
 			data.sightings.forEach(function(s){
-				s.date=s.observers[0].timing;
+				if (s.date==undefined) {s.date=s.observers[0].timing;}
 			})
 		} else if ( ext == 'xml' ){
 			var xml_string = reader.result;
