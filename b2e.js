@@ -461,7 +461,7 @@ function handleFile(file){
 		if (ext == 'json'){
 			data = jQuery.parseJSON(reader.result).data;
 			// Two types of JSON can be imported: faune-france or biolovision.data
-			if (data.form==undefined) {data.form=[];}
+			if (data.forms==undefined) {data.forms=[];}
 			if (data.sightings==undefined) {data.sightings=[];}
 			// Time is not included in s.date, take it form s.observers.timing
 			data.forms.forEach(function(f){ 
