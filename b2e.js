@@ -512,9 +512,6 @@ function handleFile(file){
 				s.date=s.observers[0].timing;
 			})
 		} else if (ext == 'txt'){
-			alert('txt not accepted!')
-			return
-			/*
 			var sightings = jQuery.parseJSON(csvJSON(reader.result));
 			if (!('Year' in sightings[0])){
 				alert('Not a correct file. Maybe try to export in English')
@@ -538,7 +535,7 @@ function handleFile(file){
 						coord_lat: s['Latitude (N)'],
 						coord_lon: s['Longitude (E)'],
 						comment: s.Comment,
-						details:{},
+						details:[],
 						timing:{
 							'@ISO8601': new Date(s.Year, s.Month-1, s.Day, s.Timing.split(':')[0], (s.Timing.split(':')[1] ? s.Timing.split(':')[1] : '')).toISOString(),
 						},
@@ -555,11 +552,7 @@ function handleFile(file){
 				};
 				data.sightings.push(ns);
 			})
-			*/
 		} else if (ext == 'csv') {
-			alert('Time ISO8601 has to be changed to timestamp')
-			return
-			/*
 			var sightings = jQuery.parseJSON(csvJSON(reader.result).replace(/\\"/g,''))
 			sightings.splice(-1,1);
 
@@ -568,7 +561,6 @@ function handleFile(file){
 				return;
 			}
 			data={};
-			data.sightings={};
 			data.sightings=[];
 
 			InitiateForms(data)
@@ -585,7 +577,7 @@ function handleFile(file){
 						coord_lat: s.lat.replace(',','.'),
 						coord_lon: s.Lng.replace(',','.'),
 						comment: 'unknown'==s.method ? s.remarks : s.remarks+', '+s.method+', '+s.Activity,
-						details:{
+						details:[{
 							count: "1",
 							sex: {
 								"-id": 'unknown' == s.sex ? "U" : 'X',
@@ -595,7 +587,7 @@ function handleFile(file){
 								"-id":  'unknown' == s.sex ? "U" : 'X',
 								"#text": s.sex
 							},
-						},
+						}],
 						timing:{
 							'@ISO8601': new Date(s.Date.split('-')[0], s.Date.split('-')[1], s.Date.split('-')[2]-1, s.Time.split(':')[0], (s.Time.split(':')[1] ? s.Time.split(':')[1] : '')).toISOString(),
 						},
@@ -615,7 +607,6 @@ function handleFile(file){
 				};
 				data.sightings.push(ns);
 			})
-			*/
 		}
 
 		data.forms.forEach(function(f,idx){
@@ -668,6 +659,7 @@ function ProcessSightings(data) {
 			polyline: false,
 			polygon: false,
 			circle: false,
+			circlemarker: false,
 			rectangle: true, 
 			marker: {
 				icon: L.AwesomeMarkers.icon({
