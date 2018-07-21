@@ -306,9 +306,9 @@ function Form2Table(f){
 		table.push(row)
 	})
 
-	if (alert_sp.length>0){
+	/*if (alert_sp.length>0){
 		alert('One or more specie(s) do(es) not exist in the current system. You might have more work on eBird to match these species. Please report the error at rafnuss@gmail.com. \n' + alert_sp.join(', ') )
-	}
+	}*/
 
 	// Check for duplicate
 	for (i=table.length-1;i>=0;i--){
@@ -466,11 +466,13 @@ function handleFile(file){
 			// Time is not included in s.date, take it form s.observers.timing
 			data.forms.forEach(function(f){ 
 				f.sightings.forEach(function(s){
-					if (s.date==undefined) {s.date=s.observers[0].timing;}
+					s.date=s.observers[0].timing;
+					//if (s.date==undefined) {s.date=s.observers[0].timing;}
 				})
 			})
 			data.sightings.forEach(function(s){
-				if (s.date==undefined) {s.date=s.observers[0].timing;}
+				s.date=s.observers[0].timing;
+				//if (s.date==undefined) {s.date=s.observers[0].timing;}
 			})
 		} else if ( ext == 'xml' ){
 			var xml_string = reader.result;
@@ -1535,15 +1537,14 @@ jQuery(document).ready(function(){
 			var d_t = new Date([d_t_l[2], d_t_l[1], d_t_l[0]].join('-'));
 		}
 
-		if (jQuery('#sel-website').val().includes("faune-france") ){
-			window.open("http://"+jQuery('#sel-website').val()+"/index.php?m_id=97&sp_DChoice=" + DChoice + "&sp_DFrom="+jQuery('#input-date-from').val()+"&sp_DTo="+jQuery('#input-date-to').val()+"&sp_DOffset="+ jQuery('#date_ago').val() +"&sp_SChoice=all&sp_PChoice=all&sp_OnlyMyData=1&sp_FChoice=export&sp_FExportFormat=JSON")
-		} else if (jQuery('#sel-website').val().includes("faune") || jQuery('#sel-website').val().includes("ornitho") || jQuery('#sel-website').val().includes("lpo")){
-			window.open("http://"+jQuery('#sel-website').val()+"/index.php?m_id=97&sp_DChoice=" + DChoice + "&sp_DFrom="+jQuery('#input-date-from').val()+"&sp_DTo="+jQuery('#input-date-to').val()+"&sp_DOffset="+ jQuery('#date_ago').val() +"&sp_SChoice=all&sp_PChoice=all&sp_OnlyMyData=1&sp_FChoice=export&sp_FExportFormat=XML")
-		} else if (jQuery('#sel-website').val().includes("observation") || jQuery('#sel-website').val().includes("waarneming")) {
+		if (jQuery('#sel-website').val().includes("observation") || jQuery('#sel-website').val().includes("waarneming")) {
 			var d = new Date(jQuery('#input-date-from').val());
 			window.open("https://"+jQuery('#sel-website').val()+"/export/user_export7.php?datum_va="+d_f.toISOString().split('T')[0]+"&datum_tm="+d_t.toISOString().split('T')[0]+"&diergroep=1&gebied=0&tag=0&zz=0&soort=0&simple=0&a[]=&k[]=")
 		} else if (jQuery('#sel-website').val().includes("data.biolovision.net") ){
 			window.open("http://"+jQuery('#sel-website').val()+"/index.php?m_id=1351&content=search&start_date="+moment(d_f).format('DD.MM.YYYY')+"&stop_date="+moment(d_t).format('DD.MM.YYYY'))
+		} else {
+			link = "http://"+jQuery('#sel-website').val()+"/index.php?m_id=31&sp_DChoice=" + DChoice + "&sp_DFrom="+jQuery('#input-date-from').val()+"&sp_DTo="+jQuery('#input-date-to').val()+"&sp_DOffset="+ jQuery('#date_ago').val() +"&sp_SChoice=all&sp_PChoice=all&sp_OnlyMyData=1";//&sp_FChoice=export&sp_FExportFormat=XML";
+			window.open(link)
 		}
 	}
 	jQuery("#sel-website").keyup(function(e){if(e.keyCode == 13){downloadfx();}});
