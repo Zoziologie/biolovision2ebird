@@ -821,8 +821,8 @@ function ProcessForms(data) {
 	//Add unasgined checklist
 	if (data.forms[0].id==0){
 		var form=data.forms[0];
-		jQuery( "#c3 .nav-tabs" ).append( "<li class='active' id='li-f-"+form.id+"'><a href='#f-"+form.id+"' data-toggle='tab'>"+form.name+"</a>" );
-		jQuery( "#c3 .tab-content" ).append( "<div class='tab-pane active' id='f-"+form.id+"'></div>" );
+		jQuery( "#c3 .nav-tabs" ).append( "<li class='nav-item' id='li-f-"+form.id+"'><a class='nav-link active' href='#f-"+form.id+"' data-toggle='tab'>"+form.name+"</a></li>" );
+		jQuery( "#c3 .tab-content" ).append( "<div class='container tab-pane active' id='f-"+form.id+"'></div>" );
 		jQuery( "#f-" + form.id ).append( '\
 			<div class="row">\
 			<div class="form-group col-sm-12">\
@@ -969,8 +969,8 @@ function ProcessForms(data) {
 		*/
 		
 
-		jQuery( "#c3 .nav-tabs" ).append( "<li class='active' id='li-f-"+form.id+"'><a href='#f-"+form.id+"' data-toggle='tab'>"+form.name+"</a>" );
-		jQuery( "#c3 .tab-content" ).append( "<div class='tab-pane active' id='f-"+form.id+"'></div>" );
+		jQuery( "#c3 .nav-tabs" ).append( "<li class='nav-item' id='li-f-"+form.id+"'><a class='nav-link' href='#f-"+form.id+"' data-toggle='tab'>"+form.name+"</a></li>" );
+		jQuery( "#c3 .tab-content" ).append( "<div class='container tab-pane' id='f-"+form.id+"'></div>" );
 		jQuery( "#f-" + form.id ).append( '\
 			<form class="form" data-toggle="validator" >\
 			<div class="row">\
@@ -1039,26 +1039,25 @@ function ProcessForms(data) {
 			<label for="cmt-sp-ct-bt-'+ form.id+'">Species Comment:</label>\
 			<div id="cmt-sp">\
 			<div class="cmt-sp-ct cmt-sp-ct-tp" id="cmt-sp-ct-tp-'+ form.id+'">\
-			<span class="label label-default" contenteditable="false" value="s.date.text">Timing (full)</span>\
-			<span class="label label-default" contenteditable="false" value="moment.unix(s.date[\'@timestamp\']).format(\'dd-MM-YYYY HH:mm\')">Timing (condensed)</span>\
-			<span class="label label-default" contenteditable="false" value="moment.unix(s.date[\'@timestamp\']).format(\'HH:mm\')">Time</span>\
-			<span class="label label-default" contenteditable="false" value="(s.observers[0].id_sighting || s.observers[0].id_universal)">ID sighting</span>\
-			<span class="label label-default" contenteditable="false" value="s.observers[0].estimation_code">Estimation code</span>\
-			<span class="label label-default" contenteditable="false" value="s.observers[0].count">Count</span>\
-			<span class="label label-default" contenteditable="false" value="s.observers[0].coord_lat">Latitude DD</span>\
-			<span class="label label-default" contenteditable="false" value="s.observers[0].coord_lon">Longitude DD</span>\
-			<span class="label label-default" contenteditable="false" value="s.observers[0].coord_lat_str">Latitude DMS</span>\
-			<span class="label label-default" contenteditable="false" value="s.observers[0].coord_lon_str">Longitude DMS</span>\
-			<span class="label label-default" contenteditable="false" value="s.observers[0].comment">Comment</span>\
-			<span class="label label-default" contenteditable="false" value="s.observers[0].details">Detail</span>\
-			<span class="label label-default" contenteditable="false" value="s.observers[0].atlas_code">Atlas code</span>\
+			<span class="badge badge-secondary" contenteditable="false" value="s.date.text">Timing (full)</span>\
+			<span class="badge badge-secondary" contenteditable="false" value="moment.unix(s.date[\'@timestamp\']).format(\'dd-MM-YYYY HH:mm\')">Timing (condensed)</span>\
+			<span class="badge badge-secondary" contenteditable="false" value="moment.unix(s.date[\'@timestamp\']).format(\'HH:mm\')">Time</span>\
+			<span class="badge badge-secondary" contenteditable="false" value="(s.observers[0].id_sighting || s.observers[0].id_universal)">ID sighting</span>\
+			<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].estimation_code">Estimation code</span>\
+			<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].count">Count</span>\
+			<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lat">Latitude DD</span>\
+			<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lon">Longitude DD</span>\
+			<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lat_str">Latitude DMS</span>\
+			<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lon_str">Longitude DMS</span>\
+			<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].comment">Comment</span>\
+			<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].details">Detail</span>\
+			<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].atlas_code">Atlas code</span>\
 			</div>\
 			<div class="cmt-sp-ct cmt-sp-ct-bt" id="cmt-sp-ct-bt-'+ form.id+'" contenteditable="true">\
-			<span class="label label-default" contenteditable="false" value="s.observers[0].estimation_code">Estimation code</span>\
-			<span class="label label-default" contenteditable="false" value="s.observers[0].count">Count</span> ind. - <span class="label label-default" contenteditable="false" value="moment.unix(s.date[\'@timestamp\']).format(\'HH:mm\')">Time</span> - &lt;a href="http://maps.google.com?q=<span class="label label-default" contenteditable="false" value="s.observers[0].coord_lat">Latitude DD</span>,<span class="label label-default" contenteditable="false" value="s.observers[0].coord_lon">Longitude DD</span>&t=k" target="_blank" &gt;<span class="label label-default" contenteditable="false" value="s.observers[0].coord_lat_str">Latitude DMS</span>N <span class="label label-default" contenteditable="false" value="s.observers[0].coord_lon_str">Longitude DMS</span>E&lt;/a&gt; - &lt;a href="http://'+jQuery('#sel-website').val()+'/index.php?m_id=54&id=<span class="label label-default" contenteditable="false" value="(s.observers[0].id_sighting || s.observers[0].id_universal)">ID sighting</span>" target="_blank">'+jQuery('#sel-website').val()+'&lt;/a&gt;\
-			<br>&lt;br&gt;<span class="label label-default" contenteditable="false" value="s.observers[0].comment">Comment</span>\
-			<br>&lt;br&gt;<span class="label label-default" contenteditable="false" value="s.observers[0].details">Detail</span>\
-			<br>&lt;br&gt;<span class="label label-default" contenteditable="false" value="s.observers[0].atlas_code">Atlas code</span>\
+			<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].estimation_code">Estimation code</span>\
+			<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].count">Count</span> ind. - <span class="badge badge-secondary" contenteditable="false" value="moment.unix(s.date[\'@timestamp\']).format(\'HH:mm\')">Time</span> - &lt;a href="http://maps.google.com?q=<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lat">Latitude DD</span>,<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lon">Longitude DD</span>&t=k" target="_blank" &gt;<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lat_str">Latitude DMS</span>N <span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lon_str">Longitude DMS</span>E&lt;/a&gt; - &lt;a href="http://'+jQuery('#sel-website').val()+'/index.php?m_id=54&id=<span class="badge badge-secondary" contenteditable="false" value="(s.observers[0].id_sighting || s.observers[0].id_universal)">ID sighting</span>" target="_blank">'+jQuery('#sel-website').val()+'&lt;/a&gt;\
+			<br>&lt;br&gt;<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].comment">Comment</span>\
+			<br>&lt;br&gt;<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].details">Detail</span>\
 			</div>\
 			</div>\
 			</div>\
@@ -1081,19 +1080,17 @@ function ProcessForms(data) {
 			<div class="row">\
 			<div class="col-lg-5 form-inline">\
 			<label for="zoom">Zoom:</label>\
-			<div class="input-group">\
 			<span class="input-group-btn">\
-			<button type="button" class="btn btn-default btn-number" data-type="minus">\
-			<span class="glyphicon glyphicon-minus"></span>\
+			<button type="button" class="btn btn-sm btn-number" data-type="minus">\
+			<i class="fa fa-minus" aria-hidden="true"></i>\
 			</button>\
 			</span>\
 			<input type="text" id="zoom" class="form-control input-number" value="1" min="1" max="21">\
 			<span class="input-group-btn">\
-			<button type="button" class="btn btn-default btn-number" data-type="plus">\
-			<span class="glyphicon glyphicon-plus"></span>\
+			<button type="button" class="btn btn-sm btn-number" data-type="plus">\
+			<i class="fa fa-plus" aria-hidden="true"></i>\
 			</button>\
 			</span>\
-			</div>\
 			</div>\
 			<div class="col-lg-3">\
 			<button type="button" class="btn btn-default center-block" id="center-map" title="Set static map automaticaly with sightings location">Center map</button>\
@@ -1467,17 +1464,15 @@ function ProcessForms(data) {
 	// Activate only the first tab
 	jQuery('.tab-content .tab-pane').each( function(idx,item){
 		var id = jQuery(item).attr('id');
-
 		if (idx==0){
 			jQuery('#'+id).addClass('active')
-			jQuery('#li-'+id).addClass('active')
+			jQuery('#li-'+id+' > a').addClass('active')
 		} else {
 			jQuery('#'+id).removeClass('active')
-			jQuery('#li-'+id).removeClass('active')
+			jQuery('#li-'+id+' > a').removeClass('active')
 		}
 	})
 }
-
 
 
 

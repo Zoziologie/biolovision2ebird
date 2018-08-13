@@ -30,9 +30,33 @@
 }
 #button-download-biolovision, #link-id{
 	background-color:#fbbd58;
+	border-radius:0px;
 }
 .tab-pane {
 	padding: 20px 0px;
+}
+.input-daterange{
+	padding-left: 17px !important;
+	margin-top:-17px;
+
+}
+#input-date-from{
+display: flex;
+flex: 1;
+    margin-right: 0;
+}
+#input-date-to{
+display: flex;
+flex: 1;
+}
+.input-group-addon{
+    display: flex;
+    padding: 6px 12px;
+    background-color: #eee;
+    border: 1px solid #ccc;
+}
+input[type="text"]{
+	border-radius: 0 !important;
 }
 /* c2: Upload; */
 #drobox-outer{
@@ -40,6 +64,7 @@
 	border: 1px solid #ccc;
 	margin-bottom: 20px;
 	margin-top:20px;
+	width: 100%;
 }
 #dropbox{
 	font-size: x-large;
