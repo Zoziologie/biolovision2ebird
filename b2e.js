@@ -132,6 +132,7 @@ function SpComment(form,s){
 	cmt = cmt.text().replace(/	/g,'');
 	cmt = cmt.replace(/<br><br><br>/g,'<br>');
 	cmt = cmt.replace(/<br><br>/g,'<br>');
+	cmt = cmt.replace(/- 00:00/g,'');
 	if (cmt.slice(-4, 999) == '<br>'){
 		cmt = cmt.slice(0, -4);
 	}
@@ -755,6 +756,7 @@ function ProcessSightings(data) {
 		maxClusterRadius:70,
 	}).addTo(modalmap);
 
+	var uniquedate=[]
 	data.sightings.forEach(function(s){
 		s['marker-symbol'] = (s.observers[0].count < 99) ? s.observers[0].count : 'x';
 		s['marker-color'] = data.forms[0].color[1];
@@ -762,6 +764,7 @@ function ProcessSightings(data) {
 		s.form = 0;
 		var m = Makemarker(s);
 		m.addTo(modalsLayer);
+		uniquedate.push(data.sightings[0].date["@ISO8601"].substring(0,10))
 	})
 
 	jQuery('#selHotspot').change(function(opt){
@@ -804,7 +807,13 @@ function ProcessSightings(data) {
 		jQuery('#selHotspot').change();
 	}, 1);
 
-
+	// Display message if data are spanning over severa days
+	uniquedate = uniquedate.filter(function(value, index, self) { 
+	    return self.indexOf(value) === index;
+	})
+	if (uniquedate.length==1){
+		jQuery('#warning-several-days').hide()
+	}
 	
 };
 
@@ -817,6 +826,16 @@ function ProcessForms(data) {
 			data.forms.splice(i, 1);
 		}
 	}
+
+	var partysize=""
+	if (data.forms.length>1){
+		while (!partysize>0){
+			partysize = prompt("How many observers for all/most lists?", "1");
+		}
+	} else {
+		partysize="1"
+	}
+
 
 	//Add unasgined checklist
 	if (data.forms[0].id==0){
@@ -933,7 +952,7 @@ function ProcessForms(data) {
 
 		})
 		form.distance='';
-		form['party-size']='1';
+		form['party-size']=partysize;
 		form.staticmap={};
 		form.gist='#';
 		if (form.marker){
@@ -943,14 +962,17 @@ function ProcessForms(data) {
 		form.weather='';
 		jQuery.get('https://api.wunderground.com/api/b097b9712f359043/history_'+moment(form.date).format('YYYYMMDD')+'/q/'+form.lat+','+form.lon+'.json',function(data){
 			var w = data.history.dailysummary[0];
-			var whtml= '<b>Temp.</b>:'+w.meantempm+'°C ('+w.mintempm+'/'+w.maxtempm +')';
-			whtml += ' - <b>Prec.</b>: '+w.precipm+ 'mm';
-			whtml += w.snow=='0' ? '':' (snow)'; 
-			whtml += ' - <b>Wind</b>: '+w.meanwdire+' '+w.meanwindspdm+ 'km/h ('+w.minwspdm+'/'+w.maxwspdm+')';
-			whtml += ' - <b>Humidity</b>: '+w.humidity;
-			//whtml += w.fog ? 'fog':''; 
-			//whtml += w.hail ? 'hail':''; 
-			form.weather= whtml;
+			form.weather= "";
+			if (w) {
+				var whtml= '<b>Temp.</b>:'+w.meantempm+'°C ('+w.mintempm+'/'+w.maxtempm +')';
+				whtml += ' - <b>Prec.</b>: '+w.precipm+ 'mm';
+				whtml += w.snow=='0' ? '':' (snow)'; 
+				whtml += ' - <b>Wind</b>: '+w.meanwdire+' '+w.meanwindspdm+ 'km/h ('+w.minwspdm+'/'+w.maxwspdm+')';
+				whtml += ' - <b>Humidity</b>: '+w.humidity;
+				//whtml += w.fog ? 'fog':''; 
+				//whtml += w.hail ? 'hail':''; 
+				form.weather= whtml;
+			}
 			previewComment(form)
 		})
 		jQuery.get( 'https://nominatim.openstreetmap.org/reverse?lat='+form.lat.toString()+'&lon='+form.lon.toString(), function( xml ) {
@@ -1156,6 +1178,7 @@ function ProcessForms(data) {
 						dashArray: "20, 10, 10, 10"
 					}
 				},
+				circlemarker: false,
 				polygon: false,
 				circle: false,
 				rectangle: false, 
@@ -1449,17 +1472,8 @@ function ProcessForms(data) {
 		document.getElementById("singleExport-"+form.id).addEventListener("click", function(){
 			singleExport(form);
 		});
-		jQuery('#li-f-'+form.id).on('click',function(){
-			setTimeout(function() {
-				form.map.invalidateSize();
-			},1);
-		})
-
-		// Initiate 
-		previewSpComment(form);
-		previewComment(form)
-		form.map.invalidateSize();
 	})
+
 
 	// Activate only the first tab
 	jQuery('.tab-content .tab-pane').each( function(idx,item){
@@ -1471,6 +1485,19 @@ function ProcessForms(data) {
 			jQuery('#'+id).removeClass('active')
 			jQuery('#li-'+id+' > a').removeClass('active')
 		}
+	})
+
+	data.forms.forEach(function(form,idx){
+		form.map.invalidateSize();
+		jQuery('#li-f-'+form.id).on('click',function(){
+			setTimeout(function() {
+				form.map.invalidateSize();
+				form.map.fitBounds(form.layer.all.getBounds());
+			},1);
+		})
+
+		previewSpComment(form);
+		previewComment(form)
 	})
 }
 

@@ -785,8 +785,8 @@
       "english":"Eurasian Teal",
       "EN":"eurasian teal",
       "SCI_NAME":"Anas crecca",
-      "PRIMARY_COM_NAME":"Green-winged Teal",
-      "en_IOC":"Eurasian/Green-winged Teal",
+      "PRIMARY_COM_NAME":"Eurasian Teal",
+      "en_IOC":"Eurasian Teal",
       "SPECIES_CODE":"gnwtea"
    },
    {
@@ -1415,9 +1415,9 @@
       "english":"Hen Harrier",
       "EN":"hen harrier",
       "SCI_NAME":"Circus cyaneus",
-      "PRIMARY_COM_NAME":"Northern Harrier",
-      "en_IOC":"Hen/Northern Harrier",
-      "SPECIES_CODE":"norhar"
+      "PRIMARY_COM_NAME":"Hen Harrier",
+      "en_IOC":"Hen Harrier",
+      "SPECIES_CODE":"henhar"
    },
    {
       "id":164,
