@@ -1145,8 +1145,8 @@
       "english":"Velvet Scoter",
       "EN":"velvet scoter",
       "SCI_NAME":"Melanitta fusca",
-      "PRIMARY_COM_NAME":"White-winged Scoter",
-      "en_IOC":"Velvet/White-winged Scoter",
+      "PRIMARY_COM_NAME":"Velvet Scoter",
+      "en_IOC":"Velvet Scoter",
       "SPECIES_CODE":"whwsco"
    },
    {
@@ -4968,6 +4968,16 @@
       "PRIMARY_COM_NAME":"Bonaparte's Gull",
       "en_IOC":"Bonaparte's Gull",
       "SPECIES_CODE":"bongul"
+   },
+   {
+      "id":1080,
+      "latin":"Melanitta deglandi",
+      "english":"White-winged scoter",
+      "EN":"White-winged scoter",
+      "SCI_NAME":"Melanitta deglandi",
+      "PRIMARY_COM_NAME":"BWhite-winged scoter",
+      "en_IOC":"White-winged scoter",
+      "SPECIES_CODE":""
    },
    {
       "id":1083,

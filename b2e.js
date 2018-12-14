@@ -1534,6 +1534,18 @@ function ProcessForms(data) {
 var data, csv_content, code_list=[],eBird_label=[],table=[],modalmap,modalsLayer, modalfLayer, form;
 
 jQuery(document).ready(function(){  
+
+	/* Adapt default website based on url param*/
+	var url = new URL(window.location.href);
+	switch(url.searchParams.get('site')) {
+	  case 'it':
+	  	jQuery('#sel-website').val('www.ornitho.it')
+	    break;
+	  case 'fr':
+	    jQuery('#sel-website').val('www.faune-france.org')
+	    break;
+	}
+
 	
 	/* c1: Download biolovision data*/  
 	//Define daptepicker
