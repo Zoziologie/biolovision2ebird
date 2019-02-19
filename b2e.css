@@ -1,21 +1,32 @@
 /*General Strucutre*/
+body{
+	background-color: initial;
+	font-family:-apple-system,BlinkMacSystemFont,"Roboto","Segoe UI","Helvetica Neue","Lucida Grande",Arial,sans-serif;
+}
+a:hover{
+	text-decoration: none;
+}
 .container{
 	max-width: 100%;
 }
 #c2{
 	display: none;
 }
-.row.row-img {
-	display: -webkit-box;
-	display: -webkit-flex;
-	display: -ms-flexbox;
-	display:         flex;
-	flex-wrap: wrap;
+.download-from-biolovision{
+	padding: 1em;
+    background-color: #ebdbc2;
+    width: 100%;
+    margin: 0px 50px;
 }
-.row.row-img > [class*='col-'] {
-	display: flex;
-	flex-direction: column;
+.row {
+	margin-bottom: 40px;
 }
+#c3 .row {
+	margin-bottom: 0px;
+}
+ [type=button]{
+ 	 background-color: #fbbd58;
+ }  
 /* c1: Dowonload biolovision; */
 #date_ago {
 	display: inline;
@@ -28,18 +39,22 @@
 	margin-top: 0px;
 	margin-bottom:0px;
 }
-#button-download-biolovision, #link-id{
-	background-color:#fbbd58;
-	border-radius:0px;
+.radio input[type="radio"]{
+	margin-top: 20px;
 }
 .tab-pane {
-	padding: 20px 0px;
+	background-color: #ebdbc2;
+	border: 2px solid #ebebeb;
 }
-.input-daterange{
-	padding-left: 17px !important;
-	margin-top:-17px;
+#tab-checklists{
+	padding-bottom: 40px;
+}
+.nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active{
+    background-color: #ebdbc2;
+    border: 2px solid #ebebeb;
+    border-bottom: none;	
+}
 
-}
 #input-date-from{
 display: flex;
 flex: 1;
@@ -55,9 +70,9 @@ flex: 1;
     background-color: #eee;
     border: 1px solid #ccc;
 }
-input[type="text"]{
+/*input[type="text"]{
 	border-radius: 0 !important;
-}
+}*/
 /* c2: Upload; */
 #drobox-outer{
 	padding: 10px;
@@ -65,6 +80,7 @@ input[type="text"]{
 	margin-bottom: 20px;
 	margin-top:20px;
 	width: 100%;
+	background: white;
 }
 #dropbox{
 	font-size: x-large;
@@ -83,14 +99,11 @@ input[type="text"]{
 .modal-footer{
 	text-align: center;
 }
-.tab-pane{
-	padding: 20px;
-}
 .map{
 	width:100%;
 	height:400px;
 }
-input[type="text"].form-control {
+/*input[type="text"].form-control {
 	display: block;
 	width: 100%;
 	height: 34px;
@@ -100,19 +113,20 @@ input[type="text"].form-control {
 	color: #555;
 	background-color: #fff;
 	background-image: none;
-	/*border: 1px solid #ccc;*/
+	border: 1px solid #ccc;
 	border-radius: 4px;
 	-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
 	box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
 	-webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
 	-o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
 	transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
-}
+}*/
 #comments-preview, #cmt-sp-preview{
 	max-width: 641px;
-	margin: auto;
+	margin-bottom: 20px;
 	padding: 10px;
-	border: 1px solid #ebebeb;
+	border: 2px solid #ebebeb;
+	background-color: #e8d5b7;
 }
 .leaflet-popup-content{
 	text-align: center;
@@ -132,6 +146,12 @@ input[type="text"].form-control {
 }
 
 /* The slider */
+#div-sliderOF{
+	display: flex;
+}
+.check-fullform{
+	display: none;
+}
 .sliderOF {
 	position: absolute;
 	cursor: pointer;
@@ -169,6 +189,10 @@ input:checked + .sliderOF:before {
 	-ms-transform: translateX(26px);
 	transform: translateX(26px);
 }
+.form-check-input{
+	    margin-top: .3rem !important;
+    margin-left: -1.25rem !important;
+}
 
 /* Rounded sliders */
 .sliderOF.round {
@@ -182,6 +206,7 @@ input:checked + .sliderOF:before {
 	padding: 6px 12px;
 	width: 100%;
 	line-height: 1.42857143;
+	margin-bottom: 10px;
 }
 .cmt-sp-ct-bt{
 	resize: both;
@@ -237,11 +262,8 @@ input:checked + .sliderOF:before {
 	width: 75px;
 	text-align: center;
 }
-.input-group{
-	padding-left: 10px;	
-}
 #zoom{
-	width: 50px;	
+	width: 60px;	
 }
 #cmt-sp-preview-sp{
 	padding-left: 10px;	
@@ -262,4 +284,7 @@ input:checked + .sliderOF:before {
 }
 input[type="number"]{
 	color: #555 !important;
+}
+.form-group{
+	margin-bottom: 0px;
 }

@@ -11,7 +11,7 @@
 
 // Load conversion taxonomie biolovision - eBird
 var eBird_birds_list;
-jQuery.getJSON("https://zoziologie.raphaelnussbaumer.com/wp-content/plugins/biolovision2eBird/patch_ornitho2eBird.min.json", function(data){
+jQuery.getJSON("https://zoziologie.raphaelnussbaumer.com/assets/biolovision2eBird/patch_ornitho2eBird.min.json", function(data){
 	eBird_birds_list = data;
 });
 
@@ -488,6 +488,8 @@ function handleFile(file){
 				var re3 = new RegExp('</'+dup+'>', 'g');
 				xml_string = xml_string.replace(re,'<'+dup+'s>').replace(re2,'<'+dup+'s ').replace(re3,'</'+dup+'s>')
 			})
+			var x2js = new X2JS();
+			var jsonObj = x2js.xml2json(xml_string);
 			data = jQuery.parseJSON(xml2json(jQuery.parseXML(xml_string)).replace('undefined','')).data;
 			if (!data.forms && !data.sightings){
 				alert('Empty file. No data available or wrong file')
@@ -975,9 +977,8 @@ function ProcessForms(data) {
 			}
 			previewComment(form)
 		})
-		jQuery.get( 'https://nominatim.openstreetmap.org/reverse?lat='+form.lat.toString()+'&lon='+form.lon.toString(), function( xml ) {
-			var json = jQuery.parseJSON(xml2json(xml).replace('undefined',''))
-			form.country = json.reversegeocode.addressparts.country_code;
+		jQuery.getJSON( 'https://nominatim.openstreetmap.org/reverse?lat='+form.lat.toString()+'&lon='+form.lon.toString()+'&format=json', function( json ) {
+			form.country = json.address.country_code;
 		});
 		
 		/* REMOVE?
@@ -996,19 +997,19 @@ function ProcessForms(data) {
 		jQuery( "#f-" + form.id ).append( '\
 			<form class="form" data-toggle="validator" >\
 			<div class="row">\
-			<div class="form-group col-lg-6">\
-			<div class="row">\
-			<div class="form-group col-lg-5">\
+			<div class="form-group col-lg-12">\
 			<label for="location" class="control-label">Location:</label>\
 			<input type="text" class="form-control" id="location" value="'+form.name+'" required>\
 			<div class="help-block with-errors"></div>\
 			</div>\
-			<div class="form-group col-lg-4">\
+			<div class="form-group col-lg-6">\
+			<div class="row">\
+			<div class="form-group col-lg-6">\
 			<label class="control-label" for="date">Date:</label> \
 			<input type="date" class="form-control" id="date" value="'+form.date+'" required>\
 			<div class="help-block with-errors"></div>\
 			</div>\
-			<div class="form-group col-lg-3">\
+			<div class="form-group col-lg-6">\
 			<label class="control-label" for="time">Time:</label>\
 			<input type="time" class="form-control" id="time" value="'+form.time_start+'" data-timeOK>\
 			<div class="help-block with-errors"></div>\
@@ -1027,16 +1028,12 @@ function ProcessForms(data) {
 			</div>\
 			<div class="form-group col-lg-6">\
 			<label>Complete Checklist:</label>\
-			<div class="checkbox">\
-			<div class="col-lg-3 text-right">\
-			NO\
+			<div id="div-sliderOF">\
+			<div class="col text-right">NO</div>\
+			<div class="text-center">\
+			<label class="switch"><input type="checkbox" checked="checked" class="check-fullform"><div class="sliderOF round"></div></label>\
 			</div>\
-			<div class="col-lg-6 text-center">\
-			<label class="switch"><input type="checkbox" checked="checked" id="check-fullform"><div class="sliderOF round"></div></label>\
-			</div>\
-			<div class=" col-lg-3 text-left">\
-			YES\
-			</div>\
+			<div class=" col text-left">YES</div>\
 			</div>\
 			</div>\
 			</div>\
@@ -1096,8 +1093,8 @@ function ProcessForms(data) {
 			<label for="comments">Checklist Comment:</label>\
 			<textarea class="form-control" rows="3"  id="comments">'+(form.comment || "") +'</textarea>\
 			</div>\
-			<div class="row checkbox">\
-			<label><input type="checkbox" checked="checked" id="check-static-map"> Include static map</label>\
+			<div class="row form-check">\
+			<label><input class="form-check-input" type="checkbox" checked="checked" id="check-static-map"> Include static map</label>\
 			</div>\
 			<div class="row">\
 			<div class="col-lg-5 form-inline">\
@@ -1121,8 +1118,8 @@ function ProcessForms(data) {
 			<button type="button" class="btn btn-default center-block" id="button-geojson">Export GeoJson</button>\
 			</div>\
 			</div>\
-			<div class="row checkbox">\
-			<label><input type="checkbox" checked="checked" id="check-weather"> Include weather</label>\
+			<div class="row form-check">\
+			<label><input type="checkbox" class="form-check-input" checked="checked" id="check-weather"> Include weather</label>\
 			</div>\
 			<div class="row">\
 			<label>Preview:</label>\
@@ -1133,11 +1130,6 @@ function ProcessForms(data) {
 			<div class="row">\
 			<div class="form-group col-sm-12">\
 			<div class="map" id="map-f-'+form.id+'"></div>\
-			</div>\
-			<div class="form-group col-sm-12"> \
-			<div class="text-center">\
-			<button type="button" class="btn btn-default" id="singleExport-'+form.id+'">Export only this checklist</button>\
-			</div>\
 			</div>\
 			</div>\
 			</form>\
@@ -1231,7 +1223,7 @@ function ProcessForms(data) {
 				form.staticmap.lat = form.layer.sightings.getBounds().getCenter().lat;
 				form.layer.msm = L.marker([form.staticmap.lat,form.staticmap.lng], {
 					icon:L.icon({
-						iconUrl: 'https://zoziologie.raphaelnussbaumer.com/wp-content/uploads/2017/10/Maps-Center-Direction-icon.png',
+						iconUrl: 'https://zoziologie.raphaelnussbaumer.com/assets/biolovision2eBird/images/Maps-Center-Direction-icon.png',
 						iconSize:     [40, 40],
 						iconAnchor:   [20, 20], 
 						popupAnchor:  [-20, 0]
@@ -1251,46 +1243,38 @@ function ProcessForms(data) {
 		var LatLngBounds = form.layer.all.getBounds();
 		var dist = LatLngBounds.getNorthEast().distanceTo(LatLngBounds.getSouthWest())/1000; // m -> km
 		dist = Math.max(5,Math.round(dist*2)).toString();
-	 	var urlebird = 'https://ebird.org/ws1.1/ref/hotspot/geo?lng='+LatLngBounds.getCenter().lng+'&lat='+LatLngBounds.getCenter().lat+'&dist='+dist+'&fmt=xml';
 
 		// Load local hotspot
-		jQuery.get( urlebird, function( xml ) {
-			var json = jQuery.parseJSON(xml2json(xml).replace('undefined',''))
-			if (json.response.result){
-				var hotspots=json.response.result.location;
-				if (!Array.isArray(hotspots)){ 
-					hotspots = [hotspots] 
-				}
-				hotspots.forEach(function(h){
-					var mark = L.marker([h.lat,h.lng],{
-						title: h['loc-name'],
-						alt: h['loc-name'],
-						icon: L.icon({
-							iconUrl: "https://zoziologie.raphaelnussbaumer.com/wp-content/plugins/improvedBiolovisionVisualisation/hotspot-icon-hotspot.png",
-							iconAnchor: [15, 19],
-							popupAnchor: [0, -19],
-						})
+		jQuery.getJSON( 'https://ebird.org/ws2.0/ref/hotspot/geo?lat='+LatLngBounds.getCenter().lat+'&lng='+LatLngBounds.getCenter().lng+'&fmt=json', function( hotspots ) {
+			hotspots = Array.isArray(hotspots) ? hotspots : [hotspots] 
+			hotspots.forEach(function(h){
+				var mark = L.marker([h.lat,h.lng],{
+					title: h.locName,
+					alt: h.locName,
+					icon: L.icon({
+						iconUrl: "https://zoziologie.raphaelnussbaumer.com/assets/biolovision2eBird/images/hotspot-icon-hotspot.png",
+						iconAnchor: [15, 19],
+						popupAnchor: [0, -19],
 					})
-					var popup = jQuery('<div/>') 
-					popup.html('\
-						Set Location of the Checklist with the eBird hostpot:<br>\
-						<button type="button" class="btn btn-default" id="setLocation" title="Define as location of the checklist">'+h['loc-name']+'</button><br>\
-						<a href="https://ebird.org/ebird/hotspot/'+h['loc-id']+'" target="_blank" title="See on eBird">View on eBird</a>');
-					popup.on('click', '#setLocation', function() {
-						form.name = jQuery(this).html();
-						jQuery('#f-'+form.id+' #location').val(form.name);
-						jQuery('#li-f-'+form.id+' a').html(form.name);
-						form.lat = h.lat;
-						form.lon = h.lng;
-						jQuery.get( 'https://nominatim.openstreetmap.org/reverse?lat='+form.lat.toString()+'&lon='+form.lon.toString(), function( xml ) {
-							var json = jQuery.parseJSON(xml2json(xml).replace('undefined',''))
-							form.country = json.reversegeocode.addressparts.country_code;
-						});
-						form.map.closePopup();
-					});
-					mark.addTo(form.layer.hotspots).bindPopup(popup[0]);
 				})
-			}
+				var popup = jQuery('<div/>') 
+				popup.html('\
+					Set Location of the Checklist with the eBird hostpot:<br>\
+					<button type="button" class="btn btn-default" id="setLocation" title="Define as location of the checklist">'+h.locName+'</button><br>\
+					<a href="https://ebird.org/ebird/hotspot/'+h.locId +'" target="_blank" title="See on eBird">View on eBird</a>');
+				popup.on('click', '#setLocation', function() {
+					form.name = jQuery(this).html();
+					jQuery('#f-'+form.id+' #location').val(form.name);
+					jQuery('#li-f-'+form.id+' a').html(form.name);
+					form.lat = h.lat;
+					form.lon = h.lng;
+					jQuery.getJSON( 'https://nominatim.openstreetmap.org/reverse?lat='+form.lat.toString()+'&lon='+form.lon.toString()+'&format=json', function( json ) {
+						form.country = json.address.country_code;
+					});
+					form.map.closePopup();
+				});
+				mark.addTo(form.layer.hotspots).bindPopup(popup[0]);
+			})
 			form.map.fitBounds(form.layer.all.getBounds());
 		});
 
@@ -1329,8 +1313,8 @@ function ProcessForms(data) {
 		jQuery('#f-'+form.id+' #observation-type').change( function(){ 
 			form.protocol = jQuery(this).val();
 			if (form.protocol == 'Incidental'){
-				jQuery('#f-'+form.id+' #check-fullform').prop("checked",false)
-				jQuery('#f-'+form.id+' #check-fullform').change();
+				jQuery('#f-'+form.id+' .check-fullform').prop("checked",false)
+				jQuery('#f-'+form.id+' .check-fullform').change();
 			}
 			jQuery('#f-'+form.id+' #time').change()
 			jQuery('#f-'+form.id+' #duration').change();
@@ -1368,7 +1352,7 @@ function ProcessForms(data) {
 				jQuery(this).parent().removeClass('has-error');
 			}
 		});
-		jQuery('#f-'+form.id+' #check-fullform').change( function(){
+		jQuery('#f-'+form.id+' .check-fullform').change( function(){
 			if (jQuery(this).is(':checked')){
 				form.full_form = true
 			} else{
@@ -1378,9 +1362,9 @@ function ProcessForms(data) {
 		jQuery('#f-'+form.id+' #observation-type').val(form.protocol).change();
 
 		if (form.full_form) {
-			jQuery('#f-'+form.id+' #check-fullform').prop("checked")
+			jQuery('#f-'+form.id+' .check-fullform').prop("checked")
 		} else {
-			jQuery('#f-'+form.id+' #check-fullform').prop("checked",false)
+			jQuery('#f-'+form.id+' .check-fullform').prop("checked",false)
 		}
 		jQuery('#f-'+form.id+' #comments').keyup( function(){
 			previewComment(form);
@@ -1468,9 +1452,6 @@ function ProcessForms(data) {
 		}, false);
 		jQuery('#f-'+form.id+' #cmt-sp-preview-sp').change( function(){
 			previewSpComment(form);
-		});
-		document.getElementById("singleExport-"+form.id).addEventListener("click", function(){
-			singleExport(form);
 		});
 	})
 
@@ -1608,6 +1589,10 @@ jQuery(document).ready(function(){
 	/* c3: Result*/
 	// Button to write to file
 	jQuery('#button-download-biolovision').click( Export );
+	jQuery('#button-download-biolovision-single').click(function(){
+		var n = jQuery("#tab-checklists div.active")[0].id.split('-')[1]-1;
+		singleExport(data.forms[n]);
+	});
 
 	// Map
 	L.MakiMarkers.accessToken = token.mapbox;
