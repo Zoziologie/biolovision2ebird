@@ -250,6 +250,30 @@ function Makemarker(s){
 
 
 
+var downloadfx = function(){
+		if (jQuery('input[type=radio][value=offset]').prop("checked")){
+			var DChoice='offset';
+			var d_t = new Date;
+			var d_f = new Date;
+			d_f.setDate(d_f.getDate()-parseFloat(jQuery('#date_ago').val())+1);
+		} else {
+			var DChoice='range';
+			var d_f = new Date(jQuery('#input-date-from').val())
+			var d_t = new Date(jQuery('#input-date-to').val())
+		}
+		if (jQuery('#sel-website').val().includes("observation") || jQuery('#sel-website').val().includes("waarneming")) {
+			window.open("https://"+jQuery('#sel-website').val()+"/export/user_export7.php?datum_va="+d_f.toISOString().split('T')[0]+"&datum_tm="+d_t.toISOString().split('T')[0]+"&diergroep=1&gebied=0&tag=0&zz=0&soort=0&simple=0&a[]=&k[]=")
+		} else if (jQuery('#sel-website').val().includes("data.biolovision.net") ){
+			window.open("http://"+jQuery('#sel-website').val()+"/index.php?m_id=1351&content=search&start_date="+moment(d_f).format('DD.MM.YYYY')+"&stop_date="+moment(d_t).format('DD.MM.YYYY'))
+		} else {
+			link = "http://"+jQuery('#sel-website').val()+"/index.php?m_id=31&sp_DChoice=" + DChoice + "&sp_DFrom="+moment(d_f).format('DD.MM.YYYY')+"&sp_DTo="+moment(d_t).format('DD.MM.YYYY')+"&sp_DOffset="+ jQuery('#date_ago').val() +"&sp_SChoice=all&sp_PChoice=all&sp_OnlyMyData=1";//&sp_FChoice=export&sp_FExportFormat=XML";
+			window.open(link)
+		}
+	}
+
+
+
+
 
 
 
@@ -672,6 +696,7 @@ function ProcessSightings(data) {
 			marker: {
 				icon: L.AwesomeMarkers.icon({
 					icon: 'list',
+					prefix: 'fa'
 				})
 			}
 		},
@@ -694,6 +719,7 @@ function ProcessSightings(data) {
 			// update marker
 			e.layer.setIcon(L.AwesomeMarkers.icon({
 				icon: 'list',
+				prefix:"fa",
 				markerColor: form.color[0],
 				iconColor: form.color[2]
 			})).on('click',function(){
@@ -739,6 +765,7 @@ function ProcessSightings(data) {
 				alt: form.name,
 				icon: L.AwesomeMarkers.icon({
 					icon: 'list',
+					prefix:'fa',
 					markerColor: form.color[0],
 					iconColor: form.color[2]
 				})
@@ -1530,43 +1557,25 @@ jQuery(document).ready(function(){
 	
 	/* c1: Download biolovision data*/  
 	//Define daptepicker
-	jQuery('#input-date-from').datetimepicker({
+	/*jQuery('#input-date-from').datetimepicker({
 		format: 'DD.MM.YYYY',
-		showTodayButton:true,
+		viewMode: 'years',
+		defaultDate: new Date(),
+		showTodayButton: true,
+		sideBySide: true,
 	})
 	jQuery('#input-date-to').datetimepicker({
 		format: 'DD.MM.YYYY',
-		showTodayButton:true,
-	})
-	var downloadfx = function(){
-		if (jQuery('input[type=radio][value=offset]').prop("checked")){
-			var DChoice='offset';
-			var d_t = new Date;
-			var d_f = new Date;
-			d_f.setDate(d_f.getDate()-parseFloat(jQuery('#date_ago').val())+1);
-		} else {
-			var DChoice='range';
-			d_f_l = jQuery('#input-date-from').val().split('.');
-			var d_f = new Date([d_f_l[2], d_f_l[1], d_f_l[0]].join('-'));
-			d_t_l = jQuery('#input-date-to').val().split('.');
-			var d_t = new Date([d_t_l[2], d_t_l[1], d_t_l[0]].join('-'));
-		}
-
-		if (jQuery('#sel-website').val().includes("observation") || jQuery('#sel-website').val().includes("waarneming")) {
-			var d = new Date(jQuery('#input-date-from').val());
-			window.open("https://"+jQuery('#sel-website').val()+"/export/user_export7.php?datum_va="+d_f.toISOString().split('T')[0]+"&datum_tm="+d_t.toISOString().split('T')[0]+"&diergroep=1&gebied=0&tag=0&zz=0&soort=0&simple=0&a[]=&k[]=")
-		} else if (jQuery('#sel-website').val().includes("data.biolovision.net") ){
-			window.open("http://"+jQuery('#sel-website').val()+"/index.php?m_id=1351&content=search&start_date="+moment(d_f).format('DD.MM.YYYY')+"&stop_date="+moment(d_t).format('DD.MM.YYYY'))
-		} else {
-			link = "http://"+jQuery('#sel-website').val()+"/index.php?m_id=31&sp_DChoice=" + DChoice + "&sp_DFrom="+jQuery('#input-date-from').val()+"&sp_DTo="+jQuery('#input-date-to').val()+"&sp_DOffset="+ jQuery('#date_ago').val() +"&sp_SChoice=all&sp_PChoice=all&sp_OnlyMyData=1";//&sp_FChoice=export&sp_FExportFormat=XML";
-			window.open(link)
-		}
-	}
+		viewMode: 'years',
+		defaultDate: new Date(),
+		showTodayButton: true,
+		sideBySide: true,
+	})*/
+	
 	jQuery("#sel-website").keyup(function(e){if(e.keyCode == 13){downloadfx();}});
 	jQuery("#date_ago").keyup(function(e){if(e.keyCode == 13){downloadfx();}});
 	jQuery("#input-date-from").keyup(function(e){if(e.keyCode == 13){downloadfx();}});
 	jQuery("#input-date-to").keyup(function(e){if(e.keyCode == 13){downloadfx();}});
-	jQuery('#link-id').click( downloadfx );
 	jQuery('#date_ago').on('focus',function(){
 		jQuery('input[type="radio"][value="offset"]').click()
 	})
