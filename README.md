@@ -1,5 +1,5 @@
 # biolovision2eBird
-Convert Biolovision data from any website (ornitho, faune-...) to an import file for eBird.
+Convert your data from any biolovision website (ornitho, faune-…) to eBird.
 
 [DEMO](https://zoziologie.raphaelnussbaumer.com/biolovision2ebird/)
 
