@@ -153,7 +153,7 @@ function staticLink(form){
 	form.layer.edit.toGeoJSON().features.forEach(function(f){
 		fs.features.push(f);
 	})
-	var sl = "https://api.mapbox.com/v4/mapbox.streets/"
+	var sl = "https://api.mapbox.com/v4/mapbox.satellite/"
 	fs.features.forEach(function(f){
 		if (f.geometry.type==="LineString" && sl.length<limit) {
 			var coord = f.geometry.coordinates.slice();
@@ -1231,7 +1231,7 @@ function ProcessForms(data) {
 				jQuery('#f-'+form.id+' #observation-type').change()
 			});
 			e.layer.bindPopup(popup[0]).openPopup();
-			form.map.fitBounds(form.layer.all.getBounds());
+			form.map.fitBounds(form.layer.sightings.getBounds());
 			previewComment(form)
 		});
 
@@ -1272,7 +1272,7 @@ function ProcessForms(data) {
 		dist = Math.max(5,Math.round(dist*2)).toString();
 
 		// Load local hotspot
-		jQuery.getJSON( 'https://ebird.org/ws2.0/ref/hotspot/geo?lat='+LatLngBounds.getCenter().lat+'&lng='+LatLngBounds.getCenter().lng+'&fmt=json', function( hotspots ) {
+		jQuery.getJSON( 'https://ebird.org/ws2.0/ref/hotspot/geo?lat='+LatLngBounds.getCenter().lat+'&lng='+LatLngBounds.getCenter().lng+'&dist=10&fmt=json', function( hotspots ) {
 			hotspots = Array.isArray(hotspots) ? hotspots : [hotspots] 
 			hotspots.forEach(function(h){
 				var mark = L.marker([h.lat,h.lng],{
@@ -1302,7 +1302,7 @@ function ProcessForms(data) {
 				});
 				mark.addTo(form.layer.hotspots).bindPopup(popup[0]);
 			})
-			form.map.fitBounds(form.layer.all.getBounds());
+			form.map.fitBounds(form.layer.sightings.getBounds());
 		});
 
 
@@ -1500,7 +1500,7 @@ function ProcessForms(data) {
 		jQuery('#li-f-'+form.id).on('click',function(){
 			setTimeout(function() {
 				form.map.invalidateSize();
-				form.map.fitBounds(form.layer.all.getBounds());
+				form.map.fitBounds(form.layer.sightings.getBounds());
 			},1);
 		})
 
