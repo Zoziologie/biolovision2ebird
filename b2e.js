@@ -924,8 +924,11 @@ function ProcessForms(data) {
 			})
 			form.date = dates.reduce(function(a, b){ return (a === b) ? a : ''; });
 			if (!form.date){
-				alert('Sigthings of form "' + form.name +'" do not come from the same day. We cannot process such data. Restart the process and aggregate only data from the same day.')
-				window.location.reload(false); 
+				alert('Sigthings of form "' + form.name +'" do not come from the same day. We took the earliest date. Please, check if this is correct.')
+				form.date = dates.sort((a,b) =>
+					dates.filter(v => v===a).length
+					- dates.filter(v => v===b).length
+				).pop()
 			}
 			var times = form.sightings.map(function(s){ 
 				return moment.unix(s.date['@timestamp']).format('HH:mm')
