@@ -992,7 +992,7 @@ function ProcessForms(data) {
 			form.lat=form.marker.getLatLng().lat;
 		}
 		form.weather='';
-		jQuery.get('https://api.wunderground.com/api/b097b9712f359043/history_'+moment(form.date).format('YYYYMMDD')+'/q/'+form.lat+','+form.lon+'.json',function(data){
+		/*jQuery.get('https://api.wunderground.com/api/b097b9712f359043/history_'+moment(form.date).format('YYYYMMDD')+'/q/'+form.lat+','+form.lon+'.json',function(data){
 			var w = data.history.dailysummary[0];
 			form.weather= "";
 			if (w) {
@@ -1006,7 +1006,28 @@ function ProcessForms(data) {
 				form.weather= whtml;
 			}
 			previewComment(form)
+		})*/
+
+		jQuery.getJSON('https://api.apixu.com/v1/history.json?key='+token.apixu+'&dt='+moment(form.date).format('YYYY-MM-DD')+'&q='+form.lat+','+form.lon,function(data){
+			
+			var id = moment((moment(data.forms[0].time_start,"HH:mm")+moment(data.forms[0].time_stop,"HH:mm:ss"))/2).add(30, 'minutes').startOf('hour').hour();
+			var w = data.forecast.forecastday[0].hour[id];
+
+			if (w) {
+				var whtml= w.condition.text
+				whtml += '<b>Temp.</b>:'+w.temp_c+'°C';
+				whtml += ' - <b>Prec.</b>: '+w.precip_mm+ 'mm';
+				whtml += chance_of_snow=='0' ? '':' (snow)'; 
+				whtml += ' - <b>Cloud coverage</b>: '+w.cloud+'%';
+				whtml += ' - <b>Wind</b>: '+w.wind_dir+' '+w.wind_kph+ 'km/h';
+				whtml += ' - <b>Humidity</b>: '+w.humidity;
+				whtml += ' - <b>Visibility</b>: '+w.vis_km+'km';				
+				form.weather= whtml;
+			}
+			previewComment(form)
 		})
+
+		
 		jQuery.getJSON( 'https://nominatim.openstreetmap.org/reverse?lat='+form.lat.toString()+'&lon='+form.lon.toString()+'&format=json', function( json ) {
 			form.country = json.address.country_code;
 		});
