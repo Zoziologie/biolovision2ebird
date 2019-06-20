@@ -133,9 +133,6 @@ function SpComment(form,s){
 	cmt = cmt.replace(/<br><br><br>/g,'<br>');
 	cmt = cmt.replace(/<br><br>/g,'<br>');
 	cmt = cmt.replace(/- 00:00/g,'');
-	if (cmt.slice(-4, 999) == '<br>'){
-		cmt = cmt.slice(0, -4);
-	}
 	return cmt
 }
 
@@ -340,7 +337,7 @@ function Form2Table(f){
 		for (j=table.length-1;j>i;j--){
 			if (table[j].common_name==table[i].common_name){
 				//add j to i
-				if (table[i].specie_comment && table[j].specie_comment){
+				if (table[i].specie_comment && table[j].specie_comment && table[i].specie_comment.length<3999){
 					table[i].specie_comment+='<br><br>'+table[j].specie_comment;
 				}
 				table[i].count=(parseInt(table[i].count)+parseInt(table[j].count)).toString();
