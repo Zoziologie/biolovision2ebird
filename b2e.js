@@ -337,8 +337,8 @@ function Form2Table(f){
 		for (j=table.length-1;j>i;j--){
 			if (table[j].common_name==table[i].common_name){
 				//add j to i
-				if (table[i].specie_comment && table[j].specie_comment && table[i].specie_comment.length<3999){
-					table[i].specie_comment+='<br><br>'+table[j].specie_comment;
+				if (table[i].specie_comment && table[j].specie_comment && table[i].specie_comment.length<3499){
+					table[i].specie_comment+=table[j].specie_comment;
 				}
 				table[i].count=(parseInt(table[i].count)+parseInt(table[j].count)).toString();
 				table.splice(j,1);// Remove the element
@@ -476,6 +476,17 @@ function handleFile(file){
 	if (['json','xml','csv','txt'].indexOf(ext) == -1){// File type not accepted 
 		return;
 	}
+
+	/* Write Cookies*/
+	var d = new Date();
+  	d.setTime(d.getTime() + (365*24*60*60*1000));
+  	var expires = "expires="+ d.toUTCString();
+    cookies_text.forEach(function(s){
+    	document.cookie= s + "=" + escape(jQuery('#'+s).val()) + ";" + expires + ";path=/";
+    })
+    cookies_check.forEach(function(s){
+    	document.cookie= s + "=" + escape(jQuery('#'+s).is(':checked')) + ";" + expires + ";path=/";
+    })
 
 	reader = new FileReader();
 	reader.readAsText(file);//,'ISO-8859-15');
@@ -853,16 +864,6 @@ function ProcessForms(data) {
 		}
 	}
 
-	var partysize=""
-	if (data.forms.length>1){
-		while (!partysize>0){
-			partysize = prompt("How many observers for all/most lists?", "1");
-		}
-	} else {
-		partysize="1"
-	}
-
-
 	//Add unasgined checklist
 	if (data.forms[0].id==0){
 		var form=data.forms[0];
@@ -981,7 +982,7 @@ function ProcessForms(data) {
 
 		})
 		form.distance='';
-		form['party-size']=partysize;
+		form['party-size']=jQuery('#nb-obs').val();
 		form.staticmap={};
 		form.gist='#';
 		if (form.marker){
@@ -1005,19 +1006,19 @@ function ProcessForms(data) {
 			previewComment(form)
 		})*/
 
-		jQuery.getJSON('https://api.apixu.com/v1/history.json?key='+token.apixu+'&dt='+moment(form.date).format('YYYY-MM-DD')+'&q='+form.lat+','+form.lon,function(data){
+		jQuery.getJSON('https://api.apixu.com/v1/history.json?key='+token.apixu+'&dt='+moment(form.date).format('YYYY-MM-DD')+'&q='+form.lat+','+form.lon,function(weather){
 			
 			var id = moment((moment(data.forms[0].time_start,"HH:mm")+moment(data.forms[0].time_stop,"HH:mm:ss"))/2).add(30, 'minutes').startOf('hour').hour();
-			var w = data.forecast.forecastday[0].hour[id];
+			var w = weather.forecast.forecastday[0].hour[id];
 
 			if (w) {
-				var whtml= w.condition.text
-				whtml += '<b>Temp.</b>:'+w.temp_c+'°C';
+				var whtml= '<b>Weather</b>:' +w.condition.text;
+				whtml += ' <b>Temp.</b>:'+w.temp_c+'°C';
 				whtml += ' - <b>Prec.</b>: '+w.precip_mm+ 'mm';
-				whtml += chance_of_snow=='0' ? '':' (snow)'; 
-				whtml += ' - <b>Cloud coverage</b>: '+w.cloud+'%';
+				whtml += w.chance_of_snow =='0' ? '':' (snow)'; 
+				whtml += ' - <b>Cloud</b>: '+w.cloud+'%';
 				whtml += ' - <b>Wind</b>: '+w.wind_dir+' '+w.wind_kph+ 'km/h';
-				whtml += ' - <b>Humidity</b>: '+w.humidity;
+				//whtml += ' - <b>Humidity</b>: '+w.humidity;
 				whtml += ' - <b>Visibility</b>: '+w.vis_km+'km';				
 				form.weather= whtml;
 			}
@@ -1120,12 +1121,21 @@ function ProcessForms(data) {
 			<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].details">Detail</span>\
 			<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].atlas_code">Atlas code</span>\
 			</div>\
-			<div class="cmt-sp-ct cmt-sp-ct-bt" id="cmt-sp-ct-bt-'+ form.id+'" contenteditable="true">\
-			<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].estimation_code">Estimation code</span>\
-			<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].count">Count</span> ind. - <span class="badge badge-secondary" contenteditable="false" value="moment.unix(s.date[\'@timestamp\']).format(\'HH:mm\')">Time</span> - &lt;a href="http://maps.google.com?q=<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lat">Latitude DD</span>,<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lon">Longitude DD</span>&t=k" target="_blank" &gt;<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lat_str">Latitude DMS</span>N <span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lon_str">Longitude DMS</span>E&lt;/a&gt; - &lt;a href="http://'+jQuery('#sel-website').val()+'/index.php?m_id=54&id=<span class="badge badge-secondary" contenteditable="false" value="(s.observers[0].id_sighting || s.observers[0].id_universal)">ID sighting</span>" target="_blank">'+jQuery('#sel-website').val()+'&lt;/a&gt;\
-			<br>&lt;br&gt;<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].comment">Comment</span>\
-			<br>&lt;br&gt;<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].details">Detail</span>\
-			</div>\
+			<div class="cmt-sp-ct cmt-sp-ct-bt" id="cmt-sp-ct-bt-'+ form.id+'" contenteditable="true">'+
+			(jQuery('#incl-sp-cmt').is(":checked") ?
+				'<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].estimation_code">Estimation code</span>\
+				<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].count">Count</span> ind. - \
+				<span class="badge badge-secondary" contenteditable="false" value="moment.unix(s.date[\'@timestamp\']).format(\'HH:mm\')">Time</span> - \
+				&lt;a href="http://maps.google.com?q=<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lat">Latitude DD</span>,\
+				<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lon">Longitude DD</span>\
+				&t=k" target="_blank" &gt;<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lat_str">Latitude DMS</span>N \
+				<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lon_str">Longitude DMS</span>\
+				E&lt;/a&gt; - &lt;a href="http://'+jQuery('#sel-website-link').val()+'/index.php?m_id=54&id=\
+				<span class="badge badge-secondary" contenteditable="false" value="(s.observers[0].id_sighting || s.observers[0].id_universal)">ID sighting</span>\
+				" target="_blank">'+jQuery('#sel-website-link').val()+'&lt;/a&gt;\
+				<br>&lt;br&gt;<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].comment">Comment</span>\
+				<br>&lt;br&gt;<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].details">Detail</span>' : '')
+			+'</div>\
 			</div>\
 			</div>\
 			<div class="form-group col-lg-12">\
@@ -1142,7 +1152,7 @@ function ProcessForms(data) {
 			<textarea class="form-control" rows="3"  id="comments">'+(form.comment || "") +'</textarea>\
 			</div>\
 			<div class="row form-check">\
-			<label><input class="form-check-input" type="checkbox" checked="checked" id="check-static-map"> Include static map</label>\
+			<label><input class="form-check-input" type="checkbox" '+  (jQuery('#incl-map').is(":checked") ? 'checked="checked"' : '') +' id="check-static-map"> Include static map</label>\
 			</div>\
 			<div class="row">\
 			<div class="col-lg-5 form-inline">\
@@ -1167,7 +1177,7 @@ function ProcessForms(data) {
 			</div>\
 			</div>\
 			<div class="row form-check">\
-			<label><input type="checkbox" class="form-check-input" checked="checked" id="check-weather"> Include weather</label>\
+			<label><input type="checkbox" class="form-check-input" '+ (jQuery('#incl-weather').is(":checked") ? 'checked="checked"' : '') +' id="check-weather"> Include weather</label>\
 			</div>\
 			<div class="row">\
 			<label>Preview:</label>\
@@ -1575,6 +1585,19 @@ jQuery(document).ready(function(){
 	    break;
 	}
 
+	jQuery('#sel-website').on('input',function(e){
+    	jQuery("#sel-website-link").val(jQuery('#sel-website').val());
+	});
+
+	jQuery('#incl-sp-cmt').change(function() {
+        if(this.checked) {
+            jQuery("#sel-website-link").attr("disabled", false);
+        } else {
+        	jQuery("#sel-website-link").attr("disabled", true);
+        }     
+    });
+
+
 	
 	/* c1: Download biolovision data*/  
 	//Define daptepicker
@@ -1628,6 +1651,26 @@ jQuery(document).ready(function(){
 		handleFile(e.target.files[0])
 	}
 
+
+    /* Read Cookies*/
+    cookies_text=['sel-website','date_ago','nb-obs','input-date-from','input-date-to','sel-website-link'];
+    cookies_check=['incl-weather','incl-map','incl-sp-cmt'];
+    cookies_text.forEach(function(s){
+    	var v =getCookieValue(s);
+    	if (!(v === "")){
+    		jQuery('#'+s).val(v);
+    	}
+    })
+    cookies_check.forEach(function(s){
+    	var v =getCookieValue(s);
+    	console.log(v)
+    	if (!(v === "")){
+    		jQuery('#'+s).prop("checked",v === 'true');
+    	}
+    })
+
+
+
 	/* c3: Result*/
 	// Button to write to file
 	jQuery('#button-download-biolovision').click( Export );
@@ -1639,4 +1682,12 @@ jQuery(document).ready(function(){
 	// Map
 	L.MakiMarkers.accessToken = token.mapbox;
 
+
+
 });
+
+
+function getCookieValue(a) {
+    var b = document.cookie.match('(^|[^;]+)\\s*' + a + '\\s*=\\s*([^;]+)');
+    return b ? b.pop() : '';
+}

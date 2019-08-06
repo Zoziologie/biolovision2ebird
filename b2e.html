@@ -33,86 +33,98 @@ plugins:
 		<div class="col-sm-5"><img src="https://zoziologie.raphaelnussbaumer.com/assets/biolovision2eBird/images/Selection_020-1.png" /></div>
 	</div>
 	<h2>2. Import Biolovision data </h2>
-	<div class="row">
-		<p>First, you need to export your file from biolovision. Go on the website, then go in "query your data" and export them in .json <img src="https://zoziologie.raphaelnussbaumer.com/assets/biolovision2eBird/images/json.png" alt="json"/>. If you are already login in this computer, you can make the query using the form below:</p>
-		<form onsubmit="downloadfx(); return false;" class="row download-from-biolovision">
-			<div class="col-lg-3 form-group"><label for="sel-website">a) Select a website:</label>
-				<input id="sel-website" class="form-control" list="websites" name="website" type="text" value="www.ornitho.ch" />
-				<datalist id="websites">
-					<option value="www.ornitho.ch"></option>
-					<option value="www.faune-france.org"></option>
-					<option value="data.biolovision.net"></option>
-					<option value="www.ornitho.it"></option>
-					<option value="www.ornitho.at"></option>
-					<option value="www.ornitho.de"></option>
-					<option value="www.ornitho.cat"></option>
-					<option value="www.ornitho.lu"></option>
-					<option value="www.ornitho.pl"></option>
-					<option value="www.ornitho.eus"></option>
-					<option value="www.faune-Champagne-ardenne.org"></option>
-					<option value="www.faune-alsace.org"></option>
-					<option value="www.faune-lorraine.org"></option>
-					<option value="www.faune-Charente.org"></option>
-					<option value="www.faune-Charente-maritime.org"></option>
-					<option value="www.faune-limousin.eu"></option>
-					<option value="www.nature79.org"></option>
-					<option value="www.faune-aquitaine.org"></option>
-					<option value="vienne.lpo.fr"></option>
-					<option value="www.faune-ain.org"></option>
-					<option value="www.faune-auvergne.org"></option>
-					<option value="www.faune-ardeche.org"></option>
-					<option value="www.faune-drome.org"></option>
-					<option value="haute-savoie.lpo.fr"></option>
-					<option value="www.faune-isere.org"></option>
-					<option value="www.faune-loire.org"></option>
-					<option value="www.faune-rhone.org"></option>
-					<option value="www.faune-savoie.org"></option>
-					<option value="www.faune-bretagne.org"></option>
-					<option value="www.oiseaux-cote-dor.org"></option>
-					<option value="franche-comte.lpo.fr"></option>
-					<option value="www.faune-nievre.org"></option>
-					<option value="www.faune-yonne.org"></option>
-					<option value="www.faune-Cher.org"></option>
-					<option value="www.faune-touraine.org"></option>
-					<option value="www.faune-lr.org"></option>
-					<option value="www.faune-tarn-aveyron.org"></option>
-					<option value="www.faune-iledefrance.org"></option>
-					<option value="www.faune-loire-atlantique.org"></option>
-					<option value="www.faune-anjou.org"></option>
-					<option value="www.faune-maine.org"></option>
-					<option value="www.faune-maine.org"></option>
-					<option value="www.faune-vendee.org"></option>
-					<option value="www.faune-paca.org"></option>
-					<option value="www.faune-martinique.org"></option>
-					<option value="www.faune-reunion.fr"></option>
-					<option value="observation.org"></option>
-					<option value="waarneming.nl"></option>
-					<option value="waarnemingen.be"></option>
-				</datalist>
+	<p>First, you need to export your file from biolovision. Go on the website, then go in "query your data" and export them in .json <img src="https://zoziologie.raphaelnussbaumer.com/assets/biolovision2eBird/images/json.png" alt="json"/>. If you are already login in this computer, you can make the query using the form below:</p>
+	<form onsubmit="downloadfx(); return false;" class="row download-from-biolovision">
+		<div class="col-lg-3 form-group"><label for="sel-website">a) Select a website:</label>
+			<input id="sel-website" class="form-control" list="websites" name="website" type="text" value="www.ornitho.ch" />
+			<datalist id="websites">
+				<option value="www.ornitho.ch"></option>
+				<option value="www.faune-france.org"></option>
+				<option value="data.biolovision.net"></option>
+				<option value="www.ornitho.it"></option>
+				<option value="www.ornitho.at"></option>
+				<option value="www.ornitho.de"></option>
+				<option value="www.ornitho.cat"></option>
+				<option value="www.ornitho.lu"></option>
+				<option value="www.ornitho.pl"></option>
+				<option value="www.ornitho.eus"></option>
+				<option value="www.faune-Champagne-ardenne.org"></option>
+				<option value="www.faune-alsace.org"></option>
+				<option value="www.faune-lorraine.org"></option>
+				<option value="www.faune-Charente.org"></option>
+				<option value="www.faune-Charente-maritime.org"></option>
+				<option value="www.faune-limousin.eu"></option>
+				<option value="www.nature79.org"></option>
+				<option value="www.faune-aquitaine.org"></option>
+				<option value="vienne.lpo.fr"></option>
+				<option value="www.faune-ain.org"></option>
+				<option value="www.faune-auvergne.org"></option>
+				<option value="www.faune-ardeche.org"></option>
+				<option value="www.faune-drome.org"></option>
+				<option value="haute-savoie.lpo.fr"></option>
+				<option value="www.faune-isere.org"></option>
+				<option value="www.faune-loire.org"></option>
+				<option value="www.faune-rhone.org"></option>
+				<option value="www.faune-savoie.org"></option>
+				<option value="www.faune-bretagne.org"></option>
+				<option value="www.oiseaux-cote-dor.org"></option>
+				<option value="franche-comte.lpo.fr"></option>
+				<option value="www.faune-nievre.org"></option>
+				<option value="www.faune-yonne.org"></option>
+				<option value="www.faune-Cher.org"></option>
+				<option value="www.faune-touraine.org"></option>
+				<option value="www.faune-lr.org"></option>
+				<option value="www.faune-tarn-aveyron.org"></option>
+				<option value="www.faune-iledefrance.org"></option>
+				<option value="www.faune-loire-atlantique.org"></option>
+				<option value="www.faune-anjou.org"></option>
+				<option value="www.faune-maine.org"></option>
+				<option value="www.faune-maine.org"></option>
+				<option value="www.faune-vendee.org"></option>
+				<option value="www.faune-paca.org"></option>
+				<option value="www.faune-martinique.org"></option>
+				<option value="www.faune-reunion.fr"></option>
+				<option value="observation.org"></option>
+				<option value="waarneming.nl"></option>
+				<option value="waarnemingen.be"></option>
+			</datalist>
+		</div>
+		<div class="col-lg-6 form-group">
+			<label style="display: block;">b) Select Date:</label>
+			<div class="col-lg-12">
+				<div class="radio"><label><input checked="checked" name="radio_date" type="radio" value="offset" /> <input id="date_ago" class="form-control" min="0" type="number" value="1" /> days ago</label></div>
 			</div>
-			<div class="col-lg-6 form-group">
-				<label style="display: block;">b) Select Date:</label>
-				<div class="col-lg-12">
-					<div class="radio"><label><input checked="checked" name="radio_date" type="radio" value="offset" /> <input id="date_ago" class="form-control" min="0" type="number" value="1" /> days ago</label></div>
-				</div>
-				<div class="col-lg-12">
-					<div class="radio">
-						<label>
-							<input name="radio_date" type="radio" value="range" />
-							<div class="input-group ">
-								<input id="input-date-from" class="form-control" type="date" />
-								<span class="input-group-addon">to</span>
-								<input id="input-date-to" class="form-control" type="date" />
-							</label>
-						</div>
+			<div class="col-lg-12">
+				<div class="radio">
+					<label>
+						<input name="radio_date" type="radio" value="range" />
+						<div class="input-group ">
+							<input id="input-date-from" class="form-control" type="date" />
+							<span class="input-group-addon">to</span>
+							<input id="input-date-to" class="form-control" type="date" />
+						</label>
 					</div>
 				</div>
 			</div>
-			<div class="col-lg-3 form-group"><label for="link-id">c) Download file</label>
-				<button id="link-id" class="btn btn-default" type="submit">Download Data Observation</button>
-			</div>
-		</form>
-	</div>
+		</div>
+		<div class="col-lg-3 form-group"><label for="link-id">c) Download file</label>
+			<button id="link-id" class="btn btn-default" type="submit">Download Data Observation</button>
+		</div>
+	</form>
+	<p>Then, define the global settings for all checklists. This can still be changed for each checklists individually. These settings will be saved in your cookies once you upload a file, such that next time you come back, the same settings will be set by default.</p>
+	<form class="row form-inline" id="row-set">
+		<div class="col-lg-3">
+			<label for="nb-obs">Number of observers: <input id="nb-obs" type="number" class="form-control" value="1"></label>
+		</div>
+		<div class="col-lg-5">
+			<label for="incl-weather"><input id="incl-weather" type="checkbox" class="form-control" checked> Include weather information in checklist comment.</label>
+			<label for="incl-map"><input id="incl-map" type="checkbox" class="form-control" checked> Include static map in checklist comment.</label>
+			<label for="incl-sp-cmt"><input id="incl-sp-cmt" type="checkbox" class="form-control" checked> Include details in species comment.</label>
+		</div>
+		<div class="col-lg-4"><label for="sel-website-link">Link website:</label>
+			<input id="sel-website-link" class="form-control" list="websites" name="website-link" type="text" value="www.ornitho.ch" />
+		</div>
+	</form>
 	<div class="row">
 		Drag the xml file on the zone above (or click on the zone to open the input window). You can directly export your  data
 		<div id="drobox-outer">

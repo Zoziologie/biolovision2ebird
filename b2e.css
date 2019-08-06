@@ -51,6 +51,8 @@ a:hover{
 }
 .radio input[type="radio"]{
 	margin-top: 17px;
+}
+input{
 	box-shadow: none;
 }
 .tab-pane {
@@ -80,6 +82,12 @@ a:hover{
 	padding: 6px 12px;
 	background-color: #eee;
 	border: 1px solid #ccc;
+}
+#nb-obs{
+	    width: 75px;
+}
+#row-set label{
+	justify-content:initial;
 }
 
 /* c2: Upload; */
