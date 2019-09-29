@@ -168,8 +168,14 @@ plugins:
 		<ul>
 			<li>Generate the eBird file (.csv) for the checklist(s) with the buttons below:</li>
 			<div class="text-center">
-				<button type="button" id="button-download-biolovision" class="btn btn-default">Export all checklists</button>
-				<button type="button" id="button-download-biolovision-single" class="btn btn-default">Export only active checklist</button>
+				<button type="button" id="button-download-biolovision" class="btn btn-default">
+					<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
+					Export all checklists
+				</button>
+				<button type="button" id="button-download-biolovision-single" class="btn btn-default">
+					<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
+					Export only active checklist
+				</button>
 			</div>
 			<li>Open eBird, go to "Submit Observations", and "Import Data" or click on <a class="" href="http://ebird.org/ebird/import/upload.form?theme=ebird" target="_blank" rel="noopener">eBird Import</a></li>
 			<li>Choose "eBird Record Format (Extended)", and load the file which was downloaded at the previous step.</li>

@@ -88,11 +88,11 @@ function csvJSON(csv){
 
 // convert coordinate from 46.3523462133 to 46°56'34''
 function deg_to_dms(deg) {
-   var d = Math.floor (deg);
-   var minfloat = (deg-d)*60;
-   var m = Math.floor(minfloat);
-   var secfloat = (minfloat-m)*60;
-   var s = Math.round(secfloat);
+	var d = Math.floor (deg);
+	var minfloat = (deg-d)*60;
+	var m = Math.floor(minfloat);
+	var secfloat = (minfloat-m)*60;
+	var s = Math.round(secfloat);
    // After rounding, the seconds might become 60. These two if-tests are not necessary if no rounding is done.
    if (s==60) { m++; s=0; }
    if (m==60) { d++; m=0; }
@@ -248,21 +248,21 @@ function Makemarker(s){
 
 
 var downloadfx = function(){
-		if (jQuery('input[type=radio][value=offset]').prop("checked")){
-			var DChoice='offset';
-			var d_t = new Date;
-			var d_f = new Date;
-			d_f.setDate(d_f.getDate()-parseFloat(jQuery('#date_ago').val())+1);
-		} else {
-			var DChoice='range';
-			var d_f = new Date(jQuery('#input-date-from').val())
-			var d_t = new Date(jQuery('#input-date-to').val())
-		}
-		if (jQuery('#sel-website').val().includes("observation") || jQuery('#sel-website').val().includes("waarneming")) {
-			window.open("https://"+jQuery('#sel-website').val()+"/export/user_export7.php?datum_va="+d_f.toISOString().split('T')[0]+"&datum_tm="+d_t.toISOString().split('T')[0]+"&diergroep=1&gebied=0&tag=0&zz=0&soort=0&simple=0&a[]=&k[]=")
-		} else if (jQuery('#sel-website').val().includes("data.biolovision.net") ){
-			window.open("http://"+jQuery('#sel-website').val()+"/index.php?m_id=1351&content=search&start_date="+moment(d_f).format('DD.MM.YYYY')+"&stop_date="+moment(d_t).format('DD.MM.YYYY'))
-		} else {
+	if (jQuery('input[type=radio][value=offset]').prop("checked")){
+		var DChoice='offset';
+		var d_t = new Date;
+		var d_f = new Date;
+		d_f.setDate(d_f.getDate()-parseFloat(jQuery('#date_ago').val())+1);
+	} else {
+		var DChoice='range';
+		var d_f = new Date(jQuery('#input-date-from').val())
+		var d_t = new Date(jQuery('#input-date-to').val())
+	}
+	if (jQuery('#sel-website').val().includes("observation") || jQuery('#sel-website').val().includes("waarneming")) {
+		window.open("https://"+jQuery('#sel-website').val()+"/export/user_export7.php?datum_va="+d_f.toISOString().split('T')[0]+"&datum_tm="+d_t.toISOString().split('T')[0]+"&diergroep=1&gebied=0&tag=0&zz=0&soort=0&simple=0&a[]=&k[]=")
+	} else if (jQuery('#sel-website').val().includes("data.biolovision.net") ){
+		window.open("http://"+jQuery('#sel-website').val()+"/index.php?m_id=1351&content=search&start_date="+moment(d_f).format('DD.MM.YYYY')+"&stop_date="+moment(d_t).format('DD.MM.YYYY'))
+	} else {
 			link = "http://"+jQuery('#sel-website').val()+"/index.php?m_id=31&sp_DChoice=" + DChoice + "&sp_DFrom="+moment(d_f).format('DD.MM.YYYY')+"&sp_DTo="+moment(d_t).format('DD.MM.YYYY')+"&sp_DOffset="+ jQuery('#date_ago').val() +"&sp_SChoice=all&sp_PChoice=all&sp_OnlyMyData=1";//&sp_FChoice=export&sp_FExportFormat=XML";
 			window.open(link)
 		}
@@ -333,19 +333,27 @@ function Form2Table(f){
 	}*/
 
 	// Check for duplicate
-	for (i=table.length-1;i>=0;i--){
-		for (j=table.length-1;j>i;j--){
-			if (table[j].common_name==table[i].common_name){
-				//add j to i
-				if (table[i].specie_comment && table[j].specie_comment && table[i].specie_comment.length<3499){
-					table[i].specie_comment+=table[j].specie_comment;
+	var non_alert=true;
+	table2 = table.reduce(function(accumulator, currentValue) { 
+		var ind = accumulator.map(t => t.common_name).indexOf(currentValue.common_name)
+		if (ind == -1){
+			accumulator.push(currentValue);
+		} else {
+			accumulator[ind].count=(parseInt(accumulator[ind].count)+parseInt(currentValue.count)).toString();
+			var tmp = accumulator[ind].specie_comment + currentValue.specie_comment;
+			if (tmp.length > 4000){
+				if (non_alert){
+					alert('Species comment is too long. Please review the species comment template of '+ f.name+'. We will carry on the export triming the comments at 4000 characters. ')
+					non_alert=false;
 				}
-				table[i].count=(parseInt(table[i].count)+parseInt(table[j].count)).toString();
-				table.splice(j,1);// Remove the element
+			} else {
+				accumulator[ind].specie_comment = tmp;
 			}
 		}
-	}
-	return table;
+		return accumulator
+	},[]);
+
+	return table2;
 }
 
 function Table2CSV(table) {
@@ -391,13 +399,14 @@ function CreateGist(form, callback){
 		alert('Error with the Gist Map: '+ errorThrown )
 		previewComment(form)
 		callback()
-    });
+	});
 }
 
 function singleExport(form){
 	if (jQuery('#f-'+form.id + ' .form-group.has-error').length > 0) {
 		alert('Form '+form.name+' has error(s). It will not be exported!')
 	} else {
+		jQuery('#button-download-biolovision-single > span.spinner-border.spinner-border-sm').show()
 		CreateGist(form, function(){
 			var table = Form2Table(form);
 			csv = Table2CSV(table);
@@ -410,6 +419,7 @@ function singleExport(form){
 			document.body.appendChild(downloadLink);
 			downloadLink.click();
 			document.body.removeChild(downloadLink);
+			jQuery('#button-download-biolovision-single > span.spinner-border.spinner-border-sm').hide()
 		})
 	}
 }
@@ -422,6 +432,7 @@ function Export(){
 		if (jQuery('#f-'+form.id + ' .form-group.has-error').length > 0) {
 			alert('Form '+form.name+' has error(s). It will not be exported!')
 		} else {
+			jQuery('#button-download-biolovision > span.spinner-border.spinner-border-sm').show()
 			CreateGist(form, function(){
 				i+=1;
 				t = Form2Table(form);
@@ -440,6 +451,7 @@ function Export(){
 						document.body.appendChild(downloadLink);
 						downloadLink.click();
 						document.body.removeChild(downloadLink);
+						jQuery('#button-download-biolovision > span.spinner-border.spinner-border-sm').hide()
 					}
 				},1000)
 			})
@@ -479,14 +491,14 @@ function handleFile(file){
 
 	/* Write Cookies*/
 	var d = new Date();
-  	d.setTime(d.getTime() + (365*24*60*60*1000));
-  	var expires = "expires="+ d.toUTCString();
-    cookies_text.forEach(function(s){
-    	document.cookie= s + "=" + escape(jQuery('#'+s).val()) + ";" + expires + ";path=/";
-    })
-    cookies_check.forEach(function(s){
-    	document.cookie= s + "=" + escape(jQuery('#'+s).is(':checked')) + ";" + expires + ";path=/";
-    })
+	d.setTime(d.getTime() + (365*24*60*60*1000));
+	var expires = "expires="+ d.toUTCString();
+	cookies_text.forEach(function(s){
+		document.cookie= s + "=" + escape(jQuery('#'+s).val()) + ";" + expires + ";path=/";
+	})
+	cookies_check.forEach(function(s){
+		document.cookie= s + "=" + escape(jQuery('#'+s).is(':checked')) + ";" + expires + ";path=/";
+	})
 
 	reader = new FileReader();
 	reader.readAsText(file);//,'ISO-8859-15');
@@ -529,156 +541,156 @@ function handleFile(file){
 			}
 			// Convert form, sightings, observer and detail to array if empty or only one present
 			if (!data.forms) { data.forms =[] }
-			if (!data.sightings) { data.sightings =[] }
-			if (!Array.isArray(data.forms)){ data.forms = [data.forms] }
-			data.forms.forEach(function(f){
-				if (!Array.isArray(f.sightings)){ f.sightings = [f.sightings] }
-				f.sightings.forEach(function(s){
-					if (!Array.isArray(s.observers)){ s.observers = [s.observers] }
-					s.observers.forEach(function(o){
-						if (!o.details) { o.details =[] }
-						if (!Array.isArray(o.details)){ o.details = [o.details] }
+				if (!data.sightings) { data.sightings =[] }
+					if (!Array.isArray(data.forms)){ data.forms = [data.forms] }
+						data.forms.forEach(function(f){
+							if (!Array.isArray(f.sightings)){ f.sightings = [f.sightings] }
+								f.sightings.forEach(function(s){
+									if (!Array.isArray(s.observers)){ s.observers = [s.observers] }
+										s.observers.forEach(function(o){
+											if (!o.details) { o.details =[] }
+												if (!Array.isArray(o.details)){ o.details = [o.details] }
+											})
+									s.date=s.observers[0].timing;
+								})
+						})
+					if (!Array.isArray(data.sightings)){ data.sightings = [data.sightings] }
+						data.sightings.forEach(function(s){
+							if (!Array.isArray(s.observers)){ s.observers = [s.observers] }
+								s.observers.forEach(function(o){
+									if (!o.details) { o.details =[] }
+										if (!Array.isArray(o.details)){ o.details = [o.details] }
+									})
+							s.date=s.observers[0].timing;
+						})
+				} else if (ext == 'txt'){
+					var sightings = jQuery.parseJSON(csvJSON(reader.result));
+					if (!('Year' in sightings[0])){
+						alert('Not a correct file. Maybe try to export in English')
+						return;
+					}
+					data={};
+					data.sightings=[];
+
+					InitiateForms(data)
+
+					sightings.forEach(function(s){
+						ns={
+							date:{
+								'@ISO8601': new Date(s.Year, s.Month-1, s.Day, s.Timing.split(':')[0], (s.Timing.split(':')[1] ? s.Timing.split(':')[1] : '')).toISOString(),
+								'@timestamp': ""
+							},
+							observers:[{
+								count: s.Number,
+								estimation_code: s.Estimation,
+								id_sighting: s['ID ornitho.ch'],
+								coord_lat: s['Latitude (N)'],
+								coord_lon: s['Longitude (E)'],
+								comment: s.Comment,
+								details:[],
+								timing:{
+									'@ISO8601': new Date(s.Year, s.Month-1, s.Day, s.Timing.split(':')[0], (s.Timing.split(':')[1] ? s.Timing.split(':')[1] : '')).toISOString(),
+								},
+								atlas_code:{'#text': s.ATLAS_CODE}
+							}],
+							place:{
+								altitude: s.ALTITUDE,
+								name: (('Lieu_dit' in s) ? s['Lieu_dit'] : (('Site' in s) ? s.Site : ''))
+							},
+							species:{
+								'latin_name': s['Latin name'],
+								name: s.Species,
+							}
+						};
+						data.sightings.push(ns);
 					})
-					s.date=s.observers[0].timing;
-				})
-			})
-			if (!Array.isArray(data.sightings)){ data.sightings = [data.sightings] }
-			data.sightings.forEach(function(s){
-				if (!Array.isArray(s.observers)){ s.observers = [s.observers] }
-				s.observers.forEach(function(o){
-					if (!o.details) { o.details =[] }
-					if (!Array.isArray(o.details)){ o.details = [o.details] }
-				})
-				s.date=s.observers[0].timing;
-			})
-		} else if (ext == 'txt'){
-			var sightings = jQuery.parseJSON(csvJSON(reader.result));
-			if (!('Year' in sightings[0])){
-				alert('Not a correct file. Maybe try to export in English')
-				return;
-			}
-			data={};
-			data.sightings=[];
+				} else if (ext == 'csv') {
+					var sightings = jQuery.parseJSON(csvJSON(reader.result).replace(/\\"/g,''))
+					sightings.splice(-1,1);
 
-			InitiateForms(data)
-
-			sightings.forEach(function(s){
-				ns={
-					date:{
-						'@ISO8601': new Date(s.Year, s.Month-1, s.Day, s.Timing.split(':')[0], (s.Timing.split(':')[1] ? s.Timing.split(':')[1] : '')).toISOString(),
-						'@timestamp': ""
-					},
-					observers:[{
-						count: s.Number,
-						estimation_code: s.Estimation,
-						id_sighting: s['ID ornitho.ch'],
-						coord_lat: s['Latitude (N)'],
-						coord_lon: s['Longitude (E)'],
-						comment: s.Comment,
-						details:[],
-						timing:{
-							'@ISO8601': new Date(s.Year, s.Month-1, s.Day, s.Timing.split(':')[0], (s.Timing.split(':')[1] ? s.Timing.split(':')[1] : '')).toISOString(),
-						},
-						atlas_code:{'#text': s.ATLAS_CODE}
-					}],
-					place:{
-						altitude: s.ALTITUDE,
-						name: (('Lieu_dit' in s) ? s['Lieu_dit'] : (('Site' in s) ? s.Site : ''))
-					},
-					species:{
-						'latin_name': s['Latin name'],
-						name: s.Species,
+					if (!('LEVEL' in sightings[0])){
+						alert('Not a correct file. Maybe try to export in English')
+						return;
 					}
-				};
-				data.sightings.push(ns);
-			})
-		} else if (ext == 'csv') {
-			var sightings = jQuery.parseJSON(csvJSON(reader.result).replace(/\\"/g,''))
-			sightings.splice(-1,1);
+					data={};
+					data.sightings=[];
 
-			if (!('LEVEL' in sightings[0])){
-				alert('Not a correct file. Maybe try to export in English')
-				return;
-			}
-			data={};
-			data.sightings=[];
+					InitiateForms(data)
 
-			InitiateForms(data)
-
-			sightings.forEach(function(s){
-				ns={
-					date:{
-						'@ISO8601': new Date(s.Date.split('-')[0], s.Date.split('-')[1], s.Date.split('-')[2]-1, s.Time.split(':')[0], (s.Time.split(':')[1] ? s.Time.split(':')[1] : '')).toISOString(), 
-					},
-					observers:[{
-						count: s.Number,
-						estimation_code: s['meaning of number'],
-						id_sighting: s.id,
-						coord_lat: s.lat.replace(',','.'),
-						coord_lon: s.Lng.replace(',','.'),
-						comment: 'unknown'==s.method ? s.remarks : s.remarks+', '+s.method+', '+s.Activity,
-						details:[{
-							count: "1",
-							sex: {
-								"-id": 'unknown' == s.sex ? "U" : 'X',
-								"#text": s.sex
+					sightings.forEach(function(s){
+						ns={
+							date:{
+								'@ISO8601': new Date(s.Date.split('-')[0], s.Date.split('-')[1], s.Date.split('-')[2]-1, s.Time.split(':')[0], (s.Time.split(':')[1] ? s.Time.split(':')[1] : '')).toISOString(), 
 							},
-							age: {
-								"-id":  'unknown' == s.sex ? "U" : 'X',
-								"#text": s.sex
+							observers:[{
+								count: s.Number,
+								estimation_code: s['meaning of number'],
+								id_sighting: s.id,
+								coord_lat: s.lat.replace(',','.'),
+								coord_lon: s.Lng.replace(',','.'),
+								comment: 'unknown'==s.method ? s.remarks : s.remarks+', '+s.method+', '+s.Activity,
+								details:[{
+									count: "1",
+									sex: {
+										"-id": 'unknown' == s.sex ? "U" : 'X',
+										"#text": s.sex
+									},
+									age: {
+										"-id":  'unknown' == s.sex ? "U" : 'X',
+										"#text": s.sex
+									},
+								}],
+								timing:{
+									'@ISO8601': new Date(s.Date.split('-')[0], s.Date.split('-')[1], s.Date.split('-')[2]-1, s.Time.split(':')[0], (s.Time.split(':')[1] ? s.Time.split(':')[1] : '')).toISOString(),
+								},
+								atlas_code:{
+									'#text': ''
+								}
+							}],
+							place:{
+								county: s.Province,
+								name: s.Area,
+								municipality: s.municipal
 							},
-						}],
-						timing:{
-							'@ISO8601': new Date(s.Date.split('-')[0], s.Date.split('-')[1], s.Date.split('-')[2]-1, s.Time.split(':')[0], (s.Time.split(':')[1] ? s.Time.split(':')[1] : '')).toISOString(),
-						},
-						atlas_code:{
-							'#text': ''
-						}
-					}],
-					place:{
-						county: s.Province,
-						name: s.Area,
-						municipality: s.municipal
-					},
-					species:{
-						'latin_name': s['Scientific name'],
-						name: s.name,
-					}
-				};
-				data.sightings.push(ns);
-			})
-		}
+							species:{
+								'latin_name': s['Scientific name'],
+								name: s.name,
+							}
+						};
+						data.sightings.push(ns);
+					})
+				}
 
-		data.forms.forEach(function(f,idx){
-			f.color = marker_color[idx+1];
-			f.id=idx+1;
-			f.name=f.sightings[0].place.name;
+				data.forms.forEach(function(f,idx){
+					f.color = marker_color[idx+1];
+					f.id=idx+1;
+					f.name=f.sightings[0].place.name;
 			f.time_start = moment(f.time_start,"HH:mm").format("HH:mm") // 9:1 -> 09:01
 		});
-		data.forms.n=data.forms.length-1;
+				data.forms.n=data.forms.length-1;
 
-		jQuery('html, body').css('overflow-y','auto');
-		if (data.sightings.length>0) {
-			jQuery('#c1').slideUp("slow",function(){
-				jQuery('#c2').slideDown("slow",function(){
-					ProcessSightings(data)
-				});
-			});
-		} else if (data.forms.length>0){
-			jQuery('#c1').slideUp("slow",function(){
-				jQuery('#c3').slideDown("slow",function(){
-					ProcessForms(data)
-				});	
-			});
-		} else {
-			alert('Empty file')
-			return
+				jQuery('html, body').css('overflow-y','auto');
+				if (data.sightings.length>0) {
+					jQuery('#c1').slideUp("slow",function(){
+						jQuery('#c2').slideDown("slow",function(){
+							ProcessSightings(data)
+						});
+					});
+				} else if (data.forms.length>0){
+					jQuery('#c1').slideUp("slow",function(){
+						jQuery('#c3').slideDown("slow",function(){
+							ProcessForms(data)
+						});	
+					});
+				} else {
+					alert('Empty file')
+					return
+				}
+			}
 		}
-	}
-}
 
 
-function ProcessSightings(data) {
+		function ProcessSightings(data) {
 	data.forms.unshift({ // Create the checklist for Non-Assigned
 		name: 'Non-Assigned',
 		id:0,
@@ -846,7 +858,7 @@ function ProcessSightings(data) {
 
 	// Display message if data are spanning over severa days
 	uniquedate = uniquedate.filter(function(value, index, self) { 
-	    return self.indexOf(value) === index;
+		return self.indexOf(value) === index;
 	})
 	if (uniquedate.length==1){
 		jQuery('#warning-several-days').hide()
@@ -926,7 +938,7 @@ function ProcessForms(data) {
 				form.date = dates.sort((a,b) =>
 					dates.filter(v => v===a).length
 					- dates.filter(v => v===b).length
-				).pop()
+					).pop()
 			}
 			var times = form.sightings.map(function(s){ 
 				return moment.unix(s.date['@timestamp']).format('HH:mm')
@@ -1577,25 +1589,25 @@ jQuery(document).ready(function(){
 	/* Adapt default website based on url param*/
 	var url = new URL(window.location.href);
 	switch(url.searchParams.get('site')) {
-	  case 'it':
-	  	jQuery('#sel-website').val('www.ornitho.it')
-	    break;
-	  case 'fr':
-	    jQuery('#sel-website').val('www.faune-france.org')
-	    break;
+		case 'it':
+		jQuery('#sel-website').val('www.ornitho.it')
+		break;
+		case 'fr':
+		jQuery('#sel-website').val('www.faune-france.org')
+		break;
 	}
 
 	jQuery('#sel-website').on('input',function(e){
-    	jQuery("#sel-website-link").val(jQuery('#sel-website').val());
+		jQuery("#sel-website-link").val(jQuery('#sel-website').val());
 	});
 
 	jQuery('#incl-sp-cmt').change(function() {
-        if(this.checked) {
-            jQuery("#sel-website-link").attr("disabled", false);
-        } else {
-        	jQuery("#sel-website-link").attr("disabled", true);
-        }     
-    });
+		if(this.checked) {
+			jQuery("#sel-website-link").attr("disabled", false);
+		} else {
+			jQuery("#sel-website-link").attr("disabled", true);
+		}     
+	});
 
 
 	
@@ -1652,22 +1664,22 @@ jQuery(document).ready(function(){
 	}
 
 
-    /* Read Cookies*/
-    cookies_text=['sel-website','date_ago','nb-obs','input-date-from','input-date-to','sel-website-link'];
-    cookies_check=['incl-weather','incl-map','incl-sp-cmt'];
-    cookies_text.forEach(function(s){
-    	var v =getCookieValue(s);
-    	if (!(v === "")){
-    		jQuery('#'+s).val(v);
-    	}
-    })
-    cookies_check.forEach(function(s){
-    	var v =getCookieValue(s);
-    	console.log(v)
-    	if (!(v === "")){
-    		jQuery('#'+s).prop("checked",v === 'true');
-    	}
-    })
+	/* Read Cookies*/
+	cookies_text=['sel-website','date_ago','nb-obs','input-date-from','input-date-to','sel-website-link'];
+	cookies_check=['incl-weather','incl-map','incl-sp-cmt'];
+	cookies_text.forEach(function(s){
+		var v =getCookieValue(s);
+		if (!(v === "")){
+			jQuery('#'+s).val(v);
+		}
+	})
+	cookies_check.forEach(function(s){
+		var v =getCookieValue(s);
+		console.log(v)
+		if (!(v === "")){
+			jQuery('#'+s).prop("checked",v === 'true');
+		}
+	})
 
 
 
@@ -1688,6 +1700,6 @@ jQuery(document).ready(function(){
 
 
 function getCookieValue(a) {
-    var b = document.cookie.match('(^|[^;]+)\\s*' + a + '\\s*=\\s*([^;]+)');
-    return b ? b.pop() : '';
+	var b = document.cookie.match('(^|[^;]+)\\s*' + a + '\\s*=\\s*([^;]+)');
+	return b ? b.pop() : '';
 }
