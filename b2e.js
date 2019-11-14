@@ -12,7 +12,7 @@
 // Load conversion taxonomie biolovision - eBird
 var eBird_birds_list;
 jQuery.getJSON("https://zoziologie.raphaelnussbaumer.com/assets/biolovision2eBird/patch_ornitho2eBird.min.json", function(data){
-	eBird_birds_list = data;
+eBird_birds_list = data;
 });
 
 
@@ -93,10 +93,10 @@ function deg_to_dms(deg) {
 	var m = Math.floor(minfloat);
 	var secfloat = (minfloat-m)*60;
 	var s = Math.round(secfloat);
-   // After rounding, the seconds might become 60. These two if-tests are not necessary if no rounding is done.
-   if (s==60) { m++; s=0; }
-   if (m==60) { d++; m=0; }
-   return (d + "°" + m + "'" + s+'"');
+	// After rounding, the seconds might become 60. These two if-tests are not necessary if no rounding is done.
+	if (s==60) { m++; s=0; }
+	if (m==60) { d++; m=0; }
+	return (d + "°" + m + "'" + s+'"');
 }
 
 // Create the general comment of checklist
@@ -246,7 +246,7 @@ function Makemarker(s){
 }
 
 
-
+// Export file 
 var downloadfx = function(){
 	if (jQuery('input[type=radio][value=offset]').prop("checked")){
 		var DChoice='offset';
@@ -260,14 +260,1135 @@ var downloadfx = function(){
 	}
 	if (jQuery('#sel-website').val().includes("observation") || jQuery('#sel-website').val().includes("waarneming")) {
 		window.open("https://"+jQuery('#sel-website').val()+"/export/user_export7.php?datum_va="+d_f.toISOString().split('T')[0]+"&datum_tm="+d_t.toISOString().split('T')[0]+"&diergroep=1&gebied=0&tag=0&zz=0&soort=0&simple=0&a[]=&k[]=")
-	} else if (jQuery('#sel-website').val().includes("data.biolovision.net") ){
+	} else if (jQuery('#sel-website').val().includes("birdtrack") ){
+		window.open("https://app.bto.org/birdtrack/explore/emr.jsp")
+	}  else if (jQuery('#sel-website').val().includes("data.biolovision.net") ){
 		window.open("http://"+jQuery('#sel-website').val()+"/index.php?m_id=1351&content=search&start_date="+moment(d_f).format('DD.MM.YYYY')+"&stop_date="+moment(d_t).format('DD.MM.YYYY'))
 	} else {
-			link = "http://"+jQuery('#sel-website').val()+"/index.php?m_id=31&sp_DChoice=" + DChoice + "&sp_DFrom="+moment(d_f).format('DD.MM.YYYY')+"&sp_DTo="+moment(d_t).format('DD.MM.YYYY')+"&sp_DOffset="+ jQuery('#date_ago').val() +"&sp_SChoice=all&sp_PChoice=all&sp_OnlyMyData=1";//&sp_FChoice=export&sp_FExportFormat=XML";
-			window.open(link)
+		link = "http://"+jQuery('#sel-website').val()+"/index.php?m_id=31&sp_DChoice=" + DChoice + "&sp_DFrom="+moment(d_f).format('DD.MM.YYYY')+"&sp_DTo="+moment(d_t).format('DD.MM.YYYY')+"&sp_DOffset="+ jQuery('#date_ago').val() +"&sp_SChoice=all&sp_PChoice=all&sp_OnlyMyData=1";//&sp_FChoice=export&sp_FExportFormat=XML";
+		window.open(link)
+	}
+}
+
+// Language Patch
+var languagePatch = function(s){
+	var name = [['LEVEL', 'id', 'Scientific name', 'name', 'Euring', 'Species id', 'family', 'species group', 'SPECIES_STATUS', 'Date', 'Time', 'date submitted', 'timestamp', 'TYPE_OBSERVATION', 'Number', 'min', 'max', 'sex', 'meaning of number', 'plumage', 'Activity', 'X', 'Y', 'lat', 'Lng', 'Biotope', 'Area', 'municipal', 'Province', 'certain', 'escape', 'link', 'precisie', 'loc_methode', 'protocol', 'status', 'Photos', 'collection nr', 'hostplant', 'substrate', 'method', 'Comments', 'Location', 'Tags', 'Transects'],['niveau', 'ID', 'Wetenschappelijke naam', 'Naam', 'Euring', 'Species id', 'Familie', 'Soortgroep', 'Soortstatus', 'Datum', 'Tijd', 'invoerdatum', 'timestamp', 'type waarneming', 'Aantal', 'min', 'max', 'Geslacht', 'telmethode', 'Kleed', 'Gedrag', 'X', 'Y', 'lat', 'Lng', 'Biotoop', 'Gebied', 'Gemeente', 'Provincie', 'Zeker', 'escape', 'link', 'precisie', 'loc_methode', 'protocol', 'status', "Foto's", 'Collectienr.', 'Waardplant', 'substraat', 'Methode', 'Toelichting', 'Locatie', 'Tags', 'Transecten']]
+	name[1].forEach(function (item, index) {
+		if (item in s) {
+			Object.defineProperty(s, name[0][index], Object.getOwnPropertyDescriptor(s, item));
+			delete s[item];
+		}
+	});
+	return s
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//____________________________________________________
+//                CREATE FUNCTIONS
+//____________________________________________________
+// handleFile() -> InitiateForms() -> ProcessSightings() -> ProcessForm()
+//                                 -> ProcessForm()
+
+
+
+function handleFile(file){
+	var ext = file.name.split('.').pop().toLowerCase();
+	/*if (['json','xml','csv','txt'].indexOf(ext) == -1){// File type not accepted 
+		return;
+	}*/
+	
+	/* Write Cookies*/
+	var d = new Date();
+	d.setTime(d.getTime() + (365*24*60*60*1000));
+	var expires = "expires="+ d.toUTCString();
+	cookies_text.forEach(function(s){
+		document.cookie= s + "=" + escape(jQuery('#'+s).val()) + ";" + expires + ";path=/";
+	})
+	cookies_check.forEach(function(s){
+		document.cookie= s + "=" + escape(jQuery('#'+s).is(':checked')) + ";" + expires + ";path=/";
+	})
+	
+	reader = new FileReader();
+	if (ext == 'xlsx'){
+		reader.readAsBinaryString(file);
+	} else {
+		reader.readAsText(file);//,'ISO-8859-15');
+	}
+	
+	
+	reader.onload = function(e){
+
+
+		if (jQuery('#sel-website').val().includes("observation") || jQuery('#sel-website').val().includes("waarneming")) {
+			if (ext != 'csv'){
+				alert('You can only upload csv file for waarneming/observado/observation website. Make sure to export in this format and retry. If the problem continue, contact rafnuss@gmail.com with your exported file')
+				return
+			}
+			alert('You are trying to convert waarneming/observado data to eBird? This script is not working fully yet. If you are interested, please contact me at rafnuss@gmail.com')				
+			var sightings = jQuery.parseJSON(csvJSON(reader.result).replace(/\\"/g,''))
+
+			data={};
+			data.sightings=[];
+			InitiateForms(data)
+
+			
+			sightings.forEach(function(s){
+				s = languagePatch(s);
+				ns={
+					date:{
+						'@ISO8601': new Date(s.Date.split('-')[0], s.Date.split('-')[1], s.Date.split('-')[2]-1, s.Time.split(':')[0], (s.Time.split(':')[1] ? s.Time.split(':')[1] : '')).toISOString(), 
+					},
+					observers:[{
+						count: s.Number,
+						estimation_code: s['meaning of number'],
+						id_sighting: s.id,
+						coord_lat: s.lat.replace(',','.'),
+						coord_lon: s.Lng.replace(',','.'),
+						comment: 'unknown'==s.method ? s.remarks : s.remarks+', '+s.method+', '+s.Activity,
+						details:[{
+							count: "1",
+							sex: {
+								"-id": 'unknown' == s.sex ? "U" : 'X',
+								"#text": s.sex
+							},
+							age: {
+								"-id":  'unknown' == s.sex ? "U" : 'X',
+								"#text": s.sex
+							},
+						}],
+						timing:{
+							'@ISO8601': new Date(s.Date.split('-')[0], s.Date.split('-')[1], s.Date.split('-')[2]-1, s.Time.split(':')[0], (s.Time.split(':')[1] ? s.Time.split(':')[1] : '')).toISOString(),
+						},
+						atlas_code:{
+							'#text': ''
+						}
+					}],
+					place:{
+						county: s.Province,
+						name: s.Area,
+						municipality: s.municipal
+					},
+					species:{
+						'latin_name': s['Scientific name'],
+						name: s.name,
+					}
+				};
+				data.sightings.push(ns);
+			})
+		} else if (jQuery('#sel-website').val().includes("birdtrack") ){
+			if (ext != 'xlsx'){
+				alert('You can only upload xlsx file for birdtrack website. Make sure to export in this format and retry. If the problem continue, contact rafnuss@gmail.com with your exported file')
+				return
+			}
+			alert('You are trying to convert birdtrack data to eBird? This is a beta version. If you have any issues, please contact me at rafnuss@gmail.com')				
+			
+			var workbook = XLSX.read(e.target.result, {type: 'binary', cellDates:true, cellStyles:true});
+			var sightings = XLSX.utils.sheet_to_row_object_array(workbook.Sheets['Records#1']);
+
+			data={};
+			data.sightings=[];
+			data.forms=[];
+
+
+			sightings.forEach(function(s){
+				s.Date = s.Date.split('/')[1] + '/' + s.Date.split('/')[0] + '/' + s.Date.split('/')[2];
+				ns={
+					date:{
+						'@timestamp' :  moment(s.Date+' '+s['Start time']).unix()
+					},
+					observers:[{
+						count: s.Count,
+						estimation_code: '',
+						id_sighting: '',
+						coord_lat: s.Lat,
+						coord_lon: s.Long,
+						comment: s.Comment,
+						details:[],
+						timing:{},
+						atlas_code:{
+							'#text': s['Breeding status'],
+						}
+					}],
+					place:{
+						county: '',
+						name: s.Place,
+						municipality: ''
+					},
+					species:{
+						'latin_name': s['Scientific name'],
+						name: s.Species,
+					}
+				};
+
+				idx = data.forms.findIndex(function(f){
+					return f.name == s.Place & f.date == s.Date & f['time_start']== s['Start time'] 
+				})
+
+				if (idx>-1){
+					data.forms[idx].sightings.push(ns)
+				} else {
+					data.forms.push({
+						"@id":data.forms.length+1,
+						"date":s.Date,
+						"name" : s.Place,
+						"time_start": s['Start time'],
+						"time_stop": s['End time'],
+						"full_form": s['End time'] =='' ? '0' : (s['End time'] == s['Start time'] ? '0' : "1"),
+						"lat": s.Lat,
+						"lon": s.Long,
+						'sightings':[ns]
+					})
+				}
+			})
+
+
+
+
+		}  else {
+			if (ext != 'json'){
+				console.log('You can only upload json file for biolovision website (ornitho, faune- and data.biolovision.net. Make sure to export in this format and retry. If the problem continue, contact rafnuss@gmail.com with your exported file')
+				return
+			}
+			data = jQuery.parseJSON(reader.result).data;
+			// Two types of JSON can be imported: faune-france or biolovision.data
+			if (data.forms==undefined) {data.forms=[];}
+			if (data.sightings==undefined) {data.sightings=[];}
+			// Time is not included in s.date, take it form s.observers.timing
+			data.forms.forEach(function(f){ 
+				f.sightings.forEach(function(s){
+					s.date=s.observers[0].timing;
+					//if (s.date==undefined) {s.date=s.observers[0].timing;}
+				})
+			})
+			data.sightings.forEach(function(s){
+				s.date=s.observers[0].timing;
+				//if (s.date==undefined) {s.date=s.observers[0].timing;}
+			})
+		}
+
+		
+		data.forms.forEach(function(f,idx){
+			f.color = marker_color[idx+1];
+			f.id=idx+1;
+			f.name=f.sightings[0].place.name;
+			f.time_start = moment(f.time_start,"HH:mm").format("HH:mm") // 9:1 -> 09:01
+		});
+		data.forms.n=data.forms.length-1;
+		
+		jQuery('html, body').css('overflow-y','auto');
+		if (data.sightings.length>0) {
+			jQuery('#c1').slideUp("slow",function(){
+				jQuery('#c2').slideDown("slow",function(){
+					ProcessSightings(data)
+				});
+			});
+		} else if (data.forms.length>0){
+			jQuery('#c1').slideUp("slow",function(){
+				jQuery('#c3').slideDown("slow",function(){
+					ProcessForms(data)
+				});	
+			});
+		} else {
+			alert('Empty file')
+			return
 		}
 	}
 
+}
+
+
+function ProcessSightings(data) {
+	data.forms.unshift({ // Create the checklist for Non-Assigned
+		name: 'Non-Assigned',
+		id:0,
+		color: marker_color[0],
+		sightings: [],
+		marker: NaN,
+		full_form: false
+	})
+	data.forms.n += 1;
+	
+	// Initiate map
+	modalmap = L.map('modal-map');
+	L.tileLayer.provider('MapBox', {id: 'rafnuss.npl3amec', accessToken: token.mapbox}).addTo(modalmap)
+	modalfLayer = new L.FeatureGroup().addTo(modalmap);
+	new L.Control.Draw({
+		position: 'topright',
+		draw: {
+			polyline: false,
+			polygon: false,
+			circle: false,
+			circlemarker: false,
+			rectangle: true, 
+			marker: {
+				icon: L.AwesomeMarkers.icon({
+					icon: 'list',
+					prefix: 'fa'
+				})
+			}
+		},
+		edit: {
+			featureGroup: modalfLayer
+		}
+	}).addTo(modalmap)
+	modalmap.on('draw:created', function (e) {
+		if (e.layerType === 'marker'){
+			data.forms.n +=1;
+			var form = {
+				id: data.forms.n,
+				color:marker_color[data.forms.n],
+				name: 'New List ' + data.forms.n.toString() +' '+ e.layer.getLatLng().toString().split('LatLng')[1],
+				sightings: [],
+				marker: e.layer,
+				full_form: false
+			}
+			data.forms.push(form)
+			// update marker
+			e.layer.setIcon(L.AwesomeMarkers.icon({
+				icon: 'list',
+				prefix:"fa",
+				markerColor: form.color[0],
+				iconColor: form.color[2]
+			})).on('click',function(){
+				jQuery('#selHotspot').val(form.id).change();
+			}).addTo(modalfLayer);
+			e.layer.id = form.id;
+			jQuery('#selHotspot').append(jQuery('<option>', {value: form.id, text: form.name, style: "background-color:"+form.color[1]+";color:"+form.color[2]+";"}));
+			jQuery('#selHotspot').val(form.id).change();
+		} else if (e.layerType === 'rectangle'){
+			modalsLayer.eachLayer(function(l){
+				if (e.layer.getBounds().contains(l.getLatLng())){
+					data.sightings.forEach(function(s){
+						if (l.feature.properties['id'] == (s.observers[0].id_sighting || s.observers[0].id_universal) ){
+							data.forms.forEach(function(f){
+								if (f.id==jQuery('#selHotspot').val()){
+									s['marker-color'] = f.color[1];
+									s.form = f.id;
+									l.setIcon(Makemarker(s).options.icon)
+								}
+							})
+						}
+					})
+				}
+			})
+		}
+	}).on('draw:deleted', function(e){
+		e.layers.eachLayer(function(l){
+			data.forms.forEach(function(f,idx){
+				if (f.id == l.id){
+					data.forms.splice(idx,1);
+					jQuery("#selHotspot option[value='"+f.id+"']").remove();
+					jQuery('#selHotspot').change();
+				}
+			})
+		})
+	});
+	
+	// Import Form
+	data.forms.forEach(function(form,idx){
+		if (idx>0){
+			var m = L.marker([form.lat, form.lon],{
+				title: form.name,
+				alt: form.name,
+				icon: L.AwesomeMarkers.icon({
+					icon: 'list',
+					prefix:'fa',
+					markerColor: form.color[0],
+					iconColor: form.color[2]
+				})
+			})
+			m.id=form.id;
+			form.marker=m;
+			m.addTo(modalfLayer).on('click',function(){
+				jQuery('#selHotspot').val(form.id).change();
+			})
+		}
+		jQuery('#selHotspot').append(jQuery('<option>', {value: form.id, text: form.name, style: "background-color:"+form.color[1]+";color:"+form.color[2]+";"}));
+	});
+	
+	// Import Sigthings
+	modalsLayer = L.markerClusterGroup({
+		showCoverageOnHover: false,
+		maxClusterRadius:70,
+	}).addTo(modalmap);
+	
+	var uniquedate=[]
+	data.sightings.forEach(function(s){
+		s['marker-symbol'] = (s.observers[0].count < 99) ? s.observers[0].count : 'x';
+		s['marker-color'] = data.forms[0].color[1];
+		s['marker-size'] = 's';
+		s.form = 0;
+		var m = Makemarker(s);
+		m.addTo(modalsLayer);
+		uniquedate.push(data.sightings[0].date["@ISO8601"].substring(0,10))
+	})
+	
+	jQuery('#selHotspot').change(function(opt){
+		data.forms.forEach(function(f,idx){
+			if (f.id == jQuery(opt.target).val()){
+				jQuery('#selHotspot').css('background-color',f.color[0])
+				jQuery('#selHotspot').css('color',f.color[2])
+			}
+		})
+	})
+	
+	jQuery('#button-process').click(function(){
+		data.sightings.forEach(function(s){
+			data.forms.forEach(function(f){
+				if (s.form == f.id){
+					f.sightings.push(s);
+				}
+			})
+		})
+		jQuery('#c2').slideUp("slow",function(){
+			jQuery('#c3').slideDown("slow",function(){
+				ProcessForms(data)
+			});	
+		});
+	});
+	
+	var modalDrawRectangle = new L.Draw.Rectangle(modalmap);
+	jQuery('#button-select-hotspot').click(function(){
+		modalDrawRectangle.enable();
+	})
+	var modalDrawMarker = new L.Draw.Marker(modalmap);
+	jQuery('#button-create-hotspot').click(function(){
+		modalDrawMarker.enable();
+	})
+	
+	setTimeout(function() {
+		modalmap.invalidateSize();
+		modalmap.fitBounds(modalsLayer.getBounds());
+		jQuery('.leaflet-draw-toolbar-top').hide();
+		jQuery('#selHotspot').change();
+	}, 1);
+	
+	// Display message if data are spanning over severa days
+	uniquedate = uniquedate.filter(function(value, index, self) { 
+		return self.indexOf(value) === index;
+	})
+	if (uniquedate.length==1){
+		jQuery('#warning-several-days').hide()
+	}
+	
+};
+
+
+function ProcessForms(data) {
+	// delete forms with empty sightings
+	var i = data.forms.length
+	while (i--) {
+		if (!data.forms[i].sightings[0]) {
+			data.forms.splice(i, 1);
+		}
+	}
+	
+	//Add unasgined checklist
+	if (data.forms[0].id==0){
+		var form=data.forms[0];
+		jQuery( "#c3 .nav-tabs" ).append( "<li class='nav-item' id='li-f-"+form.id+"'><a class='nav-link active' href='#f-"+form.id+"' data-toggle='tab'>"+form.name+"</a></li>" );
+		jQuery( "#c3 .tab-content" ).append( "<div class='container tab-pane active' id='f-"+form.id+"'></div>" );
+		jQuery( "#f-" + form.id ).append( '\
+		<div class="row">\
+		<div class="form-group col-sm-12">\
+		<p>These are all sightings which do not belong to any checklists. They won t be imported in eBird. If there is an error, you ll have to start again.</p>\
+		<p>Click on the other menus to see the other checklists. </p>\
+		</div>\
+		<div class="form-group col-sm-12">\
+		<div class="map" id="map-f-'+form.id+'"></div>\
+		</div>\
+		</div>\
+		');
+		form.map = L.map('map-f-'+form.id);
+		form.layer = L.markerClusterGroup({
+			showCoverageOnHover: false,
+			maxClusterRadius:70,
+		}).addTo(form.map);
+		
+		L.control.layers({
+			'MapBox': L.tileLayer.provider('MapBox', {id: 'rafnuss.npl3amec', accessToken:token.mapbox}).addTo(form.map),
+			'OpenStreetMap' : L.tileLayer.provider('OpenStreetMap.Mapnik'),
+			'Swisstopo': new L.TileLayer('https://wmts10.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-farbe/default/current/3857/{z}/{x}/{y}.jpeg', {
+			layer: 'ch.swisstopo.pixelkarte-farbe-pk1000.noscale',
+			maxZoom: 17,
+			attribution: 'Map data &copy; 2015 swisstopo',
+		})
+	},null,{collapsed:true}).addTo(form.map);
+	
+	form.sightings.forEach(function(s,id) {
+		var m = Makemarker(s);
+		m.addTo(form.layer);
+		if (id === form.sightings.length-1){
+			form.map.fitBounds(form.layer.getBounds());
+		}
+	})
+	data.forms.shift()
+}
+
+// Add true checklist
+data.forms.forEach(function(form,idx){
+	
+	// Change the imported form structure to suit our need. First depending on if it's a 'legit' form or not and then for both.
+	if ( form['@id']){ // Legit form
+		form.date = moment.unix(form.sightings[0].date['@timestamp']).format('YYYY-MM-DD')
+		var duration = moment.utc(moment(form.time_stop,"HH:mm").diff(moment(form.time_start,"HH:mm"))).format('HH:mm');
+		form.duration = parseInt(duration.split(':')[0])*60+parseInt(duration.split(':')[1]);
+		form.full_form= (form.full_form=='1') ? true : false;
+		if (form.duration>0){
+			form.protocol='Stationary';
+		} else {
+			form.protocol='Incidental';
+		}
+		
+	} else { // form from incidental sighting
+		var dates = form.sightings.map(function(s){ 
+			return moment.unix(s.date['@timestamp']).format('YYYY-MM-DD')
+		})
+		form.date = dates.reduce(function(a, b){ return (a === b) ? a : ''; });
+		if (!form.date){
+			alert('Sigthings of form "' + form.name +'" do not come from the same day. We took the earliest date. Please, check if this is correct.')
+			form.date = dates.sort((a,b) =>
+			dates.filter(v => v===a).length
+			- dates.filter(v => v===b).length
+			).pop()
+		}
+		var times = form.sightings.map(function(s){ 
+			return moment.unix(s.date['@timestamp']).format('HH:mm')
+		}).filter(function(t){
+			return t !='00:00'
+		})
+		if (times.length>0){
+			form.time_start = times.reduce(function (a, b) { return moment(a,'HH:mm') < moment(b,'HH:mm') ? a : b; }); 
+			form.time_stop = times.reduce(function (a, b) { return moment(a,'HH:mm') > moment(b,'HH:mm') ? a : b; }); 
+			var duration = moment.utc(moment(form.time_stop,"HH:mm").diff(moment(form.time_start,"HH:mm"))).format('HH:mm');
+			form.duration = parseInt(duration.split(':')[0])*60+parseInt(duration.split(':')[1]);
+		} else {
+			form.duration = '';
+			form.time_start = '';
+		}
+		form.protocol='Incidental';
+	}
+	form.sightings.forEach(function(s){
+		if(s.observers[0].estimation_code=='MINIMUM') {
+			s.observers[0].estimation_code='>';
+		} else if (s.observers[0].estimation_code=='EXACT_VALUE') {
+			s.observers[0].estimation_code='=';
+		} else if (s.observers[0].estimation_code=='ESTIMATION') {
+			s.observers[0].estimation_code='~';
+		} else if (s.observers[0].estimation_code=='NO_VALUE') {
+			s.observers[0].estimation_code=''
+			s.observers[0].count='x'
+		}
+		s.observers[0].coord_lat_str = deg_to_dms(s.observers[0].coord_lat);
+		s.observers[0].coord_lon_str = deg_to_dms(s.observers[0].coord_lon);
+		
+		if (!s.observers[0].details){
+			s.observers[0].details = '';
+		} else {
+			var details=[];
+			s.observers[0].details.forEach(function(d){
+				detail = d.count +'x ';
+				if (d.sex["@id"]!='U'){
+					detail += d.sex["#text"];
+				}
+				if (d.age["@id"]!='U'){
+					detail += ' '+d.age["#text"];
+				}
+				details.push(detail)
+			})
+			s.observers[0].details = details.join(', ');
+		}
+		if (!s.observers[0].atlas_code){
+			s.observers[0].atlas_code = '';
+		} else {
+			s.observers[0].atlas_code = atlas_code[s.observers[0].atlas_code['#text']] + '(Atlas code: '+s.observers[0].atlas_code['#text']+')';
+		}
+		
+	})
+	form.distance='';
+	form['party-size']=jQuery('#nb-obs').val();
+	form.staticmap={};
+	form.gist='#';
+	if (form.marker){
+		form.lon=form.marker.getLatLng().lng;
+		form.lat=form.marker.getLatLng().lat;
+	}
+	form.weather='';
+	/*jQuery.get('https://api.wunderground.com/api/b097b9712f359043/history_'+moment(form.date).format('YYYYMMDD')+'/q/'+form.lat+','+form.lon+'.json',function(data){
+	var w = data.history.dailysummary[0];
+	form.weather= "";
+	if (w) {
+		var whtml= '<b>Temp.</b>:'+w.meantempm+'°C ('+w.mintempm+'/'+w.maxtempm +')';
+		whtml += ' - <b>Prec.</b>: '+w.precipm+ 'mm';
+		whtml += w.snow=='0' ? '':' (snow)'; 
+		whtml += ' - <b>Wind</b>: '+w.meanwdire+' '+w.meanwindspdm+ 'km/h ('+w.minwspdm+'/'+w.maxwspdm+')';
+		whtml += ' - <b>Humidity</b>: '+w.humidity;
+		//whtml += w.fog ? 'fog':''; 
+		//whtml += w.hail ? 'hail':''; 
+		form.weather= whtml;
+	}
+	previewComment(form)
+})*/
+
+jQuery.getJSON('http://api.weatherstack.com/historical?access_key='+token.weatherstack+'&query='+form.lat+','+form.lon+'&hourly=1' ,function(weather){
+
+	var id = moment((moment(data.forms[0].time_start,"HH:mm")+moment(data.forms[0].time_stop,"HH:mm:ss"))/2).add(30, 'minutes').startOf('hour').hour();
+	var w = weather.forecast.forecastday[0].hour[id];
+
+	if (w) {
+		var whtml= '<b>Weather</b>:' +w.condition.text;
+		whtml += ' <b>Temp.</b>:'+w.temp_c+'°C';
+		whtml += ' - <b>Prec.</b>: '+w.precip_mm+ 'mm';
+		whtml += w.chance_of_snow =='0' ? '':' (snow)'; 
+		whtml += ' - <b>Cloud</b>: '+w.cloud+'%';
+		whtml += ' - <b>Wind</b>: '+w.wind_dir+' '+w.wind_kph+ 'km/h';
+		//whtml += ' - <b>Humidity</b>: '+w.humidity;
+		whtml += ' - <b>Visibility</b>: '+w.vis_km+'km';				
+		form.weather= whtml;
+	}
+	previewComment(form)
+})
+
+
+jQuery.getJSON( 'https://nominatim.openstreetmap.org/reverse?lat='+form.lat.toString()+'&lon='+form.lon.toString()+'&format=json', function( json ) {
+form.country = json.address.country_code;
+});
+
+/* REMOVE?
+form.specie_comment="var c='';\
+c = c + o.estimation_code+o.count+' ind.';\
+if(!o.detail){c = c + ' - ' + o.detail;}\n\
+if(o.timing['@ISO8601'] != '00:00'){c = c+' - '+moment(o.timing['@ISO8601']).format('HH:mm');}\n\
+c = c+' - <a href=\"http://maps.google.com?q='+o.coord_lat+','+o.coord_lon+'&t=k\" target=\"_blank\">'+ s.place.name +'</a>';\n\
+c = c + ' - <a href=\"http://'+jQuery('#sel-website').val()+'/index.php?m_id=54&id='+o['@id']+'\" target=\"_blank\">ID</a>';\n\
+return c";
+*/
+
+
+jQuery( "#c3 .nav-tabs" ).append( "<li class='nav-item' id='li-f-"+form.id+"'><a class='nav-link' href='#f-"+form.id+"' data-toggle='tab'>"+form.name+"</a></li>" );
+jQuery( "#c3 .tab-content" ).append( "<div class='container tab-pane' id='f-"+form.id+"'></div>" );
+jQuery( "#f-" + form.id ).append( '\
+<form class="form" data-toggle="validator" >\
+<div class="row">\
+<div class="form-group col-lg-12">\
+<label for="location" class="control-label">Location:</label>\
+<input type="text" class="form-control" id="location" value="'+form.name+'" required>\
+<div class="help-block with-errors"></div>\
+</div>\
+<div class="form-group col-lg-6">\
+<div class="row">\
+<div class="form-group col-lg-6">\
+<label class="control-label" for="date">Date:</label> \
+<input type="date" class="form-control" id="date" value="'+form.date+'" required>\
+<div class="help-block with-errors"></div>\
+</div>\
+<div class="form-group col-lg-6">\
+<label class="control-label" for="time">Time:</label>\
+<input type="time" class="form-control" id="time" value="'+form.time_start+'" data-timeOK>\
+<div class="help-block with-errors"></div>\
+</div>\
+</div>\
+<div class="row">\
+<div class="form-group col-lg-6">\
+<label for="observation-type">Observation Type:</label>\
+<select class="form-control" id="observation-type" required>\
+<option>Traveling</option>\
+<option>Stationary</option>\
+<option>Historical</option>\
+<option>Incidental</option>\
+</select>\
+<div class="help-block with-errors"></div>\
+</div>\
+<div class="form-group col-lg-6">\
+<label>Complete Checklist:</label>\
+<div id="div-sliderOF">\
+<div class="col text-right">NO</div>\
+<div class="text-center">\
+<label class="switch"><input type="checkbox" checked="checked" class="check-fullform"><div class="sliderOF round"></div></label>\
+</div>\
+<div class=" col text-left">YES</div>\
+</div>\
+</div>\
+</div>\
+<div class="row">\
+<div class="form-group col-lg-4">\
+<label class="control-label" for="duration">Duration ( min.):</label> \
+<input type="number" class="form-control" id="duration" value="'+parseInt(form.duration).toString()+'" min="0" step=".1" max="1440" data-durationOK>\
+<div class="help-block with-errors"></div>\
+</div>\
+<div class="form-group col-lg-4">\
+<label class="control-label" for="distance">Distance (km):</label>\
+<input type="number" class="form-control" id="distance" value="'+form.distance+'" min="0" step=".00001" max="999" data-distanceOK>\
+<div class="help-block with-errors"></div>\
+</div>\
+<div class="form-group col-lg-4">\
+<label class="control-label" for="party-size">Party size:</label>\
+<input type="number" class="form-control" id="party-size" value="'+form['party-size']+'" min="1" max="99" required>\
+<div class="help-block with-errors"></div>\
+</div>\
+</div>\
+<div class="form-group col-lg-12">\
+<label for="cmt-sp-ct-bt-'+ form.id+'">Species Comment:</label>\
+<div id="cmt-sp">\
+<div class="cmt-sp-ct cmt-sp-ct-tp" id="cmt-sp-ct-tp-'+ form.id+'">\
+<span class="badge badge-secondary" contenteditable="false" value="s.date.text">Timing (full)</span>\
+<span class="badge badge-secondary" contenteditable="false" value="moment.unix(s.date[\'@timestamp\']).format(\'dd-MM-YYYY HH:mm\')">Timing (condensed)</span>\
+<span class="badge badge-secondary" contenteditable="false" value="moment.unix(s.date[\'@timestamp\']).format(\'HH:mm\')">Time</span>\
+<span class="badge badge-secondary" contenteditable="false" value="(s.observers[0].id_sighting || s.observers[0].id_universal)">ID sighting</span>\
+<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].estimation_code">Estimation code</span>\
+<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].count">Count</span>\
+<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lat">Latitude DD</span>\
+<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lon">Longitude DD</span>\
+<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lat_str">Latitude DMS</span>\
+<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lon_str">Longitude DMS</span>\
+<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].comment">Comment</span>\
+<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].details">Detail</span>\
+<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].atlas_code">Atlas code</span>\
+</div>\
+<div class="cmt-sp-ct cmt-sp-ct-bt" id="cmt-sp-ct-bt-'+ form.id+'" contenteditable="true">'+
+(jQuery('#incl-sp-cmt').is(":checked") ?
+'<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].estimation_code">Estimation code</span>\
+<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].count">Count</span> ind. - \
+<span class="badge badge-secondary" contenteditable="false" value="moment.unix(s.date[\'@timestamp\']).format(\'HH:mm\')">Time</span> - \
+&lt;a href="http://maps.google.com?q=<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lat">Latitude DD</span>,\
+<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lon">Longitude DD</span>\
+&t=k" target="_blank" &gt;<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lat_str">Latitude DMS</span>N \
+<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lon_str">Longitude DMS</span>\
+E&lt;/a&gt; - &lt;a href="http://'+jQuery('#sel-website-link').val()+'/index.php?m_id=54&id=\
+<span class="badge badge-secondary" contenteditable="false" value="(s.observers[0].id_sighting || s.observers[0].id_universal)">ID sighting</span>\
+" target="_blank">'+jQuery('#sel-website-link').val()+'&lt;/a&gt;\
+<br>&lt;br&gt;<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].comment">Comment</span>\
+<br>&lt;br&gt;<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].details">Detail</span>' : '')
++'</div>\
+</div>\
+</div>\
+<div class="form-group col-lg-12">\
+<label>Exemple:  </label>\
+<div class="form-group" style=" display: inline-block;">\
+<select id="cmt-sp-preview-sp"></select>\
+</div>\
+<div id="cmt-sp-preview"></div>\
+</div>\
+</div>\
+<div class="form-group col-lg-6">\
+<div class="row">\
+<label for="comments">Checklist Comment:</label>\
+<textarea class="form-control" rows="3"  id="comments">'+(form.comment || "") +'</textarea>\
+</div>\
+<div class="row form-check">\
+<label><input class="form-check-input" type="checkbox" '+  (jQuery('#incl-map').is(":checked") ? 'checked="checked"' : '') +' id="check-static-map"> Include static map</label>\
+</div>\
+<div class="row">\
+<div class="col-lg-5 form-inline">\
+<label for="zoom">Zoom:</label>\
+<span class="input-group-btn">\
+<button type="button" class="btn btn-sm btn-number" data-type="minus">\
+<i class="fa fa-minus" aria-hidden="true"></i>\
+</button>\
+</span>\
+<input type="text" id="zoom" class="form-control input-number" value="1" min="1" max="21">\
+<span class="input-group-btn">\
+<button type="button" class="btn btn-sm btn-number" data-type="plus">\
+<i class="fa fa-plus" aria-hidden="true"></i>\
+</button>\
+</span>\
+</div>\
+<div class="col-lg-3">\
+<button type="button" class="btn btn-default center-block" id="center-map" title="Set static map automaticaly with sightings location">Center map</button>\
+</div>\
+<div class="col-lg-4">\
+<button type="button" class="btn btn-default center-block" id="button-geojson">Export GeoJson</button>\
+</div>\
+</div>\
+<div class="row form-check">\
+<label><input type="checkbox" class="form-check-input" '+ (jQuery('#incl-weather').is(":checked") ? 'checked="checked"' : '') +' id="check-weather"> Include weather</label>\
+</div>\
+<div class="row">\
+<label>Preview:</label>\
+<div id="comments-preview"></div>\
+</div>\
+</div>\
+</div>\
+<div class="row">\
+<div class="form-group col-sm-12">\
+<div class="map" id="map-f-'+form.id+'"></div>\
+</div>\
+</div>\
+</form>\
+');
+
+
+
+// Create Map
+form.map = L.map('map-f-'+form.id);
+// Create Layers
+form.layer={};
+form.layer.hotspots=L.featureGroup().addTo(form.map)
+form.layer.sightings = L.markerClusterGroup({
+	showCoverageOnHover: false,
+	maxClusterRadius:70,
+}).addTo(form.map);
+form.layer.edit = new L.FeatureGroup().addTo(form.map);
+form.layer.all = L.featureGroup([form.layer.edit, form.layer.sightings, form.layer.hotspots])
+
+//Add control
+L.control.layers({
+	'MapBox': L.tileLayer.provider('MapBox', {id: 'rafnuss.npl3amec', accessToken:token.mapbox}).addTo(form.map),
+	'OpenStreetMap' : L.tileLayer.provider('OpenStreetMap.Mapnik'),
+	'Swisstopo': new L.TileLayer('https://wmts10.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-farbe/default/current/3857/{z}/{x}/{y}.jpeg', {
+	layer: 'ch.swisstopo.pixelkarte-farbe-pk1000.noscale',
+	maxZoom: 17,
+	attribution: 'Map data &copy; 2015 swisstopo',
+})
+},null,{collapsed:true}).addTo(form.map);
+new L.Control.Draw({
+	position: 'topright',
+	draw: {
+		polyline: { 
+			shapeOptions: {
+				color: '#ad8533',
+				weight: 5,
+				opacity: 1,
+				dashArray: "20, 10, 10, 10"
+			}
+		},
+		circlemarker: false,
+		polygon: false,
+		circle: false,
+		rectangle: false, 
+		marker: false
+	},
+	edit: {
+		featureGroup: form.layer.edit,
+	}
+}).addTo(form.map)
+
+// Add Listener
+form.map.on('draw:created', function (e) {
+	e.layer.addTo(form.layer.edit);
+	// Calculating the distance of the polyline
+	var tempLatLng = null;
+	var totalDistance = 0.00000;
+	jQuery.each(e.layer._latlngs, function(i, latlng){
+		if(tempLatLng == null){
+			tempLatLng = latlng;
+			return;
+		}
+		totalDistance += tempLatLng.distanceTo(latlng);
+		tempLatLng = latlng;
+	});
+	
+	var popup = jQuery('<div/>') 
+	popup.html('Set Distance to: <button type="button" class="btn btn-default" id="setDistance">'+(totalDistance/1000).toFixed(2).toString()+'</button> km');
+	popup.on('click', '#setDistance', function() {
+		jQuery('#f-'+form.id+' #observation-type').val('Traveling')
+		jQuery('#f-'+form.id+' #distance').val(jQuery(this).html())
+		jQuery('#f-'+form.id+' #observation-type').change()
+	});
+	e.layer.bindPopup(popup[0]).openPopup();
+	form.map.fitBounds(form.layer.sightings.getBounds());
+	previewComment(form)
+});
+
+// Import Sightings
+form.sightings.forEach(function(s,id) {
+	s['marker-symbol'] = (s.observers[0].count < 99) ? s.observers[0].count : 'x';
+	s['marker-color'] = color(s,form);
+	s['marker-size'] = 'm';
+	var m = Makemarker(s);
+	m.addTo(form.layer.sightings);
+	
+	// when finish
+	if (id === form.sightings.length-1){
+		form.map.fitBounds(form.layer.all.getBounds());
+		form.staticmap.lng = form.layer.sightings.getBounds().getCenter().lng;
+		form.staticmap.lat = form.layer.sightings.getBounds().getCenter().lat;
+		form.layer.msm = L.marker([form.staticmap.lat,form.staticmap.lng], {
+			icon:L.icon({
+				iconUrl: 'https://zoziologie.raphaelnussbaumer.com/assets/biolovision2eBird/images/Maps-Center-Direction-icon.png',
+				iconSize:     [40, 40],
+				iconAnchor:   [20, 20], 
+				popupAnchor:  [-20, 0]
+			}),
+			draggable:true,
+			title:'Static Map center',
+			alt:'Static Map center'
+		}).on('dragend',function(evt){
+			form.staticmap.lng = evt.target.getLatLng().lng;
+			form.staticmap.lat = evt.target.getLatLng().lat;
+			previewComment(form)
+		}).addTo(form.map);
+		form.staticmap.zoom = getBoundsZoomLevel(L.featureGroup([form.layer.edit, form.layer.sightings]).getBounds(), { height: 450, width: 800 })
+	}
+})
+
+var LatLngBounds = form.layer.all.getBounds();
+var dist = LatLngBounds.getNorthEast().distanceTo(LatLngBounds.getSouthWest())/1000; // m -> km
+dist = Math.max(5,Math.round(dist*2)).toString();
+
+// Load local hotspot
+jQuery.getJSON( 'https://ebird.org/ws2.0/ref/hotspot/geo?lat='+LatLngBounds.getCenter().lat+'&lng='+LatLngBounds.getCenter().lng+'&dist=10&fmt=json', function( hotspots ) {
+hotspots = Array.isArray(hotspots) ? hotspots : [hotspots] 
+hotspots.forEach(function(h){
+	var mark = L.marker([h.lat,h.lng],{
+		title: h.locName,
+		alt: h.locName,
+		icon: L.icon({
+			iconUrl: "https://zoziologie.raphaelnussbaumer.com/assets/biolovision2eBird/images/hotspot-icon-hotspot.png",
+			iconAnchor: [15, 19],
+			popupAnchor: [0, -19],
+		})
+	})
+	var popup = jQuery('<div/>') 
+	popup.html('\
+	Set Location of the Checklist with the eBird hostpot:<br>\
+	<button type="button" class="btn btn-default" id="setLocation" title="Define as location of the checklist">'+h.locName+'</button><br>\
+	<a href="https://ebird.org/ebird/hotspot/'+h.locId +'" target="_blank" title="See on eBird">View on eBird</a>');
+	popup.on('click', '#setLocation', function() {
+		form.name = jQuery(this).html();
+		jQuery('#f-'+form.id+' #location').val(form.name);
+		jQuery('#li-f-'+form.id+' a').html(form.name);
+		form.lat = h.lat;
+		form.lon = h.lng;
+		jQuery.getJSON( 'https://nominatim.openstreetmap.org/reverse?lat='+form.lat.toString()+'&lon='+form.lon.toString()+'&format=json', function( json ) {
+		form.country = json.address.country_code;
+	});
+	form.map.closePopup();
+});
+mark.addTo(form.layer.hotspots).bindPopup(popup[0]);
+})
+form.map.fitBounds(form.layer.sightings.getBounds());
+});
+
+
+
+// Add Listener
+jQuery('#f-'+form.id+' #location').keyup( function(){ 
+	form.name = jQuery(this).val();
+	jQuery('#li-f-'+form.id+' a').html(form.name)
+	if (!form.name){
+		jQuery(this).parent().addClass('has-error');
+	} else{
+		jQuery(this).parent().removeClass('has-error');
+	}
+});
+jQuery('#f-'+form.id+' #date').change( function(){ 
+	form.date = jQuery(this).val();
+	if (!form.date || !/^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$/.test(form.date)  ){
+		jQuery(this).parent().addClass('has-error');
+	} else{
+		jQuery(this).parent().removeClass('has-error');
+	}
+});
+jQuery('#f-'+form.id+' #time').change( function(){ 
+	form.time_start = jQuery(this).val();
+	if (form.protocol == 'Stationary' || form.protocol == 'Traveling'){
+		if (!form.time_start || !/^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/.test(form.time_start)){
+			jQuery(this).parent().addClass('has-error');
+		} else{
+			jQuery(this).parent().removeClass('has-error');
+		}
+	} else {
+		jQuery(this).parent().removeClass('has-error');
+	}
+});
+jQuery('#f-'+form.id+' #observation-type').change( function(){ 
+	form.protocol = jQuery(this).val();
+	if (form.protocol == 'Incidental'){
+		jQuery('#f-'+form.id+' .check-fullform').prop("checked",false)
+		jQuery('#f-'+form.id+' .check-fullform').change();
+	}
+	jQuery('#f-'+form.id+' #time').change()
+	jQuery('#f-'+form.id+' #duration').change();
+	jQuery('#f-'+form.id+' #distance').change();
+});
+jQuery('#f-'+form.id+' #duration').change( function(){ 
+	form.duration = jQuery(this).val();
+	jQuery(this).parent().removeClass('has-error');
+	if (form.protocol == 'Incidental'){
+		jQuery(this).prop('disabled', true);
+	} else {
+		jQuery(this).prop('disabled', false);
+	}
+	if ( (form.protocol == 'Traveling' || form.protocol == 'Stationary') && (!form.duration || form.duration<=0) ){
+		jQuery(this).parent().addClass('has-error');
+	}
+});
+jQuery('#f-'+form.id+' #distance').change( function(){ 
+	form.distance = jQuery(this).val();
+	jQuery(this).parent().removeClass('has-error');
+	if (form.protocol == 'Traveling' || form.protocol == 'Historical' ){
+		jQuery(this).prop('disabled', false);
+	} else{
+		jQuery(this).prop('disabled', true);
+	}
+	if (form.protocol == 'Traveling' && (!form.distance || form.distance<=0)){
+		jQuery(this).parent().addClass('has-error');
+	}
+});
+jQuery('#f-'+form.id+' #party-size').change( function(){ 
+	form['party-size'] = jQuery(this).val();
+	if (!form['party-size'] || form['party-size']<1){
+		jQuery(this).parent().addClass('has-error');
+	} else{
+		jQuery(this).parent().removeClass('has-error');
+	}
+});
+jQuery('#f-'+form.id+' .check-fullform').change( function(){
+	if (jQuery(this).is(':checked')){
+		form.full_form = true
+	} else{
+		form.full_form = false
+	}
+})
+jQuery('#f-'+form.id+' #observation-type').val(form.protocol).change();
+
+if (form.full_form) {
+	jQuery('#f-'+form.id+' .check-fullform').prop("checked")
+} else {
+	jQuery('#f-'+form.id+' .check-fullform').prop("checked",false)
+}
+jQuery('#f-'+form.id+' #comments').keyup( function(){
+	previewComment(form);
+});
+jQuery('#f-'+form.id+' #check-static-map').change( function(){
+	previewComment(form);
+});
+jQuery('#f-'+form.id+' #check-weather').change( function(){
+	previewComment(form);
+});
+jQuery('#f-'+form.id+' #button-geojson').click( function(){
+	var fs = form.layer.sightings.toGeoJSON();
+	form.layer.edit.toGeoJSON().features.forEach(function(f){
+		fs.features.push(f);
+	})
+	var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(fs));
+	var link = document.createElement("a");
+	link.setAttribute("href",     dataStr     );
+	link.setAttribute("download", form.name.replace(' ','_')+".json");
+	document.body.appendChild(link);
+	link.click();
+})
+dragula([document.getElementById('cmt-sp-ct-tp-'+ form.id), document.getElementById('cmt-sp-ct-bt-'+ form.id)], {
+	copy: function (el, source) {
+		return source === document.getElementById('cmt-sp-ct-tp-'+ form.id)
+	},
+	accepts: function (el, target) {
+		return target !== document.getElementById('cmt-sp-ct-tp-'+ form.id)
+	},
+	removeOnSpill: true
+});
+form.sightings.forEach( function(s,id){
+	jQuery('#f-'+form.id+' #cmt-sp-preview-sp').append(jQuery('<option>', {
+		value: id,
+		text: (s.species.name || s.species.bird_name)
+	}));
+})
+jQuery('#f-'+form.id+' #center-map').click(function(){
+	form.staticmap.lng = form.layer.sightings.getBounds().getCenter().lng;
+	form.staticmap.lat = form.layer.sightings.getBounds().getCenter().lat;
+	form.staticmap.zoom = getBoundsZoomLevel(L.featureGroup([form.layer.edit, form.layer.sightings]).getBounds(), { height: 450, width: 800 })
+	form.layer.msm.setLatLng(form.layer.sightings.getBounds().getCenter());
+	previewComment(form)
+})
+
+jQuery('#f-'+form.id+' .btn-number').click(function(e){
+	var input = jQuery('#f-'+form.id+ ' #zoom');
+	if(jQuery(this).attr('data-type') == 'minus') {
+		input.val(+input.val()-1);
+	} else if(jQuery(this).attr('data-type') == 'plus') {
+		input.val(+input.val()+1);
+	}
+	input.change();
+});
+jQuery('#f-'+form.id+ ' #zoom').on('change', function() {
+	var input = jQuery('#f-'+form.id+ ' #zoom');
+	if(input.val() <= input.attr('min')) {
+		jQuery(".btn-number[data-type='minus']").attr('disabled', true);
+		input.val(input.attr('min'));
+	} else {
+		jQuery(".btn-number[data-type='minus']").attr('disabled', false);
+	}
+	if(input.val() >= input.attr('max')) {
+		jQuery(".btn-number[data-type='plus']").attr('disabled', true);
+		input.val(input.attr('max'));
+	} else {
+		jQuery(".btn-number[data-type='plus']").attr('disabled', false);
+	}
+	form.staticmap.zoom = input.val();
+	previewComment(form);
+})
+jQuery('#f-'+form.id+ ' #zoom').val(form.staticmap.zoom);
+
+document.getElementById('cmt-sp-ct-bt-'+ form.id).addEventListener("input", function(){
+	previewSpComment(form)
+}, false);
+document.getElementById('cmt-sp-ct-bt-'+ form.id).addEventListener("DOMNodeInserted", function(){
+	previewSpComment(form)
+}, false);
+document.getElementById('cmt-sp-ct-bt-'+ form.id).addEventListener("DOMNodeRemoved", function(){
+	previewSpComment(form)
+}, false);
+document.getElementById('cmt-sp-ct-bt-'+ form.id).addEventListener("DOMCharacterDataModified", function(){
+	previewSpComment(form)
+}, false);
+jQuery('#f-'+form.id+' #cmt-sp-preview-sp').change( function(){
+	previewSpComment(form);
+});
+})
+
+
+// Activate only the first tab
+jQuery('.tab-content .tab-pane').each( function(idx,item){
+	var id = jQuery(item).attr('id');
+	if (idx==0){
+		jQuery('#'+id).addClass('active')
+		jQuery('#li-'+id+' > a').addClass('active')
+	} else {
+		jQuery('#'+id).removeClass('active')
+		jQuery('#li-'+id+' > a').removeClass('active')
+	}
+})
+
+data.forms.forEach(function(form,idx){
+	form.map.invalidateSize();
+	jQuery('#li-f-'+form.id).on('click',function(){
+		setTimeout(function() {
+			form.map.invalidateSize();
+			form.map.fitBounds(form.layer.sightings.getBounds());
+		},1);
+	})
+	
+	previewSpComment(form);
+	previewComment(form)
+})
+}
 
 
 
@@ -297,13 +1418,13 @@ function Form2Table(f){
 	alert_sp=[];
 	f.sightings.forEach( function(s) {
 		var eBird_bird = jQuery.grep(eBird_birds_list, function(e){ return e.id == s.species['@id'] })
-
+		
 		if (eBird_bird.length<1){
 			alert_sp.push(s.species.name);
 			eBird_bird.push([]);
 			eBird_bird[0].PRIMARY_COM_NAME = s.species.name;
 		}
-
+		
 		var row = {
 			common_name: eBird_bird[0].PRIMARY_COM_NAME,
 			genus:'',
@@ -327,11 +1448,11 @@ function Form2Table(f){
 		};
 		table.push(row)
 	})
-
+	
 	/*if (alert_sp.length>0){
 		alert('One or more specie(s) do(es) not exist in the current system. You might have more work on eBird to match these species. Please report the error at rafnuss@gmail.com. \n' + alert_sp.join(', ') )
 	}*/
-
+	
 	// Check for duplicate
 	var non_alert=true;
 	table2 = table.reduce(function(accumulator, currentValue) { 
@@ -352,7 +1473,7 @@ function Form2Table(f){
 		}
 		return accumulator
 	},[]);
-
+	
 	return table2;
 }
 
@@ -362,7 +1483,7 @@ function Table2CSV(table) {
 		var line = '';
 		for (var index in table[i]) {
 			if (line != '') line += ','
-				line += '"'+table[i][index]+'"';
+			line += '"'+table[i][index]+'"';
 		}
 		str += line + '\r\n';
 	}
@@ -475,1095 +1596,6 @@ function Export(){
 
 
 
-//____________________________________________________
-//                CREATE FUNCTIONS
-//____________________________________________________
-// handleFile() -> InitiateForms() -> ProcessSightings() -> ProcessForm()
-//                                 -> ProcessForm()
-
-
-
-function handleFile(file){
-	var ext = file.name.split('.').pop().toLowerCase();
-	if (['json','xml','csv','txt'].indexOf(ext) == -1){// File type not accepted 
-		return;
-	}
-
-	/* Write Cookies*/
-	var d = new Date();
-	d.setTime(d.getTime() + (365*24*60*60*1000));
-	var expires = "expires="+ d.toUTCString();
-	cookies_text.forEach(function(s){
-		document.cookie= s + "=" + escape(jQuery('#'+s).val()) + ";" + expires + ";path=/";
-	})
-	cookies_check.forEach(function(s){
-		document.cookie= s + "=" + escape(jQuery('#'+s).is(':checked')) + ";" + expires + ";path=/";
-	})
-
-	reader = new FileReader();
-	reader.readAsText(file);//,'ISO-8859-15');
-	reader.onload = function(){
-		if (ext == 'json'){
-			data = jQuery.parseJSON(reader.result).data;
-			// Two types of JSON can be imported: faune-france or biolovision.data
-			if (data.forms==undefined) {data.forms=[];}
-			if (data.sightings==undefined) {data.sightings=[];}
-			// Time is not included in s.date, take it form s.observers.timing
-			data.forms.forEach(function(f){ 
-				f.sightings.forEach(function(s){
-					s.date=s.observers[0].timing;
-					//if (s.date==undefined) {s.date=s.observers[0].timing;}
-				})
-			})
-			data.sightings.forEach(function(s){
-				s.date=s.observers[0].timing;
-				//if (s.date==undefined) {s.date=s.observers[0].timing;}
-			})
-		} else if ( ext == 'xml' ){
-			var xml_string = reader.result;
-			var duplicate = ['sighting','form','media','observer','detail'];
-			duplicate.forEach(function(dup){
-				var re = new RegExp('<'+dup+'s>', 'g');
-				var re2 = new RegExp('<'+dup+'s ', 'g');
-				var re3 = new RegExp('</'+dup+'s>', 'g');
-				xml_string = xml_string.replace(re,'').replace(re2,'').replace(re3,'')
-				var re = new RegExp('<'+dup+'>', 'g');
-				var re2 = new RegExp('<'+dup+' ', 'g');
-				var re3 = new RegExp('</'+dup+'>', 'g');
-				xml_string = xml_string.replace(re,'<'+dup+'s>').replace(re2,'<'+dup+'s ').replace(re3,'</'+dup+'s>')
-			})
-			var x2js = new X2JS();
-			var jsonObj = x2js.xml2json(xml_string);
-			data = jQuery.parseJSON(xml2json(jQuery.parseXML(xml_string)).replace('undefined','')).data;
-			if (!data.forms && !data.sightings){
-				alert('Empty file. No data available or wrong file')
-				return
-			}
-			// Convert form, sightings, observer and detail to array if empty or only one present
-			if (!data.forms) { data.forms =[] }
-				if (!data.sightings) { data.sightings =[] }
-					if (!Array.isArray(data.forms)){ data.forms = [data.forms] }
-						data.forms.forEach(function(f){
-							if (!Array.isArray(f.sightings)){ f.sightings = [f.sightings] }
-								f.sightings.forEach(function(s){
-									if (!Array.isArray(s.observers)){ s.observers = [s.observers] }
-										s.observers.forEach(function(o){
-											if (!o.details) { o.details =[] }
-												if (!Array.isArray(o.details)){ o.details = [o.details] }
-											})
-									s.date=s.observers[0].timing;
-								})
-						})
-					if (!Array.isArray(data.sightings)){ data.sightings = [data.sightings] }
-						data.sightings.forEach(function(s){
-							if (!Array.isArray(s.observers)){ s.observers = [s.observers] }
-								s.observers.forEach(function(o){
-									if (!o.details) { o.details =[] }
-										if (!Array.isArray(o.details)){ o.details = [o.details] }
-									})
-							s.date=s.observers[0].timing;
-						})
-				} else if (ext == 'txt'){
-					var sightings = jQuery.parseJSON(csvJSON(reader.result));
-					if (!('Year' in sightings[0])){
-						alert('Not a correct file. Maybe try to export in English')
-						return;
-					}
-					data={};
-					data.sightings=[];
-
-					InitiateForms(data)
-
-					sightings.forEach(function(s){
-						ns={
-							date:{
-								'@ISO8601': new Date(s.Year, s.Month-1, s.Day, s.Timing.split(':')[0], (s.Timing.split(':')[1] ? s.Timing.split(':')[1] : '')).toISOString(),
-								'@timestamp': ""
-							},
-							observers:[{
-								count: s.Number,
-								estimation_code: s.Estimation,
-								id_sighting: s['ID ornitho.ch'],
-								coord_lat: s['Latitude (N)'],
-								coord_lon: s['Longitude (E)'],
-								comment: s.Comment,
-								details:[],
-								timing:{
-									'@ISO8601': new Date(s.Year, s.Month-1, s.Day, s.Timing.split(':')[0], (s.Timing.split(':')[1] ? s.Timing.split(':')[1] : '')).toISOString(),
-								},
-								atlas_code:{'#text': s.ATLAS_CODE}
-							}],
-							place:{
-								altitude: s.ALTITUDE,
-								name: (('Lieu_dit' in s) ? s['Lieu_dit'] : (('Site' in s) ? s.Site : ''))
-							},
-							species:{
-								'latin_name': s['Latin name'],
-								name: s.Species,
-							}
-						};
-						data.sightings.push(ns);
-					})
-				} else if (ext == 'csv') {
-					var sightings = jQuery.parseJSON(csvJSON(reader.result).replace(/\\"/g,''))
-					sightings.splice(-1,1);
-
-					if (!('LEVEL' in sightings[0])){
-						alert('Not a correct file. Maybe try to export in English')
-						return;
-					}
-					data={};
-					data.sightings=[];
-
-					InitiateForms(data)
-
-					sightings.forEach(function(s){
-						ns={
-							date:{
-								'@ISO8601': new Date(s.Date.split('-')[0], s.Date.split('-')[1], s.Date.split('-')[2]-1, s.Time.split(':')[0], (s.Time.split(':')[1] ? s.Time.split(':')[1] : '')).toISOString(), 
-							},
-							observers:[{
-								count: s.Number,
-								estimation_code: s['meaning of number'],
-								id_sighting: s.id,
-								coord_lat: s.lat.replace(',','.'),
-								coord_lon: s.Lng.replace(',','.'),
-								comment: 'unknown'==s.method ? s.remarks : s.remarks+', '+s.method+', '+s.Activity,
-								details:[{
-									count: "1",
-									sex: {
-										"-id": 'unknown' == s.sex ? "U" : 'X',
-										"#text": s.sex
-									},
-									age: {
-										"-id":  'unknown' == s.sex ? "U" : 'X',
-										"#text": s.sex
-									},
-								}],
-								timing:{
-									'@ISO8601': new Date(s.Date.split('-')[0], s.Date.split('-')[1], s.Date.split('-')[2]-1, s.Time.split(':')[0], (s.Time.split(':')[1] ? s.Time.split(':')[1] : '')).toISOString(),
-								},
-								atlas_code:{
-									'#text': ''
-								}
-							}],
-							place:{
-								county: s.Province,
-								name: s.Area,
-								municipality: s.municipal
-							},
-							species:{
-								'latin_name': s['Scientific name'],
-								name: s.name,
-							}
-						};
-						data.sightings.push(ns);
-					})
-				}
-
-				data.forms.forEach(function(f,idx){
-					f.color = marker_color[idx+1];
-					f.id=idx+1;
-					f.name=f.sightings[0].place.name;
-			f.time_start = moment(f.time_start,"HH:mm").format("HH:mm") // 9:1 -> 09:01
-		});
-				data.forms.n=data.forms.length-1;
-
-				jQuery('html, body').css('overflow-y','auto');
-				if (data.sightings.length>0) {
-					jQuery('#c1').slideUp("slow",function(){
-						jQuery('#c2').slideDown("slow",function(){
-							ProcessSightings(data)
-						});
-					});
-				} else if (data.forms.length>0){
-					jQuery('#c1').slideUp("slow",function(){
-						jQuery('#c3').slideDown("slow",function(){
-							ProcessForms(data)
-						});	
-					});
-				} else {
-					alert('Empty file')
-					return
-				}
-			}
-		}
-
-
-		function ProcessSightings(data) {
-	data.forms.unshift({ // Create the checklist for Non-Assigned
-		name: 'Non-Assigned',
-		id:0,
-		color: marker_color[0],
-		sightings: [],
-		marker: NaN,
-		full_form: false
-	})
-	data.forms.n += 1;
-	
-	// Initiate map
-	modalmap = L.map('modal-map');
-	L.tileLayer.provider('MapBox', {id: 'rafnuss.npl3amec', accessToken: token.mapbox}).addTo(modalmap)
-	modalfLayer = new L.FeatureGroup().addTo(modalmap);
-	new L.Control.Draw({
-		position: 'topright',
-		draw: {
-			polyline: false,
-			polygon: false,
-			circle: false,
-			circlemarker: false,
-			rectangle: true, 
-			marker: {
-				icon: L.AwesomeMarkers.icon({
-					icon: 'list',
-					prefix: 'fa'
-				})
-			}
-		},
-		edit: {
-			featureGroup: modalfLayer
-		}
-	}).addTo(modalmap)
-	modalmap.on('draw:created', function (e) {
-		if (e.layerType === 'marker'){
-			data.forms.n +=1;
-			var form = {
-				id: data.forms.n,
-				color:marker_color[data.forms.n],
-				name: 'New List ' + data.forms.n.toString() +' '+ e.layer.getLatLng().toString().split('LatLng')[1],
-				sightings: [],
-				marker: e.layer,
-				full_form: false
-			}
-			data.forms.push(form)
-			// update marker
-			e.layer.setIcon(L.AwesomeMarkers.icon({
-				icon: 'list',
-				prefix:"fa",
-				markerColor: form.color[0],
-				iconColor: form.color[2]
-			})).on('click',function(){
-				jQuery('#selHotspot').val(form.id).change();
-			}).addTo(modalfLayer);
-			e.layer.id = form.id;
-			jQuery('#selHotspot').append(jQuery('<option>', {value: form.id, text: form.name, style: "background-color:"+form.color[1]+";color:"+form.color[2]+";"}));
-			jQuery('#selHotspot').val(form.id).change();
-		} else if (e.layerType === 'rectangle'){
-			modalsLayer.eachLayer(function(l){
-				if (e.layer.getBounds().contains(l.getLatLng())){
-					data.sightings.forEach(function(s){
-						if (l.feature.properties['id'] == (s.observers[0].id_sighting || s.observers[0].id_universal) ){
-							data.forms.forEach(function(f){
-								if (f.id==jQuery('#selHotspot').val()){
-									s['marker-color'] = f.color[1];
-									s.form = f.id;
-									l.setIcon(Makemarker(s).options.icon)
-								}
-							})
-						}
-					})
-				}
-			})
-		}
-	}).on('draw:deleted', function(e){
-		e.layers.eachLayer(function(l){
-			data.forms.forEach(function(f,idx){
-				if (f.id == l.id){
-					data.forms.splice(idx,1);
-					jQuery("#selHotspot option[value='"+f.id+"']").remove();
-					jQuery('#selHotspot').change();
-				}
-			})
-		})
-	});
-
-	// Import Form
-	data.forms.forEach(function(form,idx){
-		if (idx>0){
-			var m = L.marker([form.lat, form.lon],{
-				title: form.name,
-				alt: form.name,
-				icon: L.AwesomeMarkers.icon({
-					icon: 'list',
-					prefix:'fa',
-					markerColor: form.color[0],
-					iconColor: form.color[2]
-				})
-			})
-			m.id=form.id;
-			form.marker=m;
-			m.addTo(modalfLayer).on('click',function(){
-				jQuery('#selHotspot').val(form.id).change();
-			})
-		}
-		jQuery('#selHotspot').append(jQuery('<option>', {value: form.id, text: form.name, style: "background-color:"+form.color[1]+";color:"+form.color[2]+";"}));
-	});
-
-	// Import Sigthings
-	modalsLayer = L.markerClusterGroup({
-		showCoverageOnHover: false,
-		maxClusterRadius:70,
-	}).addTo(modalmap);
-
-	var uniquedate=[]
-	data.sightings.forEach(function(s){
-		s['marker-symbol'] = (s.observers[0].count < 99) ? s.observers[0].count : 'x';
-		s['marker-color'] = data.forms[0].color[1];
-		s['marker-size'] = 's';
-		s.form = 0;
-		var m = Makemarker(s);
-		m.addTo(modalsLayer);
-		uniquedate.push(data.sightings[0].date["@ISO8601"].substring(0,10))
-	})
-
-	jQuery('#selHotspot').change(function(opt){
-		data.forms.forEach(function(f,idx){
-			if (f.id == jQuery(opt.target).val()){
-				jQuery('#selHotspot').css('background-color',f.color[0])
-				jQuery('#selHotspot').css('color',f.color[2])
-			}
-		})
-	})
-
-	jQuery('#button-process').click(function(){
-		data.sightings.forEach(function(s){
-			data.forms.forEach(function(f){
-				if (s.form == f.id){
-					f.sightings.push(s);
-				}
-			})
-		})
-		jQuery('#c2').slideUp("slow",function(){
-			jQuery('#c3').slideDown("slow",function(){
-				ProcessForms(data)
-			});	
-		});
-	});
-
-	var modalDrawRectangle = new L.Draw.Rectangle(modalmap);
-	jQuery('#button-select-hotspot').click(function(){
-		modalDrawRectangle.enable();
-	})
-	var modalDrawMarker = new L.Draw.Marker(modalmap);
-	jQuery('#button-create-hotspot').click(function(){
-		modalDrawMarker.enable();
-	})
-
-	setTimeout(function() {
-		modalmap.invalidateSize();
-		modalmap.fitBounds(modalsLayer.getBounds());
-		jQuery('.leaflet-draw-toolbar-top').hide();
-		jQuery('#selHotspot').change();
-	}, 1);
-
-	// Display message if data are spanning over severa days
-	uniquedate = uniquedate.filter(function(value, index, self) { 
-		return self.indexOf(value) === index;
-	})
-	if (uniquedate.length==1){
-		jQuery('#warning-several-days').hide()
-	}
-	
-};
-
-
-function ProcessForms(data) {
-	// delete forms with empty sightings
-	var i = data.forms.length
-	while (i--) {
-		if (!data.forms[i].sightings[0]) {
-			data.forms.splice(i, 1);
-		}
-	}
-
-	//Add unasgined checklist
-	if (data.forms[0].id==0){
-		var form=data.forms[0];
-		jQuery( "#c3 .nav-tabs" ).append( "<li class='nav-item' id='li-f-"+form.id+"'><a class='nav-link active' href='#f-"+form.id+"' data-toggle='tab'>"+form.name+"</a></li>" );
-		jQuery( "#c3 .tab-content" ).append( "<div class='container tab-pane active' id='f-"+form.id+"'></div>" );
-		jQuery( "#f-" + form.id ).append( '\
-			<div class="row">\
-			<div class="form-group col-sm-12">\
-			<p>These are all sightings which do not belong to any checklists. They won t be imported in eBird. If there is an error, you ll have to start again.</p>\
-			<p>Click on the other menus to see the other checklists. </p>\
-			</div>\
-			<div class="form-group col-sm-12">\
-			<div class="map" id="map-f-'+form.id+'"></div>\
-			</div>\
-			</div>\
-			');
-		form.map = L.map('map-f-'+form.id);
-		form.layer = L.markerClusterGroup({
-			showCoverageOnHover: false,
-			maxClusterRadius:70,
-		}).addTo(form.map);
-
-		L.control.layers({
-			'MapBox': L.tileLayer.provider('MapBox', {id: 'rafnuss.npl3amec', accessToken:token.mapbox}).addTo(form.map),
-			'OpenStreetMap' : L.tileLayer.provider('OpenStreetMap.Mapnik'),
-			'Swisstopo': new L.TileLayer('https://wmts10.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-farbe/default/current/3857/{z}/{x}/{y}.jpeg', {
-				layer: 'ch.swisstopo.pixelkarte-farbe-pk1000.noscale',
-				maxZoom: 17,
-				attribution: 'Map data &copy; 2015 swisstopo',
-			})
-		},null,{collapsed:true}).addTo(form.map);
-
-		form.sightings.forEach(function(s,id) {
-			var m = Makemarker(s);
-			m.addTo(form.layer);
-			if (id === form.sightings.length-1){
-				form.map.fitBounds(form.layer.getBounds());
-			}
-		})
-		data.forms.shift()
-	}
-
-	// Add true checklist
-	data.forms.forEach(function(form,idx){
-
-		// Change the imported form structure to suit our need. First depending on if it's a 'legit' form or not and then for both.
-		if ( form['@id']){ // Legit form
-			form.date = moment.unix(form.sightings[0].date['@timestamp']).format('YYYY-MM-DD')
-			var duration = moment.utc(moment(form.time_stop,"HH:mm").diff(moment(form.time_start,"HH:mm"))).format('HH:mm');
-			form.duration = parseInt(duration.split(':')[0])*60+parseInt(duration.split(':')[1]);
-			form.full_form= (form.full_form=='1') ? true : false;
-			form.protocol='Stationary';
-		} else { // form from incidental sighting
-			var dates = form.sightings.map(function(s){ 
-				return moment.unix(s.date['@timestamp']).format('YYYY-MM-DD')
-			})
-			form.date = dates.reduce(function(a, b){ return (a === b) ? a : ''; });
-			if (!form.date){
-				alert('Sigthings of form "' + form.name +'" do not come from the same day. We took the earliest date. Please, check if this is correct.')
-				form.date = dates.sort((a,b) =>
-					dates.filter(v => v===a).length
-					- dates.filter(v => v===b).length
-					).pop()
-			}
-			var times = form.sightings.map(function(s){ 
-				return moment.unix(s.date['@timestamp']).format('HH:mm')
-			}).filter(function(t){
-				return t !='00:00'
-			})
-			if (times.length>0){
-				form.time_start = times.reduce(function (a, b) { return moment(a,'HH:mm') < moment(b,'HH:mm') ? a : b; }); 
-				form.time_stop = times.reduce(function (a, b) { return moment(a,'HH:mm') > moment(b,'HH:mm') ? a : b; }); 
-				var duration = moment.utc(moment(form.time_stop,"HH:mm").diff(moment(form.time_start,"HH:mm"))).format('HH:mm');
-				form.duration = parseInt(duration.split(':')[0])*60+parseInt(duration.split(':')[1]);
-			} else {
-				form.duration = '';
-				form.time_start = '';
-			}
-			form.protocol='Incidental';
-		}
-		form.sightings.forEach(function(s){
-			if(s.observers[0].estimation_code=='MINIMUM') {
-				s.observers[0].estimation_code='>';
-			} else if (s.observers[0].estimation_code=='EXACT_VALUE') {
-				s.observers[0].estimation_code='=';
-			} else if (s.observers[0].estimation_code=='ESTIMATION') {
-				s.observers[0].estimation_code='~';
-			} else if (s.observers[0].estimation_code=='NO_VALUE') {
-				s.observers[0].estimation_code=''
-				s.observers[0].count='x'
-			}
-			s.observers[0].coord_lat_str = deg_to_dms(s.observers[0].coord_lat);
-			s.observers[0].coord_lon_str = deg_to_dms(s.observers[0].coord_lon);
-
-			if (!s.observers[0].details){
-				s.observers[0].details = '';
-			} else {
-				var details=[];
-				s.observers[0].details.forEach(function(d){
-					detail = d.count +'x ';
-					if (d.sex["@id"]!='U'){
-						detail += d.sex["#text"];
-					}
-					if (d.age["@id"]!='U'){
-						detail += ' '+d.age["#text"];
-					}
-					details.push(detail)
-				})
-				s.observers[0].details = details.join(', ');
-			}
-			if (!s.observers[0].atlas_code){
-				s.observers[0].atlas_code = '';
-			} else {
-				s.observers[0].atlas_code = atlas_code[s.observers[0].atlas_code['#text']] + '(Atlas code: '+s.observers[0].atlas_code['#text']+')';
-			}
-
-		})
-		form.distance='';
-		form['party-size']=jQuery('#nb-obs').val();
-		form.staticmap={};
-		form.gist='#';
-		if (form.marker){
-			form.lon=form.marker.getLatLng().lng;
-			form.lat=form.marker.getLatLng().lat;
-		}
-		form.weather='';
-		/*jQuery.get('https://api.wunderground.com/api/b097b9712f359043/history_'+moment(form.date).format('YYYYMMDD')+'/q/'+form.lat+','+form.lon+'.json',function(data){
-			var w = data.history.dailysummary[0];
-			form.weather= "";
-			if (w) {
-				var whtml= '<b>Temp.</b>:'+w.meantempm+'°C ('+w.mintempm+'/'+w.maxtempm +')';
-				whtml += ' - <b>Prec.</b>: '+w.precipm+ 'mm';
-				whtml += w.snow=='0' ? '':' (snow)'; 
-				whtml += ' - <b>Wind</b>: '+w.meanwdire+' '+w.meanwindspdm+ 'km/h ('+w.minwspdm+'/'+w.maxwspdm+')';
-				whtml += ' - <b>Humidity</b>: '+w.humidity;
-				//whtml += w.fog ? 'fog':''; 
-				//whtml += w.hail ? 'hail':''; 
-				form.weather= whtml;
-			}
-			previewComment(form)
-		})*/
-
-		jQuery.getJSON('https://api.apixu.com/v1/history.json?key='+token.apixu+'&dt='+moment(form.date).format('YYYY-MM-DD')+'&q='+form.lat+','+form.lon,function(weather){
-			
-			var id = moment((moment(data.forms[0].time_start,"HH:mm")+moment(data.forms[0].time_stop,"HH:mm:ss"))/2).add(30, 'minutes').startOf('hour').hour();
-			var w = weather.forecast.forecastday[0].hour[id];
-
-			if (w) {
-				var whtml= '<b>Weather</b>:' +w.condition.text;
-				whtml += ' <b>Temp.</b>:'+w.temp_c+'°C';
-				whtml += ' - <b>Prec.</b>: '+w.precip_mm+ 'mm';
-				whtml += w.chance_of_snow =='0' ? '':' (snow)'; 
-				whtml += ' - <b>Cloud</b>: '+w.cloud+'%';
-				whtml += ' - <b>Wind</b>: '+w.wind_dir+' '+w.wind_kph+ 'km/h';
-				//whtml += ' - <b>Humidity</b>: '+w.humidity;
-				whtml += ' - <b>Visibility</b>: '+w.vis_km+'km';				
-				form.weather= whtml;
-			}
-			previewComment(form)
-		})
-
-		
-		jQuery.getJSON( 'https://nominatim.openstreetmap.org/reverse?lat='+form.lat.toString()+'&lon='+form.lon.toString()+'&format=json', function( json ) {
-			form.country = json.address.country_code;
-		});
-		
-		/* REMOVE?
-		form.specie_comment="var c='';\
-		c = c + o.estimation_code+o.count+' ind.';\
-		if(!o.detail){c = c + ' - ' + o.detail;}\n\
-		if(o.timing['@ISO8601'] != '00:00'){c = c+' - '+moment(o.timing['@ISO8601']).format('HH:mm');}\n\
-		c = c+' - <a href=\"http://maps.google.com?q='+o.coord_lat+','+o.coord_lon+'&t=k\" target=\"_blank\">'+ s.place.name +'</a>';\n\
-		c = c + ' - <a href=\"http://'+jQuery('#sel-website').val()+'/index.php?m_id=54&id='+o['@id']+'\" target=\"_blank\">ID</a>';\n\
-		return c";
-		*/
-		
-
-		jQuery( "#c3 .nav-tabs" ).append( "<li class='nav-item' id='li-f-"+form.id+"'><a class='nav-link' href='#f-"+form.id+"' data-toggle='tab'>"+form.name+"</a></li>" );
-		jQuery( "#c3 .tab-content" ).append( "<div class='container tab-pane' id='f-"+form.id+"'></div>" );
-		jQuery( "#f-" + form.id ).append( '\
-			<form class="form" data-toggle="validator" >\
-			<div class="row">\
-			<div class="form-group col-lg-12">\
-			<label for="location" class="control-label">Location:</label>\
-			<input type="text" class="form-control" id="location" value="'+form.name+'" required>\
-			<div class="help-block with-errors"></div>\
-			</div>\
-			<div class="form-group col-lg-6">\
-			<div class="row">\
-			<div class="form-group col-lg-6">\
-			<label class="control-label" for="date">Date:</label> \
-			<input type="date" class="form-control" id="date" value="'+form.date+'" required>\
-			<div class="help-block with-errors"></div>\
-			</div>\
-			<div class="form-group col-lg-6">\
-			<label class="control-label" for="time">Time:</label>\
-			<input type="time" class="form-control" id="time" value="'+form.time_start+'" data-timeOK>\
-			<div class="help-block with-errors"></div>\
-			</div>\
-			</div>\
-			<div class="row">\
-			<div class="form-group col-lg-6">\
-			<label for="observation-type">Observation Type:</label>\
-			<select class="form-control" id="observation-type" required>\
-			<option>Traveling</option>\
-			<option>Stationary</option>\
-			<option>Historical</option>\
-			<option>Incidental</option>\
-			</select>\
-			<div class="help-block with-errors"></div>\
-			</div>\
-			<div class="form-group col-lg-6">\
-			<label>Complete Checklist:</label>\
-			<div id="div-sliderOF">\
-			<div class="col text-right">NO</div>\
-			<div class="text-center">\
-			<label class="switch"><input type="checkbox" checked="checked" class="check-fullform"><div class="sliderOF round"></div></label>\
-			</div>\
-			<div class=" col text-left">YES</div>\
-			</div>\
-			</div>\
-			</div>\
-			<div class="row">\
-			<div class="form-group col-lg-4">\
-			<label class="control-label" for="duration">Duration ( min.):</label> \
-			<input type="number" class="form-control" id="duration" value="'+parseInt(form.duration).toString()+'" min="0" step=".1" max="1440" data-durationOK>\
-			<div class="help-block with-errors"></div>\
-			</div>\
-			<div class="form-group col-lg-4">\
-			<label class="control-label" for="distance">Distance (km):</label>\
-			<input type="number" class="form-control" id="distance" value="'+form.distance+'" min="0" step=".00001" max="999" data-distanceOK>\
-			<div class="help-block with-errors"></div>\
-			</div>\
-			<div class="form-group col-lg-4">\
-			<label class="control-label" for="party-size">Party size:</label>\
-			<input type="number" class="form-control" id="party-size" value="'+form['party-size']+'" min="1" max="99" required>\
-			<div class="help-block with-errors"></div>\
-			</div>\
-			</div>\
-			<div class="form-group col-lg-12">\
-			<label for="cmt-sp-ct-bt-'+ form.id+'">Species Comment:</label>\
-			<div id="cmt-sp">\
-			<div class="cmt-sp-ct cmt-sp-ct-tp" id="cmt-sp-ct-tp-'+ form.id+'">\
-			<span class="badge badge-secondary" contenteditable="false" value="s.date.text">Timing (full)</span>\
-			<span class="badge badge-secondary" contenteditable="false" value="moment.unix(s.date[\'@timestamp\']).format(\'dd-MM-YYYY HH:mm\')">Timing (condensed)</span>\
-			<span class="badge badge-secondary" contenteditable="false" value="moment.unix(s.date[\'@timestamp\']).format(\'HH:mm\')">Time</span>\
-			<span class="badge badge-secondary" contenteditable="false" value="(s.observers[0].id_sighting || s.observers[0].id_universal)">ID sighting</span>\
-			<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].estimation_code">Estimation code</span>\
-			<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].count">Count</span>\
-			<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lat">Latitude DD</span>\
-			<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lon">Longitude DD</span>\
-			<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lat_str">Latitude DMS</span>\
-			<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lon_str">Longitude DMS</span>\
-			<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].comment">Comment</span>\
-			<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].details">Detail</span>\
-			<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].atlas_code">Atlas code</span>\
-			</div>\
-			<div class="cmt-sp-ct cmt-sp-ct-bt" id="cmt-sp-ct-bt-'+ form.id+'" contenteditable="true">'+
-			(jQuery('#incl-sp-cmt').is(":checked") ?
-				'<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].estimation_code">Estimation code</span>\
-				<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].count">Count</span> ind. - \
-				<span class="badge badge-secondary" contenteditable="false" value="moment.unix(s.date[\'@timestamp\']).format(\'HH:mm\')">Time</span> - \
-				&lt;a href="http://maps.google.com?q=<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lat">Latitude DD</span>,\
-				<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lon">Longitude DD</span>\
-				&t=k" target="_blank" &gt;<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lat_str">Latitude DMS</span>N \
-				<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lon_str">Longitude DMS</span>\
-				E&lt;/a&gt; - &lt;a href="http://'+jQuery('#sel-website-link').val()+'/index.php?m_id=54&id=\
-				<span class="badge badge-secondary" contenteditable="false" value="(s.observers[0].id_sighting || s.observers[0].id_universal)">ID sighting</span>\
-				" target="_blank">'+jQuery('#sel-website-link').val()+'&lt;/a&gt;\
-				<br>&lt;br&gt;<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].comment">Comment</span>\
-				<br>&lt;br&gt;<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].details">Detail</span>' : '')
-			+'</div>\
-			</div>\
-			</div>\
-			<div class="form-group col-lg-12">\
-			<label>Exemple:  </label>\
-			<div class="form-group" style=" display: inline-block;">\
-			<select id="cmt-sp-preview-sp"></select>\
-			</div>\
-			<div id="cmt-sp-preview"></div>\
-			</div>\
-			</div>\
-			<div class="form-group col-lg-6">\
-			<div class="row">\
-			<label for="comments">Checklist Comment:</label>\
-			<textarea class="form-control" rows="3"  id="comments">'+(form.comment || "") +'</textarea>\
-			</div>\
-			<div class="row form-check">\
-			<label><input class="form-check-input" type="checkbox" '+  (jQuery('#incl-map').is(":checked") ? 'checked="checked"' : '') +' id="check-static-map"> Include static map</label>\
-			</div>\
-			<div class="row">\
-			<div class="col-lg-5 form-inline">\
-			<label for="zoom">Zoom:</label>\
-			<span class="input-group-btn">\
-			<button type="button" class="btn btn-sm btn-number" data-type="minus">\
-			<i class="fa fa-minus" aria-hidden="true"></i>\
-			</button>\
-			</span>\
-			<input type="text" id="zoom" class="form-control input-number" value="1" min="1" max="21">\
-			<span class="input-group-btn">\
-			<button type="button" class="btn btn-sm btn-number" data-type="plus">\
-			<i class="fa fa-plus" aria-hidden="true"></i>\
-			</button>\
-			</span>\
-			</div>\
-			<div class="col-lg-3">\
-			<button type="button" class="btn btn-default center-block" id="center-map" title="Set static map automaticaly with sightings location">Center map</button>\
-			</div>\
-			<div class="col-lg-4">\
-			<button type="button" class="btn btn-default center-block" id="button-geojson">Export GeoJson</button>\
-			</div>\
-			</div>\
-			<div class="row form-check">\
-			<label><input type="checkbox" class="form-check-input" '+ (jQuery('#incl-weather').is(":checked") ? 'checked="checked"' : '') +' id="check-weather"> Include weather</label>\
-			</div>\
-			<div class="row">\
-			<label>Preview:</label>\
-			<div id="comments-preview"></div>\
-			</div>\
-			</div>\
-			</div>\
-			<div class="row">\
-			<div class="form-group col-sm-12">\
-			<div class="map" id="map-f-'+form.id+'"></div>\
-			</div>\
-			</div>\
-			</form>\
-			');
-
-
-
-		// Create Map
-		form.map = L.map('map-f-'+form.id);
-		// Create Layers
-		form.layer={};
-		form.layer.hotspots=L.featureGroup().addTo(form.map)
-		form.layer.sightings = L.markerClusterGroup({
-			showCoverageOnHover: false,
-			maxClusterRadius:70,
-		}).addTo(form.map);
-		form.layer.edit = new L.FeatureGroup().addTo(form.map);
-		form.layer.all = L.featureGroup([form.layer.edit, form.layer.sightings, form.layer.hotspots])
-
-		//Add control
-		L.control.layers({
-			'MapBox': L.tileLayer.provider('MapBox', {id: 'rafnuss.npl3amec', accessToken:token.mapbox}).addTo(form.map),
-			'OpenStreetMap' : L.tileLayer.provider('OpenStreetMap.Mapnik'),
-			'Swisstopo': new L.TileLayer('https://wmts10.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-farbe/default/current/3857/{z}/{x}/{y}.jpeg', {
-				layer: 'ch.swisstopo.pixelkarte-farbe-pk1000.noscale',
-				maxZoom: 17,
-				attribution: 'Map data &copy; 2015 swisstopo',
-			})
-		},null,{collapsed:true}).addTo(form.map);
-		new L.Control.Draw({
-			position: 'topright',
-			draw: {
-				polyline: { 
-					shapeOptions: {
-						color: '#ad8533',
-						weight: 5,
-						opacity: 1,
-						dashArray: "20, 10, 10, 10"
-					}
-				},
-				circlemarker: false,
-				polygon: false,
-				circle: false,
-				rectangle: false, 
-				marker: false
-			},
-			edit: {
-				featureGroup: form.layer.edit,
-			}
-		}).addTo(form.map)
-
-		// Add Listener
-		form.map.on('draw:created', function (e) {
-			e.layer.addTo(form.layer.edit);
-			// Calculating the distance of the polyline
-			var tempLatLng = null;
-			var totalDistance = 0.00000;
-			jQuery.each(e.layer._latlngs, function(i, latlng){
-				if(tempLatLng == null){
-					tempLatLng = latlng;
-					return;
-				}
-				totalDistance += tempLatLng.distanceTo(latlng);
-				tempLatLng = latlng;
-			});
-
-			var popup = jQuery('<div/>') 
-			popup.html('Set Distance to: <button type="button" class="btn btn-default" id="setDistance">'+(totalDistance/1000).toFixed(2).toString()+'</button> km');
-			popup.on('click', '#setDistance', function() {
-				jQuery('#f-'+form.id+' #observation-type').val('Traveling')
-				jQuery('#f-'+form.id+' #distance').val(jQuery(this).html())
-				jQuery('#f-'+form.id+' #observation-type').change()
-			});
-			e.layer.bindPopup(popup[0]).openPopup();
-			form.map.fitBounds(form.layer.sightings.getBounds());
-			previewComment(form)
-		});
-
-		// Import Sightings
-		form.sightings.forEach(function(s,id) {
-			s['marker-symbol'] = (s.observers[0].count < 99) ? s.observers[0].count : 'x';
-			s['marker-color'] = color(s,form);
-			s['marker-size'] = 'm';
-			var m = Makemarker(s);
-			m.addTo(form.layer.sightings);
-
-			// when finish
-			if (id === form.sightings.length-1){
-				form.map.fitBounds(form.layer.all.getBounds());
-				form.staticmap.lng = form.layer.sightings.getBounds().getCenter().lng;
-				form.staticmap.lat = form.layer.sightings.getBounds().getCenter().lat;
-				form.layer.msm = L.marker([form.staticmap.lat,form.staticmap.lng], {
-					icon:L.icon({
-						iconUrl: 'https://zoziologie.raphaelnussbaumer.com/assets/biolovision2eBird/images/Maps-Center-Direction-icon.png',
-						iconSize:     [40, 40],
-						iconAnchor:   [20, 20], 
-						popupAnchor:  [-20, 0]
-					}),
-					draggable:true,
-					title:'Static Map center',
-					alt:'Static Map center'
-				}).on('dragend',function(evt){
-					form.staticmap.lng = evt.target.getLatLng().lng;
-					form.staticmap.lat = evt.target.getLatLng().lat;
-					previewComment(form)
-				}).addTo(form.map);
-				form.staticmap.zoom = getBoundsZoomLevel(L.featureGroup([form.layer.edit, form.layer.sightings]).getBounds(), { height: 450, width: 800 })
-			}
-		})
-
-		var LatLngBounds = form.layer.all.getBounds();
-		var dist = LatLngBounds.getNorthEast().distanceTo(LatLngBounds.getSouthWest())/1000; // m -> km
-		dist = Math.max(5,Math.round(dist*2)).toString();
-
-		// Load local hotspot
-		jQuery.getJSON( 'https://ebird.org/ws2.0/ref/hotspot/geo?lat='+LatLngBounds.getCenter().lat+'&lng='+LatLngBounds.getCenter().lng+'&dist=10&fmt=json', function( hotspots ) {
-			hotspots = Array.isArray(hotspots) ? hotspots : [hotspots] 
-			hotspots.forEach(function(h){
-				var mark = L.marker([h.lat,h.lng],{
-					title: h.locName,
-					alt: h.locName,
-					icon: L.icon({
-						iconUrl: "https://zoziologie.raphaelnussbaumer.com/assets/biolovision2eBird/images/hotspot-icon-hotspot.png",
-						iconAnchor: [15, 19],
-						popupAnchor: [0, -19],
-					})
-				})
-				var popup = jQuery('<div/>') 
-				popup.html('\
-					Set Location of the Checklist with the eBird hostpot:<br>\
-					<button type="button" class="btn btn-default" id="setLocation" title="Define as location of the checklist">'+h.locName+'</button><br>\
-					<a href="https://ebird.org/ebird/hotspot/'+h.locId +'" target="_blank" title="See on eBird">View on eBird</a>');
-				popup.on('click', '#setLocation', function() {
-					form.name = jQuery(this).html();
-					jQuery('#f-'+form.id+' #location').val(form.name);
-					jQuery('#li-f-'+form.id+' a').html(form.name);
-					form.lat = h.lat;
-					form.lon = h.lng;
-					jQuery.getJSON( 'https://nominatim.openstreetmap.org/reverse?lat='+form.lat.toString()+'&lon='+form.lon.toString()+'&format=json', function( json ) {
-						form.country = json.address.country_code;
-					});
-					form.map.closePopup();
-				});
-				mark.addTo(form.layer.hotspots).bindPopup(popup[0]);
-			})
-			form.map.fitBounds(form.layer.sightings.getBounds());
-		});
-
-
-
-		// Add Listener
-		jQuery('#f-'+form.id+' #location').keyup( function(){ 
-			form.name = jQuery(this).val();
-			jQuery('#li-f-'+form.id+' a').html(form.name)
-			if (!form.name){
-				jQuery(this).parent().addClass('has-error');
-			} else{
-				jQuery(this).parent().removeClass('has-error');
-			}
-		});
-		jQuery('#f-'+form.id+' #date').change( function(){ 
-			form.date = jQuery(this).val();
-			if (!form.date || !/^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$/.test(form.date)  ){
-				jQuery(this).parent().addClass('has-error');
-			} else{
-				jQuery(this).parent().removeClass('has-error');
-			}
-		});
-		jQuery('#f-'+form.id+' #time').change( function(){ 
-			form.time_start = jQuery(this).val();
-			if (form.protocol == 'Stationary' || form.protocol == 'Traveling'){
-				if (!form.time_start || !/^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/.test(form.time_start)){
-					jQuery(this).parent().addClass('has-error');
-				} else{
-					jQuery(this).parent().removeClass('has-error');
-				}
-			} else {
-				jQuery(this).parent().removeClass('has-error');
-			}
-		});
-		jQuery('#f-'+form.id+' #observation-type').change( function(){ 
-			form.protocol = jQuery(this).val();
-			if (form.protocol == 'Incidental'){
-				jQuery('#f-'+form.id+' .check-fullform').prop("checked",false)
-				jQuery('#f-'+form.id+' .check-fullform').change();
-			}
-			jQuery('#f-'+form.id+' #time').change()
-			jQuery('#f-'+form.id+' #duration').change();
-			jQuery('#f-'+form.id+' #distance').change();
-		});
-		jQuery('#f-'+form.id+' #duration').change( function(){ 
-			form.duration = jQuery(this).val();
-			jQuery(this).parent().removeClass('has-error');
-			if (form.protocol == 'Incidental'){
-				jQuery(this).prop('disabled', true);
-			} else {
-				jQuery(this).prop('disabled', false);
-			}
-			if ( (form.protocol == 'Traveling' || form.protocol == 'Stationary') && (!form.duration || form.duration<=0) ){
-				jQuery(this).parent().addClass('has-error');
-			}
-		});
-		jQuery('#f-'+form.id+' #distance').change( function(){ 
-			form.distance = jQuery(this).val();
-			jQuery(this).parent().removeClass('has-error');
-			if (form.protocol == 'Traveling' || form.protocol == 'Historical' ){
-				jQuery(this).prop('disabled', false);
-			} else{
-				jQuery(this).prop('disabled', true);
-			}
-			if (form.protocol == 'Traveling' && (!form.distance || form.distance<=0)){
-				jQuery(this).parent().addClass('has-error');
-			}
-		});
-		jQuery('#f-'+form.id+' #party-size').change( function(){ 
-			form['party-size'] = jQuery(this).val();
-			if (!form['party-size'] || form['party-size']<1){
-				jQuery(this).parent().addClass('has-error');
-			} else{
-				jQuery(this).parent().removeClass('has-error');
-			}
-		});
-		jQuery('#f-'+form.id+' .check-fullform').change( function(){
-			if (jQuery(this).is(':checked')){
-				form.full_form = true
-			} else{
-				form.full_form = false
-			}
-		})
-		jQuery('#f-'+form.id+' #observation-type').val(form.protocol).change();
-
-		if (form.full_form) {
-			jQuery('#f-'+form.id+' .check-fullform').prop("checked")
-		} else {
-			jQuery('#f-'+form.id+' .check-fullform').prop("checked",false)
-		}
-		jQuery('#f-'+form.id+' #comments').keyup( function(){
-			previewComment(form);
-		});
-		jQuery('#f-'+form.id+' #check-static-map').change( function(){
-			previewComment(form);
-		});
-		jQuery('#f-'+form.id+' #check-weather').change( function(){
-			previewComment(form);
-		});
-		jQuery('#f-'+form.id+' #button-geojson').click( function(){
-			var fs = form.layer.sightings.toGeoJSON();
-			form.layer.edit.toGeoJSON().features.forEach(function(f){
-				fs.features.push(f);
-			})
-			var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(fs));
-			var link = document.createElement("a");
-			link.setAttribute("href",     dataStr     );
-			link.setAttribute("download", form.name.replace(' ','_')+".json");
-			document.body.appendChild(link);
-			link.click();
-		})
-		dragula([document.getElementById('cmt-sp-ct-tp-'+ form.id), document.getElementById('cmt-sp-ct-bt-'+ form.id)], {
-			copy: function (el, source) {
-				return source === document.getElementById('cmt-sp-ct-tp-'+ form.id)
-			},
-			accepts: function (el, target) {
-				return target !== document.getElementById('cmt-sp-ct-tp-'+ form.id)
-			},
-			removeOnSpill: true
-		});
-		form.sightings.forEach( function(s,id){
-			jQuery('#f-'+form.id+' #cmt-sp-preview-sp').append(jQuery('<option>', {
-				value: id,
-				text: (s.species.name || s.species.bird_name)
-			}));
-		})
-		jQuery('#f-'+form.id+' #center-map').click(function(){
-			form.staticmap.lng = form.layer.sightings.getBounds().getCenter().lng;
-			form.staticmap.lat = form.layer.sightings.getBounds().getCenter().lat;
-			form.staticmap.zoom = getBoundsZoomLevel(L.featureGroup([form.layer.edit, form.layer.sightings]).getBounds(), { height: 450, width: 800 })
-			form.layer.msm.setLatLng(form.layer.sightings.getBounds().getCenter());
-			previewComment(form)
-		})
-
-		jQuery('#f-'+form.id+' .btn-number').click(function(e){
-			var input = jQuery('#f-'+form.id+ ' #zoom');
-			if(jQuery(this).attr('data-type') == 'minus') {
-				input.val(+input.val()-1);
-			} else if(jQuery(this).attr('data-type') == 'plus') {
-				input.val(+input.val()+1);
-			}
-			input.change();
-		});
-		jQuery('#f-'+form.id+ ' #zoom').on('change', function() {
-			var input = jQuery('#f-'+form.id+ ' #zoom');
-			if(input.val() <= input.attr('min')) {
-				jQuery(".btn-number[data-type='minus']").attr('disabled', true);
-				input.val(input.attr('min'));
-			} else {
-				jQuery(".btn-number[data-type='minus']").attr('disabled', false);
-			}
-			if(input.val() >= input.attr('max')) {
-				jQuery(".btn-number[data-type='plus']").attr('disabled', true);
-				input.val(input.attr('max'));
-			} else {
-				jQuery(".btn-number[data-type='plus']").attr('disabled', false);
-			}
-			form.staticmap.zoom = input.val();
-			previewComment(form);
-		})
-		jQuery('#f-'+form.id+ ' #zoom').val(form.staticmap.zoom);
-
-		document.getElementById('cmt-sp-ct-bt-'+ form.id).addEventListener("input", function(){
-			previewSpComment(form)
-		}, false);
-		document.getElementById('cmt-sp-ct-bt-'+ form.id).addEventListener("DOMNodeInserted", function(){
-			previewSpComment(form)
-		}, false);
-		document.getElementById('cmt-sp-ct-bt-'+ form.id).addEventListener("DOMNodeRemoved", function(){
-			previewSpComment(form)
-		}, false);
-		document.getElementById('cmt-sp-ct-bt-'+ form.id).addEventListener("DOMCharacterDataModified", function(){
-			previewSpComment(form)
-		}, false);
-		jQuery('#f-'+form.id+' #cmt-sp-preview-sp').change( function(){
-			previewSpComment(form);
-		});
-	})
-
-
-	// Activate only the first tab
-	jQuery('.tab-content .tab-pane').each( function(idx,item){
-		var id = jQuery(item).attr('id');
-		if (idx==0){
-			jQuery('#'+id).addClass('active')
-			jQuery('#li-'+id+' > a').addClass('active')
-		} else {
-			jQuery('#'+id).removeClass('active')
-			jQuery('#li-'+id+' > a').removeClass('active')
-		}
-	})
-
-	data.forms.forEach(function(form,idx){
-		form.map.invalidateSize();
-		jQuery('#li-f-'+form.id).on('click',function(){
-			setTimeout(function() {
-				form.map.invalidateSize();
-				form.map.fitBounds(form.layer.sightings.getBounds());
-			},1);
-		})
-
-		previewSpComment(form);
-		previewComment(form)
-	})
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1585,7 +1617,7 @@ function ProcessForms(data) {
 var data, csv_content, code_list=[],eBird_label=[],table=[],modalmap,modalsLayer, modalfLayer, form;
 
 jQuery(document).ready(function(){  
-
+	
 	/* Adapt default website based on url param*/
 	var url = new URL(window.location.href);
 	switch(url.searchParams.get('site')) {
@@ -1596,11 +1628,22 @@ jQuery(document).ready(function(){
 		jQuery('#sel-website').val('www.faune-france.org')
 		break;
 	}
-
+	
 	jQuery('#sel-website').on('input',function(e){
 		jQuery("#sel-website-link").val(jQuery('#sel-website').val());
+		if (jQuery('#sel-website').val()=='birdtrack'){
+			jQuery("#incl-map").attr("disabled", true);
+			jQuery("#incl-map").prop( "checked", false );
+			jQuery("#incl-sp-cmt").attr("disabled", true);
+			jQuery("#incl-sp-cmt").prop( "checked", false );
+		} else {
+			jQuery("#incl-map").attr("disabled", false);
+			jQuery("#incl-map").prop( "checked", true );
+			jQuery("#incl-sp-cmt").attr("disabled", false);
+			jQuery("#incl-sp-cmt").prop( "checked", true );
+		}
 	});
-
+	
 	jQuery('#incl-sp-cmt').change(function() {
 		if(this.checked) {
 			jQuery("#sel-website-link").attr("disabled", false);
@@ -1608,8 +1651,8 @@ jQuery(document).ready(function(){
 			jQuery("#sel-website-link").attr("disabled", true);
 		}     
 	});
-
-
+	
+	
 	
 	/* c1: Download biolovision data*/  
 	//Define daptepicker
@@ -1638,8 +1681,8 @@ jQuery(document).ready(function(){
 	jQuery('.input-daterange input').on('focus',function(){
 		jQuery('input[type="radio"][value="range"]').click()
 	})
-
-
+	
+	
 	/* Upload file*/ 
 	// Drag and drop
 	dropbox = document.getElementById("dropbox");
@@ -1662,8 +1705,8 @@ jQuery(document).ready(function(){
 	document.getElementById('upload').onchange = function(e){
 		handleFile(e.target.files[0])
 	}
-
-
+	
+	
 	/* Read Cookies*/
 	cookies_text=['sel-website','date_ago','nb-obs','input-date-from','input-date-to','sel-website-link'];
 	cookies_check=['incl-weather','incl-map','incl-sp-cmt'];
@@ -1675,14 +1718,13 @@ jQuery(document).ready(function(){
 	})
 	cookies_check.forEach(function(s){
 		var v =getCookieValue(s);
-		console.log(v)
 		if (!(v === "")){
 			jQuery('#'+s).prop("checked",v === 'true');
 		}
 	})
-
-
-
+	
+	
+	
 	/* c3: Result*/
 	// Button to write to file
 	jQuery('#button-download-biolovision').click( Export );
@@ -1690,12 +1732,12 @@ jQuery(document).ready(function(){
 		var n = jQuery("#tab-checklists div.active")[0].id.split('-')[1]-1;
 		singleExport(data.forms[n]);
 	});
-
+	
 	// Map
 	L.MakiMarkers.accessToken = token.mapbox;
-
-
-
+	
+	
+	
 });
 
 
