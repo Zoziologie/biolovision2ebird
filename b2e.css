@@ -37,6 +37,11 @@ a:hover{
 .btn-default:hover{
 	background-color:  #f7a222;
 }  
+.gif{
+	width: 600px;
+	max-width: 100%;
+	margin: 0 auto;
+}
 /* c1: Dowonload biolovision; */
 #date_ago {
 	display: inline;
@@ -142,6 +147,13 @@ input{
 }
 .has-feedback .form-control-feedback{
 	right: 15; !important
+}
+.badge{
+	margin: 0px 2px;
+	cursor: move;
+}
+.badge:active{
+	cursor: grabbing;
 }
 
 /* The slider */
@@ -293,4 +305,10 @@ input[type="number"]{
 }
 .fa-list {
 	margin-top: 10px;
+}
+.leaflet-control-zoom-out{
+	text-decoration: none;
+}
+.leaflet-control-zoom-in{
+	text-decoration: none;
 }

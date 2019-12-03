@@ -20,169 +20,204 @@ plugins:
 - Leaflet.markercluster
 - Leaflet.encoded
 ---
+
 <h1> Biolovision2eBird</h1>
 <div id="c1" class="container">
-	<h2>1. Introduction </h2>
-	<div class="row"><p>
-		<div class="col-sm-12">
-			<strong>Biolovision2eBird</strong> convert your observation of any biolovision website (ornitho.ch, faune-alsace.org, ...) to an eBird Checklist! It basically take the export file from biolovision and match the data into the <a href="http://help.ebird.org/customer/portal/articles/973915-uploading-data-to-ebird#ebird-record-format-specifications" target="_blank" rel="noopener">eBird Record Format</a> which can be easily uploaded on eBird.</p>
-		</div>
-		<div class="col-sm-5"><img src="https://zoziologie.raphaelnussbaumer.com/assets/biolovision2eBird/images/Selection_019-1.png" /></div>
-		<div class="col-sm-2 text-center vcenter">
-			<i class="fas fa-long-arrow-alt-right fa-5x"></i>
-		</div>
-		<div class="col-sm-5"><img src="https://zoziologie.raphaelnussbaumer.com/assets/biolovision2eBird/images/Selection_020-1.png" /></div>
+	<div class="alert alert-info" role="alert">
+		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+		</button>
+		New version! Here are some features added: (1) posibility to define (and remember in your browser) settings for all checklists, (2) new function to automatically create checklist and assign incidental sightings, and (3) compabitlity to import data from observado and birdtrack.<br>
+		Make sure to always choose the correct website ("link website") in the first page for the hyperlink to work properly<br>
+		If you have any problem, please submit an issue on <a href="https://github.com/Zoziologie/Biolovision2eBird/issues" target="_blank"><i class="fab fa-fw fa-github" aria-hidden="true"></i> Github</a> or <a href="mailto:rafnuss@gmail.com" rel="nofollow noopener noreferrer"><i class="fas fa-fw fa-envelope-square" aria-hidden="true"></i> contact me</a>
 	</div>
-	<h2>2. Import Biolovision data </h2>
-	<p>First, you need to export your file from biolovision. Go on the website, then go in "query your data" and export them in .json <img src="https://zoziologie.raphaelnussbaumer.com/assets/biolovision2eBird/images/json.png" alt="json"/>. If you are already login in this computer, you can make the query using the form below:</p>
-	<form onsubmit="downloadfx(); return false;" class="row download-from-biolovision">
-		<div class="col-lg-3 form-group"><label for="sel-website">a) Select a website:</label>
-			<input id="sel-website" class="form-control" list="websites" name="website" type="text" value="www.ornitho.ch" />
-			<datalist id="websites">
-				<option value="www.ornitho.ch"></option>
-				<option value="www.faune-france.org"></option>
-				<option value="data.biolovision.net"></option>
-				<option value="www.ornitho.it"></option>
-				<option value="www.ornitho.at"></option>
-				<option value="www.ornitho.de"></option>
-				<option value="www.ornitho.cat"></option>
-				<option value="www.ornitho.lu"></option>
-				<option value="www.ornitho.pl"></option>
-				<option value="www.ornitho.eus"></option>
-				<option value="www.faune-Champagne-ardenne.org"></option>
-				<option value="www.faune-alsace.org"></option>
-				<option value="www.faune-lorraine.org"></option>
-				<option value="www.faune-Charente.org"></option>
-				<option value="www.faune-Charente-maritime.org"></option>
-				<option value="www.faune-limousin.eu"></option>
-				<option value="www.nature79.org"></option>
-				<option value="www.faune-aquitaine.org"></option>
-				<option value="vienne.lpo.fr"></option>
-				<option value="www.faune-ain.org"></option>
-				<option value="www.faune-auvergne.org"></option>
-				<option value="www.faune-ardeche.org"></option>
-				<option value="www.faune-drome.org"></option>
-				<option value="haute-savoie.lpo.fr"></option>
-				<option value="www.faune-isere.org"></option>
-				<option value="www.faune-loire.org"></option>
-				<option value="www.faune-rhone.org"></option>
-				<option value="www.faune-savoie.org"></option>
-				<option value="www.faune-bretagne.org"></option>
-				<option value="www.oiseaux-cote-dor.org"></option>
-				<option value="franche-comte.lpo.fr"></option>
-				<option value="www.faune-nievre.org"></option>
-				<option value="www.faune-yonne.org"></option>
-				<option value="www.faune-Cher.org"></option>
-				<option value="www.faune-touraine.org"></option>
-				<option value="www.faune-lr.org"></option>
-				<option value="www.faune-tarn-aveyron.org"></option>
-				<option value="www.faune-iledefrance.org"></option>
-				<option value="www.faune-loire-atlantique.org"></option>
-				<option value="www.faune-anjou.org"></option>
-				<option value="www.faune-maine.org"></option>
-				<option value="www.faune-maine.org"></option>
-				<option value="www.faune-vendee.org"></option>
-				<option value="www.faune-paca.org"></option>
-				<option value="www.faune-martinique.org"></option>
-				<option value="www.faune-reunion.fr"></option>
-				<option value="observation.org"></option>
-				<option value="waarneming.nl"></option>
-				<option value="waarnemingen.be"></option>
-				<option value="birdtrack"></option>
-			</datalist>
+	<h2>Introduction </h2>
+	<div class="row">
+		<div class="col-lg-6">
+			<p><strong>Biolovision2eBird</strong> helps you to import your data from any biolovision website (e.g. <a href="http://ornitho.ch/" target="_blank">ornitho.ch</a>, <a href="http://faune-alsace.org" target="_blank">faune-alsace</a>, ...), observado (e.g. <a href="https://waarneming.nl/" target="_blank">waarneming.nl</a>), birdtrack (<a href="https://www.bto.org/our-science/projects/" target="_blank">birdtrack</a>) to eBird! </p>
+			<p>The process is quite simple: (1) Upload take the export file with your data, (2) Match the data into a eBird checklist format and (3) Download a <a href="http://help.ebird.org/customer/portal/articles/973915-uploading-data-to-ebird#ebird-record-format-specifications" target="_blank" rel="noopener">eBird Record Format</a> and (4) uploaded the file on eBird.</p>
+			<p>Any comments or suggestion, please submit an issue on <a href="https://github.com/Zoziologie/Biolovision2eBird/issues" target="_blank"><i class="fab fa-fw fa-github" aria-hidden="true"></i> Github</a> or <a href="mailto:rafnuss@gmail.com" rel="nofollow noopener noreferrer"><i class="fas fa-fw fa-envelope-square" aria-hidden="true"></i> contact me</a>.</p>	
 		</div>
-		<div class="col-lg-6 form-group">
-			<label style="display: block;">b) Select Date:</label>
-			<div class="col-lg-12">
-				<div class="radio"><label><input checked="checked" name="radio_date" type="radio" value="offset" /> <input id="date_ago" class="form-control" min="0" type="number" value="1" /> days ago</label></div>
+		<div class="col-lg-6">
+			<img src="https://zoziologie.raphaelnussbaumer.com/assets/biolovision2eBird/images/b2e.gif" alt="Example" class="gif">
+		</div>
+		<!--<div class="col-sm-5"><img src="https://zoziologie.raphaelnussbaumer.com/assets/biolovision2eBird/images/Selection_019-1.png" /></div>
+			<div class="col-sm-2 text-center vcenter">
+				<i class="fas fa-long-arrow-alt-right fa-5x"></i>
 			</div>
-			<div class="col-lg-12">
-				<div class="radio">
-					<label>
-						<input name="radio_date" type="radio" value="range" />
-						<div class="input-group ">
-							<input id="input-date-from" class="form-control" type="date" />
-							<span class="input-group-addon">to</span>
-							<input id="input-date-to" class="form-control" type="date" />
-						</label>
+			<div class="col-sm-5"><img src="https://zoziologie.raphaelnussbaumer.com/assets/biolovision2eBird/images/Selection_020-1.png" /></div>-->
+		</div>
+		<h2>1. Import Biolovision data </h2>
+		<p>First, you need to export your file from biolovision. Go on the website, then go in "query your data" and export them in .json <img src="https://zoziologie.raphaelnussbaumer.com/assets/biolovision2eBird/images/json.png" alt="json"/>. If you are already login in this computer, you can make the query using the form below:</p>
+		<form onsubmit="downloadfx(); return false;" class="row download-from-biolovision">
+			<div class="col-lg-3 form-group"><label for="sel-website">a) Select a website:</label>
+				<input id="sel-website" class="form-control" list="websites" name="website" type="text" value="www.ornitho.ch" />
+				<datalist id="websites">
+					<option value="www.ornitho.ch"></option>
+					<option value="www.faune-france.org"></option>
+					<option value="data.biolovision.net"></option>
+					<option value="www.ornitho.it"></option>
+					<option value="www.ornitho.at"></option>
+					<option value="www.ornitho.de"></option>
+					<option value="www.ornitho.cat"></option>
+					<option value="www.ornitho.lu"></option>
+					<option value="www.ornitho.pl"></option>
+					<option value="www.ornitho.eus"></option>
+					<option value="www.faune-Champagne-ardenne.org"></option>
+					<option value="www.faune-alsace.org"></option>
+					<option value="www.faune-lorraine.org"></option>
+					<option value="www.faune-Charente.org"></option>
+					<option value="www.faune-Charente-maritime.org"></option>
+					<option value="www.faune-limousin.eu"></option>
+					<option value="www.nature79.org"></option>
+					<option value="www.faune-aquitaine.org"></option>
+					<option value="vienne.lpo.fr"></option>
+					<option value="www.faune-ain.org"></option>
+					<option value="www.faune-auvergne.org"></option>
+					<option value="www.faune-ardeche.org"></option>
+					<option value="www.faune-drome.org"></option>
+					<option value="haute-savoie.lpo.fr"></option>
+					<option value="www.faune-isere.org"></option>
+					<option value="www.faune-loire.org"></option>
+					<option value="www.faune-rhone.org"></option>
+					<option value="www.faune-savoie.org"></option>
+					<option value="www.faune-bretagne.org"></option>
+					<option value="www.oiseaux-cote-dor.org"></option>
+					<option value="franche-comte.lpo.fr"></option>
+					<option value="www.faune-nievre.org"></option>
+					<option value="www.faune-yonne.org"></option>
+					<option value="www.faune-Cher.org"></option>
+					<option value="www.faune-touraine.org"></option>
+					<option value="www.faune-lr.org"></option>
+					<option value="www.faune-tarn-aveyron.org"></option>
+					<option value="www.faune-iledefrance.org"></option>
+					<option value="www.faune-loire-atlantique.org"></option>
+					<option value="www.faune-anjou.org"></option>
+					<option value="www.faune-maine.org"></option>
+					<option value="www.faune-maine.org"></option>
+					<option value="www.faune-vendee.org"></option>
+					<option value="www.faune-paca.org"></option>
+					<option value="www.faune-martinique.org"></option>
+					<option value="www.faune-reunion.fr"></option>
+					<option value="observation.org"></option>
+					<option value="waarneming.nl"></option>
+					<option value="waarnemingen.be"></option>
+					<option value="birdtrack"></option>
+					<option value="birdlasser"></option>
+				</datalist>
+			</div>
+			<div class="col-lg-6 form-group">
+				<label style="display: block;">b) Select Date:</label>
+				<div class="col-lg-12">
+					<div class="radio"><label><input checked="checked" name="radio_date" type="radio" value="offset" /> <input id="date_ago" class="form-control" min="0" type="number" value="1" /> days ago</label></div>
+				</div>
+				<div class="col-lg-12">
+					<div class="radio">
+						<label>
+							<input name="radio_date" type="radio" value="range" />
+							<div class="input-group ">
+								<input id="input-date-from" class="form-control" type="date" />
+								<span class="input-group-addon">to</span>
+								<input id="input-date-to" class="form-control" type="date" />
+							</label>
+						</div>
 					</div>
 				</div>
 			</div>
-		</div>
-		<div class="col-lg-3 form-group"><label for="link-id">c) Download file</label>
-			<button id="link-id" class="btn btn-default" type="submit">Download Data Observation</button>
-		</div>
-	</form>
-	<p>Then, define the global settings for all checklists. This can still be changed for each checklists individually. These settings will be saved in your cookies once you upload a file, such that next time you come back, the same settings will be set by default.</p>
-	<form class="row form-inline" id="row-set">
-		<div class="col-lg-3">
-			<label for="nb-obs">Number of observers: <input id="nb-obs" type="number" class="form-control" value="1"></label>
-		</div>
-		<div class="col-lg-5">
-			<label for="incl-weather"><input id="incl-weather" type="checkbox" class="form-control" checked> Include weather information in checklist comment.</label>
-			<label for="incl-map"><input id="incl-map" type="checkbox" class="form-control" checked> Include static map in checklist comment.</label>
-			<label for="incl-sp-cmt"><input id="incl-sp-cmt" type="checkbox" class="form-control" checked> Include details in species comment.</label>
-		</div>
-		<div class="col-lg-4"><label for="sel-website-link">Link website:</label>
-			<input id="sel-website-link" class="form-control" list="websites" name="website-link" type="text" value="www.ornitho.ch" />
-		</div>
-	</form>
-	<div class="row">
-		Drag the xml file on the zone above (or click on the zone to open the input window). You can directly export your  data
-		<div id="drobox-outer">
-			<div id="dropbox">
-				Drop the json or xml exported file here or click to upload and continue...
-				<input id="upload" style="display: none;" type="file" />
+			<div class="col-lg-3 form-group"><label for="link-id">c) Download file</label>
+				<button id="link-id" class="btn btn-default" type="submit">Download Data Observation</button>
+			</div>
+		</form>
+		<p>Then, define the global settings for all checklists. This can still be changed for each checklists individually. These settings will be saved in your cookies once you upload a file, such that next time you come back, the same settings will be set by default.</p>
+		<form class="row form-inline" id="row-set">
+			<div class="col-lg-3">
+				<label for="nb-obs">Number of observers: <input id="nb-obs" type="number" class="form-control" value="1"></label>
+			</div>
+			<div class="col-lg-5">
+				<label for="incl-weather"><input id="incl-weather" type="checkbox" class="form-control" checked> Include weather information in checklist comment.</label>
+				<label for="incl-map"><input id="incl-map" type="checkbox" class="form-control" checked> Include static map in checklist comment.</label>
+				<label for="incl-sp-cmt"><input id="incl-sp-cmt" type="checkbox" class="form-control" checked> Include details in species comment.</label>
+			</div>
+			<div class="col-lg-4"><label for="sel-website-link">Link website:</label>
+				<input id="sel-website-link" class="form-control" list="websites" name="website-link" type="text" value="www.ornitho.ch" />
+			</div>
+		</form>
+		<div class="row">
+			Drag the json (biolovision), xlsx (birdtrack) or csv (observado) file on the zone below (or click on the zone to open the input window).
+			<div id="drobox-outer">
+				<div id="dropbox">
+					Upload the exported file with a drag-and-drop with a click on this zone 
+					<input id="upload" style="display: none;" type="file" />
+				</div>
 			</div>
 		</div>
 	</div>
-</div>
-<div id="c2" class="container">
-	<h2>3. Assign sightings to checklist </h2>
-	<div class="row">
-		<p>The first step is to assign incidental sightings <img src="https://zoziologie.raphaelnussbaumer.com/assets/biolovision2eBird/images/pin-s-xfff.png" height="30" /> to a checklist <img src="https://zoziologie.raphaelnussbaumer.com/assets/biolovision2eBird/images/markers-soft.png" alt="" height="30" />. You can either create a new checklist or use existing one from imported biolovision list. To assign a sightings to a checklist, select the desired checklist in the list below and click on "Attribute Sightings". This will allow you to draw a rectangle over the sighting(s) you want to assign. The sightings markers color will change according to the checklist's color. Remaining non-assigned sightings (white marker) will be deleted.
-		Once you have finish just click on be button below the map to carry on the process...</p>
-	</div>
-	<div id="assign-row" class="row">
-		<div class="col-lg-3"><label for="button-create-hotspot">Add a marker on the map:</label>
-			<button id="button-create-hotspot" class="btn btn-block btn-default"><i class="fa fa-list"></i> Create Checklist</button>
+	<div id="c2" class="container">
+		<h2>2a. Assign sightings to checklist </h2>
+		<div class="row">
+			<p>The first step is to assign incidental sightings (e.g. <img src="https://zoziologie.raphaelnussbaumer.com/assets/biolovision2eBird/images/pin-s-xfff.png" height="30" />) to a checklist (e.g. <img src="https://zoziologie.raphaelnussbaumer.com/assets/biolovision2eBird/images/markers-soft.png" alt="" height="30" />). You can either create a new checklist or use existing one from imported biolovision list. </p>
+			<p>To assign a sightings to a checklist, select the desired checklist in the list below and click on "Attribute Sightings". This will allow you to draw a rectangle over the sighting(s) you want to assign to the list selected in the list. The sightings markers color will change according to the checklist's color. Remaining non-assigned sightings (white marker) will be deleted.</p>
+			<p>Instead of doing this process manually, there is (new) an "Automatic Attribution". This "magic" function will create checklists and attribute the corresponding incidental sightings automotically. The function is based on a distance and duration threashold to aggregate sightings together. You can still edit automotic attribution later.</p>
+			<p>Once you have finish just click on be button below the map to carry on the process...</p>
 		</div>
-		<div class="col-lg-5"><label for="selHotspot">Select the checklist to which attribute sightings:</label>
-			<select id="selHotspot" class="form-control">
-			</select>
-		</div>
-		<div class="col-lg-4"><label for="button-select-hotspot">Draw a rectangle over the sightings:</label>
-			<button id="button-select-hotspot" class="btn btn-block btn-default"><i class="fa fa-square"></i> Attribute Sightings</button>
-		</div>
-	</div>
-	<div class="row">
-		<div id="modal-map" class="map" style="height: 500px; margin-bottom: 20px;"></div>
-		<button id="button-process" class="btn btn-block btn-default">I'm done. Let's carry on...</button>
-	</div>
-</div>
-<div id="c3" class="container" style="display: none;">
-	<h2>4. Modify checklists</h2>
-	<p>You can navigate into each checklist by clicking on the tab and modify each of them as desire. In addition, we automatically added a few improvement such as exact timing and location of each observation in comment or a static map with location of your sightings. Feel free to remove them of modify them </p>
-	<ul class="nav nav-tabs" role="tablist"></ul>
-	<div class="tab-content" id="tab-checklists"></div>
-	<h2>5. Export in eBird formated data</h2>
-	<div class="row">
-		<ul>
-			<li>Generate the eBird file (.csv) for the checklist(s) with the buttons below:</li>
-			<div class="text-center">
-				<button type="button" id="button-download-biolovision" class="btn btn-default">
-					<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
-					Export all checklists
-				</button>
-				<button type="button" id="button-download-biolovision-single" class="btn btn-default">
-					<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
-					Export only active checklist
-				</button>
+		<div id="assign-row" class="row">
+			<div class="col-lg-3"><label for="button-create-hotspot">Add a marker on the map:</label>
+				<button id="button-create-hotspot" class="btn btn-block btn-default"><i class="fa fa-list"></i> Create Checklist</button>
 			</div>
-			<li>Open eBird, go to "Submit Observations", and "Import Data" or click on <a class="" href="http://ebird.org/ebird/import/upload.form?theme=ebird" target="_blank" rel="noopener">eBird Import</a></li>
-			<li>Choose "eBird Record Format (Extended)", and load the file which was downloaded at the previous step.</li>
-			<li>Click on "Import File"</li>
-			<li>Probably that some specie won't be recognized. You will have to match them with the correct specie. Don't worry, this is only done once per specie, then eBird memorize the match!</li>
-		</ul>
+			<div class="col-lg-5"><label for="selHotspot">Select the checklist to which attribute sightings:</label>
+				<select id="selHotspot" class="form-control">
+				</select>
+			</div>
+			<div class="col-lg-4"><label for="button-select-hotspot">Draw a rectangle over the sightings:</label>
+				<button id="button-select-hotspot" class="btn btn-block btn-default"><i class="fa fa-square"></i> Attribute Sightings</button>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-lg-3"><label for="assign_dt">Threshold distance (m):</label>
+				<input id="assign_dt" class="form-control" min="0" type="number" value="500">
+			</div>
+			<div class="col-lg-3"><label for="assign_dd">Threshold duration (hour):</label>
+				<input id="assign_dd" class="form-control" min="0" type="number" value="1">
+			</div>
+			<div class="col-lg-6"><label for="assign_dd">Create hotspots and assign incidental sightings:</label>
+				<button id="button-auto-assign" class="btn btn-block btn-default"><i class="fa fa-magic"></i>Automatic Attribution</button>
+			</div>
+		</div>
+		<div class="row">
+			<div id="modal-map" class="map" style="height: 500px; margin-bottom: 20px;"></div>
+			<button id="button-process" class="btn btn-block btn-default">I'm done. Let's carry on...</button>
+		</div>
+	</div>
+	<div id="c3" class="container" style="display: none;">
+		<h2>2b. Modify checklists</h2>
+		<p>You can navigate into each checklist by clicking on the tab and modify each of them as desire. In addition, we automatically added a few improvement such as exact timing and location of each observation in comment or a static map with location of your sightings. Feel free to remove them of modify them </p>
+		<ul class="nav nav-tabs" role="tablist"></ul>
+		<div class="tab-content" id="tab-checklists"></div>
+		
+		<div class="row">
+			<div class="col-lg-12">
+				<h2>3. Download data in eBird formated data</h2>
+				<p>Generate the eBird file (.csv) for the checklist(s) with the buttons below:</p>
+				<div class="text-center">
+					<button type="button" id="button-download-biolovision" class="btn btn-default">
+						<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
+						Export all checklists
+					</button>
+					<button type="button" id="button-download-biolovision-single" class="btn btn-default">
+						<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
+						Export only active checklist
+					</button>
+				</div>
+			</div>
+			<div class="col-lg-12">
+				<h2>4. Upload data in eBird</h2>
+				<ul>
+					<li>Open eBird, go to "Submit Observations", and "Import Data" or click on <a class="" href="http://ebird.org/ebird/import/upload.form?theme=ebird" target="_blank" rel="noopener">eBird Import</a></li>
+					<li>Choose "eBird Record Format (Extended)", and load the file which was downloaded at the previous step.</li>
+					<li>Click on "Import File"</li>
+					<li>Probably that some specie won't be recognized. You will have to match them with the correct specie. Don't worry, this is only done once per specie, then eBird memorize the match!</li>
+				</ul>
+			</div>
+		</div>
 	</div>
 </div>

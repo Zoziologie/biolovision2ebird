@@ -12,12 +12,12 @@
 // Load conversion taxonomie biolovision - eBird
 var eBird_birds_list;
 jQuery.getJSON("https://zoziologie.raphaelnussbaumer.com/assets/biolovision2eBird/patch_ornitho2eBird.min.json", function(data){
-eBird_birds_list = data;
+	eBird_birds_list = data;
 });
 
 
 // Color for markers to create/merge checklist
-var marker_color = [['white','#ffffff','black'],['red','#D63E2A','white'], ['orange','#f69730','white'], ['green','#72B026','white'], ['blue','#38A9DC','white'], ['purple','#CD50B5','white'], ['darkred','#A23336','white'], ['darkgreen','#728224','white'], ['darkpurple','#593869','white'], ['cadetblue','#436877','white'], ['red','#D63E2A','black'], ['orange','#f69730','black'], ['green','#72B026','black'], ['blue','#38A9DC','black'], ['purple','#CD50B5','black'], ['darkred','#A23336','black'], ['darkgreen','728224','black'], ['darkpuple','#593869','black'], ['cadetblue','#436877','black']];
+var marker_color = [['white','#ffffff','black'],['red','#D63E2A','white'],['orange','#f69730','white'],['green','#72B026','white'],['blue','#38A9DC','white'],['purple','#CD50B5','white'],['darkred','#A23336','white'],['darkgreen','#728224','white'],['darkpurple','#593869','white'],['cadetblue','#436877','white'],['red','#D63E2A','black'],['orange','#f69730','black'],['green','#72B026','black'],['blue','#38A9DC','black'],['purple','#CD50B5','black'],['darkred','#A23336','black'],['darkgreen','728224','black'],['darkpuple','#593869','black'],['cadetblue','#436877','black'],['red','#D63E2A','grey'],['orange','#f69730','grey'],['green','#72B026','grey'],['blue','#38A9DC','grey'],['purple','#CD50B5','grey'],['darkred','#A23336','grey'],['darkgreen','728224','grey'],['darkpuple','#593869','grey'],['cadetblue','#436877','grey'],['white','#ffffff','black'],['red','#D63E2A','white'],['orange','#f69730','white'],['green','#72B026','white'],['blue','#38A9DC','white'],['purple','#CD50B5','white'],['darkred','#A23336','white'],['darkgreen','#728224','white'],['darkpurple','#593869','white'],['cadetblue','#436877','white'],['red','#D63E2A','black'],['orange','#f69730','black'],['green','#72B026','black'],['blue','#38A9DC','black'],['purple','#CD50B5','black'],['darkred','#A23336','black'],['darkgreen','728224','black'],['darkpuple','#593869','black'],['cadetblue','#436877','black'],['red','#D63E2A','grey'],['orange','#f69730','grey'],['green','#72B026','grey'],['blue','#38A9DC','grey'],['purple','#CD50B5','grey'],['darkred','#A23336','grey'],['darkgreen','728224','grey'],['darkpuple','#593869','grey'],['cadetblue','#436877','grey'],['white','#ffffff','black'],['red','#D63E2A','white'],['orange','#f69730','white'],['green','#72B026','white'],['blue','#38A9DC','white'],['purple','#CD50B5','white'],['darkred','#A23336','white'],['darkgreen','#728224','white'],['darkpurple','#593869','white'],['cadetblue','#436877','white'],['red','#D63E2A','black'],['orange','#f69730','black'],['green','#72B026','black'],['blue','#38A9DC','black'],['purple','#CD50B5','black'],['darkred','#A23336','black'],['darkgreen','728224','black'],['darkpuple','#593869','black'],['cadetblue','#436877','black'],['red','#D63E2A','grey'],['orange','#f69730','grey'],['green','#72B026','grey'],['blue','#38A9DC','grey'],['purple','#CD50B5','grey'],['darkred','#A23336','grey'],['darkgreen','728224','grey'],['darkpuple','#593869','grey'],['cadetblue','#436877','grey']];
 
 var atlas_code = {
 	'1':'Species heard or observed within safe dates, but not in suitable breeding habitat.',
@@ -62,7 +62,7 @@ var atlas_code = {
 // color of the marker in the static map export
 function color(s,form){
 	color_gradient = ['#fff','#352A87', '#363093', '#3637A0', '#353DAD', '#3243BA', '#2C4AC7', '#2053D4', '#0F5CDD', '#0363E1', '#0268E1', '#046DE0', '#0871DE', '#0D75DC', '#1079DA', '#127DD8', '#1481D6', '#1485D4', '#1389D3', '#108ED2', '#0C93D2', '#0998D1', '#079CCF', '#06A0CD', '#06A4CA', '#06A7C6', '#07A9C2', '#0AACBE', '#0FAEB9', '#15B1B4', '#1DB3AF', '#25B5A9', '#2EB7A4', '#38B99E', '#42BB98', '#4DBC92', '#59BD8C', '#65BE86', '#71BF80', '#7CBF7B', '#87BF77', '#92BF73', '#9CBF6F', '#A5BE6B', '#AEBE67', '#B7BD64', '#C0BC60', '#C8BC5D', '#D1BB59', '#D9BA56', '#E1B952', '#E9B94E', '#F1B94A', '#F8BB44', '#FDBE3D', '#FFC337', '#FEC832', '#FCCE2E', '#FAD32A', '#F7D826', '#F5DE21', '#F5E41D', '#F5EB18', '#F6F313', '#F9FB0E'];
-	var t = moment.unix(s.date["@timestamp"]).hour()*60+moment.unix(s.date["@timestamp"]).minute();
+	var t = moment(s.date["@ISO8601"]).hour()*60+moment(s.date["@ISO8601"]).minute();
 	var start = parseInt(form.time_start.split(':')[0])*60 + parseInt(form.time_start.split(':')[1]);
 	var r = Math.round(  (t - start )/form.duration * (color_gradient.length-1) )+1;
 	r = (r<0 || isNaN(r)) ? 0 : r;
@@ -71,19 +71,19 @@ function color(s,form){
 }
 
 // convert csv to JSON
-function csvJSON(csv){
-	var lines=csv.split("\n");
+function csvJSON(csv,delim){
+	var lines=csv.split("\n").map(e => e.replace(/(\r\n|\n|\r)/gm, ""));
 	var result = [];
-	var headers=lines[0].split("\t");
+	var headers=lines[0].split(delim);
 	for(var i=1;i<lines.length;i++){
 		var obj = {};
-		var currentline=lines[i].split("\t");
+		var currentline=lines[i].split(delim);
 		for(var j=0;j<headers.length;j++){
 			obj[headers[j]] = currentline[j];
 		}
 		result.push(obj);
 	}
-	return JSON.stringify(result);
+	return result;
 }
 
 // convert coordinate from 46.3523462133 to 46°56'34''
@@ -207,11 +207,13 @@ function getBoundsZoomLevel(bounds, mapDim) {
 // Create marker for sigthing in the assigement of checklists
 function Makemarker(s){
 	var title = s.observers[0].count+' '+(s.species.name || s.species.bird_name);
-	var description = '<b>Date:</b> '+moment.unix(s.date["@timestamp"]).format('DD.MM.YYYY HH:MM') + '<br>\
-	<b>Specie:</b> '+ (s.species.name || s.species.bird_name) +'(<i>'+s.species.latin_name+'</i>)<br>'+'\
-	<b>Place:</b> '+s.place.name+' / '+s.place.municipality+' ('+s.place.county+') - '+s.place.altitude+'m<br>\
-	<b>Observation:</b> '+ s.observers[0].estimation_code + s.observers[0].count + ' ind.<br>\
-	<b>ID</b>: <a href="http://'+ jQuery('#sel-website').val() +'/index.php?m_id=54&id='+(s.observers[0].id_sighting || s.observers[0].id_universal)+'" target="_blank">'+(s.observers[0].id_sighting || s.observers[0].id_universal)+'</a>';
+	var description = '<b>'+ s.observers[0].count +' '+ (s.species.name || s.species.bird_name) +' (<i>'+s.species.latin_name+'</i>)</b> <br>';
+	description += moment(s.date["@ISO8601"]).format('DD.MM.YYYY  HH:mm') + '<br>';
+	if (jQuery('#sel-website-link').val() != 'birdlasser'){
+		//description += s.place.name+' / '+s.place.municipality+' ('+s.place.county+') <br>';
+		var url = 'http://'+ jQuery('#sel-website-link').val() +'/index.php?m_id=54&id='+(s.observers[0].id_sighting || s.observers[0].id_universal);
+		description += '<a href="'+url+'" target="_blank">'+url+'</a>';
+	}
 	if (s.observers[0].medias){
 		var link = s.observers[0].medias.path+'/'+s.observers[0].medias.filename;
 		description += '<br><a href="'+link+'"><img src="'+link+'"></a>'
@@ -228,7 +230,7 @@ function Makemarker(s){
 	var feature = mark.feature = mark.feature || {};
 	feature.type = "Feature";
 	feature.properties = feature.properties || {};
-	feature.properties['date'] = moment.unix(s.date["@timestamp"]).format('DD.MM.YYYY HH:MM');
+	feature.properties['date'] = moment(s.date["@ISO8601"]).format('DD.MM.YYYY HH:MM');
 	feature.properties['specie'] = (s.species.name || s.species.bird_name);
 	feature.properties['latin'] = s.species.latin_name;
 	feature.properties['place'] = s.place.name+' / '+s.place.municipality+' ('+s.place.county+') - '+s.place.altitude+'m';
@@ -245,6 +247,31 @@ function Makemarker(s){
 	return mark
 }
 
+function addHotspot(marker){
+	data.forms.n +=1;
+	var form = {
+		id: data.forms.n,
+		color:marker_color[data.forms.n],
+		name: 'New List ' + data.forms.n.toString() +' '+ marker.getLatLng().toString().split('LatLng')[1],
+		sightings: [],
+		marker: marker,
+		full_form: false
+	}
+	data.forms.push(form)
+	// update marker
+	marker.setIcon(L.AwesomeMarkers.icon({
+		icon: 'list',
+		prefix:"fa",
+		markerColor: form.color[0],
+		iconColor: form.color[2]
+	})).on('click',function(){
+		jQuery('#selHotspot').val(form.id).change();
+	}).addTo(modalfLayer);
+	marker.id = form.id;
+	jQuery('#selHotspot').append(jQuery('<option>', {value: form.id, text: form.name, style: "background-color:"+form.color[1]+";color:"+form.color[2]+";"}));
+	jQuery('#selHotspot').val(form.id).change();
+	return form.id
+}
 
 // Export file 
 var downloadfx = function(){
@@ -264,6 +291,8 @@ var downloadfx = function(){
 		window.open("https://app.bto.org/birdtrack/explore/emr.jsp")
 	}  else if (jQuery('#sel-website').val().includes("data.biolovision.net") ){
 		window.open("http://"+jQuery('#sel-website').val()+"/index.php?m_id=1351&content=search&start_date="+moment(d_f).format('DD.MM.YYYY')+"&stop_date="+moment(d_t).format('DD.MM.YYYY'))
+	} else if (jQuery('#sel-website').val()=='birdlasser'){
+		alert('Data from birdlasser can only be downloaded from the app (to my knowledge). Selec the trip card and use "Export (CSV) trip card". Upload the CSV file below.')
 	} else {
 		link = "http://"+jQuery('#sel-website').val()+"/index.php?m_id=31&sp_DChoice=" + DChoice + "&sp_DFrom="+moment(d_f).format('DD.MM.YYYY')+"&sp_DTo="+moment(d_t).format('DD.MM.YYYY')+"&sp_DOffset="+ jQuery('#date_ago').val() +"&sp_SChoice=all&sp_PChoice=all&sp_OnlyMyData=1";//&sp_FChoice=export&sp_FExportFormat=XML";
 		window.open(link)
@@ -280,6 +309,22 @@ var languagePatch = function(s){
 		}
 	});
 	return s
+}
+
+//lat,lon to km
+function distance(lat1, lon1, lat2, lon2) {
+	if ((lat1 == lat2) && (lon1 == lon2)) {
+		return 0;
+	}
+	else {
+		var radlat1 = Math.PI * lat1/180;
+		var radlat2 = Math.PI * lat2/180;
+		var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(Math.PI * (lon1-lon2)/180);
+		if (dist > 1) {
+			dist = 1;
+		}
+		return Math.acos(dist) * 180/Math.PI * 60 * 1.1515 * 1.609344
+	}
 }
 
 
@@ -312,8 +357,8 @@ var languagePatch = function(s){
 //____________________________________________________
 //                CREATE FUNCTIONS
 //____________________________________________________
-// handleFile() -> InitiateForms() -> ProcessSightings() -> ProcessForm()
-//                                 -> ProcessForm()
+// handleFile() -> ProcessSightings() -> ProcessForm()
+//              -> ProcessForm()
 
 
 
@@ -345,18 +390,17 @@ function handleFile(file){
 	reader.onload = function(e){
 
 
-		if (jQuery('#sel-website').val().includes("observation") || jQuery('#sel-website').val().includes("waarneming")) {
+		if (jQuery('#sel-website-link').val().includes("observation") || jQuery('#sel-website-link').val().includes("waarneming")) {
 			if (ext != 'csv'){
 				alert('You can only upload csv file for waarneming/observado/observation website. Make sure to export in this format and retry. If the problem continue, contact rafnuss@gmail.com with your exported file')
 				return
 			}
 			alert('You are trying to convert waarneming/observado data to eBird? This script is not working fully yet. If you are interested, please contact me at rafnuss@gmail.com')				
-			var sightings = jQuery.parseJSON(csvJSON(reader.result).replace(/\\"/g,''))
+			var sightings = csvJSON(reader.result, "\t").replace(/\\"/g,'')
 
 			data={};
 			data.sightings=[];
-			InitiateForms(data)
-
+			data.forms=[];
 			
 			sightings.forEach(function(s){
 				s = languagePatch(s);
@@ -401,7 +445,7 @@ function handleFile(file){
 				};
 				data.sightings.push(ns);
 			})
-		} else if (jQuery('#sel-website').val().includes("birdtrack") ){
+		} else if (jQuery('#sel-website-link').val().includes("birdtrack") ){
 			if (ext != 'xlsx'){
 				alert('You can only upload xlsx file for birdtrack website. Make sure to export in this format and retry. If the problem continue, contact rafnuss@gmail.com with your exported file')
 				return
@@ -415,12 +459,11 @@ function handleFile(file){
 			data.sightings=[];
 			data.forms=[];
 
-
 			sightings.forEach(function(s){
 				s.Date = s.Date.split('/')[1] + '/' + s.Date.split('/')[0] + '/' + s.Date.split('/')[2];
 				ns={
 					date:{
-						'@timestamp' :  moment(s.Date+' '+s['Start time']).unix()
+						'@ISO8601' :  moment(s.Date+' '+s['Start time']).toISOString(),
 					},
 					observers:[{
 						count: s.Count,
@@ -467,12 +510,45 @@ function handleFile(file){
 				}
 			})
 
-
-
-
-		}  else {
+		} else if (jQuery('#sel-website-link').val().includes("birdlasser")) {
+			if (ext != 'csv'){
+				alert('You can only upload csv file for birdlasser website. The csv file can be generated on the phone app birdlasser. If the problem continue, contact rafnuss@gmail.com with your exported file')
+				return
+			}
+			var sightings = csvJSON(reader.result,",")
+			sightings.pop()
+			data={};
+			data.sightings=[];
+			data.forms=[];
+			
+			sightings.forEach(function(s){
+				//s = languagePatch(s);
+				ns={
+					date:{
+						'@ISO8601': s["ISO date"], 
+					},
+					observers:[{
+						count: s.Count,
+						estimation_code: s['Count exact']=='FALSE' ? 'NO_VALUE' : 'EXACT_VALUE',
+						id_sighting: '',
+						coord_lat: parseFloat(s.Latitude),
+						coord_lon: parseFloat(s.Longitude),
+						comment: s.Notes, //s['Seen/Heard']+', '+
+						details:[],
+						timing:{},
+						atlas_code:{}
+					}],
+					place:{},
+					species:{
+						'latin_name': s['Species tertiary name'],
+						name: s['Species primary name'],
+					}
+				};
+				data.sightings.push(ns);
+			})
+		} else {
 			if (ext != 'json'){
-				console.log('You can only upload json file for biolovision website (ornitho, faune- and data.biolovision.net. Make sure to export in this format and retry. If the problem continue, contact rafnuss@gmail.com with your exported file')
+				alert('You can only upload json file for biolovision website (ornitho, faune- and data.biolovision.net. Make sure to export in this format and retry. If the problem continue, contact rafnuss@gmail.com with your exported file')
 				return
 			}
 			data = jQuery.parseJSON(reader.result).data;
@@ -559,28 +635,7 @@ function ProcessSightings(data) {
 	}).addTo(modalmap)
 	modalmap.on('draw:created', function (e) {
 		if (e.layerType === 'marker'){
-			data.forms.n +=1;
-			var form = {
-				id: data.forms.n,
-				color:marker_color[data.forms.n],
-				name: 'New List ' + data.forms.n.toString() +' '+ e.layer.getLatLng().toString().split('LatLng')[1],
-				sightings: [],
-				marker: e.layer,
-				full_form: false
-			}
-			data.forms.push(form)
-			// update marker
-			e.layer.setIcon(L.AwesomeMarkers.icon({
-				icon: 'list',
-				prefix:"fa",
-				markerColor: form.color[0],
-				iconColor: form.color[2]
-			})).on('click',function(){
-				jQuery('#selHotspot').val(form.id).change();
-			}).addTo(modalfLayer);
-			e.layer.id = form.id;
-			jQuery('#selHotspot').append(jQuery('<option>', {value: form.id, text: form.name, style: "background-color:"+form.color[1]+";color:"+form.color[2]+";"}));
-			jQuery('#selHotspot').val(form.id).change();
+			addHotspot(e.layer)
 		} else if (e.layerType === 'rectangle'){
 			modalsLayer.eachLayer(function(l){
 				if (e.layer.getBounds().contains(l.getLatLng())){
@@ -681,6 +736,42 @@ function ProcessSightings(data) {
 	jQuery('#button-create-hotspot').click(function(){
 		modalDrawMarker.enable();
 	})
+	jQuery('#button-auto-assign').click(function(){
+		hours_lim = jQuery('#assign_dd').val();
+		km_lim = jQuery('#assign_dt').val()/1000;
+		jQuery('#button-auto-assign').attr("disabled", true);
+		for (var i = 0; i < data.sightings.length; i++) {
+			for (var j = 0; j < i; j++) {
+				var duration = moment.duration(moment(data.sightings[j].date["@ISO8601"]).diff(moment(data.sightings[i].date["@ISO8601"])));
+				var hours = Math.abs(duration.asHours());
+				var km = distance(data.sightings[j].observers[0].coord_lat, data.sightings[j].observers[0].coord_lon, data.sightings[i].observers[0].coord_lat, data.sightings[i].observers[0].coord_lon);
+				if (hours < hours_lim & km < km_lim){
+					data.sightings[i].form = data.sightings[j].form;
+					break
+				} 
+			}
+
+			if (data.sightings[i].form == 0){
+				var marker = L.marker([data.sightings[i].observers[0].coord_lat, data.sightings[i].observers[0].coord_lon]);
+				var id = addHotspot(marker);
+				data.sightings[i].form = id;
+			}
+		}
+
+		modalsLayer.eachLayer(function(l){
+			data.sightings.forEach(function(s){
+				if (l.feature.properties['id'] == (s.observers[0].id_sighting || s.observers[0].id_universal) ){
+					data.forms.forEach(function(f){
+						if (f.id==s.form){
+							s['marker-color'] = f.color[1];
+							l.setIcon(Makemarker(s).options.icon)
+						}
+					})
+				}
+			})
+		})
+	})
+	
 	
 	setTimeout(function() {
 		modalmap.invalidateSize();
@@ -756,7 +847,7 @@ data.forms.forEach(function(form,idx){
 	
 	// Change the imported form structure to suit our need. First depending on if it's a 'legit' form or not and then for both.
 	if ( form['@id']){ // Legit form
-		form.date = moment.unix(form.sightings[0].date['@timestamp']).format('YYYY-MM-DD')
+		form.date = moment(form.sightings[0].date['@ISO8601']).format('YYYY-MM-DD')
 		var duration = moment.utc(moment(form.time_stop,"HH:mm").diff(moment(form.time_start,"HH:mm"))).format('HH:mm');
 		form.duration = parseInt(duration.split(':')[0])*60+parseInt(duration.split(':')[1]);
 		form.full_form= (form.full_form=='1') ? true : false;
@@ -768,7 +859,7 @@ data.forms.forEach(function(form,idx){
 		
 	} else { // form from incidental sighting
 		var dates = form.sightings.map(function(s){ 
-			return moment.unix(s.date['@timestamp']).format('YYYY-MM-DD')
+			return moment(s.date['@ISO8601']).format('YYYY-MM-DD')
 		})
 		form.date = dates.reduce(function(a, b){ return (a === b) ? a : ''; });
 		if (!form.date){
@@ -779,7 +870,7 @@ data.forms.forEach(function(form,idx){
 			).pop()
 		}
 		var times = form.sightings.map(function(s){ 
-			return moment.unix(s.date['@timestamp']).format('HH:mm')
+			return moment(s.date['@ISO8601']).format('HH:mm')
 		}).filter(function(t){
 			return t !='00:00'
 		})
@@ -958,8 +1049,8 @@ jQuery( "#f-" + form.id ).append( '\
 <div id="cmt-sp">\
 <div class="cmt-sp-ct cmt-sp-ct-tp" id="cmt-sp-ct-tp-'+ form.id+'">\
 <span class="badge badge-secondary" contenteditable="false" value="s.date.text">Timing (full)</span>\
-<span class="badge badge-secondary" contenteditable="false" value="moment.unix(s.date[\'@timestamp\']).format(\'dd-MM-YYYY HH:mm\')">Timing (condensed)</span>\
-<span class="badge badge-secondary" contenteditable="false" value="moment.unix(s.date[\'@timestamp\']).format(\'HH:mm\')">Time</span>\
+<span class="badge badge-secondary" contenteditable="false" value="moment(s.date[\'@ISO8601\']).format(\'dd-MM-YYYY HH:mm\')">Timing (condensed)</span>\
+<span class="badge badge-secondary" contenteditable="false" value="moment(s.date[\'@ISO8601\']).format(\'HH:mm\')">Time</span>\
 <span class="badge badge-secondary" contenteditable="false" value="(s.observers[0].id_sighting || s.observers[0].id_universal)">ID sighting</span>\
 <span class="badge badge-secondary" contenteditable="false" value="s.observers[0].estimation_code">Estimation code</span>\
 <span class="badge badge-secondary" contenteditable="false" value="s.observers[0].count">Count</span>\
@@ -973,18 +1064,18 @@ jQuery( "#f-" + form.id ).append( '\
 </div>\
 <div class="cmt-sp-ct cmt-sp-ct-bt" id="cmt-sp-ct-bt-'+ form.id+'" contenteditable="true">'+
 (jQuery('#incl-sp-cmt').is(":checked") ?
-'<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].estimation_code">Estimation code</span>\
+('<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].estimation_code">Estimation code</span>\
 <span class="badge badge-secondary" contenteditable="false" value="s.observers[0].count">Count</span> ind. - \
-<span class="badge badge-secondary" contenteditable="false" value="moment.unix(s.date[\'@timestamp\']).format(\'HH:mm\')">Time</span> - \
+<span class="badge badge-secondary" contenteditable="false" value="moment(s.date[\'@ISO8601\']).format(\'HH:mm\')">Time</span> - \
 &lt;a href="http://maps.google.com?q=<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lat">Latitude DD</span>,\
 <span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lon">Longitude DD</span>\
 &t=k" target="_blank" &gt;<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lat_str">Latitude DMS</span>N \
-<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lon_str">Longitude DMS</span>\
-E&lt;/a&gt; - &lt;a href="http://'+jQuery('#sel-website-link').val()+'/index.php?m_id=54&id=\
+<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lon_str">Longitude DMS</span>'+
+(jQuery('#sel-website-link').val() =='birdlasser' ? '' : 'E&lt;/a&gt; - &lt;a href="http://'+jQuery('#sel-website-link').val()+'/index.php?m_id=54&id=\
 <span class="badge badge-secondary" contenteditable="false" value="(s.observers[0].id_sighting || s.observers[0].id_universal)">ID sighting</span>\
-" target="_blank">'+jQuery('#sel-website-link').val()+'&lt;/a&gt;\
-<br>&lt;br&gt;<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].comment">Comment</span>\
-<br>&lt;br&gt;<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].details">Detail</span>' : '')
+" target="_blank">'+jQuery('#sel-website-link').val()+'&lt;/a&gt;') +
+'<br>&lt;br&gt;<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].comment">Comment</span>\
+<br>&lt;br&gt;<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].details">Detail</span>') : '')
 +'</div>\
 </div>\
 </div>\
