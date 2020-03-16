@@ -72,7 +72,14 @@ function color(s,form){
 
 // convert csv to JSON
 function csvJSON(csv,delim){
+	csv = csv.replace(/"([^"]*)"/g, function (m,g) {
+		return g.replace(/\b([\r\n]+)\b|[\r\n]+/g, function(n,h) {
+			return h ? ' ' : '';
+		});
+	});
+
 	var lines=csv.split("\n").map(e => e.replace(/(\r\n|\n|\r)/gm, ""));
+	lines = lines.filter( e=> !(/^[,]*$/.test(e)) )
 	var result = [];
 	var headers=lines[0].split(delim);
 	for(var i=1;i<lines.length;i++){
@@ -102,9 +109,9 @@ function deg_to_dms(deg) {
 // Create the general comment of checklist
 function previewComment(form){
 	var html = jQuery('#f-'+form.id+' #comments').val() +'<br>';
-	if (jQuery('#f-'+form.id+' #check-weather').is(':checked') ){
+	/*if (jQuery('#f-'+form.id+' #check-weather').is(':checked') ){
 		html += form.weather;
-	} 
+	} */
 	if (jQuery('#f-'+form.id+' #check-static-map').is(':checked')){
 		html += '<a href="'+form.gist+'" target="_blank">'
 		html += '<img src="'+staticLink(form)+'" style="max-width:600px;width:100%"></a><br>'
@@ -415,17 +422,7 @@ function handleFile(file){
 						coord_lat: s.lat.replace(',','.'),
 						coord_lon: s.Lng.replace(',','.'),
 						comment: 'unknown'==s.method ? s.remarks : s.remarks+', '+s.method+', '+s.Activity,
-						details:[{
-							count: "1",
-							sex: {
-								"-id": 'unknown' == s.sex ? "U" : 'X',
-								"#text": s.sex
-							},
-							age: {
-								"-id":  'unknown' == s.sex ? "U" : 'X',
-								"#text": s.sex
-							},
-						}],
+						details:[],
 						timing:{
 							'@ISO8601': new Date(s.Date.split('-')[0], s.Date.split('-')[1], s.Date.split('-')[2]-1, s.Time.split(':')[0], (s.Time.split(':')[1] ? s.Time.split(':')[1] : '')).toISOString(),
 						},
@@ -516,7 +513,6 @@ function handleFile(file){
 				return
 			}
 			var sightings = csvJSON(reader.result,",")
-			sightings.pop()
 			data={};
 			data.sightings=[];
 			data.forms=[];
@@ -529,14 +525,11 @@ function handleFile(file){
 					},
 					observers:[{
 						count: s.Count,
-						estimation_code: s['Count exact']=='FALSE' ? 'NO_VALUE' : 'EXACT_VALUE',
-						id_sighting: '',
+						estimation_code: s['Count exact'].toLowerCase()=='false' ? 'NO_VALUE' : 'EXACT_VALUE',
 						coord_lat: parseFloat(s.Latitude),
 						coord_lon: parseFloat(s.Longitude),
 						comment: s.Notes, //s['Seen/Heard']+', '+
-						details:[],
-						timing:{},
-						atlas_code:{}
+						id_sighting: Math.random(),
 					}],
 					place:{},
 					species:{
@@ -612,7 +605,16 @@ function ProcessSightings(data) {
 	
 	// Initiate map
 	modalmap = L.map('modal-map');
-	L.tileLayer.provider('MapBox', {id: 'rafnuss.npl3amec', accessToken: token.mapbox}).addTo(modalmap)
+	L.control.layers({
+		'MapBox': L.tileLayer.provider('MapBox', {id: 'rafnuss.npl3amec', accessToken:token.mapbox}).addTo(modalmap),
+		'Mapbox Sattelite' : L.tileLayer.provider('MapBox', {id: 'mapbox.satellite', accessToken:token.mapbox}),
+		'OpenStreetMap' : L.tileLayer.provider('OpenStreetMap.Mapnik'),
+		'Swisstopo': new L.TileLayer('https://wmts10.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-farbe/default/current/3857/{z}/{x}/{y}.jpeg', {
+		layer: 'ch.swisstopo.pixelkarte-farbe-pk1000.noscale',
+		maxZoom: 17,
+		attribution: 'Map data &copy; 2015 swisstopo',
+		})
+	},null,{collapsed:true}).addTo(modalmap);
 	modalfLayer = new L.FeatureGroup().addTo(modalmap);
 	new L.Control.Draw({
 		position: 'topright',
@@ -824,6 +826,7 @@ function ProcessForms(data) {
 		
 		L.control.layers({
 			'MapBox': L.tileLayer.provider('MapBox', {id: 'rafnuss.npl3amec', accessToken:token.mapbox}).addTo(form.map),
+			'Mapbox Sattelite' : L.tileLayer.provider('MapBox', {id: 'mapbox.satellite', accessToken:token.mapbox}),
 			'OpenStreetMap' : L.tileLayer.provider('OpenStreetMap.Mapnik'),
 			'Swisstopo': new L.TileLayer('https://wmts10.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-farbe/default/current/3857/{z}/{x}/{y}.jpeg', {
 			layer: 'ch.swisstopo.pixelkarte-farbe-pk1000.noscale',
@@ -932,22 +935,22 @@ data.forms.forEach(function(form,idx){
 	}
 	form.weather='';
 	/*jQuery.get('https://api.wunderground.com/api/b097b9712f359043/history_'+moment(form.date).format('YYYYMMDD')+'/q/'+form.lat+','+form.lon+'.json',function(data){
-	var w = data.history.dailysummary[0];
-	form.weather= "";
-	if (w) {
-		var whtml= '<b>Temp.</b>:'+w.meantempm+'°C ('+w.mintempm+'/'+w.maxtempm +')';
-		whtml += ' - <b>Prec.</b>: '+w.precipm+ 'mm';
-		whtml += w.snow=='0' ? '':' (snow)'; 
-		whtml += ' - <b>Wind</b>: '+w.meanwdire+' '+w.meanwindspdm+ 'km/h ('+w.minwspdm+'/'+w.maxwspdm+')';
-		whtml += ' - <b>Humidity</b>: '+w.humidity;
-		//whtml += w.fog ? 'fog':''; 
-		//whtml += w.hail ? 'hail':''; 
-		form.weather= whtml;
-	}
-	previewComment(form)
-})*/
+		var w = data.history.dailysummary[0];
+		form.weather= "";
+		if (w) {
+			var whtml= '<b>Temp.</b>:'+w.meantempm+'°C ('+w.mintempm+'/'+w.maxtempm +')';
+			whtml += ' - <b>Prec.</b>: '+w.precipm+ 'mm';
+			whtml += w.snow=='0' ? '':' (snow)'; 
+			whtml += ' - <b>Wind</b>: '+w.meanwdire+' '+w.meanwindspdm+ 'km/h ('+w.minwspdm+'/'+w.maxwspdm+')';
+			whtml += ' - <b>Humidity</b>: '+w.humidity;
+			//whtml += w.fog ? 'fog':''; 
+			//whtml += w.hail ? 'hail':''; 
+			form.weather= whtml;
+		}
+		previewComment(form)
+	})*/
 
-jQuery.getJSON('http://api.weatherstack.com/historical?access_key='+token.weatherstack+'&query='+form.lat+','+form.lon+'&hourly=1' ,function(weather){
+/*jQuery.getJSON('http://api.weatherstack.com/historical?access_key='+token.weatherstack+'&query='+form.lat+','+form.lon+'&hourly=1' ,function(weather){
 
 	var id = moment((moment(data.forms[0].time_start,"HH:mm")+moment(data.forms[0].time_stop,"HH:mm:ss"))/2).add(30, 'minutes').startOf('hour').hour();
 	var w = weather.forecast.forecastday[0].hour[id];
@@ -964,11 +967,11 @@ jQuery.getJSON('http://api.weatherstack.com/historical?access_key='+token.weathe
 		form.weather= whtml;
 	}
 	previewComment(form)
-})
+})*/
 
 
 jQuery.getJSON( 'https://nominatim.openstreetmap.org/reverse?lat='+form.lat.toString()+'&lon='+form.lon.toString()+'&format=json', function( json ) {
-form.country = json.address.country_code;
+	form.country = json.address.country_code;
 });
 
 /* REMOVE?
@@ -1118,7 +1121,7 @@ jQuery( "#f-" + form.id ).append( '\
 </div>\
 </div>\
 <div class="row form-check">\
-<label><input type="checkbox" class="form-check-input" '+ (jQuery('#incl-weather').is(":checked") ? 'checked="checked"' : '') +' id="check-weather"> Include weather</label>\
+<label><input type="checkbox" class="form-check-input" '+ (jQuery('#incl-weather').is(":checked") ? 'checked="checked"' : '') +' id="check-weather" disable> Include weather</label>\
 </div>\
 <div class="row">\
 <label>Preview:</label>\
@@ -1151,6 +1154,7 @@ form.layer.all = L.featureGroup([form.layer.edit, form.layer.sightings, form.lay
 //Add control
 L.control.layers({
 	'MapBox': L.tileLayer.provider('MapBox', {id: 'rafnuss.npl3amec', accessToken:token.mapbox}).addTo(form.map),
+	'Mapbox Sattelite' : L.tileLayer.provider('MapBox', {id: 'mapbox.satellite', accessToken:token.mapbox}),
 	'OpenStreetMap' : L.tileLayer.provider('OpenStreetMap.Mapnik'),
 	'Swisstopo': new L.TileLayer('https://wmts10.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-farbe/default/current/3857/{z}/{x}/{y}.jpeg', {
 	layer: 'ch.swisstopo.pixelkarte-farbe-pk1000.noscale',
@@ -1236,6 +1240,7 @@ form.sightings.forEach(function(s,id) {
 			previewComment(form)
 		}).addTo(form.map);
 		form.staticmap.zoom = getBoundsZoomLevel(L.featureGroup([form.layer.edit, form.layer.sightings]).getBounds(), { height: 450, width: 800 })
+		previewComment(form)
 	}
 })
 
@@ -1601,13 +1606,10 @@ function CreateGist(form, callback){
 		},
 		data: JSON.stringify(gist),
 	}).done(function(response) {
-		console.log(response);
 		form.gist='https://zoziologie.raphaelnussbaumer.com/geojson/?'+encodeURIComponent(response.files[filename].raw_url)
 		previewComment(form)
 		callback()
 	}).fail( function( jqXHR, textStatus, errorThrown) {
-		console.log(fs)
-		console.log(jqXHR)
 		alert('Error with the Gist Map: '+ errorThrown )
 		previewComment(form)
 		callback()
@@ -1652,7 +1654,6 @@ function Export(){
 				filename += form.name + '_';
 				setTimeout(function() {
 					if (i == data.forms.length){
-						console.log(i)
 						csv = Table2CSV(table);
 						var downloadLink = document.createElement("a");
 						downloadLink.setAttribute('type','text/csv')
@@ -1800,7 +1801,7 @@ jQuery(document).ready(function(){
 	
 	/* Read Cookies*/
 	cookies_text=['sel-website','date_ago','nb-obs','input-date-from','input-date-to','sel-website-link'];
-	cookies_check=['incl-weather','incl-map','incl-sp-cmt'];
+	cookies_check=['incl-map','incl-sp-cmt']; // 'incl-weather',
 	cookies_text.forEach(function(s){
 		var v =getCookieValue(s);
 		if (!(v === "")){
