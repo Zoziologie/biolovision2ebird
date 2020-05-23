@@ -108,25 +108,25 @@ function deg_to_dms(deg) {
 
 // Create the general comment of checklist
 function previewComment(form){
-	var html = jQuery('#f-'+form.id+' #comments').val() +'<br>';
-	/*if (jQuery('#f-'+form.id+' #check-weather').is(':checked') ){
+	var html = jQuery('#f-'+form.id+' .comments').val() +'<br>';
+	/*if (jQuery('#f-'+form.id+' .check-weather').is(':checked') ){
 		html += form.weather;
 	} */
-	if (jQuery('#f-'+form.id+' #check-static-map').is(':checked')){
+	if (jQuery('#f-'+form.id+' .check-static-map').is(':checked')){
 		html += '<a href="'+form.gist+'" target="_blank">'
 		html += '<img src="'+staticLink(form)+'" style="max-width:600px;width:100%"></a><br>'
-		jQuery('#f-'+form.id+ ' #zoom').attr('disabled', false);
+		jQuery('#f-'+form.id+ ' .zoom').attr('disabled', false);
 		jQuery('#f-'+form.id+ ".btn-number").attr('disabled', false);
 		form.layer.msm.addTo(form.map);
 		jQuery('#center-map').removeClass('disabled')
 	} else {
-		jQuery('#f-'+form.id+ ' #zoom').attr('disabled', true);
+		jQuery('#f-'+form.id+ ' .zoom').attr('disabled', true);
 		jQuery('#f-'+form.id+ ".btn-number").attr('disabled', true);
 		form.layer.msm.removeFrom(form.map);
 		jQuery('#center-map').addClass('disabled')
 	}
 	html += '<br>Imported with <a href=\"https://zoziologie.raphaelnussbaumer.com/biolovision2ebird/\" target=\"_blank\">biolovision2eBird</a>';
-	jQuery('#f-'+form.id+' #comments-preview').html(html);
+	jQuery('#f-'+form.id+' .comments-preview').html(html);
 	form.comment=html;
 };
 
@@ -145,9 +145,9 @@ function SpComment(form,s){
 
 // Display specie comment 
 function previewSpComment(form){
-	s=form.sightings[jQuery('#f-'+form.id+' #cmt-sp-preview-sp').val()]
+	s=form.sightings[jQuery('#f-'+form.id+' .cmt-sp-preview-sp').val()]
 	cmt = SpComment(form,s)
-	jQuery('#f-'+form.id+' #cmt-sp-preview').html(cmt)
+	jQuery('#f-'+form.id+' .cmt-sp-preview').html(cmt)
 }
 
 // Create the static map for a form
@@ -969,9 +969,14 @@ data.forms.forEach(function(form,idx){
 	previewComment(form)
 })*/
 
-
-jQuery.getJSON( 'https://nominatim.openstreetmap.org/reverse?lat='+form.lat.toString()+'&lon='+form.lon.toString()+'&format=json', function( json ) {
-	form.country = json.address.country_code;
+jQuery.getJSON( 'https://photon.komoot.de/reverse?lat='+form.lat.toString()+'&lon='+form.lon.toString() + '&limit=1', function( json ) {
+	if (json.features.length>0){
+		tmp = json.features[0].properties;	
+		form.country = tmp.country;
+		form.name = tmp.name +', '+ tmp.city +', '+ tmp.state + ' (' + form.lat.toString()+', '+form.lon.toString() + ')';
+		jQuery('#f-'+form.id+' .location').val(form.name);
+		jQuery('#li-f-'+form.id+' a').html(form.name);
+	}
 });
 
 /* REMOVE?
@@ -992,26 +997,26 @@ jQuery( "#f-" + form.id ).append( '\
 <div class="row">\
 <div class="form-group col-lg-12">\
 <label for="location" class="control-label">Location:</label>\
-<input type="text" class="form-control" id="location" value="'+form.name+'" required>\
+<input type="text" class="form-control location" value="'+form.name+'" required>\
 <div class="help-block with-errors"></div>\
 </div>\
 <div class="form-group col-lg-6">\
 <div class="row">\
 <div class="form-group col-lg-6">\
 <label class="control-label" for="date">Date:</label> \
-<input type="date" class="form-control" id="date" value="'+form.date+'" required>\
+<input type="date" class="form-control date" value="'+form.date+'" required>\
 <div class="help-block with-errors"></div>\
 </div>\
 <div class="form-group col-lg-6">\
 <label class="control-label" for="time">Time:</label>\
-<input type="time" class="form-control" id="time" value="'+form.time_start+'" data-timeOK>\
+<input type="time" class="form-control time" value="'+form.time_start+'">\
 <div class="help-block with-errors"></div>\
 </div>\
 </div>\
 <div class="row">\
 <div class="form-group col-lg-6">\
 <label for="observation-type">Observation Type:</label>\
-<select class="form-control" id="observation-type" required>\
+<select class="form-control observation-type" required>\
 <option>Traveling</option>\
 <option>Stationary</option>\
 <option>Historical</option>\
@@ -1021,7 +1026,7 @@ jQuery( "#f-" + form.id ).append( '\
 </div>\
 <div class="form-group col-lg-6">\
 <label>Complete Checklist:</label>\
-<div id="div-sliderOF">\
+<div class="div-sliderOF">\
 <div class="col text-right">NO</div>\
 <div class="text-center">\
 <label class="switch"><input type="checkbox" checked="checked" class="check-fullform"><div class="sliderOF round"></div></label>\
@@ -1033,23 +1038,23 @@ jQuery( "#f-" + form.id ).append( '\
 <div class="row">\
 <div class="form-group col-lg-4">\
 <label class="control-label" for="duration">Duration ( min.):</label> \
-<input type="number" class="form-control" id="duration" value="'+parseInt(form.duration).toString()+'" min="0" step=".1" max="1440" data-durationOK>\
+<input type="number" class="form-control duration" value="'+parseInt(form.duration).toString()+'" min="0" step="5" max="1440" data-durationOK>\
 <div class="help-block with-errors"></div>\
 </div>\
 <div class="form-group col-lg-4">\
 <label class="control-label" for="distance">Distance (km):</label>\
-<input type="number" class="form-control" id="distance" value="'+form.distance+'" min="0" step=".00001" max="999" data-distanceOK>\
+<input type="number" class="form-control distance" value="'+form.distance+'" min="0" step=".1" max="999" data-distanceOK>\
 <div class="help-block with-errors"></div>\
 </div>\
 <div class="form-group col-lg-4">\
 <label class="control-label" for="party-size">Party size:</label>\
-<input type="number" class="form-control" id="party-size" value="'+form['party-size']+'" min="1" max="99" required>\
+<input type="number" class="form-control party-size" value="'+form['party-size']+'" min="1" max="99" required>\
 <div class="help-block with-errors"></div>\
 </div>\
 </div>\
 <div class="form-group col-lg-12">\
 <label for="cmt-sp-ct-bt-'+ form.id+'">Species Comment:</label>\
-<div id="cmt-sp">\
+<div class="cmt-sp">\
 <div class="cmt-sp-ct cmt-sp-ct-tp" id="cmt-sp-ct-tp-'+ form.id+'">\
 <span class="badge badge-secondary" contenteditable="false" value="s.date.text">Timing (full)</span>\
 <span class="badge badge-secondary" contenteditable="false" value="moment(s.date[\'@ISO8601\']).format(\'dd-MM-YYYY HH:mm\')">Timing (condensed)</span>\
@@ -1073,8 +1078,8 @@ jQuery( "#f-" + form.id ).append( '\
 &lt;a href="http://maps.google.com?q=<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lat">Latitude DD</span>,\
 <span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lon">Longitude DD</span>\
 &t=k" target="_blank" &gt;<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lat_str">Latitude DMS</span>N \
-<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lon_str">Longitude DMS</span>'+
-(jQuery('#sel-website-link').val() =='birdlasser' ? '' : 'E&lt;/a&gt; - &lt;a href="http://'+jQuery('#sel-website-link').val()+'/index.php?m_id=54&id=\
+<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lon_str">Longitude DMS</span>E&lt;/a&gt;'+
+(jQuery('#sel-website-link').val() =='birdlasser' ? '' : '- &lt;a href="http://'+jQuery('#sel-website-link').val()+'/index.php?m_id=54&id=\
 <span class="badge badge-secondary" contenteditable="false" value="(s.observers[0].id_sighting || s.observers[0].id_universal)">ID sighting</span>\
 " target="_blank">'+jQuery('#sel-website-link').val()+'&lt;/a&gt;') +
 '<br>&lt;br&gt;<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].comment">Comment</span>\
@@ -1085,18 +1090,18 @@ jQuery( "#f-" + form.id ).append( '\
 <div class="form-group col-lg-12">\
 <label>Exemple:  </label>\
 <div class="form-group" style=" display: inline-block;">\
-<select id="cmt-sp-preview-sp"></select>\
+<select class="cmt-sp-preview-sp"></select>\
 </div>\
-<div id="cmt-sp-preview"></div>\
+<div class="cmt-sp-preview"></div>\
 </div>\
 </div>\
 <div class="form-group col-lg-6">\
 <div class="row">\
 <label for="comments">Checklist Comment:</label>\
-<textarea class="form-control" rows="3"  id="comments">'+(form.comment || "") +'</textarea>\
+<textarea class="form-control comments" rows="3"  >'+(form.comment || "") +'</textarea>\
 </div>\
 <div class="row form-check">\
-<label><input class="form-check-input" type="checkbox" '+  (jQuery('#incl-map').is(":checked") ? 'checked="checked"' : '') +' id="check-static-map"> Include static map</label>\
+<label><input class="form-check-input check-static-map" type="checkbox" '+  (jQuery('#incl-map').is(":checked") ? 'checked="checked"' : '') +'> Include static map</label>\
 </div>\
 <div class="row">\
 <div class="col-lg-5 form-inline">\
@@ -1106,7 +1111,7 @@ jQuery( "#f-" + form.id ).append( '\
 <i class="fa fa-minus" aria-hidden="true"></i>\
 </button>\
 </span>\
-<input type="text" id="zoom" class="form-control input-number" value="1" min="1" max="21">\
+<input type="text" class="zoom form-control" input="number" value="1" min="1" max="21">\
 <span class="input-group-btn">\
 <button type="button" class="btn btn-sm btn-number" data-type="plus">\
 <i class="fa fa-plus" aria-hidden="true"></i>\
@@ -1114,18 +1119,18 @@ jQuery( "#f-" + form.id ).append( '\
 </span>\
 </div>\
 <div class="col-lg-3">\
-<button type="button" class="btn btn-default center-block" id="center-map" title="Set static map automaticaly with sightings location">Center map</button>\
+<button type="button" class="btn btn-default center-block center-map" title="Set static map automaticaly with sightings location">Center map</button>\
 </div>\
 <div class="col-lg-4">\
-<button type="button" class="btn btn-default center-block" id="button-geojson">Export GeoJson</button>\
+<button type="button" class="btn btn-default center-block button-geojson">Export GeoJson</button>\
 </div>\
 </div>\
 <div class="row form-check">\
-<label><input type="checkbox" class="form-check-input" '+ (jQuery('#incl-weather').is(":checked") ? 'checked="checked"' : '') +' id="check-weather" disable> Include weather</label>\
+<label><input type="checkbox" class="form-check-input check-weather" '+ (jQuery('#incl-weather').is(":checked") ? 'checked="checked"' : '') +'disable> Include weather</label>\
 </div>\
 <div class="row">\
 <label>Preview:</label>\
-<div id="comments-preview"></div>\
+<div class="comments-preview"></div>\
 </div>\
 </div>\
 </div>\
@@ -1153,8 +1158,8 @@ form.layer.all = L.featureGroup([form.layer.edit, form.layer.sightings, form.lay
 
 //Add control
 L.control.layers({
-	'MapBox': L.tileLayer.provider('MapBox', {id: 'rafnuss.npl3amec', accessToken:token.mapbox}).addTo(form.map),
-	'Mapbox Sattelite' : L.tileLayer.provider('MapBox', {id: 'mapbox.satellite', accessToken:token.mapbox}),
+	'MapBox': L.tileLayer.provider('MapBox', {id: 'rafnuss.npl3amec', accessToken:token.mapbox}),
+	'Mapbox Sattelite' : L.tileLayer.provider('MapBox', {id: 'mapbox.satellite', accessToken:token.mapbox}).addTo(form.map),
 	'OpenStreetMap' : L.tileLayer.provider('OpenStreetMap.Mapnik'),
 	'Swisstopo': new L.TileLayer('https://wmts10.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-farbe/default/current/3857/{z}/{x}/{y}.jpeg', {
 	layer: 'ch.swisstopo.pixelkarte-farbe-pk1000.noscale',
@@ -1201,10 +1206,10 @@ form.map.on('draw:created', function (e) {
 	
 	var popup = jQuery('<div/>') 
 	popup.html('Set Distance to: <button type="button" class="btn btn-default" id="setDistance">'+(totalDistance/1000).toFixed(2).toString()+'</button> km');
-	popup.on('click', '#setDistance', function() {
-		jQuery('#f-'+form.id+' #observation-type').val('Traveling')
-		jQuery('#f-'+form.id+' #distance').val(jQuery(this).html())
-		jQuery('#f-'+form.id+' #observation-type').change()
+	popup.on('click', '.setDistance', function() {
+		jQuery('#f-'+form.id+' .observation-type').val('Traveling')
+		jQuery('#f-'+form.id+' .distance').val(jQuery(this).html())
+		jQuery('#f-'+form.id+' .observation-type').change()
 	});
 	e.layer.bindPopup(popup[0]).openPopup();
 	form.map.fitBounds(form.layer.sightings.getBounds());
@@ -1264,17 +1269,14 @@ hotspots.forEach(function(h){
 	var popup = jQuery('<div/>') 
 	popup.html('\
 	Set Location of the Checklist with the eBird hostpot:<br>\
-	<button type="button" class="btn btn-default" id="setLocation" title="Define as location of the checklist">'+h.locName+'</button><br>\
+	<button type="button" class="btn btn-default setLocation" title="Define as location of the checklist">'+h.locName+'</button><br>\
 	<a href="https://ebird.org/ebird/hotspot/'+h.locId +'" target="_blank" title="See on eBird">View on eBird</a>');
-	popup.on('click', '#setLocation', function() {
+	popup.on('click', '.setLocation', function() {
 		form.name = jQuery(this).html();
-		jQuery('#f-'+form.id+' #location').val(form.name);
+		jQuery('#f-'+form.id+' .location').val(form.name);
 		jQuery('#li-f-'+form.id+' a').html(form.name);
 		form.lat = h.lat;
 		form.lon = h.lng;
-		jQuery.getJSON( 'https://nominatim.openstreetmap.org/reverse?lat='+form.lat.toString()+'&lon='+form.lon.toString()+'&format=json', function( json ) {
-		form.country = json.address.country_code;
-	});
 	form.map.closePopup();
 });
 mark.addTo(form.layer.hotspots).bindPopup(popup[0]);
@@ -1285,7 +1287,7 @@ form.map.fitBounds(form.layer.sightings.getBounds());
 
 
 // Add Listener
-jQuery('#f-'+form.id+' #location').keyup( function(){ 
+jQuery('#f-'+form.id+' .location').keyup( function(){ 
 	form.name = jQuery(this).val();
 	jQuery('#li-f-'+form.id+' a').html(form.name)
 	if (!form.name){
@@ -1294,7 +1296,7 @@ jQuery('#f-'+form.id+' #location').keyup( function(){
 		jQuery(this).parent().removeClass('has-error');
 	}
 });
-jQuery('#f-'+form.id+' #date').change( function(){ 
+jQuery('#f-'+form.id+' .date').change( function(){ 
 	form.date = jQuery(this).val();
 	if (!form.date || !/^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$/.test(form.date)  ){
 		jQuery(this).parent().addClass('has-error');
@@ -1302,7 +1304,7 @@ jQuery('#f-'+form.id+' #date').change( function(){
 		jQuery(this).parent().removeClass('has-error');
 	}
 });
-jQuery('#f-'+form.id+' #time').change( function(){ 
+jQuery('#f-'+form.id+' .time').change( function(){ 
 	form.time_start = jQuery(this).val();
 	if (form.protocol == 'Stationary' || form.protocol == 'Traveling'){
 		if (!form.time_start || !/^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/.test(form.time_start)){
@@ -1314,17 +1316,17 @@ jQuery('#f-'+form.id+' #time').change( function(){
 		jQuery(this).parent().removeClass('has-error');
 	}
 });
-jQuery('#f-'+form.id+' #observation-type').change( function(){ 
+jQuery('#f-'+form.id+' .observation-type').change( function(){ 
 	form.protocol = jQuery(this).val();
 	if (form.protocol == 'Incidental'){
 		jQuery('#f-'+form.id+' .check-fullform').prop("checked",false)
 		jQuery('#f-'+form.id+' .check-fullform').change();
 	}
-	jQuery('#f-'+form.id+' #time').change()
-	jQuery('#f-'+form.id+' #duration').change();
-	jQuery('#f-'+form.id+' #distance').change();
+	jQuery('#f-'+form.id+' .time').change()
+	jQuery('#f-'+form.id+' .duration').change();
+	jQuery('#f-'+form.id+' .distance').change();
 });
-jQuery('#f-'+form.id+' #duration').change( function(){ 
+jQuery('#f-'+form.id+' .duration').change( function(){ 
 	form.duration = jQuery(this).val();
 	jQuery(this).parent().removeClass('has-error');
 	if (form.protocol == 'Incidental'){
@@ -1336,7 +1338,7 @@ jQuery('#f-'+form.id+' #duration').change( function(){
 		jQuery(this).parent().addClass('has-error');
 	}
 });
-jQuery('#f-'+form.id+' #distance').change( function(){ 
+jQuery('#f-'+form.id+' .distance').change( function(){ 
 	form.distance = jQuery(this).val();
 	jQuery(this).parent().removeClass('has-error');
 	if (form.protocol == 'Traveling' || form.protocol == 'Historical' ){
@@ -1348,7 +1350,7 @@ jQuery('#f-'+form.id+' #distance').change( function(){
 		jQuery(this).parent().addClass('has-error');
 	}
 });
-jQuery('#f-'+form.id+' #party-size').change( function(){ 
+jQuery('#f-'+form.id+' .party-size').change( function(){ 
 	form['party-size'] = jQuery(this).val();
 	if (!form['party-size'] || form['party-size']<1){
 		jQuery(this).parent().addClass('has-error');
@@ -1363,23 +1365,23 @@ jQuery('#f-'+form.id+' .check-fullform').change( function(){
 		form.full_form = false
 	}
 })
-jQuery('#f-'+form.id+' #observation-type').val(form.protocol).change();
+jQuery('#f-'+form.id+' .observation-type').val(form.protocol).change();
 
 if (form.full_form) {
 	jQuery('#f-'+form.id+' .check-fullform').prop("checked")
 } else {
 	jQuery('#f-'+form.id+' .check-fullform').prop("checked",false)
 }
-jQuery('#f-'+form.id+' #comments').keyup( function(){
+jQuery('#f-'+form.id+' .comments').keyup( function(){
 	previewComment(form);
 });
-jQuery('#f-'+form.id+' #check-static-map').change( function(){
+jQuery('#f-'+form.id+' .check-static-map').change( function(){
 	previewComment(form);
 });
-jQuery('#f-'+form.id+' #check-weather').change( function(){
+jQuery('#f-'+form.id+' .check-weather').change( function(){
 	previewComment(form);
 });
-jQuery('#f-'+form.id+' #button-geojson').click( function(){
+jQuery('#f-'+form.id+' .button-geojson').click( function(){
 	var fs = form.layer.sightings.toGeoJSON();
 	form.layer.edit.toGeoJSON().features.forEach(function(f){
 		fs.features.push(f);
@@ -1401,12 +1403,12 @@ dragula([document.getElementById('cmt-sp-ct-tp-'+ form.id), document.getElementB
 	removeOnSpill: true
 });
 form.sightings.forEach( function(s,id){
-	jQuery('#f-'+form.id+' #cmt-sp-preview-sp').append(jQuery('<option>', {
+	jQuery('#f-'+form.id+' .cmt-sp-preview-sp').append(jQuery('<option>', {
 		value: id,
 		text: (s.species.name || s.species.bird_name)
 	}));
 })
-jQuery('#f-'+form.id+' #center-map').click(function(){
+jQuery('#f-'+form.id+' .center-map').click(function(){
 	form.staticmap.lng = form.layer.sightings.getBounds().getCenter().lng;
 	form.staticmap.lat = form.layer.sightings.getBounds().getCenter().lat;
 	form.staticmap.zoom = getBoundsZoomLevel(L.featureGroup([form.layer.edit, form.layer.sightings]).getBounds(), { height: 450, width: 800 })
@@ -1415,7 +1417,7 @@ jQuery('#f-'+form.id+' #center-map').click(function(){
 })
 
 jQuery('#f-'+form.id+' .btn-number').click(function(e){
-	var input = jQuery('#f-'+form.id+ ' #zoom');
+	var input = jQuery('#f-'+form.id+ ' .zoom');
 	if(jQuery(this).attr('data-type') == 'minus') {
 		input.val(+input.val()-1);
 	} else if(jQuery(this).attr('data-type') == 'plus') {
@@ -1423,8 +1425,8 @@ jQuery('#f-'+form.id+' .btn-number').click(function(e){
 	}
 	input.change();
 });
-jQuery('#f-'+form.id+ ' #zoom').on('change', function() {
-	var input = jQuery('#f-'+form.id+ ' #zoom');
+jQuery('#f-'+form.id+ ' .zoom').on('change', function() {
+	var input = jQuery('#f-'+form.id+ ' .zoom');
 	if(input.val() <= input.attr('min')) {
 		jQuery(".btn-number[data-type='minus']").attr('disabled', true);
 		input.val(input.attr('min'));
@@ -1440,7 +1442,7 @@ jQuery('#f-'+form.id+ ' #zoom').on('change', function() {
 	form.staticmap.zoom = input.val();
 	previewComment(form);
 })
-jQuery('#f-'+form.id+ ' #zoom').val(form.staticmap.zoom);
+jQuery('#f-'+form.id+ ' .zoom').val(form.staticmap.zoom);
 
 document.getElementById('cmt-sp-ct-bt-'+ form.id).addEventListener("input", function(){
 	previewSpComment(form)
@@ -1454,7 +1456,7 @@ document.getElementById('cmt-sp-ct-bt-'+ form.id).addEventListener("DOMNodeRemov
 document.getElementById('cmt-sp-ct-bt-'+ form.id).addEventListener("DOMCharacterDataModified", function(){
 	previewSpComment(form)
 }, false);
-jQuery('#f-'+form.id+' #cmt-sp-preview-sp').change( function(){
+jQuery('#f-'+form.id+' .cmt-sp-preview-sp').change( function(){
 	previewSpComment(form);
 });
 })
