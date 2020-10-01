@@ -516,7 +516,9 @@ function handleFile(file){
 			data={};
 			data.sightings=[];
 			data.forms=[];
-			
+
+			const formsid = [...new Set(sightings.map(s => s.form))];
+
 			sightings.forEach(function(s){
 				//s = languagePatch(s);
 				ns={
@@ -537,8 +539,17 @@ function handleFile(file){
 						name: s['Species primary name'],
 					}
 				};
-				data.sightings.push(ns);
+
+				// Patch to create form manually in the csv file
+				if (s.form){
+					data.forms[formsid.indexOf(s.form)].sightings.push(ns);
+				} else {
+					data.sightings.push(ns);
+				}
+				
 			})
+
+			
 		} else {
 			if (ext != 'json'){
 				alert('You can only upload json file for biolovision website (ornitho, faune- and data.biolovision.net. Make sure to export in this format and retry. If the problem continue, contact rafnuss@gmail.com with your exported file')
@@ -556,11 +567,20 @@ function handleFile(file){
 				})
 			})
 			data.sightings.forEach(function(s){
-				s.date=s.observers[0].timing;
-				//if (s.date==undefined) {s.date=s.observers[0].timing;}
+				
+				if (s.observers[0].timing != undefined){
+					s.date=s.observers[0].timing;
+				}
+				if (s.date["@ISO8601"] == undefined){
+					s.date["@ISO8601"] = new Date(s.date["@timestamp"]*1000).toISOString();
+				}
 			})
 		}
 
+		// Sort sightings
+		var b = data.sightings.sort((a, b) => {
+			(a.date['@ISO8601'] > b.date['@ISO8601']) ? -1 : 1
+		})
 		
 		data.forms.forEach(function(f,idx){
 			f.color = marker_color[idx+1];
@@ -606,8 +626,8 @@ function ProcessSightings(data) {
 	// Initiate map
 	modalmap = L.map('modal-map');
 	L.control.layers({
-		'MapBox': L.tileLayer.provider('MapBox', {id: 'rafnuss.npl3amec', accessToken:token.mapbox}).addTo(modalmap),
-		'Mapbox Sattelite' : L.tileLayer.provider('MapBox', {id: 'mapbox.satellite', accessToken:token.mapbox}),
+		'MapBox': L.tileLayer.provider('MapBox', {id: 'mapbox/streets-v11', accessToken:token.mapbox}).addTo(modalmap),
+		'Mapbox Sattelite' : L.tileLayer.provider('MapBox', {id: 'mapbox/satellite-v9', accessToken:token.mapbox}),
 		'OpenStreetMap' : L.tileLayer.provider('OpenStreetMap.Mapnik'),
 		'Swisstopo': new L.TileLayer('https://wmts10.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-farbe/default/current/3857/{z}/{x}/{y}.jpeg', {
 		layer: 'ch.swisstopo.pixelkarte-farbe-pk1000.noscale',
@@ -702,7 +722,7 @@ function ProcessSightings(data) {
 		s['marker-size'] = 's';
 		s.form = 0;
 		var m = Makemarker(s);
-		m.addTo(modalsLayer);
+		m.addTo(modalsLayer); 
 		uniquedate.push(data.sightings[0].date["@ISO8601"].substring(0,10))
 	})
 	
@@ -973,7 +993,7 @@ jQuery.getJSON( 'https://photon.komoot.de/reverse?lat='+form.lat.toString()+'&lo
 	if (json.features.length>0){
 		tmp = json.features[0].properties;	
 		form.country = tmp.country;
-		form.name = tmp.name +', '+ tmp.city +', '+ tmp.state + ' (' + form.lat.toString()+', '+form.lon.toString() + ')';
+		form.name = tmp.name +', '+ tmp.city +', '+ tmp.state + ' (' + (Math.round(form.lat*1000)/1000).toString()+', '+ (Math.round(form.lon*1000)/1000).toString() + ')';
 		jQuery('#f-'+form.id+' .location').val(form.name);
 		jQuery('#li-f-'+form.id+' a').html(form.name);
 	}
@@ -1077,9 +1097,9 @@ jQuery( "#f-" + form.id ).append( '\
 <span class="badge badge-secondary" contenteditable="false" value="moment(s.date[\'@ISO8601\']).format(\'HH:mm\')">Time</span> - \
 &lt;a href="http://maps.google.com?q=<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lat">Latitude DD</span>,\
 <span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lon">Longitude DD</span>\
-&t=k" target="_blank" &gt;<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lat_str">Latitude DMS</span>N \
+&t=k" target="_blank" &gt;<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lat_str">Latitude DMS</span>N, \
 <span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lon_str">Longitude DMS</span>E&lt;/a&gt;'+
-(jQuery('#sel-website-link').val() =='birdlasser' ? '' : '- &lt;a href="http://'+jQuery('#sel-website-link').val()+'/index.php?m_id=54&id=\
+(jQuery('#sel-website-link').val() =='birdlasser' ? '' : ' - &lt;a href="http://'+jQuery('#sel-website-link').val()+'/index.php?m_id=54&id=\
 <span class="badge badge-secondary" contenteditable="false" value="(s.observers[0].id_sighting || s.observers[0].id_universal)">ID sighting</span>\
 " target="_blank">'+jQuery('#sel-website-link').val()+'&lt;/a&gt;') +
 '<br>&lt;br&gt;<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].comment">Comment</span>\
@@ -1206,7 +1226,7 @@ form.map.on('draw:created', function (e) {
 	
 	var popup = jQuery('<div/>') 
 	popup.html('Set Distance to: <button type="button" class="btn btn-default" id="setDistance">'+(totalDistance/1000).toFixed(2).toString()+'</button> km');
-	popup.on('click', '.setDistance', function() {
+	popup.on('click', '#setDistance', function() {
 		jQuery('#f-'+form.id+' .observation-type').val('Traveling')
 		jQuery('#f-'+form.id+' .distance').val(jQuery(this).html())
 		jQuery('#f-'+form.id+' .observation-type').change()
@@ -1772,9 +1792,13 @@ jQuery(document).ready(function(){
 	jQuery('#date_ago').on('focus',function(){
 		jQuery('input[type="radio"][value="offset"]').click()
 	})
-	jQuery('.input-daterange input').on('focus',function(){
-		jQuery('input[type="radio"][value="range"]').click()
-	})
+
+	jQuery("#input-date-from").on('focus',function(e){
+		jQuery('input[type="radio"][name="radio_date"]').prop("checked", true); 
+	});
+	jQuery("#input-date-to").on('focus',function(e){
+		jQuery('input[type="radio"][name="radio_date"]').prop("checked", true); 
+	});
 	
 	
 	/* Upload file*/ 

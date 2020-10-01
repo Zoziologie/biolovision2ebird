@@ -23,12 +23,12 @@ plugins:
 
 <h1> Biolovision2eBird</h1>
 <div id="c1" class="container">
-	<div class="alert alert-info" role="alert">
+	<!--<div class="alert alert-info" role="alert">
 		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
 			<span aria-hidden="true">&times;</span>
 		</button>
 		<b>Welcome to the new version!</b> We've added a few features: (1) define settings for all checklists (and save them in your browser), (2) automatically create checklists with incidental sightings, and (3) import data from Observado, Birdtrack and Birdlasser.<br>
-	</div>
+	</div>-->
 	<h2>Introduction </h2>
 	<div class="row">
 		<div class="col-lg-6">
@@ -48,7 +48,7 @@ plugins:
 		<h2>1. Import Biolovision data </h2>
 		<ol>
 			<li>
-				<p>First, you need to export your file from your original website. The form below will direct you to the export page of each websites. You might have to first login in the website and re-click on the link. Each website uses a different format: observado .csv, birdtrack .xlsx. For biolovision websites, select the .json <img src="https://zoziologie.raphaelnussbaumer.com/assets/biolovision2eBird/images/json.png" alt="json"/> and for birdlasser, you can only download the data from the app (to my knowledge) (Select the trip card and use "Export (CSV) trip card")</p>
+				<p>First, you need to export your file from your original website. The form below will direct you to the export page of each websites. You might have to first login in the website and re-click on the link. Each website uses a different format: observado <tt>csv</tt>, birdtrack <tt>xlsx</tt>. For biolovision websites, select the <tt>json</tt> <img src="https://zoziologie.raphaelnussbaumer.com/assets/biolovision2eBird/images/json.png" alt="json"/> and for birdlasser, you can only download the data from the app (to my knowledge) (Select the trip card and use "Export (CSV) trip card")</p>
 				<form onsubmit="downloadfx(); return false;" class="row download-from-biolovision">
 					<div class="col-lg-3 form-group">
 						<label for="sel-website">a) Select a website:</label>
@@ -146,7 +146,7 @@ plugins:
 				</form>
 			</li>
 			<li>
-				<p>Drag the export file json (biolovision), xlsx (birdtrack) or csv (observado) file on the zone below (or click on the zone to open the input window).</p>
+				<p>Drag the export file <tt>json</tt> (biolovision), <tt>xlsx</tt> (birdtrack) or <tt>csv</tt> (observado) file on the zone below (or click on the zone to open the input window).</p>
 				<div id="drobox-outer">
 					<div id="dropbox">
 						Upload the exported file with a drag-and-drop with a click on this zone 
@@ -217,7 +217,7 @@ plugins:
 				<h2>5. Upload data in eBird</h2>
 				<ul>
 					<li>Open eBird, go to "Submit Observations", and "Import Data" or click on <a class="" href="http://ebird.org/ebird/import/upload.form?theme=ebird" target="_blank" rel="noopener">eBird Import</a></li>
-					<li>Choose "eBird Record Format (Extended)", and load the file which was downloaded at the previous step.</li>
+					<li>Choose "eBird Record Format (Extended)", and load the file which was downloaded at the ttvious step.</li>
 					<li>Click on "Import File"</li>
 					<li>Probably that some specie won't be recognized. You will have to match them with the correct specie. Don't worry, this is only done once per specie, then eBird memorize the match!</li>
 				</ul>

@@ -217,6 +217,7 @@ input:checked + .sliderOF:before {
 	margin-bottom: 10px;
 }
 .cmt-sp-ct-bt{
+	margin-bottom: 20px;
 	resize: both;
 	overflow-y: auto;
 	display: block;
