@@ -845,8 +845,8 @@ function ProcessForms(data) {
 		}).addTo(form.map);
 		
 		L.control.layers({
-			'MapBox': L.tileLayer.provider('MapBox', {id: 'rafnuss.npl3amec', accessToken:token.mapbox}).addTo(form.map),
-			'Mapbox Sattelite' : L.tileLayer.provider('MapBox', {id: 'mapbox.satellite', accessToken:token.mapbox}),
+			'MapBox': L.tileLayer.provider('MapBox', {id: 'mapbox/streets-v11', accessToken:token.mapbox}).addTo(form.map),
+			'Mapbox Sattelite' : L.tileLayer.provider('MapBox', {id: 'mapbox/satellite-v9', accessToken:token.mapbox}),
 			'OpenStreetMap' : L.tileLayer.provider('OpenStreetMap.Mapnik'),
 			'Swisstopo': new L.TileLayer('https://wmts10.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-farbe/default/current/3857/{z}/{x}/{y}.jpeg', {
 			layer: 'ch.swisstopo.pixelkarte-farbe-pk1000.noscale',
@@ -1178,8 +1178,8 @@ form.layer.all = L.featureGroup([form.layer.edit, form.layer.sightings, form.lay
 
 //Add control
 L.control.layers({
-	'MapBox': L.tileLayer.provider('MapBox', {id: 'rafnuss.npl3amec', accessToken:token.mapbox}),
-	'Mapbox Sattelite' : L.tileLayer.provider('MapBox', {id: 'mapbox.satellite', accessToken:token.mapbox}).addTo(form.map),
+	'MapBox': L.tileLayer.provider('MapBox', {id: 'mapbox/streets-v11', accessToken:token.mapbox}),
+	'Mapbox Sattelite' : L.tileLayer.provider('MapBox', {id: 'mapbox/satellite-v9', accessToken:token.mapbox}).addTo(form.map),
 	'OpenStreetMap' : L.tileLayer.provider('OpenStreetMap.Mapnik'),
 	'Swisstopo': new L.TileLayer('https://wmts10.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-farbe/default/current/3857/{z}/{x}/{y}.jpeg', {
 	layer: 'ch.swisstopo.pixelkarte-farbe-pk1000.noscale',
