@@ -93,6 +93,7 @@ function csvJSON(csv,delim){
 	return result;
 }
 
+
 // convert coordinate from 46.3523462133 to 46°56'34''
 function deg_to_dms(deg) {
 	var d = Math.floor (deg);
@@ -216,10 +217,18 @@ function Makemarker(s){
 	var title = s.observers[0].count+' '+(s.species.name || s.species.bird_name);
 	var description = '<b>'+ s.observers[0].count +' '+ (s.species.name || s.species.bird_name) +' (<i>'+s.species.latin_name+'</i>)</b> <br>';
 	description += moment(s.date["@ISO8601"]).format('DD.MM.YYYY  HH:mm') + '<br>';
-	if (jQuery('#sel-website-link').val() != 'birdlasser'){
+	
+	if (jQuery('#sel-website').val().includes("observation") || jQuery('#sel-website').val().includes("waarneming")) {
+		description += '<a href="'+s.link+'" target="_blank">'+s.link+'</a>';
+	} else if (jQuery('#sel-website').val().includes("birdtrack") ){
+		
+	}  else if (jQuery('#sel-website').val().includes("data.biolovision.net") ){
+		
+	} else if (jQuery('#sel-website').val()=='birdlasser'){
+		
+	} else {
 		//description += s.place.name+' / '+s.place.municipality+' ('+s.place.county+') <br>';
-		var url = 'http://'+ jQuery('#sel-website-link').val() +'/index.php?m_id=54&id='+(s.observers[0].id_sighting || s.observers[0].id_universal);
-		description += '<a href="'+url+'" target="_blank">'+url+'</a>';
+		description += '<a href="'+s.link+'" target="_blank">'+s.link+'</a>';
 	}
 	if (s.observers[0].medias){
 		var link = s.observers[0].medias.path+'/'+s.observers[0].medias.filename;
@@ -250,7 +259,7 @@ function Makemarker(s){
 	feature.properties['marker-size'] = s['marker-size'];
 	feature.properties['marker-symbol'] = s['marker-symbol'];
 	feature.properties['description'] = description;
-	feature.properties['link'] = 'http://'+jQuery('#sel-website').val()+'/index.php?m_id=54&id='+(s.observers[0].id_sighting || s.observers[0].id_universal);
+	feature.properties['link'] = s.link
 	return mark
 }
 
@@ -293,7 +302,8 @@ var downloadfx = function(){
 		var d_t = new Date(jQuery('#input-date-to').val())
 	}
 	if (jQuery('#sel-website').val().includes("observation") || jQuery('#sel-website').val().includes("waarneming")) {
-		window.open("https://"+jQuery('#sel-website').val()+"/export/user_export7.php?datum_va="+d_f.toISOString().split('T')[0]+"&datum_tm="+d_t.toISOString().split('T')[0]+"&diergroep=1&gebied=0&tag=0&zz=0&soort=0&simple=0&a[]=&k[]=")
+		alert('Data from observation.org can be exported from the Observations menu. Login and click on your name top right of the page.')
+		window.open("https://observation.org/")
 	} else if (jQuery('#sel-website').val().includes("birdtrack") ){
 		window.open("https://app.bto.org/birdtrack/explore/emr.jsp")
 	}  else if (jQuery('#sel-website').val().includes("data.biolovision.net") ){
@@ -402,42 +412,49 @@ function handleFile(file){
 				alert('You can only upload csv file for waarneming/observado/observation website. Make sure to export in this format and retry. If the problem continue, contact rafnuss@gmail.com with your exported file')
 				return
 			}
-			alert('You are trying to convert waarneming/observado data to eBird? This script is not working fully yet. If you are interested, please contact me at rafnuss@gmail.com')				
-			var sightings = csvJSON(reader.result, "\t").replace(/\\"/g,'')
+			//alert('You are trying to convert waarneming/observado data to eBird? This script is not working fully yet. If you are interested, please contact me at rafnuss@gmail.com')				
+			var sightings = Papa.parse(reader.result,{header:true, skipEmptyLines:'greedy'}).data
 
 			data={};
 			data.sightings=[];
 			data.forms=[];
 			
 			sightings.forEach(function(s){
-				s = languagePatch(s);
+				//var s = languagePatch(s);
+				var c = ''
+				if (s['counting method']!='unknown' & s['counting method']!='') c += s['counting method'] + ', '
+				if (s.method!="unknown" & s.method!="") c += s.method + ', '
+				if (s.sex!='U') c += s.sex + ', '
+				if (s['life stage']!='unknown') c += s['life stage'] + ', '
+				if (s.activity!='present') c += s.activity + ', '
+				if (!s['is certain']=="TRUE") c += 'not certain' + ', '
+				if (s['is escape']=="TRUE") c += 'escape' + ', '
+				if (s['has photos']=="TRUE") c += 'photos' + ', '
+				if (s['has sounds']=="TRUE") c += 'sounds' + ', '
+				if (s['notes']!="") c += s['notes'] + ', '
+				c = c.slice(0, -2)
 				ns={
 					date:{
-						'@ISO8601': new Date(s.Date.split('-')[0], s.Date.split('-')[1], s.Date.split('-')[2]-1, s.Time.split(':')[0], (s.Time.split(':')[1] ? s.Time.split(':')[1] : '')).toISOString(), 
+						'@ISO8601': new Date(s.date.split('/')[2], s.date.split('/')[1]-1, s.date.split('/')[0], s.time.split(':')[0], (s.time.split(':')[1] ? s.time.split(':')[1] : '')).toISOString(), 
 					},
 					observers:[{
-						count: s.Number,
+						count: s.number,
 						estimation_code: s['meaning of number'],
 						id_sighting: s.id,
-						coord_lat: s.lat.replace(',','.'),
-						coord_lon: s.Lng.replace(',','.'),
-						comment: 'unknown'==s.method ? s.remarks : s.remarks+', '+s.method+', '+s.Activity,
-						details:[],
+						link: s.link,
+						coord_lat: s.lat,
+						coord_lon: s.lng,
+						comment:  c+s.notes,
 						timing:{
-							'@ISO8601': new Date(s.Date.split('-')[0], s.Date.split('-')[1], s.Date.split('-')[2]-1, s.Time.split(':')[0], (s.Time.split(':')[1] ? s.Time.split(':')[1] : '')).toISOString(),
-						},
-						atlas_code:{
-							'#text': ''
+							'@ISO8601': new Date(s.date.split('/')[2], s.date.split('/')[1]-1, s.date.split('/')[0], s.time.split(':')[0], (s.time.split(':')[1] ? s.time.split(':')[1] : '')).toISOString(),
 						}
 					}],
 					place:{
-						county: s.Province,
-						name: s.Area,
-						municipality: s.municipal
+						name: s.location,
 					},
 					species:{
-						'latin_name': s['Scientific name'],
-						name: s.name,
+						"latin_name": s['scientific name'],
+						name: s['species name'],
 					}
 				};
 				data.sightings.push(ns);
@@ -563,6 +580,7 @@ function handleFile(file){
 			data.forms.forEach(function(f){ 
 				f.sightings.forEach(function(s){
 					s.date=s.observers[0].timing;
+					s.link = 'http://'+jQuery('#sel-website').val()+'/index.php?m_id=54&id='+(s.observers[0].id_sighting || s.observers[0].id_universal);
 					//if (s.date==undefined) {s.date=s.observers[0].timing;}
 				})
 			})
@@ -999,15 +1017,6 @@ jQuery.getJSON( 'https://photon.komoot.de/reverse?lat='+form.lat.toString()+'&lo
 	}
 });
 
-/* REMOVE?
-form.specie_comment="var c='';\
-c = c + o.estimation_code+o.count+' ind.';\
-if(!o.detail){c = c + ' - ' + o.detail;}\n\
-if(o.timing['@ISO8601'] != '00:00'){c = c+' - '+moment(o.timing['@ISO8601']).format('HH:mm');}\n\
-c = c+' - <a href=\"http://maps.google.com?q='+o.coord_lat+','+o.coord_lon+'&t=k\" target=\"_blank\">'+ s.place.name +'</a>';\n\
-c = c + ' - <a href=\"http://'+jQuery('#sel-website').val()+'/index.php?m_id=54&id='+o['@id']+'\" target=\"_blank\">ID</a>';\n\
-return c";
-*/
 
 
 jQuery( "#c3 .nav-tabs" ).append( "<li class='nav-item' id='li-f-"+form.id+"'><a class='nav-link' href='#f-"+form.id+"' data-toggle='tab'>"+form.name+"</a></li>" );
@@ -1099,8 +1108,8 @@ jQuery( "#f-" + form.id ).append( '\
 <span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lon">Longitude DD</span>\
 &t=k" target="_blank" &gt;<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lat_str">Latitude DMS</span>N, \
 <span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lon_str">Longitude DMS</span>E&lt;/a&gt;'+
-(jQuery('#sel-website-link').val() =='birdlasser' ? '' : ' - &lt;a href="http://'+jQuery('#sel-website-link').val()+'/index.php?m_id=54&id=\
-<span class="badge badge-secondary" contenteditable="false" value="(s.observers[0].id_sighting || s.observers[0].id_universal)">ID sighting</span>\
+(jQuery('#sel-website-link').val() =='birdlasser' ? '' : ' - &lt;a href="\
+<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].link">link</span>\
 " target="_blank">'+jQuery('#sel-website-link').val()+'&lt;/a&gt;') +
 '<br>&lt;br&gt;<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].comment">Comment</span>\
 <br>&lt;br&gt;<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].details">Detail</span>') : '')
