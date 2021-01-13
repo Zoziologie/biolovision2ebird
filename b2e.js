@@ -344,8 +344,13 @@ function distance(lat1, lon1, lat2, lon2) {
 	}
 }
 
-
-
+// Find the more recurrent element in a list
+function mode(arr){
+    return arr.sort((a,b) =>
+          arr.filter(v => v===a).length
+        - arr.filter(v => v===b).length
+    ).pop();
+}
 
 
 
@@ -988,35 +993,46 @@ data.forms.forEach(function(form,idx){
 		previewComment(form)
 	})*/
 
-/*jQuery.getJSON('http://api.weatherstack.com/historical?access_key='+token.weatherstack+'&query='+form.lat+','+form.lon+'&hourly=1' ,function(weather){
+	/*jQuery.getJSON('http://api.weatherstack.com/historical?access_key='+token.weatherstack+'&query='+form.lat+','+form.lon+'&hourly=1' ,function(weather){
 
-	var id = moment((moment(data.forms[0].time_start,"HH:mm")+moment(data.forms[0].time_stop,"HH:mm:ss"))/2).add(30, 'minutes').startOf('hour').hour();
-	var w = weather.forecast.forecastday[0].hour[id];
+		var id = moment((moment(data.forms[0].time_start,"HH:mm")+moment(data.forms[0].time_stop,"HH:mm:ss"))/2).add(30, 'minutes').startOf('hour').hour();
+		var w = weather.forecast.forecastday[0].hour[id];
 
-	if (w) {
-		var whtml= '<b>Weather</b>:' +w.condition.text;
-		whtml += ' <b>Temp.</b>:'+w.temp_c+'°C';
-		whtml += ' - <b>Prec.</b>: '+w.precip_mm+ 'mm';
-		whtml += w.chance_of_snow =='0' ? '':' (snow)'; 
-		whtml += ' - <b>Cloud</b>: '+w.cloud+'%';
-		whtml += ' - <b>Wind</b>: '+w.wind_dir+' '+w.wind_kph+ 'km/h';
-		//whtml += ' - <b>Humidity</b>: '+w.humidity;
-		whtml += ' - <b>Visibility</b>: '+w.vis_km+'km';				
-		form.weather= whtml;
-	}
-	previewComment(form)
-})*/
-
-jQuery.getJSON( 'https://photon.komoot.de/reverse?lat='+form.lat.toString()+'&lon='+form.lon.toString() + '&limit=1', function( json ) {
-	if (json.features.length>0){
-		tmp = json.features[0].properties;	
-		form.country = tmp.country;
-		form.name = tmp.name +', '+ tmp.city +', '+ tmp.state + ' (' + (Math.round(form.lat*1000)/1000).toString()+', '+ (Math.round(form.lon*1000)/1000).toString() + ')';
-		jQuery('#f-'+form.id+' .location').val(form.name);
-		jQuery('#li-f-'+form.id+' a').html(form.name);
-	}
-});
-
+		if (w) {
+			var whtml= '<b>Weather</b>:' +w.condition.text;
+			whtml += ' <b>Temp.</b>:'+w.temp_c+'°C';
+			whtml += ' - <b>Prec.</b>: '+w.precip_mm+ 'mm';
+			whtml += w.chance_of_snow =='0' ? '':' (snow)'; 
+			whtml += ' - <b>Cloud</b>: '+w.cloud+'%';
+			whtml += ' - <b>Wind</b>: '+w.wind_dir+' '+w.wind_kph+ 'km/h';
+			//whtml += ' - <b>Humidity</b>: '+w.humidity;
+			whtml += ' - <b>Visibility</b>: '+w.vis_km+'km';				
+			form.weather= whtml;
+		}
+		previewComment(form)
+	})*/
+	/*
+	jQuery.getJSON( 'https://photon.komoot.de/reverse?lat='+form.lat.toString()+'&lon='+form.lon.toString() + '&limit=1', function( json ) {
+		if (json.features.length>0){
+			tmp = json.features[0].properties;	
+			form.country = tmp.country;
+			form.name = tmp.name +', '+ tmp.city +', '+ tmp.state + ' (' + (Math.round(form.lat*1000)/1000).toString()+', '+ (Math.round(form.lon*1000)/1000).toString() + ')';
+			jQuery('#f-'+form.id+' .location').val(form.name);
+			jQuery('#li-f-'+form.id+' a').html(form.name);
+		}
+	});
+	jQuery.getJSON( 'https://eu1.locationiq.com/v1/reverse.php?key='+token.locationIQ+'&lat='+form.lat.toString()+'&lon='+form.lon.toString()+'&format=json', function( json ) {
+		if (true){
+			form.country = json.address.country;
+			form.name = json.display_name;
+			jQuery('#f-'+form.id+' .location').val(form.name);
+			jQuery('#li-f-'+form.id+' a').html(form.name);
+		}
+	});
+	*/
+	form.name = mode(form.sightings.map(s => s.place.name))
+	jQuery('#f-'+form.id+' .location').val(form.name);
+	jQuery('#li-f-'+form.id+' a').html(form.name);
 
 
 jQuery( "#c3 .nav-tabs" ).append( "<li class='nav-item' id='li-f-"+form.id+"'><a class='nav-link' href='#f-"+form.id+"' data-toggle='tab'>"+form.name+"</a></li>" );
