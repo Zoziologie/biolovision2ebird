@@ -401,7 +401,7 @@ function handleFile(file){
 		document.cookie= s + "=" + escape(jQuery('#'+s).is(':checked')) + ";" + expires + ";path=/";
 	})
 	
-	reader = new FileReader();
+	var reader = new FileReader();
 	if (ext == 'xlsx'){
 		reader.readAsBinaryString(file);
 	} else {
@@ -411,6 +411,7 @@ function handleFile(file){
 	
 	reader.onload = function(e){
 
+		// Add limit in dataset size
 
 		if (jQuery('#sel-website-link').val().includes("observation") || jQuery('#sel-website-link').val().includes("waarneming")) {
 			if (ext != 'csv'){
@@ -438,9 +439,10 @@ function handleFile(file){
 				if (s['has sounds']=="TRUE") c += 'sounds' + ', '
 				if (s['notes']!="") c += s['notes'] + ', '
 				c = c.slice(0, -2)
+				var datetmp = new Date(s.date.split(/[//-]+/)[2], s.date.split(/[//-]+/)[1]-1, s.date.split(/[//-]+/)[0], s.time.split(':')[0], (s.time.split(':')[1] ? s.time.split(':')[1] : '')).toISOString()
 				ns={
 					date:{
-						'@ISO8601': new Date(s.date.split('/')[2], s.date.split('/')[1]-1, s.date.split('/')[0], s.time.split(':')[0], (s.time.split(':')[1] ? s.time.split(':')[1] : '')).toISOString(), 
+						'@ISO8601': datetmp, 
 					},
 					observers:[{
 						count: s.number,
@@ -451,7 +453,7 @@ function handleFile(file){
 						coord_lon: s.lng,
 						comment:  c+s.notes,
 						timing:{
-							'@ISO8601': new Date(s.date.split('/')[2], s.date.split('/')[1]-1, s.date.split('/')[0], s.time.split(':')[0], (s.time.split(':')[1] ? s.time.split(':')[1] : '')).toISOString(),
+							'@ISO8601': datetmp,
 						}
 					}],
 					place:{
@@ -479,7 +481,7 @@ function handleFile(file){
 			data.forms=[];
 
 			sightings.forEach(function(s){
-				s.Date = s.Date.split('/')[1] + '/' + s.Date.split('/')[0] + '/' + s.Date.split('/')[2];
+				s.Date = s.Date.split(/[//-]+/)[1] + '/' + s.Date.split(/[//-]+/)[0] + '/' + s.Date.split(/[//-]+/)[2];
 				ns={
 					date:{
 						'@ISO8601' :  moment(s.Date+' '+s['Start time']).toISOString(),
@@ -613,23 +615,46 @@ function handleFile(file){
 		});
 		data.forms.n=data.forms.length-1;
 		
-		jQuery('html, body').css('overflow-y','auto');
-		if (data.sightings.length>0) {
-			jQuery('#c1').slideUp("slow",function(){
-				jQuery('#c2').slideDown("slow",function(){
-					ProcessSightings(data)
-				});
-			});
-		} else if (data.forms.length>0){
-			jQuery('#c1').slideUp("slow",function(){
-				jQuery('#c3').slideDown("slow",function(){
-					ProcessForms(data)
-				});	
-			});
+		if (data.sightings.length>500){
+			var psw = prompt('You are trying to convert '+data.sightings.length+' incidental sightings. A significant effort is necessary to group them into eBird checklist format.\
+			To avoid data import and quality issues for eBird, Please send me a sample of your data at rafnuss@gmail.com. You can still try this conversion with less than 500 sightings.','If you have it, enter the password received here')
+			
+			if (psw == "buteobuteo") {
+				if (data.sightings.length>10000){
+					var psw2 = prompt('The number of sightings is greater than 10\'000 and you will need another password','If you have it, enter the second password received here')
+					pass = (psw2 =="charadriusmorinellus") ? true : false;
+				} else {
+					pass=true
+				}
+			} else {
+				pass=false
+			}
 		} else {
-			alert('Empty file')
-			return
+			pass = true
 		}
+
+		if (pass){
+			jQuery('html, body').css('overflow-y','auto');
+			if (data.sightings.length>0) {
+				jQuery('#c1').slideUp("slow",function(){
+					jQuery('#c2').slideDown("slow",function(){
+						ProcessSightings(data)
+					});
+				});
+			} else if (data.forms.length>0){
+				jQuery('#c1').slideUp("slow",function(){
+					jQuery('#c3').slideDown("slow",function(){
+						ProcessForms(data)
+					});	
+				});
+			} else {
+				alert('Empty file')
+				return
+			}
+		} else {
+			alert('The password entered is incorrect. Please, contact me at rafnuss@gmail.com')
+		}
+
 	}
 
 }
