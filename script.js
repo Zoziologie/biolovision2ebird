@@ -11,7 +11,7 @@
 
 // Load conversion taxonomie biolovision - eBird
 var eBird_birds_list;
-jQuery.getJSON("/assets/biolovision2eBird/patch_ornitho2eBird.min.json", function(data){
+jQuery.getJSON("./patch_ornitho2eBird.min.json", function(data){
 	eBird_birds_list = data;
 });
 
@@ -1301,7 +1301,7 @@ form.sightings.forEach(function(s,id) {
 		form.staticmap.lat = form.layer.sightings.getBounds().getCenter().lat;
 		form.layer.msm = L.marker([form.staticmap.lat,form.staticmap.lng], {
 			icon:L.icon({
-				iconUrl: '/assets/biolovision2eBird/images/Maps-Center-Direction-icon.png',
+				iconUrl: './biolovision2eBird/assets/Maps-Center-Direction-icon.png',
 				iconSize:     [40, 40],
 				iconAnchor:   [20, 20], 
 				popupAnchor:  [-20, 0]
@@ -1331,7 +1331,7 @@ hotspots.forEach(function(h){
 		title: h.locName,
 		alt: h.locName,
 		icon: L.icon({
-			iconUrl: "/assets/biolovision2eBird/images/hotspot-icon-hotspot.png",
+			iconUrl: "./biolovision2eBird/assets/hotspot-icon-hotspot.png",
 			iconAnchor: [15, 19],
 			popupAnchor: [0, -19],
 		})
