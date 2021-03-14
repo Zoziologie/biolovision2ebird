@@ -640,13 +640,16 @@ function handleFile(file){
 					jQuery('#c2').slideDown("slow",function(){
 						ProcessSightings(data)
 					});
+					jQuery("#c0").slideUp("slow")
 				});
 			} else if (data.forms.length>0){
 				jQuery('#c1').slideUp("slow",function(){
 					jQuery('#c3').slideDown("slow",function(){
 						ProcessForms(data)
-					});	
+					});
+					jQuery("#c0").slideUp("slow")
 				});
+				
 			} else {
 				alert('Empty file')
 				return
@@ -794,6 +797,7 @@ function ProcessSightings(data) {
 		jQuery('#c2').slideUp("slow",function(){
 			jQuery('#c3').slideDown("slow",function(){
 				ProcessForms(data)
+				jQuery('#c4').slideDown("slow")
 			});	
 		});
 	});
@@ -873,8 +877,8 @@ function ProcessForms(data) {
 	//Add unasgined checklist
 	if (data.forms[0].id==0){
 		var form=data.forms[0];
-		jQuery( "#c3 .nav-tabs" ).append( "<li class='nav-item' id='li-f-"+form.id+"'><a class='nav-link active' href='#f-"+form.id+"' data-toggle='tab'>"+form.name+"</a></li>" );
-		jQuery( "#c3 .tab-content" ).append( "<div class='container tab-pane active' id='f-"+form.id+"'></div>" );
+		jQuery( "#c3 .nav-tabs" ).append( "<button class=nav-link id='li-f-"+form.id+"' data-bs-toggle='tab' data-bs-target='#f-"+form.id+"' data-toggle='tab' type='button' role='tab' aria-controls='nav-"+form.id+"'>"+form.name+"</button>" );
+		jQuery( "#c3 .tab-content" ).append( "<div class='container tab-pane active show' id='f-"+form.id+"' role='tabpanel' aria-labelledby='li-f-"+form.id+"'></div>" );
 		jQuery( "#f-" + form.id ).append( '\
 		<div class="row">\
 		<div class="form-group col-sm-12">\
@@ -1060,8 +1064,8 @@ data.forms.forEach(function(form,idx){
 	jQuery('#li-f-'+form.id+' a').html(form.name);
 
 
-jQuery( "#c3 .nav-tabs" ).append( "<li class='nav-item' id='li-f-"+form.id+"'><a class='nav-link' href='#f-"+form.id+"' data-toggle='tab'>"+form.name+"</a></li>" );
-jQuery( "#c3 .tab-content" ).append( "<div class='container tab-pane' id='f-"+form.id+"'></div>" );
+jQuery( "#c3 .nav-tabs" ).append( "<button class=nav-link id='li-f-"+form.id+"' data-bs-toggle='tab' data-bs-target='#f-"+form.id+"' data-toggle='tab' type='button' role='tab' aria-controls='nav-"+form.id+"'>"+form.name+"</button>" );
+jQuery( "#c3 .tab-content" ).append( "<div class='container tab-pane active show' id='f-"+form.id+"' role='tabpanel' aria-labelledby='li-f-"+form.id+"'></div>" );
 jQuery( "#f-" + form.id ).append( '\
 <form class="form" data-toggle="validator" >\
 <div class="row">\
@@ -1069,6 +1073,9 @@ jQuery( "#f-" + form.id ).append( '\
 <label for="location" class="control-label">Location:</label>\
 <input type="text" class="form-control location" value="'+form.name+'" required>\
 <div class="help-block with-errors"></div>\
+</div>\
+<div class="form-group col-sm-12">\
+<div class="map" id="map-f-'+form.id+'"></div>\
 </div>\
 <div class="form-group col-lg-6">\
 <div class="row">\
@@ -1126,34 +1133,34 @@ jQuery( "#f-" + form.id ).append( '\
 <label for="cmt-sp-ct-bt-'+ form.id+'">Species Comment:</label>\
 <div class="cmt-sp">\
 <div class="cmt-sp-ct cmt-sp-ct-tp" id="cmt-sp-ct-tp-'+ form.id+'">\
-<span class="badge badge-secondary" contenteditable="false" value="s.date.text">Timing (full)</span>\
-<span class="badge badge-secondary" contenteditable="false" value="moment(s.date[\'@ISO8601\']).format(\'dd-MM-YYYY HH:mm\')">Timing (condensed)</span>\
-<span class="badge badge-secondary" contenteditable="false" value="moment(s.date[\'@ISO8601\']).format(\'HH:mm\')">Time</span>\
-<span class="badge badge-secondary" contenteditable="false" value="(s.observers[0].id_sighting || s.observers[0].id_universal)">ID sighting</span>\
-<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].estimation_code">Estimation code</span>\
-<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].count">Count</span>\
-<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lat">Latitude DD</span>\
-<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lon">Longitude DD</span>\
-<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lat_str">Latitude DMS</span>\
-<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lon_str">Longitude DMS</span>\
-<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].comment">Comment</span>\
-<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].details">Detail</span>\
-<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].atlas_code">Atlas code</span>\
+<span class="badge bg-secondary" contenteditable="false" value="s.date.text">Timing (full)</span>\
+<span class="badge bg-secondary" contenteditable="false" value="moment(s.date[\'@ISO8601\']).format(\'dd-MM-YYYY HH:mm\')">Timing (condensed)</span>\
+<span class="badge bg-secondary" contenteditable="false" value="moment(s.date[\'@ISO8601\']).format(\'HH:mm\')">Time</span>\
+<span class="badge bg-secondary" contenteditable="false" value="(s.observers[0].id_sighting || s.observers[0].id_universal)">ID sighting</span>\
+<span class="badge bg-secondary" contenteditable="false" value="s.observers[0].estimation_code">Estimation code</span>\
+<span class="badge bg-secondary" contenteditable="false" value="s.observers[0].count">Count</span>\
+<span class="badge bg-secondary" contenteditable="false" value="s.observers[0].coord_lat">Latitude DD</span>\
+<span class="badge bg-secondary" contenteditable="false" value="s.observers[0].coord_lon">Longitude DD</span>\
+<span class="badge bg-secondary" contenteditable="false" value="s.observers[0].coord_lat_str">Latitude DMS</span>\
+<span class="badge bg-secondary" contenteditable="false" value="s.observers[0].coord_lon_str">Longitude DMS</span>\
+<span class="badge bg-secondary" contenteditable="false" value="s.observers[0].comment">Comment</span>\
+<span class="badge bg-secondary" contenteditable="false" value="s.observers[0].details">Detail</span>\
+<span class="badge bg-secondary" contenteditable="false" value="s.observers[0].atlas_code">Atlas code</span>\
 </div>\
 <div class="cmt-sp-ct cmt-sp-ct-bt" id="cmt-sp-ct-bt-'+ form.id+'" contenteditable="true">'+
 (jQuery('#incl-sp-cmt').is(":checked") ?
-('<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].estimation_code">Estimation code</span>\
-<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].count">Count</span> ind. - \
-<span class="badge badge-secondary" contenteditable="false" value="moment(s.date[\'@ISO8601\']).format(\'HH:mm\')">Time</span> - \
-&lt;a href="http://maps.google.com?q=<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lat">Latitude DD</span>,\
-<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lon">Longitude DD</span>\
-&t=k" target="_blank" &gt;<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lat_str">Latitude DMS</span>N, \
-<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].coord_lon_str">Longitude DMS</span>E&lt;/a&gt;'+
+('<span class="badge bg-secondary" contenteditable="false" value="s.observers[0].estimation_code">Estimation code</span>\
+<span class="badge bg-secondary" contenteditable="false" value="s.observers[0].count">Count</span> ind. - \
+<span class="badge bg-secondary" contenteditable="false" value="moment(s.date[\'@ISO8601\']).format(\'HH:mm\')">Time</span> - \
+&lt;a href="http://maps.google.com?q=<span class="badge bg-secondary" contenteditable="false" value="s.observers[0].coord_lat">Latitude DD</span>,\
+<span class="badge bg-secondary" contenteditable="false" value="s.observers[0].coord_lon">Longitude DD</span>\
+&t=k" target="_blank" &gt;<span class="badge bg-secondary" contenteditable="false" value="s.observers[0].coord_lat_str">Latitude DMS</span>N, \
+<span class="badge bg-secondary" contenteditable="false" value="s.observers[0].coord_lon_str">Longitude DMS</span>E&lt;/a&gt;'+
 (jQuery('#sel-website-link').val() =='birdlasser' ? '' : ' - &lt;a href="\
-<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].link">link</span>\
+<span class="badge bg-secondary" contenteditable="false" value="s.observers[0].link">link</span>\
 " target="_blank">'+jQuery('#sel-website-link').val()+'&lt;/a&gt;') +
-'<br>&lt;br&gt;<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].comment">Comment</span>\
-<br>&lt;br&gt;<span class="badge badge-secondary" contenteditable="false" value="s.observers[0].details">Detail</span>') : '')
+'<br>&lt;br&gt;<span class="badge bg-secondary" contenteditable="false" value="s.observers[0].comment">Comment</span>\
+<br>&lt;br&gt;<span class="badge bg-secondary" contenteditable="false" value="s.observers[0].details">Detail</span>') : '')
 +'</div>\
 </div>\
 </div>\
@@ -1196,17 +1203,13 @@ jQuery( "#f-" + form.id ).append( '\
 </div>\
 </div>\
 <div class="row form-check">\
-<label><input type="checkbox" class="form-check-input check-weather" '+ (jQuery('#incl-weather').is(":checked") ? 'checked="checked"' : '') +'disable> Include weather</label>\
+<label><input type="checkbox" class="form-check-input check-weather" '+ (jQuery('#incl-weather').is(":checked") ? 'checked="checked"' : '') +'disabled> Include weather</label>\
 </div>\
 <div class="row">\
 <label>Preview:</label>\
 <div class="comments-preview"></div>\
 </div>\
 </div>\
-</div>\
-<div class="row">\
-<div class="form-group col-sm-12">\
-<div class="map" id="map-f-'+form.id+'"></div>\
 </div>\
 </div>\
 </form>\
@@ -1301,7 +1304,7 @@ form.sightings.forEach(function(s,id) {
 		form.staticmap.lat = form.layer.sightings.getBounds().getCenter().lat;
 		form.layer.msm = L.marker([form.staticmap.lat,form.staticmap.lng], {
 			icon:L.icon({
-				iconUrl: './biolovision2eBird/assets/Maps-Center-Direction-icon.png',
+				iconUrl: './assets/Maps-Center-Direction-icon.png',
 				iconSize:     [40, 40],
 				iconAnchor:   [20, 20], 
 				popupAnchor:  [-20, 0]
@@ -1331,7 +1334,7 @@ hotspots.forEach(function(h){
 		title: h.locName,
 		alt: h.locName,
 		icon: L.icon({
-			iconUrl: "./biolovision2eBird/assets/hotspot-icon-hotspot.png",
+			iconUrl: "/assets/hotspot-icon-hotspot.png",
 			iconAnchor: [15, 19],
 			popupAnchor: [0, -19],
 		})
@@ -1352,6 +1355,7 @@ hotspots.forEach(function(h){
 mark.addTo(form.layer.hotspots).bindPopup(popup[0]);
 })
 form.map.fitBounds(form.layer.sightings.getBounds());
+//form.map.invalidateSize();
 });
 
 
@@ -1533,29 +1537,43 @@ jQuery('#f-'+form.id+' .cmt-sp-preview-sp').change( function(){
 
 
 // Activate only the first tab
+setTimeout(function() {
 jQuery('.tab-content .tab-pane').each( function(idx,item){
 	var id = jQuery(item).attr('id');
 	if (idx==0){
-		jQuery('#'+id).addClass('active')
-		jQuery('#li-'+id+' > a').addClass('active')
+		jQuery('#'+id).addClass('active show')
+		jQuery('#li-'+id).addClass('active')
 	} else {
-		jQuery('#'+id).removeClass('active')
-		jQuery('#li-'+id+' > a').removeClass('active')
+		jQuery('#'+id).removeClass('active show')
+		jQuery('#li-'+id).removeClass('active')
 	}
 })
-
 data.forms.forEach(function(form,idx){
-	form.map.invalidateSize();
-	jQuery('#li-f-'+form.id).on('click',function(){
-		setTimeout(function() {
-			form.map.invalidateSize();
-			form.map.fitBounds(form.layer.sightings.getBounds());
-		},1);
-	})
-	
 	previewSpComment(form);
 	previewComment(form)
 })
+},100)
+
+/*
+setTimeout(function() {
+data.forms.forEach(function(form,idx){
+	form.map.invalidateSize();
+	form.map.fitBounds(form.layer.sightings.getBounds());
+/*
+	jQuery('#li-f-'+form.id).on('click',function(){
+		
+		setTimeout(function() {
+			form.map.invalidateSize();
+			console.log(form)
+			form.map.fitBounds(form.layer.sightings.getBounds());
+		},1);
+	})
+	previewSpComment(form);
+	previewComment(form)
+})
+},100);
+*/
+
 }
 
 

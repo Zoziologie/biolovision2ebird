@@ -1,24 +1,22 @@
-/*General Strucutre*/
-body{
-	background-color: initial;
-	font-family:-apple-system,BlinkMacSystemFont,"Roboto","Segoe UI","Helvetica Neue","Lucida Grande",Arial,sans-serif;
+/*Offcanevas structure*/
+html, body {
+    overflow-x: hidden;
 }
-h1 {
-	font-size: 2rem;
+
+.bg-dblue{
+	background-color: #2c3e50;
 }
-h2 {
-	font-size: 1.5rem;
-}
-a:hover{
-	text-decoration: none;
-}
-.container{
-	max-width: 100%;
-}
+
+
+
+
+
+
+
 #c2{
 	display: none;
 }
-.download-from-biolovision{
+.form-in{
 	padding: 1em;
 	width: 100%;
 }
@@ -48,26 +46,20 @@ a:hover{
 	margin-top: 10px;
 }
 .checkbox, .radio {
-	margin-top: 0px;
-	margin-bottom:0px;
+	margin-left: 18px;
+    margin-bottom: 7px;
 }
 .radio input[type="radio"]{
-	margin-top: 17px;
+	margin-top: 14px;
+    float: left;
+    margin-left: -18px;
 }
 input{
 	box-shadow: none;
 }
-.tab-pane {
-	background-color: #ebdbc2;
-	border: 2px solid #ebebeb;
-}
+
 #tab-checklists{
 	padding-bottom: 40px;
-}
-.nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active{
-	background-color: #ebdbc2;
-	border: 2px solid #ebebeb;
-	border-bottom: none;	
 }
 
 #input-date-from{
@@ -87,9 +79,6 @@ input{
 }
 #nb-obs{
 	    width: 75px;
-}
-#row-set label{
-	justify-content:initial;
 }
 
 /* c2: Upload; */
@@ -127,7 +116,6 @@ input{
 	margin-bottom: 20px;
 	padding: 10px;
 	border: 2px solid #ebebeb;
-	background-color: #e8d5b7;
 }
 .leaflet-popup-content{
 	text-align: center;
