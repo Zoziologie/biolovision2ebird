@@ -114,8 +114,12 @@ function previewComment(form){
 		html += form.weather;
 	} */
 	if (jQuery('#f-'+form.id+' .check-static-map').is(':checked')){
-		html += '<a href="'+form.gist+'" target="_blank">'
-		html += '<img src="'+staticLink(form)+'" style="max-width:600px;width:100%"></a><br>'
+		if (jQuery("#incl-map-link").prop("checked")) {
+			html += '<a href="'+form.gist+'" target="_blank">'
+			html += '<img src="'+staticLink(form)+'" style="max-width:600px;width:100%"></a><br>'
+		} else {
+			html += '<img src="'+staticLink(form)+'" style="max-width:600px;width:100%"><br>'
+		}
 		jQuery('#f-'+form.id+ ' .zoom').attr('disabled', false);
 		jQuery('#f-'+form.id+ ".btn-number").attr('disabled', false);
 		form.layer.msm.addTo(form.map);
@@ -1677,33 +1681,38 @@ function Table2CSV(table) {
 }
 
 function CreateGist(form, callback){
-	var fs = form.layer.sightings.toGeoJSON();
-	form.layer.edit.toGeoJSON().features.forEach(function(f){
-		fs.features.push(f);
-	})
-	var filename= (form.name+'-'+form.date).replace(/[^a-z0-9_\-]/gi, '_').toLowerCase()+".geojson";
-	var gist = {
-		"description": form.name +", "+ form.date,
-		"public": true,
-		"files": {}
+	if (jQuery("#incl-map-link").prop("checked")){
+		var fs = form.layer.sightings.toGeoJSON();
+		form.layer.edit.toGeoJSON().features.forEach(function(f){
+			fs.features.push(f);
+		})
+		var filename= (form.name+'-'+form.date).replace(/[^a-z0-9_\-]/gi, '_').toLowerCase()+".geojson";
+		var gist = {
+			"description": form.name +", "+ form.date,
+			"public": true,
+			"files": {}
+		}
+		gist.files[filename] = { "content": JSON.stringify(fs) };
+		jQuery.ajax({ 
+			url: 'https://api.github.com/gists',
+			type: 'POST',
+			beforeSend: function(xhr) { 
+				xhr.setRequestHeader("Authorization", "token "+jQuery('#github-token').val()); 
+			},
+			data: JSON.stringify(gist),
+		}).done(function(response) {
+			form.gist='https://zoziologie.raphaelnussbaumer.com/geojson/?'+encodeURIComponent(response.files[filename].raw_url)
+			previewComment(form)
+			callback()
+		}).fail( function( jqXHR, textStatus, errorThrown) {
+			alert('Error with the Gist Map: '+ errorThrown )
+			previewComment(form)
+			callback()
+		});
+	} else {
+		callback()
 	}
-	gist.files[filename] = { "content": JSON.stringify(fs) };
-	jQuery.ajax({ 
-		url: 'https://api.github.com/gists',
-		type: 'POST',
-		beforeSend: function(xhr) { 
-			xhr.setRequestHeader("Authorization", "token "+token.github); 
-		},
-		data: JSON.stringify(gist),
-	}).done(function(response) {
-		form.gist='https://zoziologie.raphaelnussbaumer.com/geojson/?'+encodeURIComponent(response.files[filename].raw_url)
-		previewComment(form)
-		callback()
-	}).fail( function( jqXHR, textStatus, errorThrown) {
-		alert('Error with the Gist Map: '+ errorThrown )
-		previewComment(form)
-		callback()
-	});
+	
 }
 
 function singleExport(form){
@@ -1815,14 +1824,14 @@ jQuery(document).ready(function(){
 		jQuery("#sel-website-link").val(jQuery('#sel-website').val());
 		if (jQuery('#sel-website').val()=='birdtrack'){
 			jQuery("#incl-map").attr("disabled", true);
-			jQuery("#incl-map").prop( "checked", false );
+			jQuery("#incl-map").prop("checked", false );
 			jQuery("#incl-sp-cmt").attr("disabled", true);
-			jQuery("#incl-sp-cmt").prop( "checked", false );
+			jQuery("#incl-sp-cmt").prop("checked", false );
 		} else {
 			jQuery("#incl-map").attr("disabled", false);
-			jQuery("#incl-map").prop( "checked", true );
+			jQuery("#incl-map").prop("checked", true );
 			jQuery("#incl-sp-cmt").attr("disabled", false);
-			jQuery("#incl-sp-cmt").prop( "checked", true );
+			jQuery("#incl-sp-cmt").prop("checked", true );
 		}
 	});
 	
@@ -1834,6 +1843,23 @@ jQuery(document).ready(function(){
 		}     
 	});
 	
+	jQuery('#incl-map').change(function() {
+		if(this.checked) {
+			jQuery("#incl-map-link").attr("disabled", false);
+		} else {
+			jQuery("#incl-map-link").attr("disabled", true);
+			$("#github-token-div").slideUp();
+			jQuery("#incl-map-link").prop("checked", false );
+		}     
+	});
+
+	jQuery('#incl-map-link').change(function() {
+		if(this.checked) {
+			$("#github-token-div").slideDown();
+		} else {
+			$("#github-token-div").slideUp();
+		}     
+	});
 	
 	
 	/* c1: Download biolovision data*/  
@@ -1883,19 +1909,29 @@ jQuery(document).ready(function(){
 	dropbox.addEventListener("drop", function(e){
 		e.stopPropagation();
 		e.preventDefault();
-		handleFile(e.dataTransfer.files[0])
+		if ( jQuery("#incl-map").prop("checked") & jQuery('#github-token').val()==""){
+			alert('Please, add a github token')
+		}
+		else {
+			handleFile(e.dataTransfer.files[0])
+		}
 	}, false);
 	dropbox.addEventListener("click", function(){
 		jQuery("#upload").click();
 	})
 	document.getElementById('upload').onchange = function(e){
-		handleFile(e.target.files[0])
+		if ( jQuery("#incl-map").prop("checked") & jQuery('#github-token').val()==""){
+			alert('Please, add a github token')
+		}
+		else {
+			handleFile(e.dataTransfer.files[0])
+		}
 	}
 	
 	
 	/* Read Cookies*/
-	cookies_text=['sel-website','date_ago','nb-obs','input-date-from','input-date-to','sel-website-link'];
-	cookies_check=['incl-map','incl-sp-cmt']; // 'incl-weather',
+	cookies_text=['sel-website','date_ago','nb-obs','input-date-from','input-date-to','sel-website-link','github-token'];
+	cookies_check=['incl-map','incl-sp-cmt','incl-map-link']; // 'incl-weather',
 	cookies_text.forEach(function(s){
 		var v =getCookieValue(s);
 		if (!(v === "")){
@@ -1922,7 +1958,7 @@ jQuery(document).ready(function(){
 	// Map
 	L.MakiMarkers.accessToken = token.mapbox;
 	
-	
+	$("[data-toggle='tooltip']").tooltip();
 	
 });
 
