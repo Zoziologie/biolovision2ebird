@@ -389,29 +389,15 @@ function mode(arr){
 
 
 function handleFile(file){
+
 	var ext = file.name.split('.').pop().toLowerCase();
-	/*if (['json','xml','csv','txt'].indexOf(ext) == -1){// File type not accepted 
-		return;
-	}*/
-	
-	/* Write Cookies*/
-	var d = new Date();
-	d.setTime(d.getTime() + (365*24*60*60*1000));
-	var expires = "expires="+ d.toUTCString();
-	cookies_text.forEach(function(s){
-		document.cookie= s + "=" + escape(jQuery('#'+s).val()) + ";" + expires + ";path=/";
-	})
-	cookies_check.forEach(function(s){
-		document.cookie= s + "=" + escape(jQuery('#'+s).is(':checked')) + ";" + expires + ";path=/";
-	})
-	
+
 	var reader = new FileReader();
 	if (ext == 'xlsx'){
 		reader.readAsBinaryString(file);
 	} else {
 		reader.readAsText(file);//,'ISO-8859-15');
 	}
-	
 	
 	reader.onload = function(e){
 
@@ -1837,9 +1823,9 @@ jQuery(document).ready(function(){
 	
 	jQuery('#incl-sp-cmt').change(function() {
 		if(this.checked) {
-			jQuery("#sel-website-link").attr("disabled", false);
+			$("#website-link-div").slideDown();
 		} else {
-			jQuery("#sel-website-link").attr("disabled", true);
+			$("#website-link-div").slideUp();
 		}     
 	});
 	
@@ -1897,38 +1883,36 @@ jQuery(document).ready(function(){
 	
 	/* Upload file*/ 
 	// Drag and drop
-	dropbox = document.getElementById("dropbox");
-	dropbox.addEventListener("dragenter", function(e){
-		e.stopPropagation();
-		e.preventDefault();
-	}, false);
-	dropbox.addEventListener("dragover", function(e){
-		e.stopPropagation();
-		e.preventDefault();
-	}, false);
-	dropbox.addEventListener("drop", function(e){
-		e.stopPropagation();
-		e.preventDefault();
+	$('#upload-submit').submit(function(e) {
+		e.preventDefault();    
+	  
+		if ( jQuery('#upload').val()==""){
+			alert('Choose a file in the upload input')
+			return
+		}
+
 		if ( jQuery("#incl-map").prop("checked") & jQuery('#github-token').val()==""){
 			alert('Please, add a github token')
+			return
 		}
-		else {
-			handleFile(e.dataTransfer.files[0])
-		}
-	}, false);
-	dropbox.addEventListener("click", function(){
-		jQuery("#upload").click();
-	})
-	document.getElementById('upload').onchange = function(e){
-		if ( jQuery("#incl-map").prop("checked") & jQuery('#github-token').val()==""){
-			alert('Please, add a github token')
-		}
-		else {
-			handleFile(e.dataTransfer.files[0])
-		}
-	}
-	
-	
+
+		/* Write Cookies*/
+		var d = new Date();
+		d.setTime(d.getTime() + (365*24*60*60*1000));
+		var expires = "expires="+ d.toUTCString();
+		cookies_text.forEach(function(s){
+			document.cookie= s + "=" + escape(jQuery('#'+s).val()) + ";" + expires + ";path=/";
+		})
+		cookies_check.forEach(function(s){
+			document.cookie= s + "=" + escape(jQuery('#'+s).is(':checked')) + ";" + expires + ";path=/";
+		})
+
+		handleFile($('#upload').prop('files')[0])
+	  
+	  });
+
+
+
 	/* Read Cookies*/
 	cookies_text=['sel-website','date_ago','nb-obs','input-date-from','input-date-to','sel-website-link','github-token'];
 	cookies_check=['incl-map','incl-sp-cmt','incl-map-link']; // 'incl-weather',

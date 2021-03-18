@@ -7,9 +7,13 @@ html, body {
 	background-color: #2c3e50;
 }
 
+.form-inline .form-check, .form-inline label{
+	display: inherit;
+}
 
-
-
+#powerby:hover{
+	background: #1abc9c;
+}
 
 
 

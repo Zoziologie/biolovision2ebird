@@ -5,6 +5,7 @@
 	<title>Biolovision2eBird | Zoziologie</title>
 	<meta name="description" content="My personal website for bird related stuff.">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
 
 	<script src="https://kit.fontawesome.com/f15ed359e8.js" crossorigin="anonymous"></script>
 	<script src="https://code.jquery.com/jquery-3.5.1.min.js"
@@ -47,19 +48,23 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/xlsx.js"></script>
 
 	<script src="./script.js" type="text/javascript"></script>
-	<link rel="stylesheet" href="./style.css" type="text/css">
+	<link rel="stylesheet" href="/styles.css" type="text/css">
+	<link rel="stylesheet" href="style.css" type="text/css">
 	<script src="/token.js" type="text/javascript"></script>
 
 </head>
 
 <body class="bg-light">
 	<main class="container">
-		<div class="d-flex align-items-center p-3 my-3 text-white rounded shadow-sm bg-dblue" >
-			<img class="me-3" src="/assets/logo.svg" alt="" width="48" height="38">
-			<div class="lh-1">
-				<h1 class="h6 mb-0 text-white lh-1">Biolovision2eBird</h1>
-				<small>Convert biolovision data to eBird!</small>
+		<div class="d-flex justify-content-between p-3 my-3 text-white rounded shadow-sm bg-dblue" >
+			<div ml-2>
+				<h1 class="mb-0">Biolovision2eBird</h1>
+				<h6>Convert biolovision data to eBird</h6>
 			</div>
+			<a class="py-3 px-0 px-lg-3 rounded text-white text-decoration-none" href="/" id="powerby">
+				<span class="mr-1">Powered by</span>
+				<img class="me-3" src="/assets/logo_w.svg" alt="" height="43">
+			</a>
 		</div>
 
 
@@ -174,7 +179,7 @@
 										<input name="radio_date" type="radio" value="range" />
 										<div class="input-group ">
 											<input id="input-date-from" class="form-control" type="date" />
-											<span class="input-group-addon">to</span>
+											<span class="input-group-addon text-secondary">to</span>
 											<input id="input-date-to" class="form-control" type="date" />
 										</div>
 									</label>
@@ -182,7 +187,7 @@
 							</div>
 						</div>
 						<div class="col-lg-3 form-group"><label for="link-id">c) Download file</label>
-							<button id="link-id" class="btn btn-default" type="submit">Go to export webpage</button>
+							<button id="link-id" class="btn btn-default" type="submit"><i class="fas fa-external-link-alt"></i> Go to export webpage</button>
 						</div>
 					</form>
 				</li>
@@ -193,18 +198,25 @@
 						next time
 						you
 						come back, the same settings will be set by default.</p>
-					<form class="row form-inline text-white rounded bg-dblue form-in">
-						<div class="col-lg-3">
-							<label for="nb-obs">Number of observers:</label>
-							<input id="nb-obs" type="number" class="form-control" value="1" min="1" max="50">
+					<form class="row form-inline text-white rounded bg-dblue form-in" id="upload-submit">
+						<div class="col-lg-6">
+							<div class="mb-3">
+								<label for="upload" class="form-label">Upload the file<tt>json</tt> (biolovision), <tt>xlsx</tt> (birdtrack) or <tt>csv</tt>
+									(observado)</label>
+								<input id="upload" class="form-control" type="file" accept=".json,.csv,.xls,.xlsx"/>
+							</div>
+							<div class="mb-3">
+								<label for="nb-obs">Number of observers:</label>
+								<input id="nb-obs" type="number" class="form-control" value="1" min="1" max="50">
+							</div>
 						</div>
 						<div class="col-lg-6">
-							<div class="form-check">
+							<!--<div class="form-check">
 								<input class="form-check-input" type="checkbox" disabled id="incl-weather">
 								<label class="form-check-label" for="incl-weather">
 									Include weather information in checklist comment.
 								</label>
-							</div>
+							</div>-->
 							<div class="form-check" >
 								<input class="form-check-input" id="incl-map" type="checkbox" checked>
 								<label class="form-check-label" for="incl-map">
@@ -217,34 +229,25 @@
 									Add link to static map for interative map.
 								</label>
 							</div>
-							<div id="github-token-div" style="margin-left: 22px;">
-								<input type="text" class="form-control" id="github-token" placeholder="Github token" aria-describedby="tokenHelp">
+							<div id="github-token-div">
+								<input type="text" class="form-control w-100" id="github-token" placeholder="Github token" aria-describedby="tokenHelp">
 								<small id="tokenHelp" class="form-text text-muted">To generate an interactive map, you'll need to <a href="https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token">generate a Github token</a> with 'gist' scopes.</small>
-							  </div>
+							</div>
 							<div class="form-check">
 								<input class="form-check-input" type="checkbox" id="incl-sp-cmt" checked>
 								<label class="form-check-label" for="incl-sp-cmt">
 									Include	details in species comment.
 								</label>
 							</div>
+							<div id="website-link-div">
+								<input id="sel-website-link" class="form-control" list="websites" name="website-link" type="text" value="www.ornitho.ch" aria-describedby="website-link-help"/>
+								<small id="website-link-help" class="form-text text-muted">Link used for specie's comment details </small>
+							</div>
 						</div>
-						<div class="col-lg-3"><label for="sel-website-link">Link website:</label>
-							<input id="sel-website-link" class="form-control" list="websites" name="website-link"
-								type="text" value="www.ornitho.ch" />
+						<div class="col-lg-12 d-flex justify-content-center mt-3 mb-3">
+							<button type="submit" class="btn btn-default"><i class="fas fa-upload"></i> Upload</button>
 						</div>
 					</form>
-				</li>
-				<li>
-					<p>Drag the export file <tt>json</tt> (biolovision), <tt>xlsx</tt> (birdtrack) or <tt>csv</tt>
-						(observado)
-						file
-						on the zone below (or click on the zone to open the input window).</p>
-					<div id="drobox-outer">
-						<div id="dropbox">
-							Upload the exported file with a drag-and-drop with a click on this zone
-							<input id="upload" style="display: none;" type="file" accept=".json,.csv,.xls,.xlsx"/>
-						</div>
-					</div>
 				</li>
 			</ol>
 		</div>
