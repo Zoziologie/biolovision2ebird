@@ -867,7 +867,7 @@ function ProcessForms(data) {
 	//Add unasgined checklist
 	if (data.forms[0].id==0){
 		var form=data.forms[0];
-		jQuery( "#c3 .nav-tabs" ).append( "<button class=nav-link id='li-f-"+form.id+"' data-bs-toggle='tab' data-bs-target='#f-"+form.id+"' data-toggle='tab' type='button' role='tab' aria-controls='nav-"+form.id+"'>"+form.name+"</button>" );
+		jQuery( "#c3 .nav-pills" ).append( "<button class=nav-link id='li-f-"+form.id+"' data-bs-toggle='tab' data-bs-target='#f-"+form.id+"' data-toggle='tab' type='button' role='tab' aria-controls='nav-"+form.id+"'>"+form.name+"</button>" );
 		jQuery( "#c3 .tab-content" ).append( "<div class='container tab-pane active show' id='f-"+form.id+"' role='tabpanel' aria-labelledby='li-f-"+form.id+"'></div>" );
 		jQuery( "#f-" + form.id ).append( '\
 		<div class="row">\
@@ -1054,17 +1054,17 @@ data.forms.forEach(function(form,idx){
 	jQuery('#li-f-'+form.id+' a').html(form.name);
 
 
-jQuery( "#c3 .nav-tabs" ).append( "<button class=nav-link id='li-f-"+form.id+"' data-bs-toggle='tab' data-bs-target='#f-"+form.id+"' data-toggle='tab' type='button' role='tab' aria-controls='nav-"+form.id+"'>"+form.name+"</button>" );
+jQuery( "#c3 .nav-pills" ).append( "<button class=nav-link id='li-f-"+form.id+"' data-bs-toggle='tab' data-bs-target='#f-"+form.id+"' data-toggle='tab' type='button' role='tab' aria-controls='nav-"+form.id+"'>"+form.name+"</button>" );
 jQuery( "#c3 .tab-content" ).append( "<div class='container tab-pane active show' id='f-"+form.id+"' role='tabpanel' aria-labelledby='li-f-"+form.id+"'></div>" );
 jQuery( "#f-" + form.id ).append( '\
 <form class="form" data-toggle="validator" >\
 <div class="row">\
-<div class="form-group col-lg-12">\
+<div class="form-group col-lg-12 mb-2">\
 <label for="location" class="control-label">Location:</label>\
 <input type="text" class="form-control location" value="'+form.name+'" required>\
 <div class="help-block with-errors"></div>\
 </div>\
-<div class="form-group col-sm-12">\
+<div class="form-group mb-2 col-sm-12">\
 <div class="map" id="map-f-'+form.id+'"></div>\
 </div>\
 <div class="form-group col-lg-6">\
@@ -1208,7 +1208,7 @@ jQuery( "#f-" + form.id ).append( '\
 
 
 // Create Map
-form.map = L.map('map-f-'+form.id);
+form.map = L.map('map-f-'+form.id, {keyboard: false});
 // Create Layers
 form.layer={};
 form.layer.hotspots=L.featureGroup().addTo(form.map)
@@ -1835,6 +1835,7 @@ jQuery(document).ready(function(){
 		} else {
 			jQuery("#incl-map-link").attr("disabled", true);
 			$("#github-token-div").slideUp();
+			$("#github-token").prop('required',false);
 			jQuery("#incl-map-link").prop("checked", false );
 		}     
 	});
@@ -1842,8 +1843,10 @@ jQuery(document).ready(function(){
 	jQuery('#incl-map-link').change(function() {
 		if(this.checked) {
 			$("#github-token-div").slideDown();
+			$("#github-token").prop('required',true);
 		} else {
 			$("#github-token-div").slideUp();
+			$("#github-token").prop('required',false);
 		}     
 	});
 	
@@ -1886,12 +1889,7 @@ jQuery(document).ready(function(){
 	$('#upload-submit').submit(function(e) {
 		e.preventDefault();    
 	  
-		if ( jQuery('#upload').val()==""){
-			alert('Choose a file in the upload input')
-			return
-		}
-
-		if ( jQuery("#incl-map").prop("checked") & jQuery('#github-token').val()==""){
+		if ( jQuery("#incl-map-link").prop("checked") & jQuery('#github-token').val()==""){
 			alert('Please, add a github token')
 			return
 		}

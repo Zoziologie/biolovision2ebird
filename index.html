@@ -85,9 +85,9 @@
 								href="http://help.ebird.org/customer/portal/articles/973915-uploading-data-to-ebird#ebird-record-format-specifications"
 								target="_blank" rel="noopener">eBird Record Format</a> and (4) upload the file on eBird.
 						</p>
-						<p>Any comments or suggestions? Please submit an issue on <a
+						<p>Any comments or suggestions? Please submit an issue on <a class="btn btn-sm btn-outline-primary"
 								href="https://github.com/Zoziologie/Biolovision2eBird/issues" target="_blank"><i
-									class="fab fa-fw fa-github" aria-hidden="true"></i> Github</a> or <a
+									class="fab fa-fw fa-github" aria-hidden="true"></i> Github</a> or <a class="btn btn-sm btn-outline-primary"
 								href="mailto:rafnuss@gmail.com" rel="nofollow noopener noreferrer"><i
 									class="fas fa-fw fa-envelope-square" aria-hidden="true"></i> contact me</a>.</p>
 					</div>
@@ -203,11 +203,11 @@
 							<div class="mb-3">
 								<label for="upload" class="form-label">Upload the file<tt>json</tt> (biolovision), <tt>xlsx</tt> (birdtrack) or <tt>csv</tt>
 									(observado)</label>
-								<input id="upload" class="form-control" type="file" accept=".json,.csv,.xls,.xlsx"/>
+								<input id="upload" class="form-control" type="file" accept=".json,.csv,.xls,.xlsx" required/>
 							</div>
 							<div class="mb-3">
 								<label for="nb-obs">Number of observers:</label>
-								<input id="nb-obs" type="number" class="form-control" value="1" min="1" max="50">
+								<input id="nb-obs" type="number" class="form-control" value="1" min="1" max="50" required>
 							</div>
 						</div>
 						<div class="col-lg-6">
@@ -230,7 +230,7 @@
 								</label>
 							</div>
 							<div id="github-token-div">
-								<input type="text" class="form-control w-100" id="github-token" placeholder="Github token" aria-describedby="tokenHelp">
+								<input type="text" class="form-control w-100" id="github-token" placeholder="Github token" aria-describedby="tokenHelp" required>
 								<small id="tokenHelp" class="form-text text-muted">To generate an interactive map, you'll need to <a href="https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token">generate a Github token</a> with 'gist' scopes.</small>
 							</div>
 							<div class="form-check">
@@ -325,7 +325,7 @@
 					comment or
 					a static map with location of your sightings. Feel free to remove them of modify them </p>
 				<nav>
-					<div class="nav nav-tabs" role="tablist"></div>
+					<div class="nav nav-pills mb-4" role="tablist"></div>
 				</nav>
 				<div class="tab-content" id="tab-checklists"></div>
 			</div>
