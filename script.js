@@ -636,6 +636,7 @@ function handleFile(file){
 				jQuery('#c1').slideUp("slow",function(){
 					jQuery('#c3').slideDown("slow",function(){
 						ProcessForms(data)
+						jQuery('#c4').slideDown("slow")
 					});
 					jQuery("#c0").slideUp("slow")
 				});
