@@ -1814,11 +1814,17 @@ jQuery(document).ready(function(){
 			jQuery("#incl-map").prop("checked", false );
 			jQuery("#incl-sp-cmt").attr("disabled", true);
 			jQuery("#incl-sp-cmt").prop("checked", false );
-		} else {
+		}  else {
 			jQuery("#incl-map").attr("disabled", false);
 			jQuery("#incl-map").prop("checked", true );
 			jQuery("#incl-sp-cmt").attr("disabled", false);
 			jQuery("#incl-sp-cmt").prop("checked", true );
+		}
+
+		if (jQuery('#sel-website').val()=='birdlasser'){
+			jQuery("#sel-website-link").attr("disabled", true);
+		} else {
+			jQuery("#sel-website-link").attr("disabled", false);
 		}
 	});
 	
