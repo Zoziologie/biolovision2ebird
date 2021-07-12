@@ -235,8 +235,12 @@ function Makemarker(s){
 		description += '<a href="'+s.link+'" target="_blank">'+s.link+'</a>';
 	}
 	if (s.observers[0].medias){
-		var link = s.observers[0].medias.path+'/'+s.observers[0].medias.filename;
-		description += '<br><a href="'+link+'"><img src="'+link+'"></a>'
+		var m = s.observers[0].medias
+		for (let i = 0; i < m.length; i++) {
+			var link = m[i].path+'/'+m[i].filename;
+			description += '<br><a href="'+link+'"><img class="img-fluid" src="'+link+'"></a>'
+		  }
+		
 	}
 	var mark = L.marker([s.observers[0].coord_lat,s.observers[0].coord_lon],{
 		title: title,
@@ -582,7 +586,7 @@ function handleFile(file){
 				})
 			})
 			data.sightings.forEach(function(s){
-				
+				s.link = 'http://'+jQuery('#sel-website').val()+'/index.php?m_id=54&id='+(s.observers[0].id_sighting || s.observers[0].id_universal);
 				if (s.observers[0].timing != undefined){
 					s.date=s.observers[0].timing;
 				}
