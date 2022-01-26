@@ -1152,7 +1152,7 @@ jQuery( "#f-" + form.id ).append( '\
 &t=k" target="_blank" &gt;<span class="badge bg-secondary" contenteditable="false" value="s.observers[0].coord_lat_str">Latitude DMS</span>N, \
 <span class="badge bg-secondary" contenteditable="false" value="s.observers[0].coord_lon_str">Longitude DMS</span>E&lt;/a&gt;'+
 (jQuery('#sel-website-link').val() =='birdlasser' ? '' : ' - &lt;a href="\
-<span class="badge bg-secondary" contenteditable="false" value="s.observers[0].link">link</span>\
+<span class="badge bg-secondary" contenteditable="false" value="s.link">link</span>\
 " target="_blank">'+jQuery('#sel-website-link').val()+'&lt;/a&gt;') +
 '<br>&lt;br&gt;<span class="badge bg-secondary" contenteditable="false" value="s.observers[0].comment">Comment</span>\
 <br>&lt;br&gt;<span class="badge bg-secondary" contenteditable="false" value="s.observers[0].details">Detail</span>') : '')
