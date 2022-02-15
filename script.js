@@ -869,7 +869,7 @@ function ProcessForms(data) {
 		}
 	}
 	
-	//Add unasgined checklist
+	//Add unasigned sightings
 	if (data.forms[0].id==0){
 		var form=data.forms[0];
 		jQuery( "#c3 .nav-pills" ).append( "<button class=nav-link id='li-f-"+form.id+"' data-bs-toggle='tab' data-bs-target='#f-"+form.id+"' data-toggle='tab' type='button' role='tab' aria-controls='nav-"+form.id+"'>"+form.name+"</button>" );
@@ -920,11 +920,28 @@ data.forms.forEach(function(form,idx){
 		form.date = moment(form.sightings[0].date['@ISO8601']).format('YYYY-MM-DD')
 		var duration = moment.utc(moment(form.time_stop,"HH:mm").diff(moment(form.time_start,"HH:mm"))).format('HH:mm');
 		form.duration = parseInt(duration.split(':')[0])*60+parseInt(duration.split(':')[1]);
-		form.full_form= (form.full_form=='1') ? true : false;
+		form.full_form = (form.full_form=='1') ? true : false;
+		form.distance='';
 		if (form.duration>0){
-			form.protocol='Stationary';
+			form.protocol_type='Stationary';
 		} else {
-			form.protocol='Incidental';
+			form.protocol_type='Incidental';
+		}
+		if (form.protocol.wkt){
+			form.trace = L.geoJSON(Terraformer.WKT.parse(form.protocol.wkt));
+			form.protocol_type='Traveling';
+			// Calculating the distance of the polyline
+			let tempLatLng = null;
+			let totalDistance = 0.00000;
+			form.trace.getLayers()[0]._latlngs.slice(0,-1).forEach(function(latlng){
+				if(tempLatLng == null){
+					tempLatLng = latlng;
+					return;
+				}
+				totalDistance += tempLatLng.distanceTo(latlng);
+				tempLatLng = latlng;
+			});
+			form.distance = (totalDistance/1000).toFixed(2)
 		}
 		
 	} else { // form from incidental sighting
@@ -953,7 +970,8 @@ data.forms.forEach(function(form,idx){
 			form.duration = '';
 			form.time_start = '';
 		}
-		form.protocol='Incidental';
+		form.protocol_type='Incidental';
+		form.distance='';
 	}
 	form.sightings.forEach(function(s){
 		if(s.observers[0].estimation_code=='MINIMUM') {
@@ -992,7 +1010,6 @@ data.forms.forEach(function(form,idx){
 		}
 		
 	})
-	form.distance='';
 	form['party-size']=jQuery('#nb-obs').val();
 	form.staticmap={};
 	form.gist='#';
@@ -1222,6 +1239,11 @@ form.layer.sightings = L.markerClusterGroup({
 	maxClusterRadius:70,
 }).addTo(form.map);
 form.layer.edit = new L.FeatureGroup().addTo(form.map);
+
+if (form.trace){
+	form.trace.addTo(form.layer.edit)
+}
+
 form.layer.all = L.featureGroup([form.layer.edit, form.layer.sightings, form.layer.hotspots])
 
 //Add control
@@ -1375,7 +1397,7 @@ jQuery('#f-'+form.id+' .date').change( function(){
 });
 jQuery('#f-'+form.id+' .time').change( function(){ 
 	form.time_start = jQuery(this).val();
-	if (form.protocol == 'Stationary' || form.protocol == 'Traveling'){
+	if (form.protocol_type == 'Stationary' || form.protocol_type == 'Traveling'){
 		if (!form.time_start || !/^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/.test(form.time_start)){
 			jQuery(this).parent().addClass('has-error');
 		} else{
@@ -1386,8 +1408,8 @@ jQuery('#f-'+form.id+' .time').change( function(){
 	}
 });
 jQuery('#f-'+form.id+' .observation-type').change( function(){ 
-	form.protocol = jQuery(this).val();
-	if (form.protocol == 'Incidental'){
+	form.protocol_type = jQuery(this).val();
+	if (form.protocol_type == 'Incidental'){
 		jQuery('#f-'+form.id+' .check-fullform').prop("checked",false)
 		jQuery('#f-'+form.id+' .check-fullform').change();
 	}
@@ -1398,24 +1420,24 @@ jQuery('#f-'+form.id+' .observation-type').change( function(){
 jQuery('#f-'+form.id+' .duration').change( function(){ 
 	form.duration = jQuery(this).val();
 	jQuery(this).parent().removeClass('has-error');
-	if (form.protocol == 'Incidental'){
+	if (form.protocol_type == 'Incidental'){
 		jQuery(this).prop('disabled', true);
 	} else {
 		jQuery(this).prop('disabled', false);
 	}
-	if ( (form.protocol == 'Traveling' || form.protocol == 'Stationary') && (!form.duration || form.duration<=0) ){
+	if ( (form.protocol_type == 'Traveling' || form.protocol_type == 'Stationary') && (!form.duration || form.duration<=0) ){
 		jQuery(this).parent().addClass('has-error');
 	}
 });
 jQuery('#f-'+form.id+' .distance').change( function(){ 
 	form.distance = jQuery(this).val();
 	jQuery(this).parent().removeClass('has-error');
-	if (form.protocol == 'Traveling' || form.protocol == 'Historical' ){
+	if (form.protocol_type == 'Traveling' || form.protocol_type == 'Historical' ){
 		jQuery(this).prop('disabled', false);
 	} else{
 		jQuery(this).prop('disabled', true);
 	}
-	if (form.protocol == 'Traveling' && (!form.distance || form.distance<=0)){
+	if (form.protocol_type == 'Traveling' && (!form.distance || form.distance<=0)){
 		jQuery(this).parent().addClass('has-error');
 	}
 });
@@ -1434,7 +1456,7 @@ jQuery('#f-'+form.id+' .check-fullform').change( function(){
 		form.full_form = false
 	}
 })
-jQuery('#f-'+form.id+' .observation-type').val(form.protocol).change();
+jQuery('#f-'+form.id+' .observation-type').val(form.protocol_type).change();
 
 if (form.full_form) {
 	jQuery('#f-'+form.id+' .check-fullform').prop("checked")
