@@ -1641,7 +1641,7 @@ function Form2Table(f){
 			start_time: f.time_start,
 			state:'',//s.place.county,
 			country: '',//(s.place.country) ? s.place.country : 'CH',
-			protocol: f.protocol,
+			protocol: f.protocol_type,
 			party_size: f['party-size'],
 			duration:f.duration>0 ? f.duration : '',
 			full_form: f.full_form ? 'Y' : 'N',
