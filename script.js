@@ -927,7 +927,7 @@ data.forms.forEach(function(form,idx){
 		} else {
 			form.protocol_type='Incidental';
 		}
-		if ( (Object.values(form).indexOf('protocol') > -1) &  (Object.values(protocol).indexOf('wkt') > -1)){
+		if ( (Object.values(form).indexOf('protocol') > -1) && (Object.values(form.protocol).indexOf('wkt') > -1)){
 			form.trace = L.geoJSON(Terraformer.WKT.parse(form.protocol.wkt));
 			form.protocol_type='Traveling';
 			// Calculating the distance of the polyline
