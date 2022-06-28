@@ -1137,7 +1137,7 @@ jQuery( "#f-" + form.id ).append( '\
 </div>\
 <div class="form-group col-lg-4">\
 <label class="control-label" for="party-size">Party size:</label>\
-<input type="number" class="form-control party-size" value="'+form['party-size']+'" min="1" max="99" required>\
+<input type="number" class="form-control party-size" value="'+form['party-size']+'" min="1" max="99">\
 <div class="help-block with-errors"></div>\
 </div>\
 </div>\
