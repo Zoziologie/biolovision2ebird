@@ -923,7 +923,7 @@ data.forms.forEach(function(form,idx){
 		form.full_form = (form.full_form=='1') ? true : false;
 		form.distance='';
 		if (form.duration>0){
-			form.protocol_type='Stationary';
+			form.protocol_type='';
 		} else {
 			form.protocol_type='Incidental';
 		}
@@ -1079,12 +1079,11 @@ data.forms.forEach(function(form,idx){
 jQuery( "#c3 .nav-pills" ).append( "<button class=nav-link id='li-f-"+form.id+"' data-bs-toggle='tab' data-bs-target='#f-"+form.id+"' data-toggle='tab' type='button' role='tab' aria-controls='nav-"+form.id+"'>"+form.name+"</button>" );
 jQuery( "#c3 .tab-content" ).append( "<div class='container tab-pane active show' id='f-"+form.id+"' role='tabpanel' aria-labelledby='li-f-"+form.id+"'></div>" );
 jQuery( "#f-" + form.id ).append( '\
-<form class="form" data-toggle="validator" >\
+<form class="form">\
 <div class="row">\
 <div class="form-group col-lg-12 mb-2">\
-<label for="location" class="control-label">Location:</label>\
+<label for="location" class="control-label">Location name:</label>\
 <input type="text" class="form-control location" value="'+form.name+'" required>\
-<div class="help-block with-errors"></div>\
 </div>\
 <div class="form-group mb-2 col-sm-12">\
 <div class="map" id="map-f-'+form.id+'"></div>\
@@ -1094,24 +1093,22 @@ jQuery( "#f-" + form.id ).append( '\
 <div class="form-group col-lg-6">\
 <label class="control-label" for="date">Date:</label> \
 <input type="date" class="form-control date" value="'+form.date+'" required>\
-<div class="help-block with-errors"></div>\
 </div>\
 <div class="form-group col-lg-6">\
 <label class="control-label" for="time">Time:</label>\
 <input type="time" class="form-control time" value="'+form.time_start+'">\
-<div class="help-block with-errors"></div>\
 </div>\
 </div>\
 <div class="row">\
 <div class="form-group col-lg-6">\
 <label for="observation-type">Observation Type:</label>\
 <select class="form-control observation-type" required>\
+<option disabled selected value> Select a protocol</option>\
 <option>Traveling</option>\
 <option>Stationary</option>\
-<option>Historical</option>\
+<option disabled>Historical</option>\
 <option>Incidental</option>\
 </select>\
-<div class="help-block with-errors"></div>\
 </div>\
 <div class="form-group col-lg-6">\
 <label>Complete Checklist:</label>\
@@ -1127,20 +1124,18 @@ jQuery( "#f-" + form.id ).append( '\
 <div class="row">\
 <div class="form-group col-lg-4">\
 <label class="control-label" for="duration">Duration ( min.):</label> \
-<input type="number" class="form-control duration" value="'+parseInt(form.duration).toString()+'" min="0" step="5" max="1440" data-durationOK>\
-<div class="help-block with-errors"></div>\
+<input type="number" class="form-control duration" value="'+parseInt(form.duration).toString()+'" min="0" step="1" max="1440">\
 </div>\
 <div class="form-group col-lg-4">\
 <label class="control-label" for="distance">Distance (km):</label>\
-<input type="number" class="form-control distance" value="'+form.distance+'" min="0" step=".1" max="999" data-distanceOK>\
-<div class="help-block with-errors"></div>\
+<input type="number" class="form-control distance" value="'+form.distance+'" min="0" step=".1" max="999">\
 </div>\
 <div class="form-group col-lg-4">\
 <label class="control-label" for="party-size">Party size:</label>\
 <input type="number" class="form-control party-size" value="'+form['party-size']+'" min="1" max="99">\
-<div class="help-block with-errors"></div>\
 </div>\
 </div>\
+<div class="row">\
 <div class="form-group col-lg-12">\
 <label for="cmt-sp-ct-bt-'+ form.id+'">Species Comment:</label>\
 <div class="cmt-sp">\
@@ -1184,23 +1179,24 @@ jQuery( "#f-" + form.id ).append( '\
 <div class="cmt-sp-preview"></div>\
 </div>\
 </div>\
+</div>\
 <div class="form-group col-lg-6">\
 <div class="row">\
 <label for="comments">Checklist Comment:</label>\
-<textarea class="form-control comments" rows="3"  >'+(form.comment || "") +'</textarea>\
+<textarea class="form-control comments" rows="3"  novalidate>'+(form.comment || "") +'</textarea>\
 </div>\
 <div class="row form-check">\
-<label><input class="form-check-input check-static-map" type="checkbox" '+  (jQuery('#incl-map').is(":checked") ? 'checked="checked"' : '') +'> Include static map</label>\
+<label><input class="form-check-input check-static-map" type="checkbox" '+  (jQuery('#incl-map').is(":checked") ? 'checked="checked"' : '') +' novalidate> Include static map</label>\
 </div>\
 <div class="row">\
-<div class="col-lg-5 form-inline">\
+<div class="col-lg-5 form-inline pl-3">\
 <label for="zoom">Zoom:</label>\
 <span class="input-group-btn">\
 <button type="button" class="btn btn-sm btn-number" data-type="minus">\
 <i class="fa fa-minus" aria-hidden="true"></i>\
 </button>\
 </span>\
-<input type="text" class="zoom form-control" input="number" value="1" min="1" max="21">\
+<input type="text" class="zoom form-control" input="number" value="1" min="1" max="21" novalidate>\
 <span class="input-group-btn">\
 <button type="button" class="btn btn-sm btn-number" data-type="plus">\
 <i class="fa fa-plus" aria-hidden="true"></i>\
@@ -1432,7 +1428,7 @@ jQuery('#f-'+form.id+' .duration').change( function(){
 jQuery('#f-'+form.id+' .distance').change( function(){ 
 	form.distance = jQuery(this).val();
 	jQuery(this).parent().removeClass('has-error');
-	if (form.protocol_type == 'Traveling' || form.protocol_type == 'Historical' ){
+	if (form.protocol_type == 'Traveling' ){
 		jQuery(this).prop('disabled', false);
 	} else{
 		jQuery(this).prop('disabled', true);
@@ -1619,6 +1615,30 @@ data.forms.forEach(function(form,idx){
 function Form2Table(f){
 	table=[];
 	alert_sp=[];
+
+	// Validate
+	if (!f.protocol_type){
+		alert('Protocol type invalid for '+f.name)
+		return
+	}
+	if (f.protocol_type=="Traveling"){
+
+		if (!(f.distance>0)){
+			alert('Distance invalid for '+f.name)
+			return
+		}
+	}
+	if (f.protocol_type=="Traveling" | f.protocol_type=="Stationary"){
+		if (!(f.duration>0)){
+			alert('Duration invalid for '+f.name)
+			return
+		}
+		if (!(f['party-size']>0)){
+			alert('Party size invalid for '+f.name)
+			return
+		}
+	}
+
 	f.sightings.forEach( function(s) {
 		var eBird_bird = jQuery.grep(eBird_birds_list, function(e){ return e.id == s.species['@id'] })
 		
@@ -1729,25 +1749,25 @@ function CreateGist(form, callback){
 }
 
 function singleExport(form){
-	if (jQuery('#f-'+form.id + ' .form-group.has-error').length > 0) {
-		alert('Form '+form.name+' has error(s). It will not be exported!')
-	} else {
-		jQuery('#button-download-biolovision-single > span.spinner-border.spinner-border-sm').show()
-		CreateGist(form, function(){
-			var table = Form2Table(form);
-			csv = Table2CSV(table);
-			var downloadLink = document.createElement("a");
-			downloadLink.setAttribute('type','text/csv')
-			downloadLink.setAttribute('target','_blank')
-			var blob = new Blob(["\ufeff", csv],{type: 'text/csv'});
-			downloadLink.href = URL.createObjectURL(blob);
-			downloadLink.download = form.name.replace(/[^a-z0-9_\-]/gi, '_').toLowerCase()+'-'+form.date+".csv";
-			document.body.appendChild(downloadLink);
-			downloadLink.click();
-			document.body.removeChild(downloadLink);
+	jQuery('#button-download-biolovision-single > span.spinner-border.spinner-border-sm').show()
+	CreateGist(form, function(){
+		var table = Form2Table(form);
+		if (!table) {
 			jQuery('#button-download-biolovision-single > span.spinner-border.spinner-border-sm').hide()
-		})
-	}
+			return
+		}
+		csv = Table2CSV(table);
+		var downloadLink = document.createElement("a");
+		downloadLink.setAttribute('type','text/csv')
+		downloadLink.setAttribute('target','_blank')
+		var blob = new Blob(["\ufeff", csv],{type: 'text/csv'});
+		downloadLink.href = URL.createObjectURL(blob);
+		downloadLink.download = form.name.replace(/[^a-z0-9_\-]/gi, '_').toLowerCase()+'-'+form.date+".csv";
+		document.body.appendChild(downloadLink);
+		downloadLink.click();
+		document.body.removeChild(downloadLink);
+		jQuery('#button-download-biolovision-single > span.spinner-border.spinner-border-sm').hide()
+	})
 }
 
 function Export(){
@@ -1755,32 +1775,32 @@ function Export(){
 	var filename ='';
 	var i=0;
 	data.forms.forEach( function(form,i) {
-		if (jQuery('#f-'+form.id + ' .form-group.has-error').length > 0) {
-			alert('Form '+form.name+' has error(s). It will not be exported!')
-		} else {
-			jQuery('#button-download-biolovision > span.spinner-border.spinner-border-sm').show()
-			CreateGist(form, function(){
-				i+=1;
-				t = Form2Table(form);
-				table = table.concat(t);
-				filename += form.name + '_';
-				setTimeout(function() {
-					if (i == data.forms.length){
-						csv = Table2CSV(table);
-						var downloadLink = document.createElement("a");
-						downloadLink.setAttribute('type','text/csv')
-						downloadLink.setAttribute('target','_blank')
-						var blob = new Blob(["\ufeff", csv],{type: 'text/csv'});
-						downloadLink.href = URL.createObjectURL(blob);
-						downloadLink.download = filename.replace(/[^a-z0-9_\-]/gi, '_').toLowerCase().slice(0,50) +'-'+form.date+".csv";
-						document.body.appendChild(downloadLink);
-						downloadLink.click();
-						document.body.removeChild(downloadLink);
-						jQuery('#button-download-biolovision > span.spinner-border.spinner-border-sm').hide()
-					}
-				},1000)
-			})
-		}
+		jQuery('#button-download-biolovision > span.spinner-border.spinner-border-sm').show()
+		CreateGist(form, function(){
+			i+=1;
+			t = Form2Table(form);
+			if (!t) {
+				jQuery('#button-download-biolovision > span.spinner-border.spinner-border-sm').hide()
+				return
+			}
+			table = table.concat(t);
+			filename += form.name + '_';
+			setTimeout(function() {
+				if (i == data.forms.length){
+					csv = Table2CSV(table);
+					var downloadLink = document.createElement("a");
+					downloadLink.setAttribute('type','text/csv')
+					downloadLink.setAttribute('target','_blank')
+					var blob = new Blob(["\ufeff", csv],{type: 'text/csv'});
+					downloadLink.href = URL.createObjectURL(blob);
+					downloadLink.download = filename.replace(/[^a-z0-9_\-]/gi, '_').toLowerCase().slice(0,50) +'-'+form.date+".csv";
+					document.body.appendChild(downloadLink);
+					downloadLink.click();
+					document.body.removeChild(downloadLink);
+					jQuery('#button-download-biolovision > span.spinner-border.spinner-border-sm').hide()
+				}
+			},1000)
+		})
 	});
 }
 
