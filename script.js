@@ -407,7 +407,7 @@ function handleFile(file){
 
 		// Add limit in dataset size
 
-		if (jQuery('#sel-website-link').val().includes("observation") || jQuery('#sel-website-link').val().includes("waarneming")) {
+		if (jQuery('#sel-website').val().includes("observation") || jQuery('#sel-website').val().includes("waarneming")) {
 			if (ext != 'csv'){
 				alert('You can only upload csv file for waarneming/observado/observation website. Make sure to export in this format and retry. If the problem continue, contact rafnuss@gmail.com with your exported file')
 				return
@@ -460,7 +460,7 @@ function handleFile(file){
 				};
 				data.sightings.push(ns);
 			})
-		} else if (jQuery('#sel-website-link').val().includes("birdtrack") ){
+		} else if (jQuery('#sel-website').val().includes("birdtrack") ){
 			if (ext != 'xlsx'){
 				alert('You can only upload xlsx file for birdtrack website. Make sure to export in this format and retry. If the problem continue, contact rafnuss@gmail.com with your exported file')
 				return
@@ -525,7 +525,7 @@ function handleFile(file){
 				}
 			})
 
-		} else if (jQuery('#sel-website-link').val().includes("birdlasser")) {
+		} else if (jQuery('#sel-website').val().includes("birdlasser")) {
 			if (ext != 'csv'){
 				alert('You can only upload csv file for birdlasser website. The csv file can be generated on the phone app birdlasser. If the problem continue, contact rafnuss@gmail.com with your exported file')
 				return
@@ -1163,9 +1163,9 @@ jQuery( "#f-" + form.id ).append( '\
 <span class="badge bg-secondary" contenteditable="false" value="s.observers[0].coord_lon">Longitude DD</span>\
 &t=k" target="_blank" &gt;<span class="badge bg-secondary" contenteditable="false" value="s.observers[0].coord_lat_str">Latitude DMS</span>N, \
 <span class="badge bg-secondary" contenteditable="false" value="s.observers[0].coord_lon_str">Longitude DMS</span>E&lt;/a&gt;'+
-(jQuery('#sel-website-link').val() =='birdlasser' ? '' : ' - &lt;a href="\
+(isBiolovision ? ' - &lt;a href="\
 <span class="badge bg-secondary" contenteditable="false" value="s.link">link</span>\
-" target="_blank">'+jQuery('#sel-website-link').val()+'&lt;/a&gt;') +
+" target="_blank">'+jQuery('#sel-website-link').val()+'&lt;/a&gt;' : '') +
 '<br>&lt;br&gt;<span class="badge bg-secondary" contenteditable="false" value="s.observers[0].comment">Comment</span>\
 <br>&lt;br&gt;<span class="badge bg-secondary" contenteditable="false" value="s.observers[0].details">Detail</span>') : '')
 +'</div>\
@@ -1838,7 +1838,7 @@ function Export(){
 //____________________________________________________
 
 // Variable to put in workspace
-var data, csv_content, code_list=[],eBird_label=[],table=[],modalmap,modalsLayer, modalfLayer, form;
+var data, csv_content, code_list=[],eBird_label=[],table=[],modalmap,modalsLayer, modalfLayer, form, isBiolovision;
 
 jQuery(document).ready(function(){  
 	
@@ -1854,23 +1854,32 @@ jQuery(document).ready(function(){
 	}
 	
 	jQuery('#sel-website').on('input',function(e){
-		jQuery("#sel-website-link").val(jQuery('#sel-website').val());
-		if (jQuery('#sel-website').val()=='birdtrack'){
+		if (jQuery('#sel-website').val()=='birdlasser' | jQuery('#sel-website').val()=='birdtrack' | jQuery('#sel-website').val()=='waarnemingen.be' | jQuery('#sel-website').val()=='observation.org' | jQuery('#sel-website').val()=='waarneming.nl' ){
+			isBiolovision = false
+		} else {
+			isBiolovision = true
+		}
+		if (isBiolovision){
+			jQuery("#sel-website-link").attr("disabled", false);
+			jQuery("#sel-website-link").val(jQuery('#sel-website').val());
+			jQuery("#incl-map").attr("disabled", false);
+			jQuery("#incl-map").prop("checked", true );
+			jQuery("#incl-map-link").attr("disabled", false);
+			jQuery("#incl-sp-cmt").attr("disabled", false);
+			jQuery("#incl-sp-cmt").prop("checked", true );
+			$("#sel-website-link").prop('required',true);
+		} else {
+			jQuery("#sel-website-link").attr("disabled", true);
+			jQuery("#sel-website-link").val("");
 			jQuery("#incl-map").attr("disabled", true);
 			jQuery("#incl-map").prop("checked", false );
 			jQuery("#incl-sp-cmt").attr("disabled", true);
 			jQuery("#incl-sp-cmt").prop("checked", false );
-		}  else {
-			jQuery("#incl-map").attr("disabled", false);
-			jQuery("#incl-map").prop("checked", true );
-			jQuery("#incl-sp-cmt").attr("disabled", false);
-			jQuery("#incl-sp-cmt").prop("checked", true );
-		}
-
-		if (jQuery('#sel-website').val()=='birdlasser'){
-			jQuery("#sel-website-link").attr("disabled", true);
-		} else {
-			jQuery("#sel-website-link").attr("disabled", false);
+			jQuery("#incl-map-link").prop("checked", false );
+			jQuery("#incl-map-link").attr("disabled", true);
+			$("#github-token-div").slideUp();
+			$("#github-token").prop('required', false);  
+			$("#sel-website-link").prop('required',false);
 		}
 	});
 	
@@ -1941,10 +1950,19 @@ jQuery(document).ready(function(){
 	// Drag and drop
 	$('#upload-submit').submit(function(e) {
 		e.preventDefault();    
-	  
+
 		if ( jQuery("#incl-map-link").prop("checked") & jQuery('#github-token').val()==""){
 			alert('Please, add a github token')
 			return
+		}
+
+		if (isBiolovision){
+			try {
+				url = new URL('https://'+jQuery('#sel-website-link').val());
+			  } catch (_) {
+				alert('Please, use a valid url for the website link')
+				return
+			  }
 		}
 
 		/* Write Cookies*/
