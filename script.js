@@ -1106,7 +1106,7 @@ jQuery( "#f-" + form.id ).append( '\
 <option disabled selected value> Select a protocol</option>\
 <option>Traveling</option>\
 <option>Stationary</option>\
-<option disabled>Historical</option>\
+<option>Historical</option>\
 <option>Incidental</option>\
 </select>\
 </div>\
