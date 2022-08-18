@@ -1804,7 +1804,36 @@ function Export(){
 	});
 }
 
-
+function checkIsBiolovision(){
+	if (jQuery('#sel-website').val()=='birdlasser' | jQuery('#sel-website').val()=='birdtrack' | jQuery('#sel-website').val()=='waarnemingen.be' | jQuery('#sel-website').val()=='observation.org' | jQuery('#sel-website').val()=='waarneming.nl' ){
+		isBiolovision = false
+	} else {
+		isBiolovision = true
+	}
+	if (isBiolovision){
+		jQuery("#sel-website-link").attr("disabled", false);
+		jQuery("#sel-website-link").val(jQuery('#sel-website').val());
+		jQuery("#incl-map").attr("disabled", false);
+		jQuery("#incl-map").prop("checked", true );
+		jQuery("#incl-map-link").attr("disabled", false);
+		jQuery("#incl-sp-cmt").attr("disabled", false);
+		jQuery("#incl-sp-cmt").prop("checked", true );
+		$("#sel-website-link").prop('required',true);
+	} else {
+		jQuery("#sel-website-link").attr("disabled", true);
+		jQuery("#sel-website-link").val("");
+		jQuery("#incl-map").attr("disabled", true);
+		jQuery("#incl-map").prop("checked", false );
+		jQuery("#incl-sp-cmt").attr("disabled", true);
+		jQuery("#incl-sp-cmt").prop("checked", false );
+		jQuery("#incl-map-link").prop("checked", false );
+		jQuery("#incl-map-link").attr("disabled", true);
+		$("#github-token-div").slideUp();
+		$("#github-token").prop('required', false);  
+		$("#sel-website-link").prop('required',false);
+	}
+	return isBiolovision
+}
 
 
 
@@ -1853,34 +1882,9 @@ jQuery(document).ready(function(){
 		break;
 	}
 	
+	isBiolovision = checkIsBiolovision()
 	jQuery('#sel-website').on('input',function(e){
-		if (jQuery('#sel-website').val()=='birdlasser' | jQuery('#sel-website').val()=='birdtrack' | jQuery('#sel-website').val()=='waarnemingen.be' | jQuery('#sel-website').val()=='observation.org' | jQuery('#sel-website').val()=='waarneming.nl' ){
-			isBiolovision = false
-		} else {
-			isBiolovision = true
-		}
-		if (isBiolovision){
-			jQuery("#sel-website-link").attr("disabled", false);
-			jQuery("#sel-website-link").val(jQuery('#sel-website').val());
-			jQuery("#incl-map").attr("disabled", false);
-			jQuery("#incl-map").prop("checked", true );
-			jQuery("#incl-map-link").attr("disabled", false);
-			jQuery("#incl-sp-cmt").attr("disabled", false);
-			jQuery("#incl-sp-cmt").prop("checked", true );
-			$("#sel-website-link").prop('required',true);
-		} else {
-			jQuery("#sel-website-link").attr("disabled", true);
-			jQuery("#sel-website-link").val("");
-			jQuery("#incl-map").attr("disabled", true);
-			jQuery("#incl-map").prop("checked", false );
-			jQuery("#incl-sp-cmt").attr("disabled", true);
-			jQuery("#incl-sp-cmt").prop("checked", false );
-			jQuery("#incl-map-link").prop("checked", false );
-			jQuery("#incl-map-link").attr("disabled", true);
-			$("#github-token-div").slideUp();
-			$("#github-token").prop('required', false);  
-			$("#sel-website-link").prop('required',false);
-		}
+		isBiolovision = checkIsBiolovision()
 	});
 	
 	jQuery('#incl-sp-cmt').change(function() {
