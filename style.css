@@ -24,9 +24,6 @@ html, body {
 	padding: 1em;
 	width: 100%;
 }
-.row {
-	/*margin-bottom: 40px;*/
-}
 #c3 .row {
 	margin-bottom: 0px;
 }
@@ -135,7 +132,7 @@ input{
 	height: 34px;
 }
 .has-feedback .form-control-feedback{
-	right: 15; !important
+	right: 15;
 }
 .badge{
 	margin: 0px 2px;
