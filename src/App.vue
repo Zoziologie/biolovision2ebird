@@ -104,23 +104,23 @@ import websites_list from "/data/websites_list.json";
       </b-col>
       <b-col lg="6">
         <p>Select the website:</p>
-        <b-select v-model="website">
+        <b-select v-model="website_name">
           <b-select-option-group
             v-for="cat in new Set(websites_list.map((w) => w.category))"
             :label="cat"
             :key="cat"
           >
             <b-select-option
-              v-for="w in websites_list.filter((w) => w.category == cat)"
+              v-for="w in websites_list.filter((wl) => wl.category == cat)"
               :key="w.name"
-              :value="w"
+              :value="w.name"
             >
               {{ w.name }}
             </b-select-option>
           </b-select-option-group>
         </b-select>
         <b-row class="m-3 p-3 text-white rounded shadow-sm bg-blue" v-if="website">
-          <template v-if="(website.name = 'biolovision')">
+          <template v-if="website.name == 'biolovision'">
             <p>With biolovision website...</p>
             <b-col lg="12">
               <b-form-radio v-model="import_query_date" value="offset">
@@ -171,16 +171,16 @@ import websites_list from "/data/websites_list.json";
               >
             </b-col>
           </template>
-          <template v-else-if="(website.name = 'observation')">
+          <template v-else-if="website.name == 'observation'">
             <p>
               Data from observation.org can be exported from the Observations menu. Login and click
               on your name top right of the page: https://observation.org/
             </p>
           </template>
-          <template v-else-if="(website.name = 'birdtrack')">
+          <template v-else-if="website.name == 'birdtrack'">
             <p>https://app.bto.org/birdtrack/explore/emr.jsp</p>
           </template>
-          <template v-else-if="(website.name = 'birdlasser')">
+          <template v-else-if="website.name == 'birdlasser'">
             <p>
               Data from birdlasser can only be downloaded from the app (to my knowledge). Selec the
               trip card and use "Export (CSV) trip card". Upload the CSV file below.
@@ -335,7 +335,7 @@ export default {
       sightings: [],
       forms: [],
       forms_sightings: [],
-      website: null,
+      website_name: null,
       import_query_date: "offset",
       import_query_date_offset: 1,
       import_query_date_range_from: "",
@@ -473,8 +473,8 @@ export default {
     },
   },
   computed: {
-    import_query_link() {
-      return "abx";
+    website() {
+      return websites_list.filter((w) => w.name == this.website_name)[0];
     },
     checklists() {
       //combine sightings into checklists
@@ -484,11 +484,11 @@ export default {
   },
   mounted() {
     this.map = this.$refs.map;
-    this.website = websites_list.filter((w) => w.name == this.$cookie.get("website"))[0];
+    this.website_name = this.$cookie.get("website_name");
   },
   watch: {
-    website() {
-      this.$cookie.set("website", this.website.name, 365);
+    website_name() {
+      this.$cookie.set("website_name", this.website_name, 365);
     },
   },
 };
