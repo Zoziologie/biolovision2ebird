@@ -1,0 +1,352 @@
+[
+    {
+        "category": "Main Biolovision",
+        "extension": ".json",
+        "name": "faune-france.org",
+        "system": "biolovision",
+        "website": "www.faune-france.org"
+    },
+    {
+        "category": "Main Biolovision",
+        "extension": ".json",
+        "name": "ornitho.at",
+        "system": "biolovision",
+        "website": "www.ornitho.at"
+    },
+    {
+        "category": "Main Biolovision",
+        "extension": ".json",
+        "name": "ornitho.cat",
+        "system": "biolovision",
+        "website": "www.ornitho.cat"
+    },
+    {
+        "category": "Main Biolovision",
+        "extension": ".json",
+        "name": "ornitho.ch",
+        "system": "biolovision",
+        "website": "www.ornitho.ch"
+    },
+    {
+        "category": "Main Biolovision",
+        "extension": ".json",
+        "name": "ornitho.de",
+        "system": "biolovision",
+        "website": "www.ornitho.de"
+    },
+    {
+        "category": "Main Biolovision",
+        "extension": ".json",
+        "name": "ornitho.eus",
+        "system": "biolovision",
+        "website": "www.ornitho.eus"
+    },
+    {
+        "category": "Main Biolovision",
+        "extension": ".json",
+        "name": "ornitho.it",
+        "system": "biolovision",
+        "website": "www.ornitho.it"
+    },
+    {
+        "category": "Main Biolovision",
+        "extension": ".json",
+        "name": "ornitho.lu",
+        "system": "biolovision",
+        "website": "www.ornitho.lu"
+    },
+    {
+        "category": "Main Biolovision",
+        "extension": ".json",
+        "name": "ornitho.pl",
+        "system": "biolovision",
+        "website": "www.ornitho.pl"
+    },
+    {
+        "category": "Main Biolovision",
+        "extension": ".json",
+        "name": "biolovision.net",
+        "system": "biolovision",
+        "website": "data.biolovision.net"
+    },
+    {
+        "category": "French Biolovision",
+        "extension": ".json",
+        "name": "faune-Cher.org",
+        "system": "biolovision",
+        "website": "www.faune-Cher.org"
+    },
+    {
+        "category": "French Biolovision",
+        "extension": ".json",
+        "name": "faune-ain.org",
+        "system": "biolovision",
+        "website": "www.faune-ain.org"
+    },
+    {
+        "category": "French Biolovision",
+        "extension": ".json",
+        "name": "faune-alsace.org",
+        "system": "biolovision",
+        "website": "www.faune-alsace.org"
+    },
+    {
+        "category": "French Biolovision",
+        "extension": ".json",
+        "name": "faune-anjou.org",
+        "system": "biolovision",
+        "website": "www.faune-anjou.org"
+    },
+    {
+        "category": "French Biolovision",
+        "extension": ".json",
+        "name": "faune-aquitaine.org",
+        "system": "biolovision",
+        "website": "www.faune-aquitaine.org"
+    },
+    {
+        "category": "French Biolovision",
+        "extension": ".json",
+        "name": "faune-ardeche.org",
+        "system": "biolovision",
+        "website": "www.faune-ardeche.org"
+    },
+    {
+        "category": "French Biolovision",
+        "extension": ".json",
+        "name": "faune-auvergne.org",
+        "system": "biolovision",
+        "website": "www.faune-auvergne.org"
+    },
+    {
+        "category": "French Biolovision",
+        "extension": ".json",
+        "name": "faune-bretagne.org",
+        "system": "biolovision",
+        "website": "www.faune-bretagne.org"
+    },
+    {
+        "category": "French Biolovision",
+        "extension": ".json",
+        "name": "faune-champagne-ardenne.org",
+        "system": "biolovision",
+        "website": "www.faune-champagne-ardenne.org"
+    },
+    {
+        "category": "French Biolovision",
+        "extension": ".json",
+        "name": "faune-charente-maritime.org",
+        "system": "biolovision",
+        "website": "www.faune-charente-maritime.org"
+    },
+    {
+        "category": "French Biolovision",
+        "extension": ".json",
+        "name": "faune-charente.org",
+        "system": "biolovision",
+        "website": "www.faune-charente.org"
+    },
+    {
+        "category": "French Biolovision",
+        "extension": ".json",
+        "name": "faune-drome.org",
+        "system": "biolovision",
+        "website": "www.faune-drome.org"
+    },
+    {
+        "category": "French Biolovision",
+        "extension": ".json",
+        "name": "faune-iledefrance.org",
+        "system": "biolovision",
+        "website": "www.faune-iledefrance.org"
+    },
+    {
+        "category": "French Biolovision",
+        "extension": ".json",
+        "name": "faune-isere.org",
+        "system": "biolovision",
+        "website": "www.faune-isere.org"
+    },
+    {
+        "category": "French Biolovision",
+        "extension": ".json",
+        "name": "faune-limousin.eu",
+        "system": "biolovision",
+        "website": "www.faune-limousin.eu"
+    },
+    {
+        "category": "French Biolovision",
+        "extension": ".json",
+        "name": "faune-loire-atlantique.org",
+        "system": "biolovision",
+        "website": "www.faune-loire-atlantique.org"
+    },
+    {
+        "category": "French Biolovision",
+        "extension": ".json",
+        "name": "faune-loire.org",
+        "system": "biolovision",
+        "website": "www.faune-loire.org"
+    },
+    {
+        "category": "French Biolovision",
+        "extension": ".json",
+        "name": "faune-lorraine.org",
+        "system": "biolovision",
+        "website": "www.faune-lorraine.org"
+    },
+    {
+        "category": "French Biolovision",
+        "extension": ".json",
+        "name": "faune-lr.org",
+        "system": "biolovision",
+        "website": "www.faune-lr.org"
+    },
+    {
+        "category": "French Biolovision",
+        "extension": ".json",
+        "name": "faune-maine.org",
+        "system": "biolovision",
+        "website": "www.faune-maine.org"
+    },
+    {
+        "category": "French Biolovision",
+        "extension": ".json",
+        "name": "faune-martinique.org",
+        "system": "biolovision",
+        "website": "www.faune-martinique.org"
+    },
+    {
+        "category": "French Biolovision",
+        "extension": ".json",
+        "name": "faune-nievre.org",
+        "system": "biolovision",
+        "website": "www.faune-nievre.org"
+    },
+    {
+        "category": "French Biolovision",
+        "extension": ".json",
+        "name": "faune-paca.org",
+        "system": "biolovision",
+        "website": "www.faune-paca.org"
+    },
+    {
+        "category": "French Biolovision",
+        "extension": ".json",
+        "name": "faune-reunion.fr",
+        "system": "biolovision",
+        "website": "www.faune-reunion.fr"
+    },
+    {
+        "category": "French Biolovision",
+        "extension": ".json",
+        "name": "faune-rhone.org",
+        "system": "biolovision",
+        "website": "www.faune-rhone.org"
+    },
+    {
+        "category": "French Biolovision",
+        "extension": ".json",
+        "name": "faune-savoie.org",
+        "system": "biolovision",
+        "website": "www.faune-savoie.org"
+    },
+    {
+        "category": "French Biolovision",
+        "extension": ".json",
+        "name": "faune-tarn-aveyron.org",
+        "system": "biolovision",
+        "website": "www.faune-tarn-aveyron.org"
+    },
+    {
+        "category": "French Biolovision",
+        "extension": ".json",
+        "name": "faune-touraine.org",
+        "system": "biolovision",
+        "website": "www.faune-touraine.org"
+    },
+    {
+        "category": "French Biolovision",
+        "extension": ".json",
+        "name": "faune-vendee.org",
+        "system": "biolovision",
+        "website": "www.faune-vendee.org"
+    },
+    {
+        "category": "French Biolovision",
+        "extension": ".json",
+        "name": "faune-yonne.org",
+        "system": "biolovision",
+        "website": "www.faune-yonne.org"
+    },
+    {
+        "category": "French Biolovision",
+        "extension": ".json",
+        "name": "franche-comte.lpo.fr",
+        "system": "biolovision",
+        "website": "franche-comte.lpo.fr"
+    },
+    {
+        "category": "French Biolovision",
+        "extension": ".json",
+        "name": "haute-savoie.lpo.fr",
+        "system": "biolovision",
+        "website": "haute-savoie.lpo.fr"
+    },
+    {
+        "category": "French Biolovision",
+        "extension": ".json",
+        "name": "nature79.org",
+        "system": "biolovision",
+        "website": "www.nature79.org"
+    },
+    {
+        "category": "French Biolovision",
+        "extension": ".json",
+        "name": "oiseaux-cote-dor.org",
+        "system": "biolovision",
+        "website": "www.oiseaux-cote-dor.org"
+    },
+    {
+        "category": "French Biolovision",
+        "extension": ".json",
+        "name": "vienne.lpo.fr",
+        "system": "biolovision",
+        "website": "vienne.lpo.fr"
+    },
+    {
+        "category": "Others",
+        "extension": ".csv",
+        "name": "birdlasser",
+        "system": "birdlasser",
+        "website": "birdlasser"
+    },
+    {
+        "category": "Others",
+        "extension": ".xlsx",
+        "name": "birdtrack",
+        "system": "birdtrack",
+        "website": "birdtrack"
+    },
+    {
+        "category": "Others",
+        "extension": ".csv",
+        "name": "observation.org",
+        "system": "observation",
+        "website": "observation.org"
+    },
+    {
+        "category": "Others",
+        "extension": ".csv",
+        "name": "waarneming.nl",
+        "system": "observation",
+        "website": "waarneming.nl"
+    },
+    {
+        "category": "Others",
+        "extension": ".csv",
+        "name": "waarnemingen.be",
+        "system": "observation",
+        "website": "waarnemingen.be"
+    }
+]

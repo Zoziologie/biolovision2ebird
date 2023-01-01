@@ -4,6 +4,10 @@ import gif from "/b2e.gif";
 import jsonIcon from "/json.png";
 import pinSXFFF from "/pin-s-xfff.png";
 import markerSoft from "/markers-soft.png";
+
+import marker_color from "/data/marker_color.json";
+import tile_providers from "/data/tile_providers.json";
+import websites_list from "/data/websites_list.json";
 </script>
 <template class="bg-light">
   <b-container>
@@ -101,14 +105,22 @@ import markerSoft from "/markers-soft.png";
       <b-col lg="6">
         <p>Select the website:</p>
         <b-select v-model="website">
-          <b-select-option-group v-for="gr in website_opt" :label="gr.label" :key="gr.label">
-            <b-select-option v-for="w in gr.data" :key="w.text" :value="w.value">
-              {{ w.text }}
+          <b-select-option-group
+            v-for="cat in new Set(websites_list.map((w) => w.category))"
+            :label="cat"
+            :key="cat"
+          >
+            <b-select-option
+              v-for="w in websites_list.filter((w) => w.category == cat)"
+              :key="w.name"
+              :value="w"
+            >
+              {{ w.name }}
             </b-select-option>
           </b-select-option-group>
         </b-select>
-        <b-row class="m-3 p-3 text-white rounded shadow-sm bg-blue" v-if="system">
-          <template v-if="(system.name = 'biolovision')">
+        <b-row class="m-3 p-3 text-white rounded shadow-sm bg-blue" v-if="website">
+          <template v-if="(website.name = 'biolovision')">
             <p>With biolovision website...</p>
             <b-col lg="12">
               <b-form-radio v-model="import_query_date" value="offset">
@@ -143,7 +155,7 @@ import markerSoft from "/markers-soft.png";
             <b-col lg="12">
               <a
                 :href="
-                  system.website +
+                  website.website +
                   '/index.php?m_id=31&sp_DChoice=' +
                   import_query_date +
                   '&sp_DFrom=' +
@@ -155,20 +167,20 @@ import markerSoft from "/markers-soft.png";
                   '&sp_SChoice=all&sp_PChoice=all&sp_OnlyMyData=1'
                 "
                 class="btn btn-secondary"
-                >Export data on {{ system.website_name }}</a
+                >Export data on {{ website.website_name }}</a
               >
             </b-col>
           </template>
-          <template v-else-if="(system.name = 'observation')">
+          <template v-else-if="(website.name = 'observation')">
             <p>
               Data from observation.org can be exported from the Observations menu. Login and click
               on your name top right of the page: https://observation.org/
             </p>
           </template>
-          <template v-else-if="(system.name = 'birdtrack')">
+          <template v-else-if="(website.name = 'birdtrack')">
             <p>https://app.bto.org/birdtrack/explore/emr.jsp</p>
           </template>
-          <template v-else-if="(system.name = 'birdlasser')">
+          <template v-else-if="(website.name = 'birdlasser')">
             <p>
               Data from birdlasser can only be downloaded from the app (to my knowledge). Selec the
               trip card and use "Export (CSV) trip card". Upload the CSV file below.
@@ -176,8 +188,8 @@ import markerSoft from "/markers-soft.png";
           </template>
         </b-row>
       </b-col>
-      <b-col lg="6" v-if="system">
-        <b-form-file size="lg" @change="processFile" :accept="system.extension"></b-form-file>
+      <b-col lg="6" v-if="website">
+        <b-form-file size="lg" @change="processFile" :accept="website.extension"></b-form-file>
         <b-alert
           v-if="loading_file_status == 0"
           variant="warning"
@@ -195,7 +207,7 @@ import markerSoft from "/markers-soft.png";
           <b-icon icon="exclamation-triangle" class="mr-2"></b-icon>
           <strong>There is an error! </strong>
         </b-alert>
-        System: {{ system }}, Data: {{ forms.length }} lists and {{ sightings.length }} sightings.
+        Website: {{ website }}, Data: {{ forms.length }} lists and {{ sightings.length }} sightings.
       </b-col>
     </b-row>
 
@@ -257,7 +269,7 @@ import markerSoft from "/markers-soft.png";
         >
           <l-control-layers position="topright"></l-control-layers>
           <l-tile-layer
-            v-for="tileProvider in tileProviders"
+            v-for="tileProvider in tile_providers"
             :key="tileProvider.name"
             :name="tileProvider.name"
             :visible="tileProvider.visible"
@@ -335,132 +347,6 @@ export default {
         [90, 180],
         [-90, -180],
       ]),
-      tileProviders: [
-        {
-          name: "Mapbox.Streets",
-          visible: true,
-          url: "https://api.mapbox.com/styles/v1/mapbox/streets-v9/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoicmFmbnVzcyIsImEiOiIzMVE1dnc0In0.3FNMKIlQ_afYktqki-6m0g",
-          attribution: "",
-        },
-        {
-          name: "Mapbox.Satellite",
-          visible: false,
-          url: "https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v9/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoicmFmbnVzcyIsImEiOiIzMVE1dnc0In0.3FNMKIlQ_afYktqki-6m0g",
-          attribution: "",
-        },
-        {
-          name: "OpenStreetMap",
-          visible: false,
-          attribution:
-            '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-          url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-        },
-      ],
-      system_opt: [
-        { name: "biolovision", extension: ".json", export_link: "" },
-        { name: "birdlasser", extension: ".csv", export_link: "" },
-        { name: "birdtrack", extension: ".xlsx", export_link: "" },
-        { name: "observation", extension: ".csv", export_link: "" },
-      ],
-      website_opt: [
-        {
-          label: "Main Biolovision",
-          data: [
-            { value: "www.faune-france.org", text: "faune-france.org", system: "biolovision" },
-            { value: "www.ornitho.at", text: "ornitho.at", system: "biolovision" },
-            { value: "www.ornitho.cat", text: "ornitho.cat", system: "biolovision" },
-            { value: "www.ornitho.ch", text: "ornitho.ch", system: "biolovision" },
-            { value: "www.ornitho.de", text: "ornitho.de", system: "biolovision" },
-            { value: "www.ornitho.eus", text: "ornitho.eus", system: "biolovision" },
-            { value: "www.ornitho.it", text: "ornitho.it", system: "biolovision" },
-            { value: "www.ornitho.lu", text: "ornitho.lu", system: "biolovision" },
-            { value: "www.ornitho.pl", text: "ornitho.pl", system: "biolovision" },
-            { value: "data.biolovision.net", text: "biolovision.net", system: "biolovision" },
-          ],
-        },
-        {
-          label: "Others",
-          data: [
-            { value: "birdlasser", text: "birdlasser", system: "birdlasser" },
-            { value: "birdtrack", text: "birdtrack", system: "birdtrack" },
-            { value: "observation.org", text: "observation.org", system: "observation" },
-            { value: "waarneming.nl", text: "waarneming.nl", system: "observation" },
-            { value: "waarnemingen.be", text: "waarnemingen.be", system: "observation" },
-          ],
-        },
-        {
-          label: "French Biolovision",
-          data: [
-            { value: "www.faune-Cher.org", text: "faune-Cher.org", system: "biolovision" },
-            { value: "www.faune-ain.org", text: "faune-ain.org", system: "biolovision" },
-            { value: "www.faune-alsace.org", text: "faune-alsace.org", system: "biolovision" },
-            { value: "www.faune-anjou.org", text: "faune-anjou.org", system: "biolovision" },
-            {
-              value: "www.faune-aquitaine.org",
-              text: "faune-aquitaine.org",
-              system: "biolovision",
-            },
-            { value: "www.faune-ardeche.org", text: "faune-ardeche.org", system: "biolovision" },
-            { value: "www.faune-auvergne.org", text: "faune-auvergne.org", system: "biolovision" },
-            { value: "www.faune-bretagne.org", text: "faune-bretagne.org", system: "biolovision" },
-            {
-              value: "www.faune-champagne-ardenne.org",
-              text: "faune-champagne-ardenne.org",
-              system: "biolovision",
-            },
-            {
-              value: "www.faune-charente-maritime.org",
-              text: "faune-charente-maritime.org",
-              system: "biolovision",
-            },
-            { value: "www.faune-charente.org", text: "faune-charente.org", system: "biolovision" },
-            { value: "www.faune-drome.org", text: "faune-drome.org", system: "biolovision" },
-            {
-              value: "www.faune-iledefrance.org",
-              text: "faune-iledefrance.org",
-              system: "biolovision",
-            },
-            { value: "www.faune-isere.org", text: "faune-isere.org", system: "biolovision" },
-            { value: "www.faune-limousin.eu", text: "faune-limousin.eu", system: "biolovision" },
-            {
-              value: "www.faune-loire-atlantique.org",
-              text: "faune-loire-atlantique.org",
-              system: "biolovision",
-            },
-            { value: "www.faune-loire.org", text: "faune-loire.org", system: "biolovision" },
-            { value: "www.faune-lorraine.org", text: "faune-lorraine.org", system: "biolovision" },
-            { value: "www.faune-lr.org", text: "faune-lr.org", system: "biolovision" },
-            { value: "www.faune-maine.org", text: "faune-maine.org", system: "biolovision" },
-            {
-              value: "www.faune-martinique.org",
-              text: "faune-martinique.org",
-              system: "biolovision",
-            },
-            { value: "www.faune-nievre.org", text: "faune-nievre.org", system: "biolovision" },
-            { value: "www.faune-paca.org", text: "faune-paca.org", system: "biolovision" },
-            { value: "www.faune-reunion.fr", text: "faune-reunion.fr", system: "biolovision" },
-            { value: "www.faune-rhone.org", text: "faune-rhone.org", system: "biolovision" },
-            { value: "www.faune-savoie.org", text: "faune-savoie.org", system: "biolovision" },
-            {
-              value: "www.faune-tarn-aveyron.org",
-              text: "faune-tarn-aveyron.org",
-              system: "biolovision",
-            },
-            { value: "www.faune-touraine.org", text: "faune-touraine.org", system: "biolovision" },
-            { value: "www.faune-vendee.org", text: "faune-vendee.org", system: "biolovision" },
-            { value: "www.faune-yonne.org", text: "faune-yonne.org", system: "biolovision" },
-            { value: "franche-comte.lpo.fr", text: "franche-comte.lpo.fr", system: "biolovision" },
-            { value: "haute-savoie.lpo.fr", text: "haute-savoie.lpo.fr", system: "biolovision" },
-            { value: "www.nature79.org", text: "nature79.org", system: "biolovision" },
-            {
-              value: "www.oiseaux-cote-dor.org",
-              text: "oiseaux-cote-dor.org",
-              system: "biolovision",
-            },
-            { value: "vienne.lpo.fr", text: "vienne.lpo.fr", system: "biolovision" },
-          ],
-        },
-      ],
     };
   },
   methods: {
@@ -491,7 +377,7 @@ export default {
         this.loading_file_status = -1;
       };
       reader.onload = (e) => {
-        if (this.system.name == "biolovision") {
+        if (this.website.name == "biolovision") {
           const data = JSON.parse(reader.result).data;
           // Create empty forms and sightings if not presents
           data.forms = data.forms || [];
@@ -515,6 +401,7 @@ export default {
 
           this.forms = data.forms.map((f) => {
             return {
+              id: fid + 1,
               datetime_start: f.time_start,
               datetime_stop: f.time_stop,
               lat: f.lat,
@@ -589,24 +476,6 @@ export default {
     import_query_link() {
       return "abx";
     },
-    system() {
-      if (!this.website) {
-        return null;
-      } else {
-        // Merge all groups of website option
-        const website_opt = [
-          ...this.website_opt[0].data,
-          ...this.website_opt[1].data,
-          ...this.website_opt[2].data,
-        ];
-        // find the website
-        const w = website_opt.filter((w) => w.value == this.website)[0];
-        const s = this.system_opt.filter((s) => s.name == w.system)[0];
-        s.website = w.value;
-        s.website_name = w.text;
-        return s;
-      }
-    },
     checklists() {
       //combine sightings into checklists
       const forms_sightings = []; // this.sigthings
@@ -615,11 +484,11 @@ export default {
   },
   mounted() {
     this.map = this.$refs.map;
-    this.website = this.$cookie.get("website");
+    this.website = websites_list.filter((w) => w.name == this.$cookie.get("website"))[0];
   },
   watch: {
     website() {
-      this.$cookie.set("website", this.website, 365);
+      this.$cookie.set("website", this.website.name, 365);
     },
   },
 };
