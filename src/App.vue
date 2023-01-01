@@ -120,7 +120,7 @@ import websites_list from "/data/websites_list.json";
           </b-select-option-group>
         </b-select>
         <b-row class="m-3 p-3 text-white rounded shadow-sm bg-blue" v-if="website">
-          <template v-if="website.name == 'biolovision'">
+          <template v-if="website.system == 'biolovision'">
             <p>With biolovision website...</p>
             <b-col lg="12">
               <b-form-radio v-model="import_query_date" value="offset">
@@ -171,16 +171,16 @@ import websites_list from "/data/websites_list.json";
               >
             </b-col>
           </template>
-          <template v-else-if="website.name == 'observation'">
+          <template v-else-if="website.system == 'observation'">
             <p>
               Data from observation.org can be exported from the Observations menu. Login and click
               on your name top right of the page: https://observation.org/
             </p>
           </template>
-          <template v-else-if="website.name == 'birdtrack'">
+          <template v-else-if="website.system == 'birdtrack'">
             <p>https://app.bto.org/birdtrack/explore/emr.jsp</p>
           </template>
-          <template v-else-if="website.name == 'birdlasser'">
+          <template v-else-if="website.system == 'birdlasser'">
             <p>
               Data from birdlasser can only be downloaded from the app (to my knowledge). Selec the
               trip card and use "Export (CSV) trip card". Upload the CSV file below.
@@ -245,17 +245,28 @@ import websites_list from "/data/websites_list.json";
       </b-col>
       <b-col lg="3">
         <small>Add a marker on the map</small>
-        <b-button variant="secondary">
+        <b-button variant="secondary" @click="mapDrawMarker.enable()">
           <b-icon icon="list-check" class="mr-1"></b-icon>Create Checklist
         </b-button>
       </b-col>
       <b-col lg="5">
-        <small>Select the checklist to which attribute sightings</small>
-        <select id="selHotspot" class="form-control"></select>
+        <small>Change which form to assign the sightings</small>
+        <b-form-select
+          v-model="assign_form_id"
+          :options="
+            forms.map((f) => {
+              return { value: f.id, text: f.id + '. ' + f.location_name };
+            })
+          "
+        ></b-form-select>
       </b-col>
       <b-col lg="4">
         <small>Draw a rectangle over the sightings</small>
-        <b-button variant="secondary">
+        <b-button
+          variant="secondary"
+          @click="mapDrawRectangle.enable()"
+          :disabled="assign_form_id == null"
+        >
           <b-icon icon="square" class="mr-1"></b-icon>Attribute Sightings
         </b-button>
       </b-col>
@@ -290,14 +301,54 @@ import websites_list from "/data/websites_list.json";
             :key="s.datetime + s.common_name"
             :lat-lng="[s.lat, s.lon]"
             :radius="10"
+            :fillColor="marker_color[s.form_id][0]"
+            :color="marker_color[s.form_id][0]"
           >
             <l-popup>
               <b-table bordered small striped hover responsive :items="object2Table(s)"></b-table>
             </l-popup>
           </l-circle-marker>
-          <l-marker v-for="f in forms_sightings" :key="f.id" :lat-lng="[f.lat, f.lon]" />
-          <l-feature-group ref="featureGroup" @ready="onFeatureGroupReady($event)">
-          </l-feature-group>
+          <l-marker
+            v-for="f in forms"
+            :key="'form-' + f.id"
+            :lat-lng="[f.lat, f.lon]"
+            @click="assign_form_id = f.id"
+          >
+            <l-icon
+              :iconAnchor="[
+                mapMarkerHotspotSize / 2,
+                Math.sqrt((mapMarkerHotspotSize * mapMarkerHotspotSize) / 2) +
+                  mapMarkerHotspotSize / 2,
+              ]"
+              ><!--  :labelAnchor="[-6, 0]" :popupAnchor="[0, -36]"-->
+              <div style="display: grid">
+                <div
+                  :style="{
+                    'background-color': marker_color[f.id][0],
+                    color: marker_color[f.id][2],
+                    width: mapMarkerHotspotSize + 'px',
+                    height: mapMarkerHotspotSize + 'px',
+                    display: 'block',
+                    position: 'relative',
+                    'border-radius': '3rem 3rem 0',
+                    transform: 'rotate(45deg)',
+                    border: '1px solid #ffffff',
+                  }"
+                ></div>
+                <div
+                  :style="{
+                    color: marker_color[f.id][2],
+                    position: 'absolute',
+                    width: mapMarkerHotspotSize + 'px',
+                    'text-align': 'center',
+                    'line-height': mapMarkerHotspotSize + 'px',
+                  }"
+                >
+                  {{ f.id }}
+                </div>
+              </div>
+            </l-icon>
+          </l-marker>
         </l-map>
       </b-col>
     </b-row>
@@ -310,15 +361,17 @@ import "leaflet/dist/leaflet.css";
 import "leaflet-draw/dist/leaflet.draw.css";
 import "leaflet";
 import "leaflet-draw/dist/leaflet.draw-src.js";
+window.type = true;
 
-import { latLngBounds, latLng } from "leaflet";
 import {
   LMap,
   LTileLayer,
   LControlLayers,
   LPopup,
   LCircleMarker,
+  LMarker,
   LFeatureGroup,
+  LIcon,
 } from "vue2-leaflet";
 
 export default {
@@ -328,6 +381,8 @@ export default {
     LTileLayer,
     LControlLayers,
     LPopup,
+    LMarker,
+    LIcon,
     LCircleMarker,
   },
   data() {
@@ -343,10 +398,14 @@ export default {
       loading_file_status: null,
       assign_date_from: "",
       assign_date_to: "",
-      mapBounds: latLngBounds([
+      assign_form_id: null,
+      mapBounds: L.latLngBounds([
         [90, 180],
         [-90, -180],
       ]),
+      mapDrawMarker: null,
+      mapDrawRectangle: null,
+      mapMarkerHotspotSize: 24,
     };
   },
   methods: {
@@ -354,7 +413,12 @@ export default {
       return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     },
     sortSightings(a, b) {
-      a.datetime > b.datetime ? -1 : 1;
+      return a.datetime > b.datetime ? -1 : 1;
+    },
+    mode(arr) {
+      return arr
+        .sort((a, b) => arr.filter((v) => v === a).length - arr.filter((v) => v === b).length)
+        .pop();
     },
     object2Table(s) {
       return Object.entries(s).map(([k, v]) => {
@@ -371,48 +435,50 @@ export default {
       } else {
         reader.readAsText(file);
       }
-
       reader.onerror = (error) => {
         throw new Error(error);
         this.loading_file_status = -1;
       };
       reader.onload = (e) => {
-        if (this.website.name == "biolovision") {
+        if (this.website.system == "biolovision") {
           const data = JSON.parse(reader.result).data;
           // Create empty forms and sightings if not presents
           data.forms = data.forms || [];
           data.sightings = data.sightings || [];
 
-          const sightingsTransformation = function (s) {
-            return {
-              datetime: s.observers[0].timing["@ISO8601"].split("+")[0],
-              lat: s.place.coord_lat,
-              lon: s.place.coord_lon,
-              location_name: s.place.name,
-              common_name: s.species.name,
-              scientific_name: s.species.latin_name,
-              species_count: s.observers.count,
-              species_count_precision: s.observers.estimation_code,
-              species_comment: s.observers.comment || "",
-            };
+          const sightingsTransformation = function (sightings, form_id) {
+            return sightings.map((s) => {
+              return {
+                form_id: form_id,
+                datetime: s.observers[0].timing["@ISO8601"].split("+")[0],
+                lat: s.place.coord_lat,
+                lon: s.place.coord_lon,
+                location_name: s.place.name,
+                common_name: s.species.name,
+                scientific_name: s.species.latin_name,
+                species_count: s.observers.count,
+                species_count_precision: s.observers.estimation_code,
+                species_comment: s.observers.comment || "",
+              };
+            });
           };
 
-          this.sightings = data.sightings.map(sightingsTransformation).sort(this.sortSightings);
+          this.sightings = sightingsTransformation(data.sightings, 0);
 
-          this.forms = data.forms.map((f) => {
+          this.forms = data.forms.map((f, fid) => {
             return {
               id: fid + 1,
               datetime_start: f.time_start,
               datetime_stop: f.time_stop,
               lat: f.lat,
               lon: f.lon,
-              location_name: "",
+              location_name: this.mode(f.sightings.map((s) => s.place.name)),
               full_form: f.full_form == "1",
               incidental: false,
               protocol: null,
               number_observer: null,
               path: f.protocol.wkt,
-              sightings: f.sightings.map(sightingsTransformation).sort(this.sortSightings),
+              sightings: sightingsTransformation(data.sightings, fid + 1),
             };
           });
         } else {
@@ -420,56 +486,50 @@ export default {
           throw new Error("No correct sytem");
         }
 
-        this.assign_date_from = this.sightings[0].datetime;
-        this.assign_date_to = this.sightings[this.sightings.length - 1].datetime;
+        if (this.sightings.length > 0) {
+          this.assign_date_from = this.sightings[0].datetime;
+          this.assign_date_to = this.sightings[this.sightings.length - 1].datetime;
+        }
+        this.map.fitBounds(
+          L.latLngBounds([...this.sightings, ...this.forms].map((s) => L.latLng(s.lat, s.lon)))
+        );
 
         this.loading_file_status = 1;
       };
     },
     async onLeafletReady() {
       await this.$nextTick();
+      this.mapDrawMarker = new L.Draw.Marker(this.map.mapObject);
+      this.mapDrawRectangle = new L.Draw.Rectangle(this.map.mapObject);
+
       this.map.mapObject.on(L.Draw.Event.CREATED, (e) => {
-        console.log(e);
         if (e.layerType === "marker") {
+          const latLng = e.layer.getLatLng();
+          const id = this.forms.length + 1;
+          this.forms.push({
+            id: id,
+            datetime_start: null,
+            datetime_stop: null,
+            lat: latLng.lat,
+            lon: latLng.lng,
+            location_name:
+              "New List " + id.toString() + " " + latLng.toString().replace("LatLng", ""),
+            full_form: false,
+            incidental: false,
+            protocol: null,
+            number_observer: null,
+            path: null,
+            sightings: [],
+          });
+          this.assign_form_id = id;
         } else if (e.layerType === "rectangle") {
-          modalsLayer.eachLayer(function (l) {
-            if (e.layer.getBounds().contains(l.getLatLng())) {
-              data.sightings.forEach(function (s) {
-                if (
-                  l.feature.properties["id"] ==
-                  (s.observers[0].id_sighting || s.observers[0].id_universal)
-                ) {
-                  data.forms.forEach(function (f) {
-                    if (f.id == jQuery("#selHotspot").val()) {
-                      s["marker-color"] = f.color[1];
-                      s.form = f.id;
-                      l.setIcon(Makemarker(s).options.icon);
-                    }
-                  });
-                }
-              });
+          this.sightings.forEach((s) => {
+            if (e.layer.getBounds().contains(L.latLng(s.lat, s.lon))) {
+              s.form_id = this.assign_form_id;
             }
           });
         }
       });
-    },
-    async onFeatureGroupReady(editableLayers) {
-      await this.$nextTick();
-      const drawControl = new L.Control.Draw({
-        position: "topright",
-        draw: {
-          polyline: false,
-          polygon: false,
-          circle: false,
-          circlemarker: false,
-          rectangle: true,
-          marker: true,
-        },
-        edit: {
-          featureGroup: editableLayers,
-        },
-      });
-      this.map.mapObject.addControl(drawControl);
     },
   },
   computed: {
