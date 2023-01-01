@@ -278,7 +278,11 @@ import markerSoft from "/markers-soft.png";
             :key="s.datetime + s.common_name"
             :lat-lng="[s.lat, s.lon]"
             :radius="10"
-          />
+          >
+            <l-popup>
+              <b-table bordered small striped hover responsive :items="object2Table(s)"></b-table>
+            </l-popup>
+          </l-circle-marker>
           <l-marker v-for="f in forms_sightings" :key="f.id" :lat-lng="[f.lat, f.lon]" />
           <l-feature-group ref="featureGroup" @ready="onFeatureGroupReady($event)">
           </l-feature-group>
@@ -465,6 +469,11 @@ export default {
     },
     sortSightings(a, b) {
       a.datetime > b.datetime ? -1 : 1;
+    },
+    object2Table(s) {
+      return Object.entries(s).map(([k, v]) => {
+        return { Properties: k, Value: v };
+      });
     },
     processFile(event) {
       this.loading_file_status = 0;
