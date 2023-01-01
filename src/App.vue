@@ -491,8 +491,8 @@ export default {
           const sightingsTransformation = function (s) {
             return {
               datetime: s.observers[0].timing["@ISO8601"].split("+")[0],
-              lat: s.place.lat,
-              lon: s.place.lng,
+              lat: s.place.coord_lat,
+              lon: s.place.coord_lon,
               location_name: s.place.name,
               common_name: s.species.name,
               scientific_name: s.species.latin_name,
@@ -524,7 +524,6 @@ export default {
           throw new Error("No correct sytem");
         }
 
-        console.log(this.sightings);
         this.assign_date_from = this.sightings[0].datetime;
         this.assign_date_to = this.sightings[this.sightings.length - 1].datetime;
 
@@ -607,6 +606,12 @@ export default {
   },
   mounted() {
     this.map = this.$refs.map;
+    this.website = this.$cookie.get("website");
+  },
+  watch: {
+    website() {
+      this.$cookie.set("website", this.website, 365);
+    },
   },
 };
 </script>
