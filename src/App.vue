@@ -167,7 +167,7 @@ import websites_list from "/data/websites_list.json";
         <h2 class="border-bottom pb-2 mb-3">1. Import Biolovision data</h2>
       </b-col>
       <b-col lg="6">
-        <p>Select the website:</p>
+        <p>Select the website from which to import the data</p>
         <b-select v-model="website_name">
           <b-select-option-group
             v-for="cat in new Set(websites_list.map((w) => w.category))"
@@ -185,7 +185,11 @@ import websites_list from "/data/websites_list.json";
         </b-select>
         <b-row class="m-3 p-3 text-white rounded shadow-sm bg-blue" v-if="website">
           <template v-if="website.system == 'biolovision'">
-            <p>With biolovision website...</p>
+            <p>
+              For biolovision website, export your data file as json
+              <b-img :src="jsonIcon" />. You can use the form below as a starting point to generate
+              the file.
+            </p>
             <b-col lg="12">
               <b-form-radio v-model="import_query_date" value="offset">
                 <b-input-group append="days ago">
@@ -199,7 +203,7 @@ import websites_list from "/data/websites_list.json";
                 </b-input-group>
               </b-form-radio>
             </b-col>
-            <b-col lg="12">
+            <b-col lg="12" class="mt-2">
               <b-form-radio v-model="import_query_date" value="range">
                 <b-input-group>
                   <b-form-input
@@ -216,22 +220,23 @@ import websites_list from "/data/websites_list.json";
                 </b-input-group>
               </b-form-radio>
             </b-col>
-            <b-col lg="12">
+            <b-col lg="12" class="text-center mt-2">
               <a
                 :href="
                   website.website +
                   '/index.php?m_id=31&sp_DChoice=' +
                   import_query_date +
                   '&sp_DFrom=' +
-                  import_query_date_range_from +
+                  new Date(import_query_date_range_from).toLocaleDateString('fr-CH') +
                   '&sp_DTo=' +
-                  import_query_date_range_to +
+                  new Date(import_query_date_range_to).toLocaleDateString('fr-CH') +
                   '&sp_DOffset=' +
                   import_query_date_offset +
                   '&sp_SChoice=all&sp_PChoice=all&sp_OnlyMyData=1'
                 "
+                target="_blank"
                 class="btn btn-secondary"
-                >Export data on {{ website.website_name }}</a
+                >Export data from <strong>{{ website.name }}</strong></a
               >
             </b-col>
           </template>
@@ -253,25 +258,30 @@ import websites_list from "/data/websites_list.json";
         </b-row>
       </b-col>
       <b-col lg="6" v-if="website">
-        <b-form-file size="lg" @change="processFile" :accept="website.extension"></b-form-file>
-        <b-alert
-          v-if="loading_file_status == 0"
-          variant="warning"
-          class="d-flex align-items-center"
-          show
-        >
+        <p>
+          Load the data file into the webapp (the data remains in your browser and are never send on
+          internet).
+        </p>
+        <b-form-file
+          size="lg"
+          @change="processFile"
+          :accept="website.extension"
+          :placeholder="'Click to load your ' + website.extension + ' file'"
+          class="mb-2"
+        />
+        <b-alert v-if="loading_file_status == 0" variant="warning" show>
           <b-spinner label="Spinning" variant="warning" class="mr-2"></b-spinner>
           <strong class="me-1">Loading data.</strong>
         </b-alert>
         <b-alert v-else-if="loading_file_status == 1" variant="success" show>
           <b-icon icon="check-circle-fill" class="mr-2"></b-icon>
           <strong>Data loaded successfuly! </strong>
+          {{ forms.filter((f) => f.imported).length }} forms and {{ sightings.length }} sightings.
         </b-alert>
         <b-alert v-else-if="loading_file_status == -1" variant="danger" show>
           <b-icon icon="exclamation-triangle" class="mr-2"></b-icon>
           <strong>There is an error! </strong>
         </b-alert>
-        Website: {{ website }}, Data: {{ forms.length }} lists and {{ sightings.length }} sightings.
       </b-col>
     </b-row>
 
@@ -300,16 +310,9 @@ import websites_list from "/data/websites_list.json";
           aggregate sightings together. You can still edit automotic attribution later.
         </p>
       </b-col>
-      <b-col lg="12">
-        <b-input-group>
-          <b-form-input v-model="assign_date_from" type="datetime-local" />
-          <b-input-group-text class="rounded-0">to</b-input-group-text>
-          <b-form-input v-model="assign_date_to" type="datetime-local" />
-        </b-input-group>
-      </b-col>
       <b-col lg="3">
         <small>Add a marker on the map</small>
-        <b-button variant="secondary" @click="mapDrawMarker.enable()">
+        <b-button variant="secondary" @click="mapDrawMarker.enable()" block>
           <b-icon icon="list-check" class="mr-1"></b-icon>Create Checklist
         </b-button>
       </b-col>
@@ -322,7 +325,8 @@ import websites_list from "/data/websites_list.json";
               return { value: f.id, text: f.id + '. ' + f.location_name };
             })
           "
-        ></b-form-select>
+          block
+        />
       </b-col>
       <b-col lg="4">
         <small>Draw a rectangle over the sightings</small>
@@ -330,6 +334,7 @@ import websites_list from "/data/websites_list.json";
           variant="secondary"
           @click="mapDrawRectangle.enable()"
           :disabled="assign_form_id == null"
+          block
         >
           <b-icon icon="square" class="mr-1"></b-icon>Attribute Sightings
         </b-button>
@@ -415,6 +420,17 @@ import websites_list from "/data/websites_list.json";
           </l-marker>
         </l-map>
       </b-col>
+      <!--<b-col lg="12">
+        <p>
+          If sightings belonging to different checklist overlap on the map, use the time filtering
+          below
+        </p>
+        <b-input-group>
+          <b-form-input v-model="assign_date_from" type="datetime-local" />
+          <b-input-group-text class="rounded-0">to</b-input-group-text>
+          <b-form-input v-model="assign_date_to" type="datetime-local" />
+        </b-input-group>
+      </b-col>-->
     </b-row>
   </b-container>
 </template>
@@ -453,7 +469,6 @@ export default {
     return {
       sightings: [],
       forms: [],
-      forms_sightings: [],
       website_name: null,
       important_information: [],
       import_query_date: "offset",
@@ -533,6 +548,7 @@ export default {
           this.forms = data.forms.map((f, fid) => {
             return {
               id: fid + 1,
+              imported: true,
               datetime_start: f.time_start,
               datetime_stop: f.time_stop,
               lat: f.lat,
@@ -573,6 +589,7 @@ export default {
           const id = this.forms.length + 1;
           this.forms.push({
             id: id,
+            imported: false,
             datetime_start: null,
             datetime_stop: null,
             lat: latLng.lat,
