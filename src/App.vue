@@ -340,13 +340,7 @@ import websites_list from "/data/websites_list.json";
         </b-button>
       </b-col>
       <b-col lg="12">
-        <l-map
-          :bounds="mapBounds"
-          class="w-100 mt-3"
-          style="height: 400px"
-          ref="map"
-          @ready="onLeafletReady"
-        >
+        <l-map class="w-100 mt-3" style="height: 400px" ref="map" @ready="onLeafletReady">
           <l-control-layers position="topright"></l-control-layers>
           <l-tile-layer
             v-for="tileProvider in tile_providers"
@@ -432,6 +426,49 @@ import websites_list from "/data/websites_list.json";
         </b-input-group>
       </b-col>-->
     </b-row>
+    <b-row id="c2" class="my-3 p-3 bg-white rounded shadow-sm">
+      <b-col lg="12">
+        <h2 class="border-bottom pb-2 mb-3">3. Adjust checklists</h2>
+        <p>
+          You can navigate into each checklist by clicking on the tab and modify each of them as
+          desire. In addition, we automatically added a few improvement such as exact timing and
+          location of each observation in comment or a static map with location of your sightings.
+          Feel free to remove them of modify them
+        </p>
+      </b-col>
+      <b-col lg="12">
+        <b-tabs small tabs justified v-if="forms.length > 0">
+          <b-tab v-for="f in forms" :key="f.id">
+            <template #title>
+              {{ f.location_name }}
+            </template>
+            <b-form-group label="Location Name:">
+              <b-form-input v-model="f.location_name" type="text" />
+            </b-form-group>
+            <b-form-group label="Date and time:">
+              <b-form-input v-model="f.datetime" type="datetime-local" />
+            </b-form-group>
+
+            <b-form-group label="Duration (HH:MM):">
+              <b-form-input v-model="f.duration" type="time" />
+            </b-form-group>
+            <b-form-group label="Distance (km):">
+              <b-form-input v-model="f.distance" type="number" />
+            </b-form-group>
+            <b-form-group label="Party size:">
+              <b-form-input v-model="f.number_observer" type="number" />
+            </b-form-group>
+            <b-form-checkbox switch v-model="f.primary_purpose">Primary Purpose</b-form-checkbox>
+            <b-form-group label="Protocol:">
+              {{ protocol(f) }}
+            </b-form-group>
+            <b-form-checkbox switch v-model="f.full_form">Complete Checklist</b-form-checkbox>
+            <b-form-checkbox switch v-model="f.include_map">Include static map</b-form-checkbox>
+            Preview checklist Comment:
+          </b-tab>
+        </b-tabs>
+      </b-col>
+    </b-row>
   </b-container>
 </template>
 
@@ -479,10 +516,6 @@ export default {
       assign_date_from: "",
       assign_date_to: "",
       assign_form_id: null,
-      mapBounds: L.latLngBounds([
-        [90, 180],
-        [-90, -180],
-      ]),
       mapDrawMarker: null,
       mapDrawRectangle: null,
       mapMarkerHotspotSize: 24,
@@ -504,6 +537,12 @@ export default {
       return Object.entries(s).map(([k, v]) => {
         return { Properties: k, Value: v };
       });
+    },
+    timeStartStop2Durtion(timeStart, timeStop) {
+      const duration = (new Date(timeStop) - new Date(timeStart)) / 1000 / 60;
+      const H = Math.floor(duration / 60);
+      const M = duration - H * 60;
+      return String(H).padStart(2, "0") + ":" + String(M).padStart(2, "0");
     },
     processFile(event) {
       this.loading_file_status = 0;
@@ -546,20 +585,24 @@ export default {
           this.sightings = sightingsTransformation(data.sightings, 0);
 
           this.forms = data.forms.map((f, fid) => {
+            const date = f.sightings[0].observers[0].timing["@ISO8601"].split("T")[0];
+            const timeStart = date + "T" + f.time_start;
+            const timeStop = date + "T" + f.time_stop;
             return {
               id: fid + 1,
               imported: true,
-              datetime_start: f.time_start,
-              datetime_stop: f.time_stop,
+              location_name: this.mode(f.sightings.map((s) => s.place.name)),
               lat: f.lat,
               lon: f.lon,
-              location_name: this.mode(f.sightings.map((s) => s.place.name)),
-              full_form: f.full_form == "1",
-              incidental: false,
-              protocol: null,
+              datetime: timeStart,
+              duration: this.timeStartStop2Durtion(timeStart, timeStop),
+              distance: null,
               number_observer: null,
+              full_form: f.full_form == "1",
+              primary_purpose: true,
+              include_map: true,
               path: f.protocol.wkt,
-              sightings: sightingsTransformation(data.sightings, fid + 1),
+              sightings: sightingsTransformation(f.sightings, fid + 1),
             };
           });
         } else {
@@ -590,16 +633,17 @@ export default {
           this.forms.push({
             id: id,
             imported: false,
-            datetime_start: null,
-            datetime_stop: null,
-            lat: latLng.lat,
-            lon: latLng.lng,
             location_name:
               "New List " + id.toString() + " " + latLng.toString().replace("LatLng", ""),
-            full_form: false,
-            incidental: false,
-            protocol: null,
+            lat: latLng.lat,
+            lon: latLng.lng,
+            datetime: null,
+            duration: null,
+            distance: null,
             number_observer: null,
+            full_form: false,
+            primary_purpose: false,
+            include_map: true,
             path: null,
             sightings: [],
           });
@@ -612,6 +656,26 @@ export default {
           });
         }
       });
+    },
+    protocol(f) {
+      if (f.primary_purpose) {
+        if (
+          (f.distance != null) &
+          (f.duration != null) &
+          (f.datetime != null) &
+          (f.number_observer != null)
+        ) {
+          if (f.distance > 0) {
+            return "traveling";
+          } else {
+            return "stationary";
+          }
+        } else {
+          return "historical";
+        }
+      } else {
+        return "incidental";
+      }
     },
   },
   computed: {
