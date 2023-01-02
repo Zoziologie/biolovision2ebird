@@ -22,8 +22,7 @@ import websites_list from "/data/websites_list.json";
         <b-img class="me-3" :src="logo" alt="" height="43" />
       </b-link>
     </b-row>
-
-    <b-row id="c0" class="my-3 p-3 bg-white rounded shadow-sm">
+    <b-row class="my-3 p-3 bg-white rounded shadow-sm" v-show="!continue_intro">
       <b-col lg="12">
         <h2 class="border-bottom pb-2 mb-3">Introduction</h2>
       </b-col>
@@ -154,7 +153,11 @@ import websites_list from "/data/websites_list.json";
             </li>
           </ol>
           <b-col lg="12" class="text-center">
-            <b-button variant="secondary" :disabled="important_information.length < 3">
+            <b-button
+              variant="secondary"
+              :disabled="important_information.length < 3"
+              @click="continue_intro = true"
+            >
               Continue
             </b-button>
           </b-col>
@@ -162,7 +165,7 @@ import websites_list from "/data/websites_list.json";
       </b-col>
     </b-row>
 
-    <b-row id="c1" class="my-3 p-3 bg-white rounded shadow-sm">
+    <b-row class="my-3 p-3 bg-white rounded shadow-sm" v-show="continue_intro">
       <b-col lg="12">
         <h2 class="border-bottom pb-2 mb-3">1. Import Biolovision data</h2>
       </b-col>
@@ -270,7 +273,7 @@ import websites_list from "/data/websites_list.json";
           class="mb-2"
         />
         <b-alert v-if="loading_file_status == 0" variant="warning" show>
-          <b-spinner label="Spinning" variant="warning" class="mr-2"></b-spinner>
+          <b-spinner small variant="warning" class="mr-2"></b-spinner>
           <strong class="me-1">Loading data.</strong>
         </b-alert>
         <b-alert v-else-if="loading_file_status == 1" variant="success" show>
@@ -285,11 +288,11 @@ import websites_list from "/data/websites_list.json";
       </b-col>
     </b-row>
 
-    <b-row id="c2" class="my-3 p-3 bg-white rounded shadow-sm">
+    <b-row class="my-3 p-3 bg-white rounded shadow-sm" v-show="sightings.length > 0">
       <b-col lg="12">
         <h2 class="border-bottom pb-2 mb-3">2. Assign sightings to checklist</h2>
       </b-col>
-      <b-col lg="12">
+      <!--<b-col lg="12">
         <p>
           The first step is to assign incidental sightings (e.g.
           <b-img :src="pinSXFFF" height="30" />) to a checklist (e.g.
@@ -309,7 +312,7 @@ import websites_list from "/data/websites_list.json";
           sightings automotically. The function is based on a distance and duration threashold to
           aggregate sightings together. You can still edit automotic attribution later.
         </p>
-      </b-col>
+      </b-col>-->
       <b-col lg="3">
         <small>Add a marker on the map</small>
         <b-button variant="secondary" @click="mapDrawMarker.enable()" block>
@@ -426,7 +429,8 @@ import websites_list from "/data/websites_list.json";
         </b-input-group>
       </b-col>-->
     </b-row>
-    <b-row id="c2" class="my-3 p-3 bg-white rounded shadow-sm">
+
+    <b-row class="my-3 p-3 bg-white rounded shadow-sm" v-show="forms.length > 0">
       <b-col lg="12">
         <h2 class="border-bottom pb-2 mb-3">3. Adjust checklists</h2>
         <p>
@@ -437,26 +441,51 @@ import websites_list from "/data/websites_list.json";
         </p>
       </b-col>
       <b-col lg="12">
-        <b-tabs small tabs justified v-if="forms.length > 0">
-          <b-tab v-for="f in forms" :key="f.id">
+        <b-tabs :small="forms.length > 4" pills justified v-if="forms.length > 0">
+          <b-tab v-for="f in forms" :key="f.id" @click="tabClick(f)">
             <template #title>
               {{ f.location_name }}
             </template>
+            <b-alert show variant="danger" class="mt-2" v-if="computeDuration(f) > 1440">
+              <b-icon-exclamation-triangle-fill class="mr-2" />The checklist
+              {{ f.location_name }} contains sightings from different days. It is strongly
+              recommended to split them into multiple checklists.
+            </b-alert>
             <b-form-group label="Location Name:">
               <b-form-input v-model="f.location_name" type="text" />
             </b-form-group>
             <b-form-group label="Date and time:">
-              <b-form-input v-model="f.datetime" type="datetime-local" />
+              <b-input-group>
+                <b-form-input v-model="f.datetime" type="datetime-local" />
+                <b-input-group-append>
+                  <b-button variant="secondary" @click="f.datetime = computeDatetime(f)"
+                    >auto-compute</b-button
+                  >
+                </b-input-group-append>
+              </b-input-group>
             </b-form-group>
-
-            <b-form-group label="Duration (HH:MM):">
-              <b-form-input v-model="f.duration" type="time" />
+            <b-form-group label="Duration (minutes):">
+              <b-input-group>
+                <b-form-input v-model="f.duration" type="number" step="1" min="1" max="1440" />
+                <b-input-group-append>
+                  <b-button variant="secondary" @click="f.duration = computeDuration(f)"
+                    >auto-compute</b-button
+                  >
+                </b-input-group-append>
+              </b-input-group>
             </b-form-group>
             <b-form-group label="Distance (km):">
-              <b-form-input v-model="f.distance" type="number" />
+              <b-input-group>
+                <b-form-input v-model="f.distance" step="0.1" min="0" max="100" type="number" />
+                <b-input-group-append>
+                  <b-button variant="secondary" @click="f.distance = computeDistance(f)"
+                    >auto-compute</b-button
+                  >
+                </b-input-group-append>
+              </b-input-group>
             </b-form-group>
             <b-form-group label="Party size:">
-              <b-form-input v-model="f.number_observer" type="number" />
+              <b-form-input v-model="f.number_observer" step="1" min="0" max="100" type="number" />
             </b-form-group>
             <b-form-checkbox switch v-model="f.primary_purpose">Primary Purpose</b-form-checkbox>
             <b-form-group label="Protocol:">
@@ -464,7 +493,38 @@ import websites_list from "/data/websites_list.json";
             </b-form-group>
             <b-form-checkbox switch v-model="f.full_form">Complete Checklist</b-form-checkbox>
             <b-form-checkbox switch v-model="f.include_map">Include static map</b-form-checkbox>
-            Preview checklist Comment:
+            <l-map class="w-100 mt-3" style="height: 400px" :ref="'map-' + f.id">
+              <l-control-layers position="topright"></l-control-layers>
+              <l-tile-layer
+                v-for="tileProvider in tile_providers"
+                :key="tileProvider.name"
+                :name="tileProvider.name"
+                :visible="tileProvider.visible"
+                :url="tileProvider.url"
+                :attribution="tileProvider.attribution"
+                layer-type="base"
+              />
+              <l-circle-marker
+                v-for="s in getSightings(f)"
+                :key="s.datetime + s.common_name"
+                :lat-lng="[s.lat, s.lon]"
+                :radius="10"
+                :fillColor="marker_color[s.form_id][0]"
+                :color="marker_color[s.form_id][0]"
+              >
+                <l-popup>
+                  <b-table
+                    bordered
+                    small
+                    striped
+                    hover
+                    responsive
+                    :items="object2Table(s)"
+                  ></b-table>
+                </l-popup>
+              </l-circle-marker>
+              <l-marker :lat-lng="[f.lat, f.lon]" />
+            </l-map>
           </b-tab>
         </b-tabs>
       </b-col>
@@ -508,6 +568,7 @@ export default {
       forms: [],
       website_name: null,
       important_information: [],
+      continue_intro: true, // Change on the final version
       import_query_date: "offset",
       import_query_date_offset: 1,
       import_query_date_range_from: "",
@@ -525,9 +586,6 @@ export default {
     formatNb(x) {
       return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     },
-    sortSightings(a, b) {
-      return a.datetime > b.datetime ? -1 : 1;
-    },
     mode(arr) {
       return arr
         .sort((a, b) => arr.filter((v) => v === a).length - arr.filter((v) => v === b).length)
@@ -537,12 +595,6 @@ export default {
       return Object.entries(s).map(([k, v]) => {
         return { Properties: k, Value: v };
       });
-    },
-    timeStartStop2Durtion(timeStart, timeStop) {
-      const duration = (new Date(timeStop) - new Date(timeStart)) / 1000 / 60;
-      const H = Math.floor(duration / 60);
-      const M = duration - H * 60;
-      return String(H).padStart(2, "0") + ":" + String(M).padStart(2, "0");
     },
     processFile(event) {
       this.loading_file_status = 0;
@@ -588,6 +640,7 @@ export default {
             const date = f.sightings[0].observers[0].timing["@ISO8601"].split("T")[0];
             const timeStart = date + "T" + f.time_start;
             const timeStop = date + "T" + f.time_stop;
+
             return {
               id: fid + 1,
               imported: true,
@@ -595,7 +648,7 @@ export default {
               lat: f.lat,
               lon: f.lon,
               datetime: timeStart,
-              duration: this.timeStartStop2Durtion(timeStart, timeStop),
+              duration: (new Date(timeStop) - new Date(timeStart)) / 1000 / 60,
               distance: null,
               number_observer: null,
               full_form: f.full_form == "1",
@@ -614,10 +667,13 @@ export default {
           this.assign_date_from = this.sightings[0].datetime;
           this.assign_date_to = this.sightings[this.sightings.length - 1].datetime;
         }
-        this.map.fitBounds(
-          L.latLngBounds([...this.sightings, ...this.forms].map((s) => L.latLng(s.lat, s.lon)))
-        );
 
+        setTimeout(() => {
+          this.map.mapObject.invalidateSize();
+          this.map.fitBounds(
+            L.latLngBounds([...this.sightings, ...this.forms].map((s) => L.latLng(s.lat, s.lon)))
+          );
+        }, 500);
         this.loading_file_status = 1;
       };
     },
@@ -643,8 +699,15 @@ export default {
             number_observer: null,
             full_form: false,
             primary_purpose: false,
-            include_map: true,
-            path: null,
+            checklist_comment: "",
+            species_comment: "",
+            static_map: {
+              path: null,
+              display: true,
+              zoom: null,
+              lon: null,
+              lat: null,
+            },
             sightings: [],
           });
           this.assign_form_id = id;
@@ -656,6 +719,20 @@ export default {
           });
         }
       });
+    },
+    tabClick(f) {
+      setTimeout(() => {
+        this.$refs["map-" + f.id][0].mapObject.invalidateSize();
+        this.$refs["map-" + f.id][0].mapObject.fitBounds(
+          L.latLngBounds([
+            L.latLng(f.lat, f.lon),
+            ...this.getSightings(f).map((s) => L.latLng(s.lat, s.lon)),
+          ])
+        );
+      }, 500);
+    },
+    getSightings(f) {
+      return [...f.sightings, ...this.sightings.filter((s) => s.form_id == f.id)];
     },
     protocol(f) {
       if (f.primary_purpose) {
@@ -676,6 +753,38 @@ export default {
       } else {
         return "incidental";
       }
+    },
+    static_map_link(f) {
+      return (
+        "https://api.mapbox.com/v4/mapbox.satellite/" +
+        f.static_map.lat +
+        "," +
+        f.static_map.lon +
+        "," +
+        f.static_map.zoom +
+        "/800x450@2x.png?access_token=pk.eyJ1IjoicmFmbnVzcyIsImEiOiIzMVE1dnc0In0.3FNMKIlQ_afYktqki-6m0g"
+      );
+    },
+    checklist_comment(f) {
+      return f.checklist_comment + f.static_map.display
+        ? "<img src=" + static_map_link(f) + " style='max-width:600px;width:100%'>"
+        : "" +
+            `Imported with <a href="https://zoziologie.raphaelnussbaumer.com/biolovision2ebird/">biolovision2eBird<a>.
+      `;
+    },
+    computeDatetime(f) {
+      return this.getSightings(f)[0].datetime;
+    },
+    computeDuration(f) {
+      const sightings = this.getSightings(f);
+      if (sightings.length == 0) {
+        return null;
+      }
+      const datetime = sightings.map((s) => new Date(s.datetime)).sort();
+      return Math.round((datetime[datetime.length - 1] - datetime[0]) / 1000 / 60);
+    },
+    computeDistance(f) {
+      return null;
     },
   },
   computed: {
