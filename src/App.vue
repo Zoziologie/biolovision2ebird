@@ -673,8 +673,9 @@ export default {
           const data = JSON.parse(reader.result).data;
           // Create empty forms and sightings if not presents
           data.forms = data.forms || [];
-          this.sightings = data.sightings || [];
+          data.sightings = data.sightings || [];
 
+          // Define the standard mapping of biolovision sightings to the webapp sightings
           const sightingsTransformation = function (sightings, form_id) {
             return sightings.map((s) => {
               return {
@@ -692,17 +693,20 @@ export default {
             });
           };
 
-          this.sightings = sightingsTransformation(this.sightings, 0);
+          // Convert individual sightings
+          this.sightings = sightingsTransformation(data.sightings, 0);
 
+          // Convert sightings from the forms, keep them seperate
           this.forms_sightings = data.forms.map((f, fid) => {
             return sightingsTransformation(f.sightings, fid + 1);
           });
 
+          // convert form data
           this.forms = data.forms.map((f, fid) => {
             const date = f.sightings[0].observers[0].timing["@ISO8601"].split("T")[0];
             const timeStart = date + "T" + f.time_start;
             const timeStop = date + "T" + f.time_stop;
-            return {
+            return createForm({
               id: fid + 1,
               imported: true,
               location_name: this.mode(f.sightings.map((s) => s.place.name)),
@@ -723,8 +727,10 @@ export default {
                 lon: null,
                 lat: null,
               },
-            };
+            });
           });
+
+          // Define the default form_card with the latest forms of the list
           this.form_card = this.forms.length > 0 ? this.forms[this.forms.length - 1] : null;
         } else {
           this.loading_file_status = -1;
@@ -738,16 +744,33 @@ export default {
         this.mapBounds = L.latLngBounds(
           [...this.sightings, ...this.forms].map((s) => L.latLng(s.lat, s.lon))
         ).pad(0.05);
-
-        /*setTimeout(() => {
-          this.$refs.map.mapObject.invalidateSize();
-          this.$refs.map.fitBounds(
-            L.latLngBounds(
-              [...this.sightings, ...this.forms].map((s) => L.latLng(s.lat, s.lon))
-            ).pad(0.05)
-          );
-        }, 500);*/
       };
+    },
+    createForm(f) {
+      f = {
+        id: id,
+        imported: f.imported || false,
+        location_name: f.location_name || "New List " + id.toString(),
+        lat: f.lat || null,
+        lon: f.lon || null,
+        datetime: f.datetime || null,
+        duration: f.duration || null,
+        distance: f.distance || null,
+        number_observer: f.number_observer || null,
+        full_form: f.full_form || false,
+        primary_purpose: f.primary_purpose || false,
+        checklist_comment: f.checklist_comment || "",
+        species_comment: f.species_comment || "",
+        static_map: f.static_map || {},
+      };
+      f.static_map = {
+        path: f.static_map.lat || null,
+        display: f.static_map.lat || true,
+        zoom: f.static_map.lat || null,
+        lon: f.static_map.lat || null,
+        lat: f.static_map.lat || null,
+      };
+      return f;
     },
     async onLeafletReady() {
       await this.$nextTick();
@@ -764,28 +787,7 @@ export default {
     },
     addForm() {
       const id = this.forms.length + 1;
-      this.forms.push({
-        id: id,
-        imported: false,
-        location_name: "New List " + id.toString(),
-        lat: null,
-        lon: null,
-        datetime: null,
-        duration: null,
-        distance: null,
-        number_observer: null,
-        full_form: false,
-        primary_purpose: false,
-        checklist_comment: "",
-        species_comment: "",
-        static_map: {
-          path: null,
-          display: true,
-          zoom: null,
-          lon: null,
-          lat: null,
-        },
-      });
+      this.forms.push(createForm({}));
       this.form_card = this.forms[this.forms.length - 1];
     },
     removeForm(id) {
