@@ -91,11 +91,16 @@ import tile_providers from "/data/tile_providers.json";
                     >
                       <b-icon icon="box-arrow-in-down" />
                     </b-button>
-                    <b-button v-show="forms.length > 0" variant="danger" @click="removeForm()">
-                      <b-icon icon="x" />
-                    </b-button>
                   </b-input-group-append>
                 </b-input-group>
+                <b-button-group class="mt-2">
+                  <b-button @click="assignClean"
+                    ><b-icon icon="trash" /> remove empty checklist</b-button
+                  >
+                  <b-button @click="assignReset"
+                    ><b-icon icon="arrow-counterclockwise" /> Reset</b-button
+                  >
+                </b-button-group>
               </div>
             </l-control>
 
@@ -149,18 +154,22 @@ import tile_providers from "/data/tile_providers.json";
         </b-col>
         <b-col lg="4">
           <b-form-group label="Duration threashold:">
-            <b-form-input v-model="assign_duration" type="number" step="0.1" min="0.1" max="24" />
+            <b-input-group append="hr">
+              <b-form-input v-model="assign_duration" type="number" step="0.1" min="0.1" max="24" />
+            </b-input-group>
           </b-form-group>
         </b-col>
         <b-col lg="4">
           <b-form-group label="Distance threashold:">
-            <b-form-input v-model="assign_distance" type="number" step="0.1" min="0.1" max="5" />
+            <b-input-group append="km">
+              <b-form-input v-model="assign_distance" type="number" step="0.1" min="0.1" max="5" />
+            </b-input-group>
           </b-form-group>
         </b-col>
         <b-col lg="4">
           <b-form-group label="L:">
-            <b-button variant="primary" block>
-              <b-icon icon="heart" class="mr-1" click="assignMagic()"></b-icon>Automatic Attribution
+            <b-button variant="primary" block @click="assignMagic">
+              <b-icon icon="heart" class="mr-1"></b-icon>Automatic Attribution
             </b-button>
           </b-form-group>
         </b-col>
@@ -487,27 +496,62 @@ export default {
       this.forms = this.forms.filter((i) => i.id !== this.assign_form_id);
       this.assign_form_id = 0;
     },
+    assignClean() {
+      const form_id = this.sightings.reduce((prev, s, sid, self) => {
+        return prev.includes(s.form_id) ? prev : [...prev, s.form_id];
+      }, []);
+      this.forms = this.forms.filter((f) => f.imported | form_id.includes(f.id));
+    },
+    assignReset() {
+      this.sightings.forEach((s) => (s.form_id = 0));
+      this.forms = this.forms.filter((f) => f.imported);
+      this.count_forms = this.forms.length;
+    },
     assignMagic() {
-      const datetime = this.sightings.map((s) => new Date(s.datetime));
-      const form_id = this.sightings.map((s) => s.form_id);
-      for (var i = 0; i < this.sightings.length; i++) {
-        for (var j = 0; j < i; j++) {
-          if (abs(datetime[i] - datetime[j]) < this.assign_duration * 60 * 60 * 1000) {
-            var km = distance(
-              this.sightings[j].observers[0].coord_lat,
-              this.sightings[j].observers[0].coord_lon,
-              this.sightings[i].observers[0].coord_lat,
-              this.sightings[i].observers[0].coord_lon
+      let sightings = this.sightings.filter((s) => s.form_id == 0);
+      console.log(sightings);
+      const datetime = sightings.map((s) => new Date(s.datetime));
+      var form_id = this.count_forms + 1;
+
+      for (var i = 0; i < sightings.length; i++) {
+        for (var j = i - 1; j >= 0; j--) {
+          if (Math.abs(datetime[i] - datetime[j]) < this.assign_duration * 60 * 60 * 1000) {
+            var km = fx.distance(
+              sightings[j].lat,
+              sightings[j].lon,
+              sightings[i].lat,
+              sightings[i].lon
             );
             if (km < this.assign_distance) {
-              form_id[i] = form_id[j];
-              break;
+              sightings[i].form_id = sightings[j].form_id;
+              break; // stop loop if within time and distance
             }
+          } else {
+            break; // stop loop if outside of time
           }
         }
-        // New checklist
-        if (form_id[i] == 0) {
+        if (sightings[i].form_id == 0) {
+          sightings[i].form_id = form_id;
+          form_id = form_id + 1;
         }
+      }
+
+      console.log(sightings.map((s) => s.form_id));
+
+      for (var i = this.count_forms + 1; i < form_id; i++) {
+        var sightings2 = sightings.filter((s) => s.form_id == i);
+        var fnew = fx.createForm(
+          {
+            location_name: fx.mode(sightings2.map((s) => s.location_name)),
+            lat: sightings2.reduce((a, b) => a + b.lat, 0) / sightings2.length,
+            lon: sightings2.reduce((a, b) => a + b.lon, 0) / sightings2.length,
+          },
+          this.count_forms + 1
+        );
+        this.forms.push(fnew);
+        this.count_forms = this.count_forms + 1;
+        this.assign_form_id = fnew.id;
+        this.form_card = fnew;
       }
     },
     protocol(f) {
