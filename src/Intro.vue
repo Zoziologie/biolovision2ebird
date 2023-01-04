@@ -63,22 +63,6 @@ export default {
     <b-col lg="6">
       <b-img :src="gif" fluid />
     </b-col>
-    <b-col lg="12">
-      <p>
-        Any comments or suggestions? Please submit an issue on
-        <b-link
-          class="btn btn-sm btn-outline-primary"
-          href="https://github.com/Zoziologie/Biolovision2eBird/issues"
-          target="_blank"
-        >
-          <b-icon icon="github" aria-hidden="true"> </b-icon> Github</b-link
-        >
-        or
-        <b-link class="btn btn-sm btn-outline-primary" href="mailto:rafnuss@gmail.com">
-          <b-icon icon="envelope" aria-hidden="true"> </b-icon> Contact me</b-link
-        >.
-      </p>
-    </b-col>
     <b-col>
       <b-alert variant="danger" show class="mt-3">
         <h4 class="alert-heading">

@@ -465,6 +465,23 @@ import websites_list from "/data/websites_list.json";
         </b-card>
       </b-col>
     </b-row>
+
+    <b-row class="d-flex justify-content-between p-3 my-3 text-white rounded shadow-sm bg-blue">
+      <b-col lg="12">
+        Any comments or suggestions? Please submit an issue on
+        <b-link
+          class="btn btn-sm btn-outline-secondary"
+          href="https://github.com/Zoziologie/Biolovision2eBird/issues"
+          target="_blank"
+        >
+          <b-icon icon="github" aria-hidden="true"> </b-icon> Github</b-link
+        >
+        or
+        <b-link class="btn btn-sm btn-outline-secondary" href="mailto:rafnuss@gmail.com">
+          <b-icon icon="envelope" aria-hidden="true"> </b-icon> Contact me</b-link
+        >.
+      </b-col>
+    </b-row>
   </b-container>
 </template>
 
