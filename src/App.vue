@@ -322,23 +322,33 @@ import websites_list from "/data/websites_list.json";
           </small>
         </b-col>
         <b-col lg="3">
-          <b-button variant="secondary" @click="mapDrawMarker.enable()" block>
-            <b-icon icon="list-check" class="mr-1"> </b-icon>Create Checklist
-          </b-button>
+          <b-card no-body header="Assign checklist">
+            <b-list-group flush>
+              <b-list-group-item
+                v-for="f in forms"
+                :key="f.id"
+                :style="{ 'background-color': f.bgColor }"
+                class="d-flex justify-content-between align-items-center"
+              >
+                {{ f.location_name }}
+                <b-button pill size="sm"
+                  ><b-icon
+                    icon="square"
+                    @click="
+                      assign_form_id = f.id;
+                      mapDrawRectangle.enable();
+                    "
+                  />
+                </b-button>
+                <b-icon icon="x" @click="removeForm(f.id)"></b-icon>
+              </b-list-group-item>
+              <b-list-group-item @click="addForm()" href="#" class="text-center"
+                >+</b-list-group-item
+              >
+            </b-list-group>
+          </b-card>
         </b-col>
-        <b-col lg="6">
-          <b-form-select
-            v-model="assign_form_id"
-            :options="[
-              { value: 0, text: '0. Non-assigned' },
-              ...forms.map((f) => {
-                return { value: f.id, text: f.id + '. ' + f.location_name };
-              }),
-            ]"
-            block
-          />
-        </b-col>
-        <b-col lg="3">
+        <!--<b-col lg="3">
           <b-button
             variant="secondary"
             @click="mapDrawRectangle.enable()"
@@ -347,10 +357,10 @@ import websites_list from "/data/websites_list.json";
           >
             <b-icon icon="square" class="mr-1"></b-icon>Attribute Sightings
           </b-button>
-        </b-col>
-        <b-col lg="12">
+        </b-col>-->
+        <b-col lg="9">
           <l-map
-            class="w-100 mt-3"
+            class="w-100"
             style="height: 400px"
             ref="map"
             @ready="onLeafletReady"
@@ -378,47 +388,6 @@ import websites_list from "/data/websites_list.json";
                 <b-table bordered small striped hover responsive :items="object2Table(s)" />
               </l-popup>
             </l-circle-marker>
-            <l-marker
-              v-for="f in forms"
-              :key="'form-' + f.id"
-              :lat-lng="[f.lat, f.lon]"
-              @click="assign_form_id = f.id"
-            >
-              <l-icon
-                :iconAnchor="[
-                  mapMarkerHotspotSize / 2,
-                  Math.sqrt((mapMarkerHotspotSize * mapMarkerHotspotSize) / 2) +
-                    mapMarkerHotspotSize / 2,
-                ]"
-              >
-                <div style="display: grid">
-                  <div
-                    :style="{
-                      'background-color': marker_color[f.id][0],
-                      color: marker_color[f.id][2],
-                      width: mapMarkerHotspotSize + 'px',
-                      height: mapMarkerHotspotSize + 'px',
-                      display: 'block',
-                      position: 'relative',
-                      'border-radius': '3rem 3rem 0',
-                      transform: 'rotate(45deg)',
-                      border: '1px solid #ffffff',
-                    }"
-                  ></div>
-                  <div
-                    :style="{
-                      color: marker_color[f.id][2],
-                      position: 'absolute',
-                      width: mapMarkerHotspotSize + 'px',
-                      'text-align': 'center',
-                      'line-height': mapMarkerHotspotSize + 'px',
-                    }"
-                  >
-                    {{ f.id }}
-                  </div>
-                </div>
-              </l-icon>
-            </l-marker>
           </l-map>
         </b-col>
         <b-col lg="12">
@@ -665,7 +634,6 @@ export default {
       mapBounds: null,
       assign_distance: 0.5,
       assign_duration: 1,
-      mapDrawMarker: null,
       mapDrawRectangle: null,
       mapMarkerHotspotSize: 24,
       form_card: null,
@@ -783,39 +751,9 @@ export default {
     },
     async onLeafletReady() {
       await this.$nextTick();
-      this.mapDrawMarker = new L.Draw.Marker(this.$refs.map.mapObject);
       this.mapDrawRectangle = new L.Draw.Rectangle(this.$refs.map.mapObject);
-
       this.$refs.map.mapObject.on(L.Draw.Event.CREATED, (e) => {
-        if (e.layerType === "marker") {
-          const latLng = e.layer.getLatLng();
-          const id = this.forms.length + 1;
-          this.forms.push({
-            id: id,
-            imported: false,
-            location_name:
-              "New List " + id.toString() + " " + latLng.toString().replace("LatLng", ""),
-            lat: latLng.lat,
-            lon: latLng.lng,
-            datetime: null,
-            duration: null,
-            distance: null,
-            number_observer: null,
-            full_form: false,
-            primary_purpose: false,
-            checklist_comment: "",
-            species_comment: "",
-            static_map: {
-              path: null,
-              display: true,
-              zoom: null,
-              lon: null,
-              lat: null,
-            },
-          });
-          this.assign_form_id = id;
-          this.form_card = this.forms[this.forms.length - 1];
-        } else if (e.layerType === "rectangle") {
+        if (e.layerType === "rectangle") {
           this.sightings.forEach((s) => {
             if (e.layer.getBounds().contains(L.latLng(s.lat, s.lon))) {
               s.form_id = this.assign_form_id;
@@ -823,6 +761,41 @@ export default {
           });
         }
       });
+    },
+    addForm() {
+      const id = this.forms.length + 1;
+      this.forms.push({
+        id: id,
+        imported: false,
+        location_name: "New List " + id.toString(),
+        lat: null,
+        lon: null,
+        datetime: null,
+        duration: null,
+        distance: null,
+        number_observer: null,
+        full_form: false,
+        primary_purpose: false,
+        checklist_comment: "",
+        species_comment: "",
+        static_map: {
+          path: null,
+          display: true,
+          zoom: null,
+          lon: null,
+          lat: null,
+        },
+      });
+      this.form_card = this.forms[this.forms.length - 1];
+    },
+    removeForm(id) {
+      if (this.forms[id].imported) {
+        console.log("Not possible to delete an imported form");
+        return;
+      } else {
+        // change all sightings from this id
+        this.sightings.forEach((s) => (s.form_id = s.form_id == id ? 0 : form_id));
+      }
     },
     assignMagic() {
       const datetime = this.sightings.map((s) => new Date(s.datetime));
