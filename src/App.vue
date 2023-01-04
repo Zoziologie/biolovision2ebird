@@ -28,7 +28,7 @@ import tile_providers from "/data/tile_providers.json";
 
     <b-row class="my-3 p-3 bg-white rounded shadow-sm" v-if="count_forms != null">
       <b-col lg="12">
-        <h2 class="border-bottom pb-2 mb-3">2. Assign sightings to checklist</h2>
+        <h2 class="border-bottom pb-2 mb-3">2. Assign individual sightings to checklists</h2>
       </b-col>
       <template v-if="sightings.length == 0">
         <b-col
@@ -59,41 +59,44 @@ import tile_providers from "/data/tile_providers.json";
             :bounds="map_bounds"
           >
             <l-control position="topright">
-              <b-input-group style="max-width: 480px">
-                <template #prepend>
-                  <b-button
-                    variant="primary"
-                    @click="map_draw_rectangle.enable()"
+              <div class="d-flex flex-column" style="max-width: 480px">
+                <b-button
+                  class="mb-2"
+                  variant="success"
+                  @click="
+                    create_checklist = true;
+                    map_draw_rectangle.enable();
+                  "
+                >
+                  <b-icon icon="plus" /> Create checklist
+                </b-button>
+                <b-input-group>
+                  <b-form-select
                     v-show="forms.length > 0"
-                  >
-                    <b-icon icon="box-arrow-in-down" />
-                  </b-button>
-                </template>
-                <b-form-select
-                  v-show="forms.length > 0"
-                  v-model="assign_form_id"
-                  :options="[
-                    { value: 0, text: '0. Non-assigned' },
-                    ...forms.map((f) => {
-                      return { value: f.id, text: f.id + '. ' + f.location_name };
-                    }),
-                  ]"
-                />
-                <b-input-group-append>
-                  <b-button
-                    variant="success"
-                    @click="
-                      create_checklist = true;
-                      map_draw_rectangle.enable();
-                    "
-                  >
-                    <b-icon icon="plus" /> {{ forms.length == 0 ? "Create checklist" : "" }}
-                  </b-button>
-                  <b-button v-show="forms.length > 0" variant="danger">
-                    <b-icon icon="x" />
-                  </b-button>
-                </b-input-group-append>
-              </b-input-group>
+                    v-model="assign_form_id"
+                    :options="[
+                      { value: 0, text: '0. Non-assigned' },
+                      ...forms
+                        .filter((f) => !f.imported)
+                        .map((f) => {
+                          return { value: f.id, text: f.id + '. ' + f.location_name };
+                        }),
+                    ]"
+                  />
+                  <b-input-group-append>
+                    <b-button
+                      variant="primary"
+                      @click="map_draw_rectangle.enable()"
+                      v-show="forms.length > 0"
+                    >
+                      <b-icon icon="box-arrow-in-down" />
+                    </b-button>
+                    <b-button v-show="forms.length > 0" variant="danger" @click="removeForm()">
+                      <b-icon icon="x" />
+                    </b-button>
+                  </b-input-group-append>
+                </b-input-group>
+              </div>
             </l-control>
 
             <l-control-layers position="bottomright" />
@@ -119,7 +122,7 @@ import tile_providers from "/data/tile_providers.json";
               </l-popup>
             </l-circle-marker>
             <l-marker
-              v-for="f in forms"
+              v-for="f in forms.filter((f) => !f.imported)"
               :key="f.id"
               :lat-lng="[f.lat, f.lon]"
               @click="assign_form_id = f.id"
@@ -477,15 +480,12 @@ export default {
         }
       });
     },
-    removeForm(f) {
-      if (f.imported) {
-        throw Error("Not possible to delete an imported form");
-      } else {
-        // change all sightings from this id
-        this.sightings.forEach((s) => (s.form_id = s.form_id == f.id ? 0 : form_id));
-        // remove the form
-        this.forms = this.forms.filter((i) => i.id !== f.id);
-      }
+    removeForm() {
+      // change all sightings from this id
+      this.sightings.forEach((s) => (s.form_id = s.form_id == this.assign_form_id ? 0 : s.form_id));
+      // remove the form
+      this.forms = this.forms.filter((i) => i.id !== this.assign_form_id);
+      this.assign_form_id = 0;
     },
     assignMagic() {
       const datetime = this.sightings.map((s) => new Date(s.datetime));

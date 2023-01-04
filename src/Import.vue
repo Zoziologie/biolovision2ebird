@@ -87,7 +87,7 @@ export default {
                 checklist_comment: "",
                 species_comment: "",
                 static_map: {
-                  path: f.protocol.wkt,
+                  path: f.protocol ? f.protocol.wkt || "" : "",
                   display: true,
                   zoom: null,
                   lon: null,
