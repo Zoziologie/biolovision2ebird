@@ -68,7 +68,7 @@ import tile_providers from "/data/tile_providers.json";
                     map_draw_rectangle.enable();
                   "
                 >
-                  <b-icon icon="plus" /> Create checklist
+                  <b-icon icon="plus" /> Create a checklist
                 </b-button>
                 <b-input-group>
                   <b-form-select

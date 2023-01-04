@@ -237,7 +237,7 @@ export default {
       />
       <b-alert v-if="loading_file_status == 0" variant="warning" show>
         <b-spinner small variant="warning" class="mr-2"> </b-spinner>
-        <strong class="me-1">Loading data.</strong>
+        <strong class="me-1">Loading data...</strong>
       </b-alert>
       <b-alert v-else-if="loading_file_status == 1" variant="success" show>
         <b-icon icon="check-circle-fill" class="mr-2"> </b-icon>
