@@ -320,44 +320,7 @@ import websites_list from "/data/websites_list.json";
             will not be exported.
           </small>
         </b-col>
-        <b-col lg="3">
-          <b-card no-body header="Assign checklist">
-            <b-list-group flush>
-              <b-list-group-item
-                v-for="f in forms"
-                :key="f.id"
-                :style="{ 'background-color': f.bgColor }"
-                class="d-flex justify-content-between align-items-center"
-              >
-                {{ f.location_name }}
-                <b-button pill size="sm"
-                  ><b-icon
-                    icon="square"
-                    @click="
-                      assign_form_id = f.id;
-                      map_draw.enable();
-                    "
-                  />
-                </b-button>
-                <b-icon icon="x" @click="removeForm(f)"></b-icon>
-              </b-list-group-item>
-              <b-list-group-item @click="addForm({})" href="#" class="text-center"
-                >+</b-list-group-item
-              >
-            </b-list-group>
-          </b-card>
-        </b-col>
-        <!--<b-col lg="3">
-          <b-button
-            variant="secondary"
-            @click="map_draw.enable()"
-            :disabled="assign_form_id == null"
-            block
-          >
-            <b-icon icon="square" class="mr-1"></b-icon>Attribute Sightings
-          </b-button>
-        </b-col>-->
-        <b-col lg="9">
+        <b-col lg="12">
           <l-map
             class="w-100"
             style="height: 400px"
@@ -365,7 +328,45 @@ import websites_list from "/data/websites_list.json";
             @ready="onLeafletReady"
             :bounds="map_bounds"
           >
-            <l-control-layers position="topright" />
+            <l-control position="topright">
+              <b-input-group style="max-width: 480px">
+                <template #prepend>
+                  <b-button
+                    variant="primary"
+                    @click="map_draw_rectangle.enable()"
+                    v-show="forms.length > 0"
+                  >
+                    <b-icon icon="box-arrow-in-down" />
+                  </b-button>
+                </template>
+                <b-form-select
+                  v-show="forms.length > 0"
+                  v-model="assign_form_id"
+                  :options="[
+                    { value: 0, text: '0. Non-assigned' },
+                    ...forms.map((f) => {
+                      return { value: f.id, text: f.id + '. ' + f.location_name };
+                    }),
+                  ]"
+                />
+                <b-input-group-append>
+                  <b-button
+                    variant="success"
+                    @click="
+                      create_checklist = true;
+                      map_draw_rectangle.enable();
+                    "
+                  >
+                    <b-icon icon="plus" /> {{ forms.length == 0 ? "Create checklist" : "" }}
+                  </b-button>
+                  <b-button v-show="forms.length > 0" variant="danger">
+                    <b-icon icon="x" />
+                  </b-button>
+                </b-input-group-append>
+              </b-input-group>
+            </l-control>
+
+            <l-control-layers position="bottomright" />
             <l-tile-layer
               v-for="tileProvider in tile_providers"
               :key="tileProvider.name"
@@ -387,6 +388,22 @@ import websites_list from "/data/websites_list.json";
                 <b-table bordered small striped hover responsive :items="object2Table(s)" />
               </l-popup>
             </l-circle-marker>
+            <l-marker
+              v-for="f in forms"
+              :key="f.id"
+              :lat-lng="[f.lat, f.lon]"
+              @click="assign_form_id = f.id"
+              :draggable="true"
+              @update:lat-lng="
+                (latlng) => {
+                  f.lat = latlng.lat;
+                  f.lon = latlng.lng;
+                }
+              "
+              :zIndexOffset="1000"
+            >
+              <IconHotspot :size="24" :fid="f.id" />
+            </l-marker>
           </l-map>
         </b-col>
         <b-col lg="12">
@@ -554,7 +571,7 @@ import websites_list from "/data/websites_list.json";
               </b-col>
             </b-row>
           </b-card-body>
-          <l-map class="w-100" style="height: 400px" ref="mapCard" :bounds="map_card_bounds">
+          <l-map class="w-100" style="height: 400px" :bounds="map_card_bounds">
             <l-control-layers position="topright" />
             <l-tile-layer
               v-for="tileProvider in tile_providers"
@@ -578,6 +595,19 @@ import websites_list from "/data/websites_list.json";
             </l-popup>-->
             </l-circle-marker>
             <!--<l-marker :lat-lng="[fmapid.lat, fmapid.lon]" />-->
+            <l-marker
+              :lat-lng="[form_card.lat, form_card.lon]"
+              :draggable="true"
+              @update:lat-lng="
+                (latlng) => {
+                  form_card.lat = latlng.lat;
+                  form_card.lon = latlng.lng;
+                }
+              "
+              :zIndexOffset="1000"
+            >
+              <IconHotspot :size="24" :fid="form_card.id" />
+            </l-marker>
           </l-map>
         </b-card>
       </b-col>
@@ -597,6 +627,7 @@ import {
   LMap,
   LTileLayer,
   LControlLayers,
+  LControl,
   LPopup,
   LCircleMarker,
   LMarker,
@@ -604,20 +635,25 @@ import {
   LIcon,
 } from "vue2-leaflet";
 
+import IconHotspot from "./IconHotspot.vue";
+
 export default {
   components: {
     LMap,
     LFeatureGroup,
     LTileLayer,
+    LControl,
     LControlLayers,
     LPopup,
     LMarker,
     LIcon,
     LCircleMarker,
+    IconHotspot,
   },
   data() {
     return {
       sightings: [],
+      sightings_forms: [],
       forms: [],
       forms_sightings: [],
       website_name: null,
@@ -630,14 +666,17 @@ export default {
       loading_file_status: null,
       number_imported_form: 0,
       number_imported_sightings: 0,
+      count_forms: 1,
       assign_form_id: 0,
+      create_checklist: false,
       map_bounds: null,
       assign_distance: 0.5,
       assign_duration: 1,
-      map_draw: null,
-      map_marker_hotspot_size: 24,
+      map_draw_rectangle: null,
+      map_draw_marker: null,
       form_card: null,
       map_card_bounds: null,
+      a: null,
     };
   },
   methods: {
@@ -681,8 +720,8 @@ export default {
               return {
                 form_id: form_id,
                 datetime: s.observers[0].timing["@ISO8601"].split("+")[0],
-                lat: s.observers[0].coord_lat,
-                lon: s.observers[0].coord_lon,
+                lat: parseFloat(s.observers[0].coord_lat),
+                lon: parseFloat(s.observers[0].coord_lon),
                 location_name: s.place.name,
                 common_name: s.species.name,
                 scientific_name: s.species.latin_name,
@@ -696,18 +735,12 @@ export default {
           // Convert individual sightings
           this.sightings = sightingsTransformation(data.sightings, 0);
 
-          // Convert sightings from the forms, keep them seperate
-          this.forms_sightings = data.forms.map((f, fid) => {
-            return sightingsTransformation(f.sightings, fid + 1);
-          });
-
           // convert form data
-          this.forms = data.forms.map((f, fid) => {
+          this.forms = data.forms.map((f) => {
             const date = f.sightings[0].observers[0].timing["@ISO8601"].split("T")[0];
             const timeStart = date + "T" + f.time_start;
             const timeStop = date + "T" + f.time_stop;
-            return createForm({
-              id: fid + 1,
+            return this.createForm({
               imported: true,
               location_name: this.mode(f.sightings.map((s) => s.place.name)),
               lat: f.lat,
@@ -730,6 +763,11 @@ export default {
             });
           });
 
+          // Convert sightings from the forms, keep them seperate
+          this.forms_sightings = data.forms.map((f, fid) => {
+            return sightingsTransformation(f.sightings, this.forms[fid].id);
+          });
+
           // Define the default form_card with the latest forms of the list
           this.form_card = this.forms.length > 0 ? this.forms[this.forms.length - 1] : null;
         } else {
@@ -748,15 +786,10 @@ export default {
       };
     },
     createForm(f) {
-      // generate a random id
-      f.id = f.if || (Math.random() + 1).toString(36).substring(7);
-      if (this.forms.map((f) => f.id).includes(f.id) | (f.id == 0)) {
-        throw new Error("Invalid form id " + string(f.id));
-      }
       f = {
-        id: f.id,
+        id: this.count_forms,
         imported: f.imported || false,
-        location_name: f.location_name || "New List " + id.toString(),
+        location_name: f.location_name || "New List " + f.id,
         lat: f.lat || null,
         lon: f.lon || null,
         datetime: f.datetime || null,
@@ -776,27 +809,44 @@ export default {
         lon: f.static_map.lat || null,
         lat: f.static_map.lat || null,
       };
+      this.count_forms = this.count_forms + 1;
       return f;
     },
     async onLeafletReady() {
       await this.$nextTick();
-      this.map_draw = new L.Draw.Rectangle(this.$refs.map.mapObject);
+      this.map_draw_rectangle = new L.Draw.Rectangle(this.$refs.map.mapObject);
+      // this.map_draw_marker = new L.Draw.Marker(this.map.mapObject);
       this.$refs.map.mapObject.on(L.Draw.Event.CREATED, (e) => {
         if (e.layerType === "rectangle") {
-          // Assign sightings to new checklist
-          this.sightings.forEach((s) => {
-            if (e.layer.getBounds().contains(L.latLng(s.lat, s.lon))) {
-              s.form_id = this.assign_form_id;
+          // find sightings inside rectangle
+          let sightings = this.sightings.filter((s) =>
+            e.layer.getBounds().contains(L.latLng(s.lat, s.lon))
+          );
+          if (sightings.length == 0) {
+            alert(
+              "You tried to create a hotspot with no sightings. Please try again by drawing the rectangle over sightings"
+            );
+          } else {
+            // create new checklist if necessaary
+            if (this.create_checklist) {
+              const fnew = this.createForm({
+                location_name: this.mode(sightings.map((s) => s.location_name)),
+                lat: sightings.reduce((a, b) => a + b.lat, 0) / sightings.length,
+                lon: sightings.reduce((a, b) => a + b.lon, 0) / sightings.length,
+              });
+              this.forms.push(fnew);
+              this.assign_form_id = fnew.id;
+              this.form_card = fnew;
+              this.create_checklist = false;
             }
-          });
+            // Assign sightings to new checklist
+            sightings.forEach((s) => {
+              s.form_id = this.assign_form_id;
+            });
+          }
           // remove empty checklist
         }
       });
-    },
-    addForm(f) {
-      const fnew = createForm(f);
-      this.forms.push(fnew);
-      this.form_card = fnew;
     },
     removeForm(f) {
       if (f.imported) {
