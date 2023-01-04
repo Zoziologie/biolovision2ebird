@@ -339,9 +339,9 @@ import websites_list from "/data/websites_list.json";
                     "
                   />
                 </b-button>
-                <b-icon icon="x" @click="removeForm(f.id)"></b-icon>
+                <b-icon icon="x" @click="removeForm(f)"></b-icon>
               </b-list-group-item>
-              <b-list-group-item @click="addForm()" href="#" class="text-center"
+              <b-list-group-item @click="addForm({})" href="#" class="text-center"
                 >+</b-list-group-item
               >
             </b-list-group>
@@ -748,8 +748,13 @@ export default {
       };
     },
     createForm(f) {
+      // generate a random id
+      f.id = f.if || (Math.random() + 1).toString(36).substring(7);
+      if (this.forms.map((f) => f.id).includes(f.id) | (f.id == 0)) {
+        throw new Error("Invalid form id " + string(f.id));
+      }
       f = {
-        id: id,
+        id: f.id,
         imported: f.imported || false,
         location_name: f.location_name || "New List " + id.toString(),
         lat: f.lat || null,
@@ -778,26 +783,29 @@ export default {
       this.map_draw = new L.Draw.Rectangle(this.$refs.map.mapObject);
       this.$refs.map.mapObject.on(L.Draw.Event.CREATED, (e) => {
         if (e.layerType === "rectangle") {
+          // Assign sightings to new checklist
           this.sightings.forEach((s) => {
             if (e.layer.getBounds().contains(L.latLng(s.lat, s.lon))) {
               s.form_id = this.assign_form_id;
             }
           });
+          // remove empty checklist
         }
       });
     },
-    addForm() {
-      const id = this.forms.length + 1;
-      this.forms.push(createForm({}));
-      this.form_card = this.forms[this.forms.length - 1];
+    addForm(f) {
+      const fnew = createForm(f);
+      this.forms.push(fnew);
+      this.form_card = fnew;
     },
-    removeForm(id) {
-      if (this.forms[id].imported) {
-        console.log("Not possible to delete an imported form");
-        return;
+    removeForm(f) {
+      if (f.imported) {
+        throw Error("Not possible to delete an imported form");
       } else {
         // change all sightings from this id
-        this.sightings.forEach((s) => (s.form_id = s.form_id == id ? 0 : form_id));
+        this.sightings.forEach((s) => (s.form_id = s.form_id == f.id ? 0 : form_id));
+        // remove the form
+        this.forms = this.forms.filter((i) => i.id !== f.id);
       }
     },
     assignMagic() {
