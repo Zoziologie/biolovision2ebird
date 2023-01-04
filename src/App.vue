@@ -2,8 +2,8 @@
 import logo from "/logo_w.svg";
 import gif from "/b2e.gif";
 import jsonIcon from "/json.png";
-import pinSXFFF from "/pin-s-xfff.png";
-import markerSoft from "/markers-soft.png";
+//import pinSXFFF from "/pin-s-xfff.png";
+//import markerSoft from "/markers-soft.png";
 
 import marker_color from "/data/marker_color.json";
 import tile_providers from "/data/tile_providers.json";
@@ -19,10 +19,11 @@ import websites_list from "/data/websites_list.json";
       <b-link class="py-3 px-0 px-lg-3 rounded text-white text-decoration-none bg-primary" href="/">
         <span class="mr-1">Powered by</span>
 
-        <b-img class="me-3" :src="logo" alt="" height="43" />
+        <b-img class="me-3" :src="logo" alt="" height="38" />
       </b-link>
     </b-row>
-    <b-row class="my-3 p-3 bg-white rounded shadow-sm" v-show="!continue_intro">
+
+    <b-row class="my-3 p-3 bg-white rounded shadow-sm" v-show="!skip_intro">
       <b-col lg="12">
         <h2 class="border-bottom pb-2 mb-3">Introduction</h2>
       </b-col>
@@ -45,9 +46,9 @@ import websites_list from "/data/websites_list.json";
         </p>
         <p>The process is quite simple:</p>
         <ol>
-          <li>Download your data from the original website and load them on this webapp.</li>
-          <li>Group incidental sightings into checklists.</li>
-          <li>Add missing information for the eBird standard.</li>
+          <li>Generate your data from the original website and load them on this webapp.</li>
+          <li>Create checklists and assign individual sightings to checklist.</li>
+          <li>Provide missing information on checklists to fulfill the eBird standards.</li>
           <li>
             Download an
             <b-link
@@ -61,28 +62,30 @@ import websites_list from "/data/websites_list.json";
             >.
           </li>
         </ol>
-
-        <p>
-          Any comments or suggestions? Please submit an issue on
-          <b-link
-            class="btn btn-sm btn-link"
-            href="https://github.com/Zoziologie/Biolovision2eBird/issues"
-            target="_blank"
-            ><b-icon icon="github" aria-hidden="true"></b-icon> Github</b-link
-          >
-          or
-          <b-link class="btn btn-sm btn-link" href="mailto:rafnuss@gmail.com"
-            ><b-icon icon="envelope" aria-hidden="true"></b-icon> Contact me</b-link
-          >.
-        </p>
       </b-col>
       <b-col lg="6">
         <b-img :src="gif" fluid />
       </b-col>
+      <b-col lg="12">
+        <p>
+          Any comments or suggestions? Please submit an issue on
+          <b-link
+            class="btn btn-sm btn-outline-primary"
+            href="https://github.com/Zoziologie/Biolovision2eBird/issues"
+            target="_blank"
+          >
+            <b-icon icon="github" aria-hidden="true"> </b-icon> Github</b-link
+          >
+          or
+          <b-link class="btn btn-sm btn-outline-primary" href="mailto:rafnuss@gmail.com">
+            <b-icon icon="envelope" aria-hidden="true"> </b-icon> Contact me</b-link
+          >.
+        </p>
+      </b-col>
       <b-col>
-        <b-alert variant="warning" show class="mt-3">
+        <b-alert variant="danger" show class="mt-3">
           <h4 class="alert-heading">
-            <b-icon icon="exclamation-octagon" class="mr-1"></b-icon>Required Information
+            <b-icon icon="exclamation-octagon" class="mr-1"> </b-icon>Prerequisites
           </h4>
           <b-form-group>
             <b-form-checkbox-group stacked v-model="important_information">
@@ -92,8 +95,9 @@ import websites_list from "/data/websites_list.json";
                   href="https://ebird.freshdesk.com/en/support/solutions/articles/48000795623#eBird-Checklist-Basics"
                   target="_blank"
                   class="alert-link"
-                  >eBird Core Rules & Requirements.</b-link
                 >
+                  eBird Core Rules & Requirements.
+                </b-link>
               </b-form-checkbox>
               <b-form-checkbox value="2">
                 Understand the differences between
@@ -101,7 +105,8 @@ import websites_list from "/data/websites_list.json";
                   href="https://support.ebird.org/en/support/solutions/articles/48000950859-guide-to-ebird-protocols"
                   class="alert-link"
                   target="_blank"
-                  >eBird Core Protocols</b-link
+                >
+                  eBird Core Protocols </b-link
                 >.
               </b-form-checkbox>
               <b-form-checkbox value="3">
@@ -115,8 +120,10 @@ import websites_list from "/data/websites_list.json";
               </b-form-checkbox>
             </b-form-checkbox-group>
           </b-form-group>
+        </b-alert>
+        <b-alert variant="warning" show class="mt-3">
           <h4 class="alert-heading">
-            <b-icon icon="exclamation-triangle" class="mr-1"></b-icon>Important Information
+            <b-icon icon="exclamation-triangle" class="mr-1" />Important Information
           </h4>
           <ol>
             <li>
@@ -130,10 +137,10 @@ import websites_list from "/data/websites_list.json";
               >, we encourage the use of complete checklist with the stationary and traveling
               protocol. In general, lists should be converted to traveling or stationary by adding
               information on (1) number of observers and (2) distance traveled. If these two
-              information cannot be provided, lists will use the Historical protocol. Individual
-              direct observations (sightings) should be converted to incidental. Under certain
-              conditions, multiple direct observations can be grouped and converted to incomplete
-              traveling, stationary or historical protocols.
+              information cannot be provided, lists will use the historical protocol. Individual
+              direct observations (i.e., sightings) should be converted to incidental checklists if
+              birding was not your primary purpose or to incomplete traveling, stationary or
+              historical protocols.
             </li>
             <li>
               We encourage you to keep the link to your sightings on the original website in the
@@ -148,26 +155,27 @@ import websites_list from "/data/websites_list.json";
                 class="alert-link"
                 >Enter your pre-eBird life list</b-link
               >. On the webapp, import all your sightings and create a single checklist at the step
-              2. Assign sightings. Then, modify location and dates in eBird as recommended on the
-              link above.
+              2. Assign individual sightings. Then, modify location and dates in eBird as
+              recommended on the link above.
             </li>
+            <li>Skip the intro by adding <code>?skip_intro=true</code> to the url</li>
           </ol>
-          <b-col lg="12" class="text-center">
-            <b-button
-              variant="secondary"
-              :disabled="important_information.length < 3"
-              @click="continue_intro = true"
-            >
-              Continue
-            </b-button>
-          </b-col>
         </b-alert>
+      </b-col>
+      <b-col lg="12" class="text-center">
+        <b-button
+          variant="secondary"
+          :disabled="important_information.length < 3"
+          @click="skip_intro = true"
+        >
+          Continue
+        </b-button>
       </b-col>
     </b-row>
 
-    <b-row class="my-3 p-3 bg-white rounded shadow-sm" v-show="continue_intro">
+    <b-row class="my-3 p-3 bg-white rounded shadow-sm" v-show="skip_intro">
       <b-col lg="12">
-        <h2 class="border-bottom pb-2 mb-3">1. Import Biolovision data</h2>
+        <h2 class="border-bottom pb-2 mb-3">1. Generate and load Biolovision data</h2>
       </b-col>
       <b-col lg="6">
         <p>Select the website from which to import the data</p>
@@ -239,8 +247,8 @@ import websites_list from "/data/websites_list.json";
                 "
                 target="_blank"
                 class="btn btn-secondary"
-                >Export data from <strong>{{ website.name }}</strong></a
-              >
+                >Export data from <strong>{{ website.name }}</strong>
+              </a>
             </b-col>
           </template>
           <template v-else-if="website.system == 'observation'">
@@ -273,166 +281,177 @@ import websites_list from "/data/websites_list.json";
           class="mb-2"
         />
         <b-alert v-if="loading_file_status == 0" variant="warning" show>
-          <b-spinner small variant="warning" class="mr-2"></b-spinner>
+          <b-spinner small variant="warning" class="mr-2"> </b-spinner>
           <strong class="me-1">Loading data.</strong>
         </b-alert>
         <b-alert v-else-if="loading_file_status == 1" variant="success" show>
-          <b-icon icon="check-circle-fill" class="mr-2"></b-icon>
+          <b-icon icon="check-circle-fill" class="mr-2"> </b-icon>
           <strong>Data loaded successfuly! </strong>
-          {{ forms.filter((f) => f.imported).length }} forms and {{ sightings.length }} sightings.
+          {{ import_form_sightings_length[0] }} forms and
+          {{ import_form_sightings_length[1] }} individual sightings.
         </b-alert>
         <b-alert v-else-if="loading_file_status == -1" variant="danger" show>
-          <b-icon icon="exclamation-triangle" class="mr-2"></b-icon>
+          <b-icon icon="exclamation-triangle" class="mr-2"> </b-icon>
           <strong>There is an error! </strong>
         </b-alert>
       </b-col>
     </b-row>
 
-    <b-row class="my-3 p-3 bg-white rounded shadow-sm" v-show="sightings.length > 0">
+    <b-row class="my-3 p-3 bg-white rounded shadow-sm" v-if="loading_file_status == 1">
       <b-col lg="12">
         <h2 class="border-bottom pb-2 mb-3">2. Assign sightings to checklist</h2>
       </b-col>
-      <!--<b-col lg="12">
-        <p>
-          The first step is to assign incidental sightings (e.g.
-          <b-img :src="pinSXFFF" height="30" />) to a checklist (e.g.
-          <b-img :src="markerSoft" alt="" height="30" />). You can either create a new checklist or
-          use existing one from imported biolovision list.
-        </p>
-        <p>
-          To assign a sightings to a checklist, select the desired checklist in the list below and
-          click on "Attribute Sightings". This will allow you to draw a rectangle over the
-          sighting(s) you want to assign to the list selected in the list. The sightings markers
-          color will change according to the checklist's color. Remaining non-assigned sightings
-          (white marker) will be deleted.
-        </p>
-        <p>
-          Instead of doing this process manually, there is (new) an "Automatic Attribution". This
-          "magic" function will create checklists and attribute the corresponding incidental
-          sightings automotically. The function is based on a distance and duration threashold to
-          aggregate sightings together. You can still edit automotic attribution later.
-        </p>
-      </b-col>-->
-      <b-col lg="3">
-        <small>Add a marker on the map</small>
-        <b-button variant="secondary" @click="mapDrawMarker.enable()" block>
-          <b-icon icon="list-check" class="mr-1"></b-icon>Create Checklist
-        </b-button>
-      </b-col>
-      <b-col lg="5">
-        <small>Change which form to assign the sightings</small>
-        <b-form-select
-          v-model="assign_form_id"
-          :options="
-            forms.map((f) => {
-              return { value: f.id, text: f.id + '. ' + f.location_name };
-            })
-          "
-          block
-        />
-      </b-col>
-      <b-col lg="4">
-        <small>Draw a rectangle over the sightings</small>
-        <b-button
-          variant="secondary"
-          @click="mapDrawRectangle.enable()"
-          :disabled="assign_form_id == null"
-          block
+      <template v-if="import_form_sightings_length[1] == 0">
+        <b-col
+          ><p>
+            The data uploaded does not contain individual sightings. You can go to step 3.
+          </p></b-col
         >
-          <b-icon icon="square" class="mr-1"></b-icon>Attribute Sightings
-        </b-button>
-      </b-col>
-      <b-col lg="12">
-        <l-map class="w-100 mt-3" style="height: 400px" ref="map" @ready="onLeafletReady">
-          <l-control-layers position="topright"></l-control-layers>
-          <l-tile-layer
-            v-for="tileProvider in tile_providers"
-            :key="tileProvider.name"
-            :name="tileProvider.name"
-            :visible="tileProvider.visible"
-            :url="tileProvider.url"
-            :attribution="tileProvider.attribution"
-            layer-type="base"
+      </template>
+      <template v-else>
+        <b-col lg="12">
+          <p>
+            First, create checklist(s) by adding marker(s) on the map. Then, select in the dropdown
+            the checklists on which you want to assign the individual sightings. Finally, draw a
+            rectangle on the map around the sightings to attribute them to the checklist.
+          </p>
+          <small>
+            The number of the marker on the map corresponds to the order in the dropdown and the
+            color of the sightings match those of the marker. The sightings left on "Non-assign"
+            will not be exported.
+          </small>
+        </b-col>
+        <b-col lg="3">
+          <b-button variant="secondary" @click="mapDrawMarker.enable()" block>
+            <b-icon icon="list-check" class="mr-1"> </b-icon>Create Checklist
+          </b-button>
+        </b-col>
+        <b-col lg="6">
+          <b-form-select
+            v-model="assign_form_id"
+            :options="[
+              { value: 0, text: '0. Non-assigned' },
+              ...forms.map((f) => {
+                return { value: f.id, text: f.id + '. ' + f.location_name };
+              }),
+            ]"
+            block
           />
-          <!--<v-marker-cluster
-            :options="{
-              showCoverageOnHover: false,
-            }"
+        </b-col>
+        <b-col lg="3">
+          <b-button
+            variant="secondary"
+            @click="mapDrawRectangle.enable()"
+            :disabled="assign_form_id == null"
+            block
           >
-            <l-marker v-for="s in sightings" :key="s.locId" :lat-lng="[s.place.lat, s.place.lon]">
-            </l-marker>
-          </v-marker-cluster>-->
-          <l-circle-marker
-            v-for="s in sightings"
-            :key="s.datetime + s.common_name"
-            :lat-lng="[s.lat, s.lon]"
-            :radius="10"
-            :fillColor="marker_color[s.form_id][0]"
-            :color="marker_color[s.form_id][0]"
+            <b-icon icon="square" class="mr-1"></b-icon>Attribute Sightings
+          </b-button>
+        </b-col>
+        <b-col lg="12">
+          <l-map
+            class="w-100 mt-3"
+            style="height: 400px"
+            ref="map"
+            @ready="onLeafletReady"
+            :bounds="mapBounds"
           >
-            <l-popup>
-              <b-table bordered small striped hover responsive :items="object2Table(s)"></b-table>
-            </l-popup>
-          </l-circle-marker>
-          <l-marker
-            v-for="f in forms"
-            :key="'form-' + f.id"
-            :lat-lng="[f.lat, f.lon]"
-            @click="assign_form_id = f.id"
-          >
-            <l-icon
-              :iconAnchor="[
-                mapMarkerHotspotSize / 2,
-                Math.sqrt((mapMarkerHotspotSize * mapMarkerHotspotSize) / 2) +
+            <l-control-layers position="topright" />
+            <l-tile-layer
+              v-for="tileProvider in tile_providers"
+              :key="tileProvider.name"
+              :name="tileProvider.name"
+              :visible="tileProvider.visible"
+              :url="tileProvider.url"
+              :attribution="tileProvider.attribution"
+              layer-type="base"
+            />
+            <l-circle-marker
+              v-for="s in sightings"
+              :key="s.datetime + s.common_name"
+              :lat-lng="[s.lat, s.lon]"
+              :radius="10"
+              :fillColor="marker_color[s.form_id][0]"
+              :color="marker_color[s.form_id][0]"
+            >
+              <l-popup>
+                <b-table bordered small striped hover responsive :items="object2Table(s)" />
+              </l-popup>
+            </l-circle-marker>
+            <l-marker
+              v-for="f in forms"
+              :key="'form-' + f.id"
+              :lat-lng="[f.lat, f.lon]"
+              @click="assign_form_id = f.id"
+            >
+              <l-icon
+                :iconAnchor="[
                   mapMarkerHotspotSize / 2,
-              ]"
-              ><!--  :labelAnchor="[-6, 0]" :popupAnchor="[0, -36]"-->
-              <div style="display: grid">
-                <div
-                  :style="{
-                    'background-color': marker_color[f.id][0],
-                    color: marker_color[f.id][2],
-                    width: mapMarkerHotspotSize + 'px',
-                    height: mapMarkerHotspotSize + 'px',
-                    display: 'block',
-                    position: 'relative',
-                    'border-radius': '3rem 3rem 0',
-                    transform: 'rotate(45deg)',
-                    border: '1px solid #ffffff',
-                  }"
-                ></div>
-                <div
-                  :style="{
-                    color: marker_color[f.id][2],
-                    position: 'absolute',
-                    width: mapMarkerHotspotSize + 'px',
-                    'text-align': 'center',
-                    'line-height': mapMarkerHotspotSize + 'px',
-                  }"
-                >
-                  {{ f.id }}
+                  Math.sqrt((mapMarkerHotspotSize * mapMarkerHotspotSize) / 2) +
+                    mapMarkerHotspotSize / 2,
+                ]"
+              >
+                <div style="display: grid">
+                  <div
+                    :style="{
+                      'background-color': marker_color[f.id][0],
+                      color: marker_color[f.id][2],
+                      width: mapMarkerHotspotSize + 'px',
+                      height: mapMarkerHotspotSize + 'px',
+                      display: 'block',
+                      position: 'relative',
+                      'border-radius': '3rem 3rem 0',
+                      transform: 'rotate(45deg)',
+                      border: '1px solid #ffffff',
+                    }"
+                  ></div>
+                  <div
+                    :style="{
+                      color: marker_color[f.id][2],
+                      position: 'absolute',
+                      width: mapMarkerHotspotSize + 'px',
+                      'text-align': 'center',
+                      'line-height': mapMarkerHotspotSize + 'px',
+                    }"
+                  >
+                    {{ f.id }}
+                  </div>
                 </div>
-              </div>
-            </l-icon>
-          </l-marker>
-        </l-map>
-      </b-col>
-      <!--<b-col lg="12">
-        <p>
-          If sightings belonging to different checklist overlap on the map, use the time filtering
-          below
-        </p>
-        <b-input-group>
-          <b-form-input v-model="assign_date_from" type="datetime-local" />
-          <b-input-group-text class="rounded-0">to</b-input-group-text>
-          <b-form-input v-model="assign_date_to" type="datetime-local" />
-        </b-input-group>
-      </b-col>-->
+              </l-icon>
+            </l-marker>
+          </l-map>
+        </b-col>
+        <b-col lg="12">
+          <p>
+            Instead of doing this process manually, there is (new) an "Automatic Attribution". This
+            "magic" function will create checklists and attribute the corresponding incidental
+            sightings automotically. The function is based on a distance and duration threashold to
+            aggregate sightings together. You can still edit automotic attribution later.
+          </p>
+        </b-col>
+        <b-col lg="4">
+          <b-form-group label="Duration threashold:">
+            <b-form-input v-model="assign_duration" type="number" step="0.1" min="0.1" max="24" />
+          </b-form-group>
+        </b-col>
+        <b-col lg="4">
+          <b-form-group label="Distance threashold:">
+            <b-form-input v-model="assign_distance" type="number" step="0.1" min="0.1" max="5" />
+          </b-form-group>
+        </b-col>
+        <b-col lg="4">
+          <b-form-group label="L:">
+            <b-button variant="primary" block>
+              <b-icon icon="heart" class="mr-1" click="assignMagic()"></b-icon>Automatic Attribution
+            </b-button>
+          </b-form-group>
+        </b-col>
+      </template>
     </b-row>
 
-    <b-row class="my-3 p-3 bg-white rounded shadow-sm" v-show="forms.length > 0">
+    <b-row class="my-3 p-3 bg-white rounded shadow-sm" v-if="forms.length > 0">
       <b-col lg="12">
-        <h2 class="border-bottom pb-2 mb-3">3. Adjust checklists</h2>
+        <h2 class="border-bottom pb-2 mb-3">3. Provide checklists details</h2>
         <p>
           You can navigate into each checklist by clicking on the tab and modify each of them as
           desire. In addition, we automatically added a few improvement such as exact timing and
@@ -441,92 +460,158 @@ import websites_list from "/data/websites_list.json";
         </p>
       </b-col>
       <b-col lg="12">
-        <b-tabs :small="forms.length > 4" pills justified v-if="forms.length > 0">
-          <b-tab v-for="f in forms" :key="f.id" @click="tabClick(f)">
-            <template #title>
-              {{ f.location_name }}
-            </template>
-            <b-alert show variant="danger" class="mt-2" v-if="computeDuration(f) > 1440">
+        <b-card class="mt-2" no-body>
+          <b-tabs pills card sm>
+            <b-tab v-for="f in forms" :key="f.id" @click="form_card = f">
+              <template #title class="d-inline">
+                {{
+                  (f.location_name.length > 15) & (forms.length > 5)
+                    ? f.location_name.slice(0, 15 - 1) + "..."
+                    : f.location_name
+                }}<b-form-checkbox>E </b-form-checkbox>
+              </template>
+            </b-tab>
+          </b-tabs>
+          <b-card-body class="pt-0" v-if="form_card">
+            <b-alert show variant="danger" class="mt-2" v-if="getFormCardDuration > 1440">
               <b-icon-exclamation-triangle-fill class="mr-2" />The checklist
               {{ f.location_name }} contains sightings from different days. It is strongly
               recommended to split them into multiple checklists.
             </b-alert>
-            <b-form-group label="Location Name:">
-              <b-form-input v-model="f.location_name" type="text" />
-            </b-form-group>
-            <b-form-group label="Date and time:">
-              <b-input-group>
-                <b-form-input v-model="f.datetime" type="datetime-local" />
-                <b-input-group-append>
-                  <b-button variant="secondary" @click="f.datetime = computeDatetime(f)"
-                    >auto-compute</b-button
-                  >
-                </b-input-group-append>
-              </b-input-group>
-            </b-form-group>
-            <b-form-group label="Duration (minutes):">
-              <b-input-group>
-                <b-form-input v-model="f.duration" type="number" step="1" min="1" max="1440" />
-                <b-input-group-append>
-                  <b-button variant="secondary" @click="f.duration = computeDuration(f)"
-                    >auto-compute</b-button
-                  >
-                </b-input-group-append>
-              </b-input-group>
-            </b-form-group>
-            <b-form-group label="Distance (km):">
-              <b-input-group>
-                <b-form-input v-model="f.distance" step="0.1" min="0" max="100" type="number" />
-                <b-input-group-append>
-                  <b-button variant="secondary" @click="f.distance = computeDistance(f)"
-                    >auto-compute</b-button
-                  >
-                </b-input-group-append>
-              </b-input-group>
-            </b-form-group>
-            <b-form-group label="Party size:">
-              <b-form-input v-model="f.number_observer" step="1" min="0" max="100" type="number" />
-            </b-form-group>
-            <b-form-checkbox switch v-model="f.primary_purpose">Primary Purpose</b-form-checkbox>
-            <b-form-group label="Protocol:">
-              {{ protocol(f) }}
-            </b-form-group>
-            <b-form-checkbox switch v-model="f.full_form">Complete Checklist</b-form-checkbox>
-            <b-form-checkbox switch v-model="f.include_map">Include static map</b-form-checkbox>
-            <l-map class="w-100 mt-3" style="height: 400px" :ref="'map-' + f.id">
-              <l-control-layers position="topright"></l-control-layers>
-              <l-tile-layer
-                v-for="tileProvider in tile_providers"
-                :key="tileProvider.name"
-                :name="tileProvider.name"
-                :visible="tileProvider.visible"
-                :url="tileProvider.url"
-                :attribution="tileProvider.attribution"
-                layer-type="base"
-              />
-              <l-circle-marker
-                v-for="s in getSightings(f)"
-                :key="s.datetime + s.common_name"
-                :lat-lng="[s.lat, s.lon]"
-                :radius="10"
-                :fillColor="marker_color[s.form_id][0]"
-                :color="marker_color[s.form_id][0]"
-              >
-                <l-popup>
-                  <b-table
-                    bordered
-                    small
-                    striped
-                    hover
-                    responsive
-                    :items="object2Table(s)"
-                  ></b-table>
-                </l-popup>
-              </l-circle-marker>
-              <l-marker :lat-lng="[f.lat, f.lon]" />
-            </l-map>
-          </b-tab>
-        </b-tabs>
+            <b-row>
+              <b-col lg="6">
+                <b-form-group label="Location Name:">
+                  <b-input-group>
+                    <b-form-input v-model="form_card.location_name" type="text" />
+                    <b-input-group-append>
+                      <b-button
+                        variant="secondary"
+                        class="btn-sm"
+                        @click="form_card.location_name = getFormName()"
+                        v-b-tooltip.hover
+                        title="Use the most common location name of all sightings"
+                        >auto</b-button
+                      >
+                    </b-input-group-append>
+                  </b-input-group>
+                </b-form-group>
+              </b-col>
+              <b-col lg="6">
+                <b-form-group label="Date and time:">
+                  <b-input-group>
+                    <b-form-input v-model="form_card.datetime" type="datetime-local" />
+                    <b-input-group-append>
+                      <b-button
+                        variant="secondary"
+                        class="btn-sm"
+                        @click="form_card.datetime = sightings_form_card[0].datetime"
+                        v-b-tooltip.hover
+                        title="Compute earliest datetime of all sightings."
+                        >auto-compute</b-button
+                      >
+                    </b-input-group-append>
+                  </b-input-group>
+                </b-form-group>
+              </b-col>
+              <b-col lg="6">
+                <b-form-group label="Duration (minutes):">
+                  <b-input-group>
+                    <b-form-input
+                      v-model="form_card.duration"
+                      type="number"
+                      step="1"
+                      min="1"
+                      max="1440"
+                    />
+                    <b-input-group-append>
+                      <b-button
+                        variant="secondary"
+                        class="btn-sm"
+                        @click="form_card.duration = getFormCardDuration()"
+                        v-b-tooltip.hover
+                        title="Compute duration between the first and last sightings."
+                        >auto-compute</b-button
+                      >
+                    </b-input-group-append>
+                  </b-input-group>
+                </b-form-group>
+              </b-col>
+              <b-col lg="6">
+                <b-form-group label="Distance (km):">
+                  <b-input-group>
+                    <b-form-input
+                      v-model="form_card.distance"
+                      step="0.1"
+                      min="0"
+                      max="100"
+                      type="number"
+                    />
+                    <b-input-group-append>
+                      <b-button
+                        variant="secondary"
+                        class="btn-sm"
+                        @click="form_card.duration = form_card.distance = getFormCardDistance()"
+                        >auto-compute</b-button
+                      >
+                    </b-input-group-append>
+                  </b-input-group>
+                </b-form-group>
+              </b-col>
+              <b-col lg="6">
+                <b-form-group label="Party size:">
+                  <b-form-input
+                    v-model="form_card.number_observer"
+                    step="1"
+                    min="0"
+                    max="100"
+                    type="number"
+                  />
+                </b-form-group>
+              </b-col>
+              <b-col lg="6">
+                <b-form-checkbox switch v-model="form_card.primary_purpose"
+                  >Primary Purpose</b-form-checkbox
+                >
+                <b-form-group label="Protocol:">
+                  {{ protocol(form_card) }}
+                </b-form-group>
+                <b-form-checkbox switch v-model="form_card.full_form"
+                  >Complete Checklist</b-form-checkbox
+                >
+              </b-col>
+              <b-col lg="6">
+                <b-form-checkbox switch v-model="form_card.include_map"
+                  >Include static map</b-form-checkbox
+                >
+              </b-col>
+            </b-row>
+          </b-card-body>
+          <l-map class="w-100" style="height: 400px" ref="mapCard" :bounds="mapCardBounds">
+            <l-control-layers position="topright" />
+            <l-tile-layer
+              v-for="tileProvider in tile_providers"
+              :key="tileProvider.name"
+              :name="tileProvider.name"
+              :visible="tileProvider.visible"
+              :url="tileProvider.url"
+              :attribution="tileProvider.attribution"
+              layer-type="base"
+            />
+            <l-circle-marker
+              v-for="s in sightings_form_card"
+              :key="s.datetime + s.common_name"
+              :lat-lng="[s.lat, s.lon]"
+              :radius="10"
+              :fillColor="marker_color[s.form_id][0]"
+              :color="marker_color[s.form_id][0]"
+            >
+              <!--<l-popup>
+              <b-table bordered small striped hover responsive :items="object2Table(s)"></b-table>
+            </l-popup>-->
+            </l-circle-marker>
+            <!--<l-marker :lat-lng="[fmapid.lat, fmapid.lon]" />-->
+          </l-map>
+        </b-card>
       </b-col>
     </b-row>
   </b-container>
@@ -566,20 +651,25 @@ export default {
     return {
       sightings: [],
       forms: [],
+      forms_sightings: [],
       website_name: null,
       important_information: [],
-      continue_intro: true, // Change on the final version
+      skip_intro: false, // Change on the final version
       import_query_date: "offset",
       import_query_date_offset: 1,
       import_query_date_range_from: "",
       import_query_date_range_to: "",
       loading_file_status: null,
-      assign_date_from: "",
-      assign_date_to: "",
-      assign_form_id: null,
+      import_form_sightings_length: [0, 0],
+      assign_form_id: 0,
+      mapBounds: null,
+      assign_distance: 0.5,
+      assign_duration: 1,
       mapDrawMarker: null,
       mapDrawRectangle: null,
       mapMarkerHotspotSize: 24,
+      form_card: null,
+      mapCardBounds: null,
     };
   },
   methods: {
@@ -615,15 +705,15 @@ export default {
           const data = JSON.parse(reader.result).data;
           // Create empty forms and sightings if not presents
           data.forms = data.forms || [];
-          data.sightings = data.sightings || [];
+          this.sightings = data.sightings || [];
 
           const sightingsTransformation = function (sightings, form_id) {
             return sightings.map((s) => {
               return {
                 form_id: form_id,
                 datetime: s.observers[0].timing["@ISO8601"].split("+")[0],
-                lat: s.place.coord_lat,
-                lon: s.place.coord_lon,
+                lat: s.observers[0].coord_lat,
+                lon: s.observers[0].coord_lon,
                 location_name: s.place.name,
                 common_name: s.species.name,
                 scientific_name: s.species.latin_name,
@@ -634,13 +724,16 @@ export default {
             });
           };
 
-          this.sightings = sightingsTransformation(data.sightings, 0);
+          this.sightings = sightingsTransformation(this.sightings, 0);
+
+          this.forms_sightings = data.forms.map((f, fid) => {
+            return sightingsTransformation(f.sightings, fid + 1);
+          });
 
           this.forms = data.forms.map((f, fid) => {
             const date = f.sightings[0].observers[0].timing["@ISO8601"].split("T")[0];
             const timeStart = date + "T" + f.time_start;
             const timeStop = date + "T" + f.time_stop;
-
             return {
               id: fid + 1,
               imported: true,
@@ -653,36 +746,47 @@ export default {
               number_observer: null,
               full_form: f.full_form == "1",
               primary_purpose: true,
-              include_map: true,
-              path: f.protocol.wkt,
-              sightings: sightingsTransformation(f.sightings, fid + 1),
+              checklist_comment: "",
+              species_comment: "",
+              static_map: {
+                path: f.protocol.wkt,
+                display: true,
+                zoom: null,
+                lon: null,
+                lat: null,
+              },
             };
           });
+          this.form_card = this.forms.length > 0 ? this.forms[this.forms.length - 1] : null;
         } else {
           this.loading_file_status = -1;
-          throw new Error("No correct sytem");
+          throw new Error("No correct system");
         }
 
-        if (this.sightings.length > 0) {
-          this.assign_date_from = this.sightings[0].datetime;
-          this.assign_date_to = this.sightings[this.sightings.length - 1].datetime;
-        }
+        this.import_form_sightings_length = [this.forms.length, this.sightings.length];
 
-        setTimeout(() => {
-          this.map.mapObject.invalidateSize();
-          this.map.fitBounds(
-            L.latLngBounds([...this.sightings, ...this.forms].map((s) => L.latLng(s.lat, s.lon)))
-          );
-        }, 500);
         this.loading_file_status = 1;
+
+        this.mapBounds = L.latLngBounds(
+          [...this.sightings, ...this.forms].map((s) => L.latLng(s.lat, s.lon))
+        ).pad(0.05);
+
+        /*setTimeout(() => {
+          this.$refs.map.mapObject.invalidateSize();
+          this.$refs.map.fitBounds(
+            L.latLngBounds(
+              [...this.sightings, ...this.forms].map((s) => L.latLng(s.lat, s.lon))
+            ).pad(0.05)
+          );
+        }, 500);*/
       };
     },
     async onLeafletReady() {
       await this.$nextTick();
-      this.mapDrawMarker = new L.Draw.Marker(this.map.mapObject);
-      this.mapDrawRectangle = new L.Draw.Rectangle(this.map.mapObject);
+      this.mapDrawMarker = new L.Draw.Marker(this.$refs.map.mapObject);
+      this.mapDrawRectangle = new L.Draw.Rectangle(this.$refs.map.mapObject);
 
-      this.map.mapObject.on(L.Draw.Event.CREATED, (e) => {
+      this.$refs.map.mapObject.on(L.Draw.Event.CREATED, (e) => {
         if (e.layerType === "marker") {
           const latLng = e.layer.getLatLng();
           const id = this.forms.length + 1;
@@ -708,9 +812,9 @@ export default {
               lon: null,
               lat: null,
             },
-            sightings: [],
           });
           this.assign_form_id = id;
+          this.form_card = this.forms[this.forms.length - 1];
         } else if (e.layerType === "rectangle") {
           this.sightings.forEach((s) => {
             if (e.layer.getBounds().contains(L.latLng(s.lat, s.lon))) {
@@ -720,19 +824,34 @@ export default {
         }
       });
     },
-    tabClick(f) {
-      setTimeout(() => {
-        this.$refs["map-" + f.id][0].mapObject.invalidateSize();
-        this.$refs["map-" + f.id][0].mapObject.fitBounds(
-          L.latLngBounds([
-            L.latLng(f.lat, f.lon),
-            ...this.getSightings(f).map((s) => L.latLng(s.lat, s.lon)),
-          ])
-        );
-      }, 500);
-    },
-    getSightings(f) {
-      return [...f.sightings, ...this.sightings.filter((s) => s.form_id == f.id)];
+    assignMagic() {
+      const datetime = this.sightings.map((s) => new Date(s.datetime));
+      const form_id = this.sightings.map((s) => s.form_id);
+      for (var i = 0; i < this.sightings.length; i++) {
+        for (var j = 0; j < i; j++) {
+          if (abs(datetime[i] - datetime[j]) < this.assign_duration * 60 * 60 * 1000) {
+            var km = distance(
+              this.sightings[j].observers[0].coord_lat,
+              this.sightings[j].observers[0].coord_lon,
+              this.sightings[i].observers[0].coord_lat,
+              this.sightings[i].observers[0].coord_lon
+            );
+            if (km < this.assign_distance) {
+              form_id[i] = form_id[j];
+              break;
+            }
+          }
+        }
+        // New checklist
+        if (form_id[i] == 0) {
+          var marker = L.marker([
+            this.sightings[i].observers[0].coord_lat,
+            this.sightings[i].observers[0].coord_lon,
+          ]);
+          var id = addHotspot(marker);
+          this.sightings[i].form = id;
+        }
+      }
     },
     protocol(f) {
       if (f.primary_purpose) {
@@ -772,18 +891,14 @@ export default {
             `Imported with <a href="https://zoziologie.raphaelnussbaumer.com/biolovision2ebird/">biolovision2eBird<a>.
       `;
     },
-    computeDatetime(f) {
-      return this.getSightings(f)[0].datetime;
+    getFormName() {
+      return this.mode(this.sightings_form_card.map((s) => s.location_name));
     },
-    computeDuration(f) {
-      const sightings = this.getSightings(f);
-      if (sightings.length == 0) {
-        return null;
-      }
-      const datetime = sightings.map((s) => new Date(s.datetime)).sort();
+    getFormCardDuration() {
+      const datetime = this.sightings_form_card.map((s) => new Date(s.datetime)).sort();
       return Math.round((datetime[datetime.length - 1] - datetime[0]) / 1000 / 60);
     },
-    computeDistance(f) {
+    getFormCardDistance() {
       return null;
     },
   },
@@ -791,16 +906,31 @@ export default {
     website() {
       return websites_list.filter((w) => w.name == this.website_name)[0];
     },
-    checklists() {
-      //combine sightings into checklists
-      const forms_sightings = []; // this.sigthings
-      return [...this.forms, ...forms_sightings];
+    sightings_form_card() {
+      if (!this.form_card) {
+        console.log("Error with form_card");
+        return [];
+      }
+      console.log("get sightings for form " + String(this.form_card.id));
+
+      const sightings = this.form_card.imported
+        ? this.forms_sightings[this.form_card.id - 1]
+        : this.sightings.filter((s) => s.form_id == this.form_card.id);
+
+      this.mapCardBounds =
+        sightings.length > 0
+          ? L.latLngBounds(sightings.map((s) => L.latLng(s.lat, s.lon))).pad(0.05)
+          : this.mapCardBounds;
+
+      return sightings;
     },
   },
   mounted() {
-    this.map = this.$refs.map;
     this.website_name = this.$cookie.get("website_name");
     this.important_information = JSON.parse(this.$cookie.get("important_information"));
+
+    const urlParams = new URLSearchParams(window.location.search);
+    this.skip_intro = urlParams.get("skip_intro") ? true : false;
   },
   watch: {
     website_name() {
