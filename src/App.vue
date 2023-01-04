@@ -1,13 +1,11 @@
 <script setup>
 import logo from "/logo_w.svg";
 
-import jsonIcon from "/json.png";
 //import pinSXFFF from "/pin-s-xfff.png";
 //import markerSoft from "/markers-soft.png";
 
 import marker_color from "/data/marker_color.json";
 import tile_providers from "/data/tile_providers.json";
-import websites_list from "/data/websites_list.json";
 </script>
 
 <template class="bg-light">
@@ -26,134 +24,13 @@ import websites_list from "/data/websites_list.json";
 
     <Intro v-show="!skip_intro" @skipIntro="skip_intro = true" />
 
-    <b-row class="my-3 p-3 bg-white rounded shadow-sm" v-show="skip_intro">
-      <b-col lg="12">
-        <h2 class="border-bottom pb-2 mb-3">1. Generate and load Biolovision data</h2>
-      </b-col>
-      <b-col lg="6">
-        <p>Select the website from which to import the data</p>
-        <b-select v-model="website_name">
-          <b-select-option-group
-            v-for="cat in new Set(websites_list.map((w) => w.category))"
-            :label="cat"
-            :key="cat"
-          >
-            <b-select-option
-              v-for="w in websites_list.filter((wl) => wl.category == cat)"
-              :key="w.name"
-              :value="w.name"
-            >
-              {{ w.name }}
-            </b-select-option>
-          </b-select-option-group>
-        </b-select>
-        <b-row class="m-3 p-3 text-white rounded shadow-sm bg-blue" v-if="website">
-          <template v-if="website.system == 'biolovision'">
-            <p>
-              For biolovision website, export your data file as json
-              <b-img :src="jsonIcon" />. You can use the form below as a starting point to generate
-              the file.
-            </p>
-            <b-col lg="12">
-              <b-form-radio v-model="import_query_date" value="offset">
-                <b-input-group append="days ago">
-                  <b-form-input
-                    v-model="import_query_date_offset"
-                    min="0"
-                    type="number"
-                    value="1"
-                    :disabled="import_query_date != 'offset'"
-                  />
-                </b-input-group>
-              </b-form-radio>
-            </b-col>
-            <b-col lg="12" class="mt-2">
-              <b-form-radio v-model="import_query_date" value="range">
-                <b-input-group>
-                  <b-form-input
-                    v-model="import_query_date_range_from"
-                    type="date"
-                    :disabled="import_query_date != 'range'"
-                  />
-                  <b-input-group-text class="rounded-0">to</b-input-group-text>
-                  <b-form-input
-                    v-model="import_query_date_range_to"
-                    type="date"
-                    :disabled="import_query_date != 'range'"
-                  />
-                </b-input-group>
-              </b-form-radio>
-            </b-col>
-            <b-col lg="12" class="text-center mt-2">
-              <a
-                :href="
-                  website.website +
-                  '/index.php?m_id=31&sp_DChoice=' +
-                  import_query_date +
-                  '&sp_DFrom=' +
-                  new Date(import_query_date_range_from).toLocaleDateString('fr-CH') +
-                  '&sp_DTo=' +
-                  new Date(import_query_date_range_to).toLocaleDateString('fr-CH') +
-                  '&sp_DOffset=' +
-                  import_query_date_offset +
-                  '&sp_SChoice=all&sp_PChoice=all&sp_OnlyMyData=1'
-                "
-                target="_blank"
-                class="btn btn-secondary"
-                >Export data from <strong>{{ website.name }}</strong>
-              </a>
-            </b-col>
-          </template>
-          <template v-else-if="website.system == 'observation'">
-            <p>
-              Data from observation.org can be exported from the Observations menu. Login and click
-              on your name top right of the page: https://observation.org/
-            </p>
-          </template>
-          <template v-else-if="website.system == 'birdtrack'">
-            <p>https://app.bto.org/birdtrack/explore/emr.jsp</p>
-          </template>
-          <template v-else-if="website.system == 'birdlasser'">
-            <p>
-              Data from birdlasser can only be downloaded from the app (to my knowledge). Selec the
-              trip card and use "Export (CSV) trip card". Upload the CSV file below.
-            </p>
-          </template>
-        </b-row>
-      </b-col>
-      <b-col lg="6" v-if="website">
-        <p>
-          Load the data file into the webapp (the data remains in your browser and are never send on
-          internet).
-        </p>
-        <b-form-file
-          size="lg"
-          @change="processFile"
-          :accept="website.extension"
-          :placeholder="'Click to load your ' + website.extension + ' file'"
-          class="mb-2"
-        />
-        <b-alert v-if="loading_file_status == 0" variant="warning" show>
-          <b-spinner small variant="warning" class="mr-2"> </b-spinner>
-          <strong class="me-1">Loading data.</strong>
-        </b-alert>
-        <b-alert v-else-if="loading_file_status == 1" variant="success" show>
-          <b-icon icon="check-circle-fill" class="mr-2"> </b-icon>
-          <strong>Data loaded successfuly! </strong>
-          {{ number_imported_form }} forms and {{ number_imported_sightings }} individual sightings.
-        </b-alert>
-        <b-alert v-else-if="loading_file_status == -1" variant="danger" show>
-          <b-icon icon="exclamation-triangle" class="mr-2"> </b-icon>
-          <strong>There is an error! </strong>
-        </b-alert>
-      </b-col>
-    </b-row>
+    <Import v-show="skip_intro" @exportData="importData" />
 
-    <b-row class="my-3 p-3 bg-white rounded shadow-sm" v-if="loading_file_status == 1">
+    <b-row class="my-3 p-3 bg-white rounded shadow-sm" v-if="count_forms != null">
       <b-col lg="12">
         <h2 class="border-bottom pb-2 mb-3">2. Assign sightings to checklist</h2>
       </b-col>
-      <template v-if="number_imported_sightings == 0">
+      <template v-if="sightings.length == 0">
         <b-col
           ><p>
             The data uploaded does not contain individual sightings. You can go to step 3.
@@ -238,7 +115,7 @@ import websites_list from "/data/websites_list.json";
               :color="marker_color[s.form_id][0]"
             >
               <l-popup>
-                <b-table bordered small striped hover responsive :items="object2Table(s)" />
+                <b-table bordered small striped hover responsive :items="fx.object2Table(s)" />
               </l-popup>
             </l-circle-marker>
             <l-marker
@@ -444,7 +321,7 @@ import websites_list from "/data/websites_list.json";
               :color="marker_color[s.form_id][0]"
             >
               <!--<l-popup>
-              <b-table bordered small striped hover responsive :items="object2Table(s)"></b-table>
+              <b-table bordered small striped hover responsive :items="fx.object2Table(s)"></b-table>
             </l-popup>-->
             </l-circle-marker>
             <!--<l-marker :lat-lng="[fmapid.lat, fmapid.lon]" />-->
@@ -505,8 +382,11 @@ import {
   LIcon,
 } from "vue2-leaflet";
 
+import fx from "./functions";
+
 import IconChecklist from "./IconChecklist.vue";
 import Intro from "./Intro.vue";
+import Import from "./Import.vue";
 
 export default {
   components: {
@@ -521,23 +401,15 @@ export default {
     LCircleMarker,
     IconChecklist,
     Intro,
+    Import,
   },
   data() {
     return {
       sightings: [],
-      sightings_forms: [],
       forms: [],
       forms_sightings: [],
-      website_name: null,
       skip_intro: false, // Change on the final version
-      import_query_date: "offset",
-      import_query_date_offset: 1,
-      import_query_date_range_from: "",
-      import_query_date_range_to: "",
-      loading_file_status: null,
-      number_imported_form: 0,
-      number_imported_sightings: 0,
-      count_forms: 1,
+      count_forms: null,
       assign_form_id: 0,
       create_checklist: false,
       map_bounds: null,
@@ -551,137 +423,19 @@ export default {
     };
   },
   methods: {
-    formatNb(x) {
-      return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    },
-    mode(arr) {
-      return arr
-        .sort((a, b) => arr.filter((v) => v === a).length - arr.filter((v) => v === b).length)
-        .pop();
-    },
-    object2Table(s) {
-      return Object.entries(s).map(([k, v]) => {
-        return { Properties: k, Value: v };
-      });
-    },
-    processFile(event) {
-      this.loading_file_status = 0;
-      const file = event.target.files[0];
+    importData(d) {
+      this.forms = d.forms;
+      this.sightings = d.sightings;
+      this.forms_sightings = d.forms_sightings;
 
-      const reader = new FileReader();
-      if (file.type == "xlsx") {
-        reader.readAsBinaryString(file);
-      } else {
-        reader.readAsText(file);
-      }
-      reader.onerror = (error) => {
-        throw new Error(error);
-        this.loading_file_status = -1;
-      };
-      reader.onload = (e) => {
-        if (this.website.system == "biolovision") {
-          const data = JSON.parse(reader.result).data;
-          // Create empty forms and sightings if not presents
-          data.forms = data.forms || [];
-          data.sightings = data.sightings || [];
+      this.count_forms = this.forms.length;
 
-          // Define the standard mapping of biolovision sightings to the webapp sightings
-          const sightingsTransformation = function (sightings, form_id) {
-            return sightings.map((s) => {
-              return {
-                form_id: form_id,
-                datetime: s.observers[0].timing["@ISO8601"].split("+")[0],
-                lat: parseFloat(s.observers[0].coord_lat),
-                lon: parseFloat(s.observers[0].coord_lon),
-                location_name: s.place.name,
-                common_name: s.species.name,
-                scientific_name: s.species.latin_name,
-                species_count: s.observers.count,
-                species_count_precision: s.observers.estimation_code,
-                species_comment: s.observers.comment || "",
-              };
-            });
-          };
+      // Define the default form_card with the latest forms of the list
+      this.form_card = this.count_forms > 0 ? this.forms[this.count_forms - 1] : null;
 
-          // Convert individual sightings
-          this.sightings = sightingsTransformation(data.sightings, 0);
-
-          // convert form data
-          this.forms = data.forms.map((f) => {
-            const date = f.sightings[0].observers[0].timing["@ISO8601"].split("T")[0];
-            const timeStart = date + "T" + f.time_start;
-            const timeStop = date + "T" + f.time_stop;
-            return this.createForm({
-              imported: true,
-              location_name: this.mode(f.sightings.map((s) => s.place.name)),
-              lat: f.lat,
-              lon: f.lon,
-              datetime: timeStart,
-              duration: (new Date(timeStop) - new Date(timeStart)) / 1000 / 60,
-              distance: null,
-              number_observer: null,
-              full_form: f.full_form == "1",
-              primary_purpose: true,
-              checklist_comment: "",
-              species_comment: "",
-              static_map: {
-                path: f.protocol.wkt,
-                display: true,
-                zoom: null,
-                lon: null,
-                lat: null,
-              },
-            });
-          });
-
-          // Convert sightings from the forms, keep them seperate
-          this.forms_sightings = data.forms.map((f, fid) => {
-            return sightingsTransformation(f.sightings, this.forms[fid].id);
-          });
-
-          // Define the default form_card with the latest forms of the list
-          this.form_card = this.forms.length > 0 ? this.forms[this.forms.length - 1] : null;
-        } else {
-          this.loading_file_status = -1;
-          throw new Error("No correct system");
-        }
-
-        this.number_imported_form = this.forms.length;
-        this.number_imported_sightings = this.sightings.length;
-
-        this.loading_file_status = 1;
-
-        this.map_bounds = L.latLngBounds(
-          [...this.sightings, ...this.forms].map((s) => L.latLng(s.lat, s.lon))
-        ).pad(0.05);
-      };
-    },
-    createForm(f) {
-      f = {
-        id: this.count_forms,
-        imported: f.imported || false,
-        location_name: f.location_name || "New List " + f.id,
-        lat: f.lat || null,
-        lon: f.lon || null,
-        datetime: f.datetime || null,
-        duration: f.duration || null,
-        distance: f.distance || null,
-        number_observer: f.number_observer || null,
-        full_form: f.full_form || false,
-        primary_purpose: f.primary_purpose || false,
-        checklist_comment: f.checklist_comment || "",
-        species_comment: f.species_comment || "",
-        static_map: f.static_map || {},
-      };
-      f.static_map = {
-        path: f.static_map.lat || null,
-        display: f.static_map.lat || true,
-        zoom: f.static_map.lat || null,
-        lon: f.static_map.lat || null,
-        lat: f.static_map.lat || null,
-      };
-      this.count_forms = this.count_forms + 1;
-      return f;
+      this.map_bounds = L.latLngBounds(
+        [...this.sightings, ...this.forms].map((s) => L.latLng(s.lat, s.lon))
+      ).pad(0.05);
     },
     async onLeafletReady() {
       await this.$nextTick();
@@ -700,14 +454,18 @@ export default {
           } else {
             // create new checklist if necessaary
             if (this.create_checklist) {
-              const fnew = this.createForm({
-                location_name: this.mode(sightings.map((s) => s.location_name)),
-                lat: sightings.reduce((a, b) => a + b.lat, 0) / sightings.length,
-                lon: sightings.reduce((a, b) => a + b.lon, 0) / sightings.length,
-              });
+              const fnew = fx.createForm(
+                {
+                  location_name: fx.mode(sightings.map((s) => s.location_name)),
+                  lat: sightings.reduce((a, b) => a + b.lat, 0) / sightings.length,
+                  lon: sightings.reduce((a, b) => a + b.lon, 0) / sightings.length,
+                },
+                this.count_forms + 1
+              );
               this.forms.push(fnew);
               this.assign_form_id = fnew.id;
               this.form_card = fnew;
+              this.count_forms = this.count_forms + 1;
               this.create_checklist = false;
             }
             // Assign sightings to new checklist
@@ -791,7 +549,7 @@ export default {
       `;
     },
     getFormName() {
-      return this.mode(this.sightings_form_card.map((s) => s.location_name));
+      return fx.mode(this.sightings_form_card.map((s) => s.location_name));
     },
     getFormCardDuration() {
       const datetime = this.sightings_form_card.map((s) => new Date(s.datetime)).sort();
@@ -809,9 +567,6 @@ export default {
     },
   },
   computed: {
-    website() {
-      return websites_list.filter((w) => w.name == this.website_name)[0];
-    },
     sightings_form_card() {
       if (!this.form_card) {
         throw Error("Error with form_card");
@@ -828,14 +583,8 @@ export default {
     },
   },
   mounted() {
-    this.website_name = this.$cookie.get("website_name");
     const urlParams = new URLSearchParams(window.location.search);
     this.skip_intro = urlParams.get("skip_intro") ? true : false;
-  },
-  watch: {
-    website_name() {
-      this.$cookie.set("website_name", this.website_name, 365);
-    },
   },
 };
 </script>
