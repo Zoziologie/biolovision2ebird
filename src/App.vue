@@ -255,7 +255,7 @@ import websites_list from "/data/websites_list.json";
               "
               :zIndexOffset="1000"
             >
-              <IconHotspot :size="24" :fid="f.id" />
+              <IconChecklist :size="24" :fid="f.id" />
             </l-marker>
           </l-map>
         </b-col>
@@ -459,7 +459,7 @@ import websites_list from "/data/websites_list.json";
               "
               :zIndexOffset="1000"
             >
-              <IconHotspot :size="24" :fid="form_card.id" />
+              <IconChecklist :size="24" :fid="form_card.id" />
             </l-marker>
           </l-map>
         </b-card>
@@ -488,7 +488,7 @@ import {
   LIcon,
 } from "vue2-leaflet";
 
-import IconHotspot from "./IconHotspot.vue";
+import IconChecklist from "./IconChecklist.vue";
 import Intro from "./Intro.vue";
 
 export default {
@@ -502,7 +502,7 @@ export default {
     LMarker,
     LIcon,
     LCircleMarker,
-    IconHotspot,
+    IconChecklist,
     Intro,
   },
   data() {
@@ -678,7 +678,7 @@ export default {
           );
           if (sightings.length == 0) {
             alert(
-              "You tried to create a hotspot with no sightings. Please try again by drawing the rectangle over sightings"
+              "You tried to create a checklist with no sightings. Please try again by drawing the rectangle over sightings"
             );
           } else {
             // create new checklist if necessaary
@@ -732,12 +732,6 @@ export default {
         }
         // New checklist
         if (form_id[i] == 0) {
-          var marker = L.marker([
-            this.sightings[i].observers[0].coord_lat,
-            this.sightings[i].observers[0].coord_lon,
-          ]);
-          var id = addHotspot(marker);
-          this.sightings[i].form = id;
         }
       }
     },
