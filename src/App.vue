@@ -287,8 +287,7 @@ import websites_list from "/data/websites_list.json";
         <b-alert v-else-if="loading_file_status == 1" variant="success" show>
           <b-icon icon="check-circle-fill" class="mr-2"> </b-icon>
           <strong>Data loaded successfuly! </strong>
-          {{ import_form_sightings_length[0] }} forms and
-          {{ import_form_sightings_length[1] }} individual sightings.
+          {{ number_imported_form }} forms and {{ number_imported_sightings }} individual sightings.
         </b-alert>
         <b-alert v-else-if="loading_file_status == -1" variant="danger" show>
           <b-icon icon="exclamation-triangle" class="mr-2"> </b-icon>
@@ -301,7 +300,7 @@ import websites_list from "/data/websites_list.json";
       <b-col lg="12">
         <h2 class="border-bottom pb-2 mb-3">2. Assign sightings to checklist</h2>
       </b-col>
-      <template v-if="import_form_sightings_length[1] == 0">
+      <template v-if="number_imported_sightings == 0">
         <b-col
           ><p>
             The data uploaded does not contain individual sightings. You can go to step 3.
@@ -336,7 +335,7 @@ import websites_list from "/data/websites_list.json";
                     icon="square"
                     @click="
                       assign_form_id = f.id;
-                      mapDrawRectangle.enable();
+                      map_draw.enable();
                     "
                   />
                 </b-button>
@@ -351,7 +350,7 @@ import websites_list from "/data/websites_list.json";
         <!--<b-col lg="3">
           <b-button
             variant="secondary"
-            @click="mapDrawRectangle.enable()"
+            @click="map_draw.enable()"
             :disabled="assign_form_id == null"
             block
           >
@@ -364,7 +363,7 @@ import websites_list from "/data/websites_list.json";
             style="height: 400px"
             ref="map"
             @ready="onLeafletReady"
-            :bounds="mapBounds"
+            :bounds="map_bounds"
           >
             <l-control-layers position="topright" />
             <l-tile-layer
@@ -555,7 +554,7 @@ import websites_list from "/data/websites_list.json";
               </b-col>
             </b-row>
           </b-card-body>
-          <l-map class="w-100" style="height: 400px" ref="mapCard" :bounds="mapCardBounds">
+          <l-map class="w-100" style="height: 400px" ref="mapCard" :bounds="map_card_bounds">
             <l-control-layers position="topright" />
             <l-tile-layer
               v-for="tileProvider in tile_providers"
@@ -629,15 +628,16 @@ export default {
       import_query_date_range_from: "",
       import_query_date_range_to: "",
       loading_file_status: null,
-      import_form_sightings_length: [0, 0],
+      number_imported_form: 0,
+      number_imported_sightings: 0,
       assign_form_id: 0,
-      mapBounds: null,
+      map_bounds: null,
       assign_distance: 0.5,
       assign_duration: 1,
-      mapDrawRectangle: null,
-      mapMarkerHotspotSize: 24,
+      map_draw: null,
+      map_marker_hotspot_size: 24,
       form_card: null,
-      mapCardBounds: null,
+      map_card_bounds: null,
     };
   },
   methods: {
@@ -737,11 +737,12 @@ export default {
           throw new Error("No correct system");
         }
 
-        this.import_form_sightings_length = [this.forms.length, this.sightings.length];
+        this.number_imported_form = this.forms.length;
+        this.number_imported_sightings = this.sightings.length;
 
         this.loading_file_status = 1;
 
-        this.mapBounds = L.latLngBounds(
+        this.map_bounds = L.latLngBounds(
           [...this.sightings, ...this.forms].map((s) => L.latLng(s.lat, s.lon))
         ).pad(0.05);
       };
@@ -774,7 +775,7 @@ export default {
     },
     async onLeafletReady() {
       await this.$nextTick();
-      this.mapDrawRectangle = new L.Draw.Rectangle(this.$refs.map.mapObject);
+      this.map_draw = new L.Draw.Rectangle(this.$refs.map.mapObject);
       this.$refs.map.mapObject.on(L.Draw.Event.CREATED, (e) => {
         if (e.layerType === "rectangle") {
           this.sightings.forEach((s) => {
@@ -892,10 +893,10 @@ export default {
         ? this.forms_sightings[this.form_card.id - 1]
         : this.sightings.filter((s) => s.form_id == this.form_card.id);
 
-      this.mapCardBounds =
+      this.map_card_bounds =
         sightings.length > 0
           ? L.latLngBounds(sightings.map((s) => L.latLng(s.lat, s.lon))).pad(0.05)
-          : this.mapCardBounds;
+          : this.map_card_bounds;
 
       return sightings;
     },
