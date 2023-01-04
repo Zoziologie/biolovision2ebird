@@ -885,6 +885,13 @@ export default {
     getFormCardDistance() {
       return null;
     },
+    getSightings(f) {
+      console.log("get sightings from form " + String(this.form_card.id));
+
+      return this.form_card.imported
+        ? this.forms_sightings[this.form_card.id - 1]
+        : this.sightings.filter((s) => s.form_id == this.form_card.id);
+    },
   },
   computed: {
     website() {
@@ -892,14 +899,10 @@ export default {
     },
     sightings_form_card() {
       if (!this.form_card) {
-        console.log("Error with form_card");
-        return [];
+        throw Error("Error with form_card");
       }
-      console.log("get sightings for form " + String(this.form_card.id));
 
-      const sightings = this.form_card.imported
-        ? this.forms_sightings[this.form_card.id - 1]
-        : this.sightings.filter((s) => s.form_id == this.form_card.id);
+      const sightings = this.getSightings(this.form_card);
 
       this.map_card_bounds =
         sightings.length > 0
