@@ -517,6 +517,13 @@ import tile_providers from "/data/tile_providers.json";
       </b-col>
     </b-row>
 
+    <Export
+      :forms="forms"
+      :sightings="sightings"
+      :form_sightings="forms_sightings"
+      v-if="forms.length > 0"
+    />
+
     <b-row class="d-flex justify-content-between p-3 my-3 text-white rounded shadow-sm bg-blue">
       <b-col lg="12">
         Any comments or suggestions? Please submit an issue on
@@ -561,6 +568,7 @@ import fx from "./functions";
 import IconChecklist from "./IconChecklist.vue";
 import Intro from "./Intro.vue";
 import Import from "./Import.vue";
+import Export from "./Export.vue";
 
 export default {
   components: {
@@ -576,6 +584,7 @@ export default {
     IconChecklist,
     Intro,
     Import,
+    Export,
   },
   data() {
     return {
