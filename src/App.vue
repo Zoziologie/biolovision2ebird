@@ -570,9 +570,11 @@ export default {
       this.forms = this.forms.filter((f) => f.imported | form_id.includes(f.id));
     },
     assignReset() {
-      this.sightings.forEach((s) => (s.form_id = 0));
-      this.forms = this.forms.filter((f) => f.imported);
-      this.count_forms = this.forms.length;
+      if (confirm("Are you sure you want to reset the assign map? This action cannot be undone.")) {
+        this.sightings.forEach((s) => (s.form_id = 0));
+        this.forms = this.forms.filter((f) => f.imported);
+        this.count_forms = this.forms.length;
+      }
     },
     assignMagic() {
       let sightings = this.sightings.filter((s) => s.form_id == 0);
