@@ -38,7 +38,7 @@ import tile_providers from "/data/tile_providers.json";
         >
       </template>
       <template v-else>
-        <b-col lg="12">
+        <b-col lg="6">
           <p>
             First, create checklist(s) by adding marker(s) on the map. Then, select in the dropdown
             the checklists on which you want to assign the individual sightings. Finally, draw a
@@ -50,9 +50,48 @@ import tile_providers from "/data/tile_providers.json";
             will not be exported.
           </small>
         </b-col>
+        <b-col lg="6">
+          <h5>Automatic attribution</h5>
+          <p>
+            Instead of doing this process manually, there is (new) an "Automatic Attribution". This
+            "magic" function will create checklists and attribute the corresponding incidental
+            sightings automotically. The function is based on a distance and duration threashold to
+            aggregate sightings together. You can still edit automotic attribution later.
+          </p>
+          <b-row>
+            <b-col lg="4">
+              <b-input-group append="hr">
+                <b-form-input
+                  v-model="assign_duration"
+                  type="number"
+                  step="0.1"
+                  min="0.1"
+                  max="24"
+                />
+              </b-input-group>
+            </b-col>
+            <b-col lg="4">
+              <b-input-group append="km">
+                <b-form-input
+                  v-model="assign_distance"
+                  type="number"
+                  step="0.1"
+                  min="0.1"
+                  max="5"
+                />
+              </b-input-group>
+            </b-col>
+            <b-col lg="4">
+              <b-button variant="primary" block @click="assignMagic">
+                <b-icon icon="arrow-repeat" class="mr-1"></b-icon>Magic tool
+              </b-button>
+            </b-col>
+          </b-row>
+        </b-col>
+
         <b-col lg="12">
           <l-map
-            class="w-100"
+            class="w-100 mt-2"
             style="height: 400px"
             ref="map_sightings"
             @ready="onMapSightingsReady"
@@ -66,6 +105,9 @@ import tile_providers from "/data/tile_providers.json";
                   @click="
                     create_checklist = true;
                     map_draw_rectangle.enable();
+                  "
+                  v-b-tooltip.hover="
+                    'Draw a rectangle on the map to initialize the new checklists with sightings included in the rectangle.'
                   "
                 >
                   <b-icon icon="plus" /> Create a checklist
@@ -88,16 +130,23 @@ import tile_providers from "/data/tile_providers.json";
                       variant="primary"
                       @click="map_draw_rectangle.enable()"
                       v-show="forms.length > 0"
+                      v-b-tooltip.hover="
+                        'Draw a rectangle on the map to assign checklist to the checklist selected.'
+                      "
                     >
                       <b-icon icon="box-arrow-in-down" />
                     </b-button>
                   </b-input-group-append>
                 </b-input-group>
                 <b-button-group class="mt-2">
-                  <b-button @click="assignClean"
-                    ><b-icon icon="trash" /> remove empty checklist</b-button
+                  <b-button @click="assignClean" v-b-tooltip.bottom title="Delete empty checklists"
+                    ><b-icon icon="trash" /> Clean</b-button
                   >
-                  <b-button @click="assignReset"
+                  <b-button
+                    @click="assignReset"
+                    variant="danger"
+                    v-b-tooltip.bottom
+                    title="Delete all checklists"
                     ><b-icon icon="arrow-counterclockwise" /> Reset</b-button
                   >
                 </b-button-group>
@@ -154,35 +203,6 @@ import tile_providers from "/data/tile_providers.json";
               <IconChecklist :size="24" :fid="f.id" />
             </l-marker>
           </l-map>
-        </b-col>
-        <b-col lg="12">
-          <p>
-            Instead of doing this process manually, there is (new) an "Automatic Attribution". This
-            "magic" function will create checklists and attribute the corresponding incidental
-            sightings automotically. The function is based on a distance and duration threashold to
-            aggregate sightings together. You can still edit automotic attribution later.
-          </p>
-        </b-col>
-        <b-col lg="4">
-          <b-form-group label="Duration threashold:">
-            <b-input-group append="hr">
-              <b-form-input v-model="assign_duration" type="number" step="0.1" min="0.1" max="24" />
-            </b-input-group>
-          </b-form-group>
-        </b-col>
-        <b-col lg="4">
-          <b-form-group label="Distance threashold:">
-            <b-input-group append="km">
-              <b-form-input v-model="assign_distance" type="number" step="0.1" min="0.1" max="5" />
-            </b-input-group>
-          </b-form-group>
-        </b-col>
-        <b-col lg="4">
-          <b-form-group label="L:">
-            <b-button variant="primary" block @click="assignMagic">
-              <b-icon icon="heart-fill" class="mr-1"></b-icon>Automatic Attribution
-            </b-button>
-          </b-form-group>
         </b-col>
       </template>
     </b-row>
