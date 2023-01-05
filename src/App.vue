@@ -224,15 +224,7 @@ import tile_providers from "/data/tile_providers.json";
         <b-input-group class="mt-3">
           <b-form-spinbutton v-model="number_observer_for_all" step="1" min="0" max="100" />
           <b-input-group-append>
-            <b-button
-              @click="
-                forms.forEach(
-                  (f) =>
-                    (f.number_observer = f.number_observer
-                      ? f.number_observer
-                      : number_observer_for_all)
-                )
-              "
+            <b-button @click="setObserverForAll(number_observer_for_all)"
               ><b-icon icon="arrow-repeat"
             /></b-button>
           </b-input-group-append>
@@ -847,6 +839,20 @@ export default {
       console.log("getFormCardDuration");
       const datetime = this.sightings_form_card.map((s) => new Date(s.date + "T" + s.time)).sort();
       return Math.round((datetime[datetime.length - 1] - datetime[0]) / 1000 / 60);
+    },
+    setObserverForAll(nb) {
+      const forms = this.forms.filter((f) => !(f.number_observer > 0));
+      if (
+        confirm(
+          "Are you sure you want to set the party size for " +
+            forms.map((f) => f.location_name).join(", ") +
+            " to " +
+            nb +
+            ". This action cannot be undone."
+        )
+      ) {
+        forms.forEach((f) => (f.number_observer = nb));
+      }
     },
   },
   computed: {
