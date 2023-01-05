@@ -525,7 +525,9 @@ import tile_providers from "/data/tile_providers.json";
             >
               <IconChecklist :size="24" :fid="form_card.id" />
             </l-marker>
+            <l-polyline :lat-lngs="form_card.static_map.path" :color="'brown'" />
           </l-map>
+          {{ form_card.static_map.path }}
         </b-card>
       </b-col>
     </b-row>
@@ -564,7 +566,6 @@ import "leaflet-fullscreen/dist/leaflet.fullscreen.css";
 import "leaflet";
 import "leaflet-draw/dist/leaflet.draw-src.js";
 import "leaflet-fullscreen/dist/Leaflet.fullscreen.js";
-window.type = true;
 
 import {
   LMap,
@@ -574,7 +575,7 @@ import {
   LPopup,
   LCircleMarker,
   LMarker,
-  LFeatureGroup,
+  LPolyline,
   LIcon,
 } from "vue2-leaflet";
 
@@ -588,7 +589,7 @@ import Export from "./Export.vue";
 export default {
   components: {
     LMap,
-    LFeatureGroup,
+    LPolyline,
     LTileLayer,
     LControl,
     LControlLayers,
@@ -658,14 +659,24 @@ export default {
         if (e.layerType === "polyline") {
           const latlngs = e.layer.getLatLngs();
           // Compute distance as the cumulative distance between each point.
-          const dist = latlngs.reduce(
-            (acc, latlng) => {
-              return [acc[0] + acc[1].distanceTo(latlng), latlng];
-            },
-            [0, latlngs[0]]
-          );
-          this.form_card.distance = (dist[0] / 1000).toFixed(2);
-          this.form_card.static_map.path = latlngs.map((l) => [l.lat, l.lng]);
+          const dist = (
+            latlngs.reduce(
+              (acc, latlng) => {
+                return [acc[0] + acc[1].distanceTo(latlng), latlng];
+              },
+              [0, latlngs[0]]
+            )[0] / 1000
+          ).toFixed(2);
+          if (
+            confirm(
+              "Are you sure you want to reset the path on the map and set the distance to " +
+                dist +
+                "km? This action cannot be undone."
+            )
+          ) {
+            this.form_card.distance = dist;
+            this.form_card.static_map.path = latlngs.map((l) => [l.lat, l.lng]);
+          }
         }
       });
     },

@@ -40,20 +40,6 @@ export default {
         };
         return f;
     },
-    /*distance(lat1, lon1, lat2, lon2) {
-        if ((lat1 == lat2) && (lon1 == lon2)) {
-            return 0;
-        }
-        else {
-            var radlat1 = Math.PI * lat1 / 180;
-            var radlat2 = Math.PI * lat2 / 180;
-            var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(Math.PI * (lon1 - lon2) / 180);
-            if (dist > 1) {
-                dist = 1;
-            }
-            return Math.acos(dist) * 180 / Math.PI * 60 * 1.1515 * 1.609344
-        }
-    },*/
     protocol(f) {
         if (!f.date) {
             return "invalid";

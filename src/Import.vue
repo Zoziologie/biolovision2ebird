@@ -6,6 +6,7 @@ import jsonIcon from "/json.png";
 <script>
 import fx from "./functions";
 import Wkt from "wicket/wicket.js";
+import "leaflet";
 
 export default {
   data() {
@@ -77,10 +78,21 @@ export default {
             const timeStop = date + "T" + f.time_stop;
 
             var path = null;
+            var distance = null;
             if (f.protocol && f.protocol.wkt) {
               var wkt = new Wkt.Wkt();
               wkt.read(f.protocol.wkt);
-              path = wkt.toJson().coordinates;
+              path = wkt.toJson().coordinates.map((c) => [c[1], c[0]]);
+              distance = (
+                path
+                  .map((l) => L.latLng(l))
+                  .reduce(
+                    (acc, latlng) => {
+                      return [acc[0] + acc[1].distanceTo(latlng), latlng];
+                    },
+                    [0, L.latLng(path[0])]
+                  )[0] / 1000
+              ).toFixed(2);
             }
             return fx.createForm(
               {
@@ -91,7 +103,7 @@ export default {
                 date: date,
                 time: f.time_start,
                 duration: (new Date(timeStop) - new Date(timeStart)) / 1000 / 60,
-                distance: null,
+                distance: distance,
                 number_observer: null,
                 full_form: f.full_form == "1",
                 primary_purpose: true,
