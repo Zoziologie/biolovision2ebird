@@ -59,7 +59,7 @@ import tile_providers from "/data/tile_providers.json";
             aggregate sightings together. You can still edit automotic attribution later.
           </p>
           <b-row>
-            <b-col lg="4">
+            <b-col sm="4">
               <b-input-group append="hr">
                 <b-form-input
                   v-model="assign_duration"
@@ -70,7 +70,7 @@ import tile_providers from "/data/tile_providers.json";
                 />
               </b-input-group>
             </b-col>
-            <b-col lg="4">
+            <b-col sm="4">
               <b-input-group append="km">
                 <b-form-input
                   v-model="assign_distance"
@@ -81,7 +81,7 @@ import tile_providers from "/data/tile_providers.json";
                 />
               </b-input-group>
             </b-col>
-            <b-col lg="4">
+            <b-col sm="4">
               <b-button variant="primary" block @click="assignMagic">
                 <b-icon icon="arrow-repeat" class="mr-1"></b-icon>Magic tool
               </b-button>
@@ -210,6 +210,8 @@ import tile_providers from "/data/tile_providers.json";
     <b-row class="my-3 p-3 bg-white rounded shadow-sm" v-if="forms.length > 0">
       <b-col lg="12">
         <h2 class="border-bottom pb-2 mb-3">3. Provide checklists details</h2>
+      </b-col>
+      <b-col lg="9">
         <p>
           You can navigate into each checklist by clicking on the tab and modify each of them as
           desire. In addition, we automatically added a few improvement such as exact timing and
@@ -217,20 +219,45 @@ import tile_providers from "/data/tile_providers.json";
           Feel free to remove them of modify them
         </p>
       </b-col>
-      <b-col lg="12">
-        <b-card class="mt-2" no-body>
-          <b-tabs pills card no-fade :small="forms.length > 7">
+      <b-col lg="3">
+        <p>Change the party size for all lists</p>
+        <b-input-group class="mt-3">
+          <b-form-spinbutton v-model="number_observer_for_all" step="1" min="0" max="100" />
+          <b-input-group-append>
+            <b-button variant="info">change</b-button>
+          </b-input-group-append>
+        </b-input-group>
+      </b-col>
+      <b-col lg="6" class="m-auto text-center">
+        <b-button-group size="lg" class="w-100">
+          <b-button variant="primary" @click="prevForm">
+            <b-icon icon="chevron-left" />
+          </b-button>
+          <b-dropdown variant="primary" class="w-100">
+            <template #button-content>
+              {{ form_card.location_name }}
+            </template>
+            <b-dropdown-item href="#" v-for="f in forms" :key="f.id" @click="form_card = f">
+              {{ f.location_name }}
+            </b-dropdown-item>
+          </b-dropdown>
+          <b-button variant="primary" @click="nextForm"><b-icon icon="chevron-right" /></b-button>
+        </b-button-group>
+      </b-col>
+      <b-col lg="12" class="mt-3">
+        <b-card no-body>
+          <!--<b-tabs pills card no-fade :small="forms.length > 7">
             <b-tab v-for="f in forms" :key="f.id" @click="form_card = f">
               <template #title class="d-inline">
                 {{
                   (f.location_name.length > 15) & (forms.length > 5)
                     ? f.location_name.slice(0, 15 - 1) + "..."
                     : f.location_name
-                }}<b-form-checkbox> {{ protocol(f) }} </b-form-checkbox>
+                }}
               </template>
             </b-tab>
-          </b-tabs>
-          <b-card-body class="pt-0" v-if="form_card">
+          </b-tabs>-->
+          <b-card-body v-if="form_card">
             <!--<b-alert show variant="danger" class="mt-2" v-if="getFormCardDuration() > 1440">
               <b-icon-exclamation-triangle-fill class="mr-2" />The checklist
               {{ f.location_name }} contains sightings from different days. It is strongly
@@ -411,7 +438,7 @@ import tile_providers from "/data/tile_providers.json";
             />
             <l-circle-marker
               v-for="s in sightings_form_card"
-              :key="s.datetime + s.common_name"
+              :key="s.time + s.common_name"
               :lat-lng="[s.lat, s.lon]"
               :radius="10"
               :fillColor="marker_color[s.form_id % marker_color.length]"
@@ -735,6 +762,18 @@ export default {
       return this.form_card.imported
         ? this.forms_sightings[this.form_card.id - 1]
         : this.sightings.filter((s) => s.form_id == this.form_card.id);
+    },
+    prevForm() {
+      let idx = this.forms.map((f) => f.id).indexOf(this.form_card.id);
+      idx = idx == 0 ? idx : idx - 1;
+      console.log(idx);
+      this.form_card = this.forms[idx];
+    },
+    nextForm() {
+      let idx = this.forms.map((f) => f.id).indexOf(this.form_card.id);
+      idx = idx == this.forms.length - 1 ? idx : idx + 1;
+      console.log(idx);
+      this.form_card = this.forms[idx];
     },
   },
   computed: {

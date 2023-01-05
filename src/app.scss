@@ -118,3 +118,7 @@ h6,
 .rounded-0 {
   border-radius: 0 !important;
 }
+.dropdown-menu {
+  max-height: 400px;
+  overflow-y: auto;
+}
