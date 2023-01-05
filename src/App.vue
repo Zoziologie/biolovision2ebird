@@ -396,9 +396,13 @@ import tile_providers from "/data/tile_providers.json";
                     <b-input-group-append>
                       <b-button
                         variant="secondary"
-                        @click="form_card.distance = getFormCardDistance()"
-                        ><b-icon icon="arrow-repeat"
-                      /></b-button>
+                        v-b-tooltip.click="
+                          'Click on the map below to draw your path and update distance'
+                        "
+                        @click="animateBezier"
+                      >
+                        <b-icon icon="bezier" />
+                      </b-button>
                     </b-input-group-append>
                   </b-input-group>
                 </b-form-group>
@@ -467,6 +471,15 @@ import tile_providers from "/data/tile_providers.json";
             @ready="onMapCardReady"
           >
             <l-control-layers position="topright" />
+            <l-control position="topright">
+              <b-button
+                :pressed="animate_bezier"
+                v-b-tooltip.hover="'Draw your path to measure distance'"
+                @click="map_card_polyline.enable()"
+              >
+                <b-icon icon="bezier" :animation="animate_bezier ? 'throb' : 'false'" />
+              </b-button>
+            </l-control>
             <l-tile-layer
               v-for="tileProvider in tile_providers"
               :key="tileProvider.name"
@@ -604,9 +617,11 @@ export default {
       assign_duration: 1,
       map_draw_rectangle: null,
       map_draw_marker: null,
+      map_card_polyline: null,
       form_card: null,
       map_card_bounds: null,
       number_observer_for_all: 1,
+      animate_bezier: false,
     };
   },
   methods: {
@@ -614,6 +629,12 @@ export default {
       this.popup_latLng = L.latLng([s.lat, s.lon]);
       this.popup_s = s;
       setTimeout(() => this.$refs[marker].mapObject.openPopup(), 100);
+    },
+    animateBezier() {
+      this.animate_bezier = true;
+      setTimeout(() => {
+        this.animate_bezier = false;
+      }, 5000);
     },
     importData(d) {
       this.forms = d.forms;
@@ -632,13 +653,21 @@ export default {
     async onMapCardReady() {
       await this.$nextTick();
       this.$refs.map_card.mapObject.addControl(new L.Control.Fullscreen());
-      /*this.map_draw_rectangle = new L.Draw.Polyline(this.$refs.map_card.mapObject);
+      this.map_card_polyline = new L.Draw.Polyline(this.$refs.map_card.mapObject);
       this.$refs.map_card.mapObject.on(L.Draw.Event.CREATED, (e) => {
         if (e.layerType === "polyline") {
-          
-          }
+          const latlngs = e.layer.getLatLngs();
+          // Compute distance as the cumulative distance between each point.
+          const dist = latlngs.reduce(
+            (acc, latlng) => {
+              return [acc[0] + acc[1].distanceTo(latlng), latlng];
+            },
+            [0, latlngs[0]]
+          );
+          this.form_card.distance = (dist[0] / 1000).toFixed(2);
+          this.form_card.static_map.path = latlngs;
         }
-      }*/
+      });
     },
     async onMapSightingsReady() {
       await this.$nextTick();
@@ -709,12 +738,10 @@ export default {
       for (var i = 0; i < sightings.length; i++) {
         for (var j = i - 1; j >= 0; j--) {
           if (Math.abs(datetime[i] - datetime[j]) < this.assign_duration * 60 * 60 * 1000) {
-            var km = fx.distance(
-              sightings[j].lat,
-              sightings[j].lon,
-              sightings[i].lat,
-              sightings[i].lon
-            );
+            var km =
+              L.latLng([sightings[j].lat, sightings[j].lon]).distanceTo(
+                L.latLng([sightings[i].lat, sightings[i].lon])
+              ) / 1000;
             if (km < this.assign_distance) {
               sightings[i].form_id = sightings[j].form_id;
               break; // stop loop if within time and distance
@@ -810,16 +837,6 @@ export default {
       const datetime = this.sightings_form_card.map((s) => new Date(s.date + "T" + s.time)).sort();
       return Math.round((datetime[datetime.length - 1] - datetime[0]) / 1000 / 60);
     },
-    getFormCardDistance() {
-      return null;
-    },
-    getSightings(f) {
-      console.log("get sightings from form " + String(this.form_card.id));
-
-      return this.form_card.imported
-        ? this.forms_sightings[this.form_card.id - 1]
-        : this.sightings.filter((s) => s.form_id == this.form_card.id);
-    },
   },
   computed: {
     sightings_form_card() {
@@ -827,7 +844,9 @@ export default {
         throw Error("Error with form_card");
       }
 
-      const sightings = this.getSightings(this.form_card);
+      const sightings = this.form_card.imported
+        ? this.forms_sightings[this.form_card.id - 1]
+        : this.sightings.filter((s) => s.form_id == this.form_card.id);
 
       this.map_card_bounds =
         sightings.length > 0

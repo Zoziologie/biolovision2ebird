@@ -1,6 +1,8 @@
 <script setup></script>
 
 <script>
+import fx from "./functions";
+
 export default {
   props: ["forms", "sightings", "forms_sightings"],
   data() {
@@ -35,7 +37,7 @@ export default {
           start_time: f.time_start,
           state: "",
           country: "",
-          protocol: protocol(f),
+          protocol: fx.protocol(f),
           party_size: f.number_observer,
           duration: f.duration > 0 ? f.duration : "",
           full_form: f.full_form ? "Y" : "N",

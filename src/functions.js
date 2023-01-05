@@ -32,15 +32,15 @@ export default {
             static_map: f.static_map || {},
         };
         f.static_map = {
-            path: f.static_map.lat || null,
             display: f.static_map.lat || true,
+            path: f.static_map.lat || null,
             zoom: f.static_map.lat || null,
             lon: f.static_map.lat || null,
             lat: f.static_map.lat || null,
         };
         return f;
     },
-    distance(lat1, lon1, lat2, lon2) {
+    /*distance(lat1, lon1, lat2, lon2) {
         if ((lat1 == lat2) && (lon1 == lon2)) {
             return 0;
         }
@@ -53,5 +53,42 @@ export default {
             }
             return Math.acos(dist) * 180 / Math.PI * 60 * 1.1515 * 1.609344
         }
-    }
+    },*/
+    protocol(f) {
+        if (!f.date) {
+            return "invalid";
+        }
+        if (f.primary_purpose) {
+            if (
+                !!f.time &&
+                parseFloat(f.distance) >= 0 &&
+                parseFloat(f.duration) > 0 &&
+                parseFloat(f.number_observer) > 0
+            ) {
+                if (f.distance > 0) {
+                    return "traveling";
+                } else {
+                    return "stationary";
+                }
+            } else {
+                return "historical";
+            }
+        } else {
+            return "incidental";
+        }
+    },
+    protocol_variant(p) {
+        switch (p) {
+            case "traveling":
+                return "success";
+            case "stationary":
+                return "success";
+            case "warning":
+                return "success";
+            case "incidental":
+                return "warning";
+            case "invalid":
+                return "danger";
+        }
+    },
 }
