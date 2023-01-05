@@ -5,6 +5,7 @@ import jsonIcon from "/json.png";
 
 <script>
 import fx from "./functions";
+import Wkt from "wicket/wicket.js";
 
 export default {
   data() {
@@ -74,6 +75,13 @@ export default {
             const date = f.sightings[0].observers[0].timing["@ISO8601"].split("T")[0];
             const timeStart = date + "T" + f.time_start;
             const timeStop = date + "T" + f.time_stop;
+
+            var path = null;
+            if (f.protocol && f.protocol.wkt) {
+              var wkt = new Wkt.Wkt();
+              wkt.read(f.protocol.wkt);
+              path = wkt.toJson().coordinates;
+            }
             return fx.createForm(
               {
                 imported: true,
@@ -87,10 +95,10 @@ export default {
                 number_observer: null,
                 full_form: f.full_form == "1",
                 primary_purpose: true,
-                checklist_comment: "",
+                checklist_comment: f.comment || "",
                 species_comment: "",
                 static_map: {
-                  path: f.protocol ? f.protocol.wkt || "" : "",
+                  path: path,
                   display: true,
                   zoom: null,
                   lon: null,

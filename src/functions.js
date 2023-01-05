@@ -32,10 +32,10 @@ export default {
             static_map: f.static_map || {},
         };
         f.static_map = {
-            display: f.static_map.lat || true,
-            path: f.static_map.lat || null,
-            zoom: f.static_map.lat || null,
-            lon: f.static_map.lat || null,
+            display: f.static_map.display || true,
+            path: f.static_map.path || null,
+            zoom: f.static_map.zom || null,
+            lon: f.static_map.lon || null,
             lat: f.static_map.lat || null,
         };
         return f;

@@ -665,7 +665,7 @@ export default {
             [0, latlngs[0]]
           );
           this.form_card.distance = (dist[0] / 1000).toFixed(2);
-          this.form_card.static_map.path = latlngs;
+          this.form_card.static_map.path = latlngs.map((l) => [l.lat, l.lng]);
         }
       });
     },
