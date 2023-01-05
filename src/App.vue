@@ -547,8 +547,10 @@ import tile_providers from "/data/tile_providers.json";
 import "./app.scss";
 import "leaflet/dist/leaflet.css";
 import "leaflet-draw/dist/leaflet.draw.css";
+import "leaflet-fullscreen/dist/leaflet.fullscreen.css";
 import "leaflet";
 import "leaflet-draw/dist/leaflet.draw-src.js";
+import "leaflet-fullscreen/dist/Leaflet.fullscreen.js";
 window.type = true;
 
 import {
@@ -629,6 +631,7 @@ export default {
     },
     async onMapCardReady() {
       await this.$nextTick();
+      this.$refs.map_card.mapObject.addControl(new L.Control.Fullscreen());
       /*this.map_draw_rectangle = new L.Draw.Polyline(this.$refs.map_card.mapObject);
       this.$refs.map_card.mapObject.on(L.Draw.Event.CREATED, (e) => {
         if (e.layerType === "polyline") {
@@ -639,6 +642,7 @@ export default {
     },
     async onMapSightingsReady() {
       await this.$nextTick();
+      this.$refs.map_sightings.mapObject.addControl(new L.Control.Fullscreen());
       this.map_draw_rectangle = new L.Draw.Rectangle(this.$refs.map_sightings.mapObject);
       this.$refs.map_sightings.mapObject.on(L.Draw.Event.CREATED, (e) => {
         if (e.layerType === "rectangle") {
