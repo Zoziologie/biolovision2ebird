@@ -449,9 +449,34 @@ import tile_providers from "/data/tile_providers.json";
             </b-row>
             <b-row>
               <b-col lg="6">
-                <b-form-checkbox switch v-model="form_card.include_map"
+                <b-form-group
+                  label="Checklist Comments"
+                  description="We will automatically add 'Imported from biolvision2eBird' in the checklist comment."
+                >
+                  <b-form-textarea
+                    v-model="form_card.comment"
+                    max-rows="6"
+                    no-resize
+                  ></b-form-textarea>
+                </b-form-group>
+              </b-col>
+              <b-col lg="6">
+                <b-form-checkbox switch v-model="form_card.static_map"
                   >Include static map</b-form-checkbox
                 >
+                <template v-if="form_card.static_map">
+                  <b-input-group>
+                    <template #prepend>
+                      <b-input-group-text
+                        ><a href="https://docs.mapbox.com/help/getting-started/access-tokens/"
+                          >Mapbox Access Token</a
+                        >
+                      </b-input-group-text>
+                    </template>
+                    <b-form-input v-model="mapbox_access_token" type="text" />
+                  </b-input-group>
+                  <b-img :src="static_map_link(form_card, sightings_form_card)" />
+                </template>
               </b-col>
             </b-row>
           </b-card-body>
@@ -517,9 +542,8 @@ import tile_providers from "/data/tile_providers.json";
             >
               <IconChecklist :size="24" :fid="form_card.id" />
             </l-marker>
-            <l-polyline :lat-lngs="form_card.static_map.path" :color="'brown'" />
+            <l-polyline :lat-lngs="form_card.path" :color="'brown'" v-if="form_card.path" />
           </l-map>
-          {{ form_card.static_map.path }}
         </b-card>
       </b-col>
     </b-row>
@@ -558,6 +582,7 @@ import "leaflet-fullscreen/dist/leaflet.fullscreen.css";
 import "leaflet";
 import "leaflet-draw/dist/leaflet.draw-src.js";
 import "leaflet-fullscreen/dist/Leaflet.fullscreen.js";
+import "polyline-encoded/Polyline.encoded.js";
 
 import {
   LMap,
@@ -612,9 +637,9 @@ export default {
       map_draw_marker: null,
       map_card_polyline: null,
       form_card: null,
-      map_card_bounds: null,
       number_observer_for_all: 1,
       animate_bezier: false,
+      mapbox_access_token: "",
     };
   },
   methods: {
@@ -667,7 +692,7 @@ export default {
             )
           ) {
             this.form_card.distance = dist;
-            this.form_card.static_map.path = latlngs.map((l) => [l.lat, l.lng]);
+            this.form_card.path = latlngs.map((l) => [l.lat, l.lng]);
           }
         }
       });
@@ -814,16 +839,45 @@ export default {
           return "danger";
       }
     },
-    static_map_link(f) {
-      return (
-        "https://api.mapbox.com/v4/mapbox.satellite/" +
-        f.static_map.lat +
-        "," +
-        f.static_map.lon +
-        "," +
-        f.static_map.zoom +
-        "/800x450@2x.png?access_token=pk.eyJ1IjoicmFmbnVzcyIsImEiOiIzMVE1dnc0In0.3FNMKIlQ_afYktqki-6m0g"
-      );
+    static_map_link(form, sightings) {
+      if (form && sightings) {
+        // Create path
+        let path = "";
+        if (form.path && form.path.length > 0) {
+          const path_simplified = L.LineUtil.simplify(
+            form.path.map((x) => {
+              return { x: x[0], y: x[1] };
+            }),
+            0.00001
+          ).map((x) => [x.x, x.y]);
+
+          const path_encodeded = L.PolylineUtil.encode(path_simplified, 5);
+
+          path = "path-5+AD8533(" + encodeURIComponent(path_encodeded) + "),";
+        }
+
+        // Create sightings markers
+        const sightings_simplified = L.LineUtil.simplify(
+          sightings.map((x) => {
+            return { x: x.lat, y: x.lon };
+          }),
+          0.001
+        ).map((x) => [x.x, x.y]);
+
+        let sightings_geojson = L.polyline(sightings_simplified).toGeoJSON();
+        sightings_geojson.geometry.type = "MultiPoint";
+        sightings_geojson.properties = {
+          "marker-size": "s",
+        };
+        sightings_geojson.geometry.coordinates = sightings_geojson.geometry.coordinates.map((c) => [
+          Math.round(c[0] * 1000) / 1000,
+          Math.round(c[1] * 1000) / 1000,
+        ]);
+
+        const markers = "geojson(" + encodeURIComponent(JSON.stringify(sightings_geojson)) + ")";
+
+        return `https://api.mapbox.com/styles/v1/mapbox/satellite-v9/static/${path}${markers}/auto/300x200?access_token=${this.mapbox_access_token}&logo=false`;
+      }
     },
     checklist_comment(f) {
       return f.checklist_comment + f.static_map.display
@@ -865,18 +919,25 @@ export default {
         ? this.forms_sightings[this.form_card.id - 1]
         : this.sightings.filter((s) => s.form_id == this.form_card.id);
 
-      this.map_card_bounds =
-        sightings.length > 0
-          ? L.latLngBounds(sightings.map((s) => L.latLng(s.lat, s.lon))).pad(0.05)
-          : this.map_card_bounds;
-
       console.log("sightings_form_card");
       return sightings;
+    },
+    map_card_bounds() {
+      return this.sightings_form_card.length > 0
+        ? L.latLngBounds(this.sightings_form_card.map((s) => L.latLng(s.lat, s.lon))).pad(0.05)
+        : null;
     },
   },
   mounted() {
     const urlParams = new URLSearchParams(window.location.search);
     this.skip_intro = urlParams.get("skip_intro") ? true : false;
+
+    this.mapbox_access_token = JSON.parse(this.$cookie.get("mapbox_access_token"));
+  },
+  watch: {
+    mapbox_access_token() {
+      this.$cookie.set("mapbox_access_token", JSON.stringify(this.mapbox_access_token), 365);
+    },
   },
 };
 </script>

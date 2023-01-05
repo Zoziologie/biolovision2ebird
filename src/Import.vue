@@ -109,13 +109,7 @@ export default {
                 primary_purpose: true,
                 checklist_comment: f.comment || "",
                 species_comment: "",
-                static_map: {
-                  path: path,
-                  display: true,
-                  zoom: null,
-                  lon: null,
-                  lat: null,
-                },
+                path: path,
               },
               id + 1
             );

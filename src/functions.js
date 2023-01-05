@@ -29,14 +29,8 @@ export default {
             primary_purpose: f.primary_purpose || false,
             checklist_comment: f.checklist_comment || "",
             species_comment: f.species_comment || "",
-            static_map: f.static_map || {},
-        };
-        f.static_map = {
-            display: f.static_map.display || true,
-            path: f.static_map.path || null,
-            zoom: f.static_map.zom || null,
-            lon: f.static_map.lon || null,
-            lat: f.static_map.lat || null,
+            path: f.path || null,
+            static_map: f.static_map || true,
         };
         return f;
     },
@@ -77,4 +71,5 @@ export default {
                 return "danger";
         }
     },
+
 }
