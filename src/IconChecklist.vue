@@ -18,8 +18,7 @@ export default {
     <div style="display: grid">
       <div
         :style="{
-          'background-color': marker_color[fid][0],
-          color: marker_color[fid][2],
+          'background-color': marker_color[fid % marker_color.length],
           width: size + 'px',
           height: size + 'px',
           display: 'block',
@@ -31,7 +30,6 @@ export default {
       ></div>
       <div
         :style="{
-          color: marker_color[fid][2],
           position: 'absolute',
           width: size + 'px',
           'text-align': 'center',

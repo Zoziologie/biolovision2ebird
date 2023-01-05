@@ -54,9 +54,9 @@ import tile_providers from "/data/tile_providers.json";
           <l-map
             class="w-100"
             style="height: 400px"
-            ref="map"
-            @ready="onLeafletReady"
-            :bounds="map_bounds"
+            ref="map_sightings"
+            @ready="onMapSightingsReady"
+            :bounds="map_sightings_bounds"
           >
             <l-control position="topright">
               <div class="d-flex flex-column" style="max-width: 480px">
@@ -119,13 +119,24 @@ import tile_providers from "/data/tile_providers.json";
               :key="s.datetime + s.common_name"
               :lat-lng="[s.lat, s.lon]"
               :radius="10"
-              :fillColor="marker_color[s.form_id][0]"
-              :color="marker_color[s.form_id][0]"
+              :fillColor="marker_color[s.form_id % marker_color.length]"
+              :color="marker_color[s.form_id % marker_color.length]"
+              @click="openPopup(s, 'marker_popup_sightings')"
             >
-              <l-popup>
-                <b-table bordered small striped hover responsive :items="fx.object2Table(s)" />
-              </l-popup>
             </l-circle-marker>
+            <l-marker ref="marker_popup_sightings" :latLng="popup_latLng">
+              <l-icon :popup-anchor="[0, 2]" :icon-size="[0, 0]" :icon-url="logo" />
+              <l-popup>
+                <b-table
+                  bordered
+                  small
+                  striped
+                  hover
+                  responsive
+                  :items="fx.object2Table(popup_s)"
+                />
+              </l-popup>
+            </l-marker>
             <l-marker
               v-for="f in forms.filter((f) => !f.imported)"
               :key="f.id"
@@ -169,7 +180,7 @@ import tile_providers from "/data/tile_providers.json";
         <b-col lg="4">
           <b-form-group label="L:">
             <b-button variant="primary" block @click="assignMagic">
-              <b-icon icon="heart" class="mr-1"></b-icon>Automatic Attribution
+              <b-icon icon="heart-fill" class="mr-1"></b-icon>Automatic Attribution
             </b-button>
           </b-form-group>
         </b-col>
@@ -188,59 +199,57 @@ import tile_providers from "/data/tile_providers.json";
       </b-col>
       <b-col lg="12">
         <b-card class="mt-2" no-body>
-          <b-tabs pills card sm>
+          <b-tabs pills card no-fade :small="forms.length > 7">
             <b-tab v-for="f in forms" :key="f.id" @click="form_card = f">
               <template #title class="d-inline">
                 {{
                   (f.location_name.length > 15) & (forms.length > 5)
                     ? f.location_name.slice(0, 15 - 1) + "..."
                     : f.location_name
-                }}<b-form-checkbox>E </b-form-checkbox>
+                }}<b-form-checkbox> {{ protocol(f) }} </b-form-checkbox>
               </template>
             </b-tab>
           </b-tabs>
           <b-card-body class="pt-0" v-if="form_card">
-            <b-alert show variant="danger" class="mt-2" v-if="getFormCardDuration > 1440">
+            <!--<b-alert show variant="danger" class="mt-2" v-if="getFormCardDuration() > 1440">
               <b-icon-exclamation-triangle-fill class="mr-2" />The checklist
               {{ f.location_name }} contains sightings from different days. It is strongly
               recommended to split them into multiple checklists.
-            </b-alert>
+            </b-alert>-->
             <b-row>
-              <b-col lg="6">
+              <b-col lg="4">
                 <b-form-group label="Location Name:">
                   <b-input-group>
                     <b-form-input v-model="form_card.location_name" type="text" />
                     <b-input-group-append>
                       <b-button
                         variant="secondary"
-                        class="btn-sm"
                         @click="form_card.location_name = getFormName()"
                         v-b-tooltip.hover
                         title="Use the most common location name of all sightings"
-                        >auto</b-button
-                      >
+                        ><b-icon icon="arrow-repeat"
+                      /></b-button>
                     </b-input-group-append>
                   </b-input-group>
                 </b-form-group>
               </b-col>
-              <b-col lg="6">
+              <b-col lg="4">
                 <b-form-group label="Date and time:">
                   <b-input-group>
                     <b-form-input v-model="form_card.datetime" type="datetime-local" />
                     <b-input-group-append>
                       <b-button
                         variant="secondary"
-                        class="btn-sm"
                         @click="form_card.datetime = sightings_form_card[0].datetime"
                         v-b-tooltip.hover
                         title="Compute earliest datetime of all sightings."
-                        >auto-compute</b-button
-                      >
+                        ><b-icon icon="arrow-repeat"
+                      /></b-button>
                     </b-input-group-append>
                   </b-input-group>
                 </b-form-group>
               </b-col>
-              <b-col lg="6">
+              <b-col lg="4">
                 <b-form-group label="Duration (minutes):">
                   <b-input-group>
                     <b-form-input
@@ -249,21 +258,23 @@ import tile_providers from "/data/tile_providers.json";
                       step="1"
                       min="1"
                       max="1440"
+                      :state="
+                        parseFloat(form_card.duration) > 0 && parseFloat(form_card.duration) <= 1440
+                      "
                     />
                     <b-input-group-append>
                       <b-button
                         variant="secondary"
-                        class="btn-sm"
                         @click="form_card.duration = getFormCardDuration()"
                         v-b-tooltip.hover
                         title="Compute duration between the first and last sightings."
-                        >auto-compute</b-button
-                      >
+                        ><b-icon icon="arrow-repeat"
+                      /></b-button>
                     </b-input-group-append>
                   </b-input-group>
                 </b-form-group>
               </b-col>
-              <b-col lg="6">
+              <b-col lg="4">
                 <b-form-group label="Distance (km):">
                   <b-input-group>
                     <b-form-input
@@ -272,19 +283,21 @@ import tile_providers from "/data/tile_providers.json";
                       min="0"
                       max="100"
                       type="number"
+                      :state="
+                        parseFloat(form_card.distance) >= 0 && parseFloat(form_card.distance) <= 80
+                      "
                     />
                     <b-input-group-append>
                       <b-button
                         variant="secondary"
-                        class="btn-sm"
                         @click="form_card.duration = form_card.distance = getFormCardDistance()"
-                        >auto-compute</b-button
-                      >
+                        ><b-icon icon="arrow-repeat"
+                      /></b-button>
                     </b-input-group-append>
                   </b-input-group>
                 </b-form-group>
               </b-col>
-              <b-col lg="6">
+              <b-col lg="4">
                 <b-form-group label="Party size:">
                   <b-form-input
                     v-model="form_card.number_observer"
@@ -292,20 +305,43 @@ import tile_providers from "/data/tile_providers.json";
                     min="0"
                     max="100"
                     type="number"
+                    :state="parseFloat(form_card.number_observer) > 0"
                   />
                 </b-form-group>
               </b-col>
-              <b-col lg="6">
-                <b-form-checkbox switch v-model="form_card.primary_purpose"
-                  >Primary Purpose</b-form-checkbox
-                >
-                <b-form-group label="Protocol:">
-                  {{ protocol(form_card) }}
-                </b-form-group>
-                <b-form-checkbox switch v-model="form_card.full_form"
-                  >Complete Checklist</b-form-checkbox
-                >
+              <b-col lg="4">
+                Effort:
+                <div class="d-flex">
+                  <div>
+                    <b-form-checkbox
+                      switch
+                      v-model="form_card.primary_purpose"
+                      v-b-tooltip.hover.html="
+                        'When birding is your <b>primary purpose</b>, you <i>are making an effort</i> to find all the birds around you to the best of your ability.'
+                      "
+                      >Primary Purpose
+                    </b-form-checkbox>
+                    <b-form-checkbox
+                      switch
+                      v-model="form_card.full_form"
+                      v-b-tooltip.hover.html="
+                        'In a <b>complete checklist</b>, you <i>report every species</i> you could identify to the best of your ability, by sight and/or sound.'
+                      "
+                    >
+                      Complete Checklist
+                    </b-form-checkbox>
+                  </div>
+                  <div class="align-self-center text-center m-auto">
+                    <h4 variant>
+                      <b-badge :variant="protocol_variant(protocol(form_card))">{{
+                        protocol(form_card).toUpperCase()
+                      }}</b-badge>
+                    </h4>
+                  </div>
+                </div>
               </b-col>
+            </b-row>
+            <b-row>
               <b-col lg="6">
                 <b-form-checkbox switch v-model="form_card.include_map"
                   >Include static map</b-form-checkbox
@@ -313,7 +349,13 @@ import tile_providers from "/data/tile_providers.json";
               </b-col>
             </b-row>
           </b-card-body>
-          <l-map class="w-100" style="height: 400px" :bounds="map_card_bounds">
+          <l-map
+            class="w-100"
+            style="height: 400px"
+            :bounds="map_card_bounds"
+            ref="map_card"
+            @ready="onMapCardReady"
+          >
             <l-control-layers position="topright" />
             <l-tile-layer
               v-for="tileProvider in tile_providers"
@@ -329,14 +371,24 @@ import tile_providers from "/data/tile_providers.json";
               :key="s.datetime + s.common_name"
               :lat-lng="[s.lat, s.lon]"
               :radius="10"
-              :fillColor="marker_color[s.form_id][0]"
-              :color="marker_color[s.form_id][0]"
+              :fillColor="marker_color[s.form_id % marker_color.length]"
+              :color="marker_color[s.form_id % marker_color.length]"
+              @click="openPopup(s, 'marker_popup_card')"
             >
-              <!--<l-popup>
-              <b-table bordered small striped hover responsive :items="fx.object2Table(s)"></b-table>
-            </l-popup>-->
             </l-circle-marker>
-            <!--<l-marker :lat-lng="[fmapid.lat, fmapid.lon]" />-->
+            <l-marker ref="marker_popup_card" :latLng="popup_latLng">
+              <l-icon :popup-anchor="[0, 2]" :icon-size="[0, 0]" :icon-url="logo" />
+              <l-popup>
+                <b-table
+                  bordered
+                  small
+                  striped
+                  hover
+                  responsive
+                  :items="fx.object2Table(popup_s)"
+                />
+              </l-popup>
+            </l-marker>
             <l-marker
               :lat-lng="[form_card.lat, form_card.lon]"
               :draggable="true"
@@ -420,21 +472,27 @@ export default {
       sightings: [],
       forms: [],
       forms_sightings: [],
-      skip_intro: false, // Change on the final version
+      skip_intro: false,
       count_forms: null,
+      popup_latLng: [0, 0],
+      popup_s: {},
       assign_form_id: 0,
       create_checklist: false,
-      map_bounds: null,
+      map_sightings_bounds: null,
       assign_distance: 0.5,
       assign_duration: 1,
       map_draw_rectangle: null,
       map_draw_marker: null,
       form_card: null,
       map_card_bounds: null,
-      a: null,
     };
   },
   methods: {
+    openPopup(s, marker) {
+      this.popup_latLng = L.latLng([s.lat, s.lon]);
+      this.popup_s = s;
+      setTimeout(() => this.$refs[marker].mapObject.openPopup(), 100);
+    },
     importData(d) {
       this.forms = d.forms;
       this.sightings = d.sightings;
@@ -445,15 +503,24 @@ export default {
       // Define the default form_card with the latest forms of the list
       this.form_card = this.count_forms > 0 ? this.forms[this.count_forms - 1] : null;
 
-      this.map_bounds = L.latLngBounds(
+      this.map_sightings_bounds = L.latLngBounds(
         [...this.sightings, ...this.forms].map((s) => L.latLng(s.lat, s.lon))
       ).pad(0.05);
     },
-    async onLeafletReady() {
+    async onMapCardReady() {
       await this.$nextTick();
-      this.map_draw_rectangle = new L.Draw.Rectangle(this.$refs.map.mapObject);
-      // this.map_draw_marker = new L.Draw.Marker(this.map.mapObject);
-      this.$refs.map.mapObject.on(L.Draw.Event.CREATED, (e) => {
+      /*this.map_draw_rectangle = new L.Draw.Polyline(this.$refs.map_card.mapObject);
+      this.$refs.map_card.mapObject.on(L.Draw.Event.CREATED, (e) => {
+        if (e.layerType === "polyline") {
+          
+          }
+        }
+      }*/
+    },
+    async onMapSightingsReady() {
+      await this.$nextTick();
+      this.map_draw_rectangle = new L.Draw.Rectangle(this.$refs.map_sightings.mapObject);
+      this.$refs.map_sightings.mapObject.on(L.Draw.Event.CREATED, (e) => {
         if (e.layerType === "rectangle") {
           // find sightings inside rectangle
           let sightings = this.sightings.filter((s) =>
@@ -509,7 +576,6 @@ export default {
     },
     assignMagic() {
       let sightings = this.sightings.filter((s) => s.form_id == 0);
-      console.log(sightings);
       const datetime = sightings.map((s) => new Date(s.datetime));
       var form_id = this.count_forms + 1;
 
@@ -536,8 +602,6 @@ export default {
         }
       }
 
-      console.log(sightings.map((s) => s.form_id));
-
       for (var i = this.count_forms + 1; i < form_id; i++) {
         var sightings2 = sightings.filter((s) => s.form_id == i);
         var fnew = fx.createForm(
@@ -555,12 +619,14 @@ export default {
       }
     },
     protocol(f) {
+      if (!f.datetime) {
+        return "invalid";
+      }
       if (f.primary_purpose) {
         if (
-          (f.distance != null) &
-          (f.duration != null) &
-          (f.datetime != null) &
-          (f.number_observer != null)
+          parseFloat(f.distance) > 0 &&
+          parseFloat(f.duration) > 0 &&
+          parseFloat(f.number_observer) > 0
         ) {
           if (f.distance > 0) {
             return "traveling";
@@ -572,6 +638,20 @@ export default {
         }
       } else {
         return "incidental";
+      }
+    },
+    protocol_variant(p) {
+      switch (p) {
+        case "traveling":
+          return "success";
+        case "stationary":
+          return "success";
+        case "warning":
+          return "success";
+        case "incidental":
+          return "warning";
+        case "invalid":
+          return "danger";
       }
     },
     static_map_link(f) {
@@ -596,6 +676,7 @@ export default {
       return fx.mode(this.sightings_form_card.map((s) => s.location_name));
     },
     getFormCardDuration() {
+      console.log("getFormCardDuration");
       const datetime = this.sightings_form_card.map((s) => new Date(s.datetime)).sort();
       return Math.round((datetime[datetime.length - 1] - datetime[0]) / 1000 / 60);
     },
@@ -623,6 +704,7 @@ export default {
           ? L.latLngBounds(sightings.map((s) => L.latLng(s.lat, s.lon))).pad(0.05)
           : this.map_card_bounds;
 
+      console.log("sightings_form_card");
       return sightings;
     },
   },
