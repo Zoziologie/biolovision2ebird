@@ -16,6 +16,7 @@ export default {
         f = {
             id: id,
             imported: f.imported || false,
+            exportable: false,
             location_name: f.location_name || "New List " + f.id,
             lat: f.lat || null,
             lon: f.lon || null,

@@ -220,28 +220,63 @@ import tile_providers from "/data/tile_providers.json";
         </p>
       </b-col>
       <b-col lg="3">
-        <p>Change the party size for all lists</p>
+        <p>Change the party size for all lists with no party size</p>
         <b-input-group class="mt-3">
           <b-form-spinbutton v-model="number_observer_for_all" step="1" min="0" max="100" />
           <b-input-group-append>
-            <b-button variant="info">change</b-button>
+            <b-button
+              @click="
+                forms.forEach(
+                  (f) =>
+                    (f.number_observer = f.number_observer
+                      ? f.number_observer
+                      : number_observer_for_all)
+                )
+              "
+              ><b-icon icon="arrow-repeat"
+            /></b-button>
           </b-input-group-append>
         </b-input-group>
       </b-col>
       <b-col lg="6" class="m-auto text-center">
         <b-button-group size="lg" class="w-100">
-          <b-button variant="primary" @click="prevForm">
+          <b-button
+            variant="blue"
+            @click="
+              {
+                let idx = forms.map((f) => f.id).indexOf(form_card.id);
+                idx = idx == 0 ? idx : idx - 1;
+                form_card = forms[idx];
+              }
+            "
+          >
             <b-icon icon="chevron-left" />
           </b-button>
-          <b-dropdown variant="primary" class="w-100">
+          <b-dropdown variant="blue" class="w-100">
             <template #button-content>
-              {{ form_card.location_name }}
+              {{ form_card.id + ". " + form_card.location_name }}
+              <b-badge :variant="protocol_variant(protocol(form_card))" class="ml-2"
+                >{{ protocol(form_card).slice(0, 1).toUpperCase() }} </b-badge
+              ><b-icon icon="check" v-show="form_card.exportable" class="ml-2" />
             </template>
             <b-dropdown-item href="#" v-for="f in forms" :key="f.id" @click="form_card = f">
-              {{ f.location_name }}
+              {{ f.id + ". " + f.location_name }}
+              <b-badge :variant="protocol_variant(protocol(f))" class="ml-2"
+                >{{ protocol(f).slice(0, 1).toUpperCase() }} </b-badge
+              ><b-icon icon="check" v-show="f.exportable" class="ml-2" />
             </b-dropdown-item>
           </b-dropdown>
-          <b-button variant="primary" @click="nextForm"><b-icon icon="chevron-right" /></b-button>
+          <b-button
+            variant="blue"
+            @click="
+              {
+                let idx = forms.map((f) => f.id).indexOf(form_card.id);
+                idx = idx == forms.length - 1 ? idx : idx + 1;
+                form_card = forms[idx];
+              }
+            "
+            ><b-icon icon="chevron-right"
+          /></b-button>
         </b-button-group>
       </b-col>
       <b-col lg="12" class="mt-3">
@@ -409,6 +444,11 @@ import tile_providers from "/data/tile_providers.json";
                     </h4>
                   </div>
                 </div>
+              </b-col>
+              <b-col lg="2">
+                <b-form-group label="">
+                  <b-form-checkbox v-model="form_card.exportable">Ready for export</b-form-checkbox>
+                </b-form-group>
               </b-col>
             </b-row>
             <b-row>
@@ -645,6 +685,7 @@ export default {
         this.sightings.forEach((s) => (s.form_id = 0));
         this.forms = this.forms.filter((f) => f.imported);
         this.count_forms = this.forms.length;
+        this.count_forms > 0 ? this.forms[this.count_forms - 1] : null;
       }
     },
     assignMagic() {
@@ -680,6 +721,8 @@ export default {
         var fnew = fx.createForm(
           {
             location_name: fx.mode(sightings2.map((s) => s.location_name)),
+            date: sightings2[0].date,
+            time: sightings2[0].time,
             lat: sightings2.reduce((a, b) => a + b.lat, 0) / sightings2.length,
             lon: sightings2.reduce((a, b) => a + b.lon, 0) / sightings2.length,
           },
@@ -697,7 +740,8 @@ export default {
       }
       if (f.primary_purpose) {
         if (
-          parseFloat(f.distance) > 0 &&
+          !!f.time &&
+          parseFloat(f.distance) >= 0 &&
           parseFloat(f.duration) > 0 &&
           parseFloat(f.number_observer) > 0
         ) {
@@ -762,18 +806,6 @@ export default {
       return this.form_card.imported
         ? this.forms_sightings[this.form_card.id - 1]
         : this.sightings.filter((s) => s.form_id == this.form_card.id);
-    },
-    prevForm() {
-      let idx = this.forms.map((f) => f.id).indexOf(this.form_card.id);
-      idx = idx == 0 ? idx : idx - 1;
-      console.log(idx);
-      this.form_card = this.forms[idx];
-    },
-    nextForm() {
-      let idx = this.forms.map((f) => f.id).indexOf(this.form_card.id);
-      idx = idx == this.forms.length - 1 ? idx : idx + 1;
-      console.log(idx);
-      this.form_card = this.forms[idx];
     },
   },
   computed: {
