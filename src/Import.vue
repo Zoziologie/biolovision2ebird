@@ -27,9 +27,11 @@ export default {
   methods: {
     sightingsTransformation(sightings, form_id) {
       return sightings.map((s) => {
+        var datetime = s.observers[0].timing["@ISO8601"].split("+")[0];
         return {
           form_id: form_id,
-          datetime: s.observers[0].timing["@ISO8601"].split("+")[0],
+          date: datetime.split("T")[0],
+          time: datetime.split("T")[1],
           lat: parseFloat(s.observers[0].coord_lat),
           lon: parseFloat(s.observers[0].coord_lon),
           location_name: s.place.name,
@@ -78,7 +80,8 @@ export default {
                 location_name: fx.mode(f.sightings.map((s) => s.place.name)),
                 lat: f.lat,
                 lon: f.lon,
-                datetime: timeStart,
+                date: date,
+                time: f.time_start,
                 duration: (new Date(timeStop) - new Date(timeStart)) / 1000 / 60,
                 distance: null,
                 number_observer: null,

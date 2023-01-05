@@ -116,7 +116,7 @@ import tile_providers from "/data/tile_providers.json";
             />
             <l-circle-marker
               v-for="s in sightings"
-              :key="s.datetime + s.common_name"
+              :key="s.time + s.common_name"
               :lat-lng="[s.lat, s.lon]"
               :radius="10"
               :fillColor="marker_color[s.form_id % marker_color.length]"
@@ -233,23 +233,47 @@ import tile_providers from "/data/tile_providers.json";
                   </b-input-group>
                 </b-form-group>
               </b-col>
-              <b-col lg="4">
-                <b-form-group label="Date and time:">
+              <b-col lg="3">
+                <b-form-group label="Date:">
                   <b-input-group>
-                    <b-form-input v-model="form_card.datetime" type="datetime-local" />
+                    <b-form-input
+                      v-model="form_card.date"
+                      type="date"
+                      :state="form_card.date != ''"
+                    />
                     <b-input-group-append>
                       <b-button
                         variant="secondary"
-                        @click="form_card.datetime = sightings_form_card[0].datetime"
+                        @click="form_card.date = sightings_form_card[0].date"
                         v-b-tooltip.hover
-                        title="Compute earliest datetime of all sightings."
+                        title="Compute earliest date of all sightings."
                         ><b-icon icon="arrow-repeat"
                       /></b-button>
                     </b-input-group-append>
                   </b-input-group>
                 </b-form-group>
               </b-col>
-              <b-col lg="4">
+              <b-col lg="3">
+                <b-form-group label="Time:">
+                  <b-input-group>
+                    <b-form-input
+                      v-model="form_card.time"
+                      type="time"
+                      :state="form_card.time != ''"
+                    />
+                    <b-input-group-append>
+                      <b-button
+                        variant="secondary"
+                        @click="form_card.time = sightings_form_card[0].time"
+                        v-b-tooltip.hover
+                        title="Compute earliest time of all sightings."
+                        ><b-icon icon="arrow-repeat"
+                      /></b-button>
+                    </b-input-group-append>
+                  </b-input-group>
+                </b-form-group>
+              </b-col>
+              <b-col lg="2">
                 <b-form-group label="Duration (minutes):">
                   <b-input-group>
                     <b-form-input
@@ -274,7 +298,7 @@ import tile_providers from "/data/tile_providers.json";
                   </b-input-group>
                 </b-form-group>
               </b-col>
-              <b-col lg="4">
+              <b-col lg="3">
                 <b-form-group label="Distance (km):">
                   <b-input-group>
                     <b-form-input
@@ -290,21 +314,20 @@ import tile_providers from "/data/tile_providers.json";
                     <b-input-group-append>
                       <b-button
                         variant="secondary"
-                        @click="form_card.duration = form_card.distance = getFormCardDistance()"
+                        @click="form_card.distance = getFormCardDistance()"
                         ><b-icon icon="arrow-repeat"
                       /></b-button>
                     </b-input-group-append>
                   </b-input-group>
                 </b-form-group>
               </b-col>
-              <b-col lg="4">
+              <b-col lg="3">
                 <b-form-group label="Party size:">
-                  <b-form-input
+                  <b-form-spinbutton
                     v-model="form_card.number_observer"
                     step="1"
-                    min="0"
+                    min="1"
                     max="100"
-                    type="number"
                     :state="parseFloat(form_card.number_observer) > 0"
                   />
                 </b-form-group>
@@ -485,6 +508,7 @@ export default {
       map_draw_marker: null,
       form_card: null,
       map_card_bounds: null,
+      number_observer_for_all: 1,
     };
   },
   methods: {
@@ -578,7 +602,7 @@ export default {
     },
     assignMagic() {
       let sightings = this.sightings.filter((s) => s.form_id == 0);
-      const datetime = sightings.map((s) => new Date(s.datetime));
+      const datetime = sightings.map((s) => new Date(s.date + "T" + s.time));
       var form_id = this.count_forms + 1;
 
       for (var i = 0; i < sightings.length; i++) {
@@ -621,7 +645,7 @@ export default {
       }
     },
     protocol(f) {
-      if (!f.datetime) {
+      if (!f.date) {
         return "invalid";
       }
       if (f.primary_purpose) {
@@ -679,7 +703,7 @@ export default {
     },
     getFormCardDuration() {
       console.log("getFormCardDuration");
-      const datetime = this.sightings_form_card.map((s) => new Date(s.datetime)).sort();
+      const datetime = this.sightings_form_card.map((s) => new Date(s.date + "T" + s.time)).sort();
       return Math.round((datetime[datetime.length - 1] - datetime[0]) / 1000 / 60);
     },
     getFormCardDistance() {
