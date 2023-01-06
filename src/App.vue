@@ -455,15 +455,6 @@ import tile_providers from "/data/tile_providers.json";
             </b-row>
             <b-row>
               <b-col lg="6">
-                <b-form-group label="Checklist Comments">
-                  <b-form-textarea
-                    v-model="form_card.comment"
-                    max-rows="6"
-                    no-resize
-                  ></b-form-textarea>
-                </b-form-group>
-              </b-col>
-              <b-col lg="6">
                 <b-form-group>
                   <template #label>
                     Species Comment Model
@@ -501,7 +492,6 @@ import tile_providers from "/data/tile_providers.json";
                           form_card_sightings.slice(0, 1)
                         )[0]
                       "
-                      class="mr-2"
                     ></div>
                   </b-card>
                 </b-form-group>
@@ -545,22 +535,54 @@ import tile_providers from "/data/tile_providers.json";
                 </b-modal>
               </b-col>
               <b-col lg="6">
-                <b-form-checkbox switch v-model="form_card.static_map"
-                  >Include static map</b-form-checkbox
-                >
-                <template v-if="form_card.static_map">
-                  <b-input-group>
-                    <template #prepend>
-                      <b-input-group-text
-                        ><a href="https://docs.mapbox.com/help/getting-started/access-tokens/"
-                          >Mapbox Access Token</a
-                        >
-                      </b-input-group-text>
-                    </template>
-                    <b-form-input v-model="mapbox_access_token" type="text" />
-                  </b-input-group>
-                  <b-img :src="static_map_link(form_card, form_card_sightings)" />
-                </template>
+                <b-form-group>
+                  <template #label>
+                    Checklist Comment
+                    <b-button-group size="sm">
+                      <b-button
+                        v-b-modal.modal-checklist-comment
+                        v-b-tooltip.hover
+                        title="Open edit windows"
+                      >
+                        <b-icon icon="pencil" />
+                      </b-button>
+                      <b-button
+                        variant="primary"
+                        v-b-tooltip.hover
+                        title="Apply this model to all other checklists and set as default for new."
+                        @click="applyCommentToAll"
+                      >
+                        <b-icon icon="files" />
+                      </b-button>
+                    </b-button-group>
+                  </template>
+                  <b-card>
+                    <div v-html="checklist_comment(form_card, form_card_sightings)"></div>
+                  </b-card>
+                </b-form-group>
+
+                <b-modal id="modal-checklist-comment" size="lg" title="Edit Checklist Comment">
+                  <b-form-group label="Checklist Comments: ">
+                    <b-form-textarea
+                      v-model="form_card.checklist_comment"
+                      max-rows="6"
+                      no-resize
+                    ></b-form-textarea>
+                    <b-form-checkbox switch v-model="form_card.static_map"
+                      >Include static map</b-form-checkbox
+                    >
+                  </b-form-group>
+
+                  <template v-if="form_card.static_map">
+                    <b-form-group label="Mapobx Acccess Token: ">
+                      <b-form-input v-model="mapbox_access_token" type="text" />
+                    </b-form-group>
+                  </template>
+                  <p>Preview:</p>
+                  <b-card>
+                    <div v-html="checklist_comment(form_card, form_card_sightings)"></div>
+                  </b-card>
+                </b-modal>
               </b-col>
             </b-row>
           </b-card-body>
@@ -959,12 +981,16 @@ export default {
         return cmt;
       });
     },
-    checklist_comment(form) {
-      return f.checklist_comment + f.static_map.display
-        ? "<img src=" + static_map_link(f) + " style='max-width:600px;width:100%'>"
-        : "" +
-            `Imported with <a href="https://zoziologie.raphaelnussbaumer.com/biolovision2ebird/">biolovision2eBird<a>.
-      `;
+    checklist_comment(form, sightings) {
+      return (
+        form.checklist_comment +
+        (form.static_map
+          ? "<img src=" +
+            this.static_map_link(form, sightings) +
+            " style='max-width:300px;width:100%'><br/>"
+          : "") +
+        'Imported with <a href="https://zoziologie.raphaelnussbaumer.com/biolovision2ebird/">biolovision2eBird<a>.'
+      );
     },
     getFormName(form) {
       return fx.mode(this.form.map((s) => s.location_name));
