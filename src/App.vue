@@ -97,7 +97,7 @@ import tile_providers from "/data/tile_providers.json";
             @ready="onMapSightingsReady"
             :bounds="map_sightings_bounds"
           >
-            <l-control position="topright">
+            <l-control position="bottomright">
               <div class="d-flex flex-column" style="max-width: 480px">
                 <b-button
                   class="mb-2"
@@ -474,6 +474,24 @@ import tile_providers from "/data/tile_providers.json";
                     no-resize
                   ></b-form-textarea>
                 </b-form-group>
+                <div
+                  v-html="
+                    speciesComment(form_card.species_comment, form_card_sightings.slice(0, 1))[0]
+                  "
+                ></div>
+                <b-button v-b-modal.modal-1>Info on variable available</b-button>
+                <b-modal id="modal-1" title="Sightings variable">
+                  <p class="my-4">You can use any of the properties of th column on the left</p>
+                  <b-table
+                    bordered
+                    small
+                    striped
+                    hover
+                    responsive
+                    v-if="form_card_sightings.length > 0"
+                    :items="fx.object2Table(form_card_sightings[0])"
+                  />
+                </b-modal>
               </b-col>
               <b-col lg="6">
                 <b-form-checkbox switch v-model="form_card.static_map"
@@ -638,6 +656,7 @@ export default {
   },
   data() {
     return {
+      website: null,
       sightings: [],
       forms: [],
       forms_sightings: [],
@@ -664,6 +683,7 @@ export default {
       this.forms = d.forms;
       this.sightings = d.sightings;
       this.forms_sightings = d.forms_sightings;
+      this.website = d.website;
 
       this.count_forms = this.forms.length;
 
@@ -708,7 +728,6 @@ export default {
       this.$refs.map_sightings.mapObject.addControl(new L.Control.Fullscreen());
       this.map_draw_rectangle = new L.Draw.Rectangle(this.$refs.map_sightings.mapObject);
       this.$refs.map_sightings.mapObject.on(L.Draw.Event.CREATED, (e) => {
-        console.log(e);
         if (e.layerType === "rectangle") {
           // find sightings inside rectangle
           let sightings = this.sightings.filter((s) =>
@@ -726,13 +745,14 @@ export default {
                   location_name: fx.mode(sightings.map((s) => s.location_name)),
                   lat: sightings.reduce((a, b) => a + b.lat, 0) / sightings.length,
                   lon: sightings.reduce((a, b) => a + b.lon, 0) / sightings.length,
+                  species_comment: this.website.species_comment,
                 },
                 this.count_forms + 1
               );
               this.forms.push(fnew);
               this.assign_form_id = fnew.id;
               this.form_card = fnew;
-              this.count_forms = this.count_forms + 1;
+              this.count_forms++;
               this.create_checklist = false;
             }
             // Assign sightings to new checklist
@@ -779,7 +799,7 @@ export default {
         }
         if (sightings[i].form_id == 0) {
           sightings[i].form_id = form_id;
-          form_id = form_id + 1;
+          form_id++;
         }
       }
 
@@ -792,11 +812,12 @@ export default {
             time: sightings2[0].time,
             lat: sightings2.reduce((a, b) => a + b.lat, 0) / sightings2.length,
             lon: sightings2.reduce((a, b) => a + b.lon, 0) / sightings2.length,
+            species_comment: this.website.species_comment,
           },
           this.count_forms + 1
         );
         this.forms.push(fnew);
-        this.count_forms = this.count_forms + 1;
+        this.count_forms++;
         this.assign_form_id = fnew.id;
         this.form_card = fnew;
       }
@@ -878,7 +899,16 @@ export default {
         return `https://api.mapbox.com/styles/v1/mapbox/satellite-v9/static/${path}${markers}/auto/300x200?access_token=${this.mapbox_access_token}&logo=false`;
       }
     },
-    checklist_comment(f) {
+    speciesComment(species_comment, sightings) {
+      return sightings.map((s) => {
+        let cmt = species_comment;
+        Object.keys(s).forEach((k) => {
+          cmt = cmt.replaceAll("${" + k + "}", s[k]);
+        });
+        return cmt;
+      });
+    },
+    checklist_comment(form) {
       return f.checklist_comment + f.static_map.display
         ? "<img src=" + static_map_link(f) + " style='max-width:600px;width:100%'>"
         : "" +

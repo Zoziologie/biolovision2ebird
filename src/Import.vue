@@ -8,6 +8,13 @@ import fx from "./functions";
 import Wkt from "wicket/wicket.js";
 import "leaflet";
 
+const precision_match = {
+  MINIMUM: ">",
+  EXACT_VALUE: "=",
+  ESTIMATION: "~",
+  NO_VALUE: "",
+};
+
 export default {
   data() {
     return {
@@ -29,7 +36,22 @@ export default {
   methods: {
     sightingsTransformation(sightings, form_id) {
       return sightings.map((s) => {
-        var datetime = s.observers[0].timing["@ISO8601"].split("+")[0];
+        const datetime = s.observers[0].timing["@ISO8601"].split("+")[0];
+
+        let comment = s.observers[0].comment || "";
+        if (s.observers[0].details) {
+          comment += s.observers[0].details
+            .map((d) => {
+              return (
+                d.count +
+                "x " +
+                (d.sex["@id"] != "U" ? d.sex["#text"] + " " : "") +
+                (d.age["@id"] != "U" ? d.age["#text"] + " " : "")
+              );
+            })
+            .join(", ");
+        }
+
         return {
           form_id: form_id,
           date: datetime.split("T")[0],
@@ -39,9 +61,10 @@ export default {
           location_name: s.place.name,
           common_name: s.species.name,
           scientific_name: s.species.latin_name,
-          species_count: s.observers.count,
-          species_count_precision: s.observers.estimation_code,
-          species_comment: s.observers.comment || "",
+          species_count: s.observers[0].estimation_code == "NO_VALUE" ? "x" : s.observers[0].count,
+          species_count_precision: precision_match[s.observers[0].estimation_code],
+          species_comment: comment,
+          website_id: s.observers[0].id_sighting || "",
         };
       });
     },
@@ -72,6 +95,14 @@ export default {
           export_data.sightings = this.sightingsTransformation(data.sightings, 0);
 
           // convert form data
+
+          this.website.species_comment =
+            '${species_count_precision}${species_count} ind. - ${time} - <a href="http://maps.google.com?q=${lat},${lon}&t=k">${lat}, ${lon}</a> - <a href="' +
+            this.website.website +
+            'index.php?m_id=54&id=${website_id}">' +
+            this.website_name +
+            "<br>${species_comment}";
+
           export_data.forms = data.forms.map((f, id) => {
             const date = f.sightings[0].observers[0].timing["@ISO8601"].split("T")[0];
             const timeStart = date + "T" + f.time_start;
@@ -108,7 +139,7 @@ export default {
                 full_form: f.full_form == "1",
                 primary_purpose: true,
                 checklist_comment: f.comment || "",
-                species_comment: "",
+                species_comment: this.website.species_comment,
                 path: path,
               },
               id + 1
