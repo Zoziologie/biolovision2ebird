@@ -129,3 +129,14 @@ h6,
   position: absolute;
   width: 1px;
 }
+.html-editor {
+  font-family: Menlo, Monaco, "Courier New", monospace;
+  line-height: 18px;
+  font-weight: normal;
+  font-size: 12px;
+  font-feature-settings: "liga" 0, "calt" 0;
+  color: #000000;
+}
+.form-control:focus {
+  color: #000000;
+}

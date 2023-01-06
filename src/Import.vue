@@ -282,6 +282,7 @@ export default {
         :accept="website.extension"
         :placeholder="'Click to load your ' + website.extension + ' file'"
         class="mb-2"
+        no-drop
       />
       <b-alert v-if="loading_file_status == 0" variant="warning" show>
         <b-spinner small variant="warning" class="mr-2"> </b-spinner>

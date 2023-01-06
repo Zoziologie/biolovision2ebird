@@ -224,9 +224,9 @@ import tile_providers from "/data/tile_providers.json";
         <b-input-group class="mt-3">
           <b-form-spinbutton v-model="number_observer_for_all" step="1" min="0" max="100" />
           <b-input-group-append>
-            <b-button @click="setObserverForAll(number_observer_for_all)"
-              ><b-icon icon="arrow-repeat"
-            /></b-button>
+            <b-button @click="setObserverForAll(number_observer_for_all)" variant="primary">
+              <b-icon icon="files" />
+            </b-button>
           </b-input-group-append>
         </b-input-group>
       </b-col>
@@ -464,24 +464,75 @@ import tile_providers from "/data/tile_providers.json";
                 </b-form-group>
               </b-col>
               <b-col lg="6">
-                <b-form-group
-                  label="Species Comments"
-                  description="This code will be evaluated with."
-                >
+                <b-form-group>
+                  <template #label>
+                    Species Comment Model
+                    <b-button-group size="sm">
+                      <b-button
+                        v-b-modal.modal-species-comment
+                        v-b-tooltip.hover
+                        title="Open edit windows"
+                      >
+                        <b-icon icon="pencil" />
+                      </b-button>
+                      <b-button
+                        variant="danger"
+                        v-b-tooltip.hover
+                        title="Erase comment"
+                        @click="eraseComment"
+                      >
+                        <b-icon icon="trash" />
+                      </b-button>
+                      <b-button
+                        variant="primary"
+                        v-b-tooltip.hover
+                        title="Apply this model to all other checklists and set as default for new."
+                        @click="applyCommentToAll"
+                      >
+                        <b-icon icon="files" />
+                      </b-button>
+                    </b-button-group>
+                  </template>
+                  <b-card>
+                    <div
+                      v-html="
+                        speciesComment(
+                          form_card.species_comment,
+                          form_card_sightings.slice(0, 1)
+                        )[0]
+                      "
+                      class="mr-2"
+                    ></div>
+                  </b-card>
+                </b-form-group>
+
+                <b-modal id="modal-species-comment" size="lg" title="Edit Species Comment">
+                  <p class="mt-2">
+                    You can edit how the species comment looks like using the HTML code below.
+                  </p>
                   <b-form-textarea
                     v-model="form_card.species_comment"
-                    max-rows="6"
-                    no-resize
-                  ></b-form-textarea>
-                </b-form-group>
-                <div
-                  v-html="
-                    speciesComment(form_card.species_comment, form_card_sightings.slice(0, 1))[0]
-                  "
-                ></div>
-                <b-button v-b-modal.modal-1>Info on variable available</b-button>
-                <b-modal id="modal-1" title="Sightings variable">
-                  <p class="my-4">You can use any of the properties of th column on the left</p>
+                    rows="6"
+                    class="html-editor"
+                  />
+
+                  <h6 class="mt-4">Live Preview</h6>
+                  <b-card>
+                    <div
+                      v-html="
+                        speciesComment(
+                          form_card.species_comment,
+                          form_card_sightings.slice(0, 1)
+                        )[0]
+                      "
+                      class="mr-2 b-2"
+                    ></div>
+                  </b-card>
+                  <p class="mt-4">
+                    Use the notation <code>${Properties}</code> to disply dynamic information on
+                    each species. Use the table below to see all the properties available.
+                  </p>
+
                   <b-table
                     bordered
                     small
@@ -942,6 +993,27 @@ export default {
       setTimeout(() => {
         this.animate_bezier = false;
       }, 5000);
+    },
+    applyCommentToAll() {
+      if (
+        confirm(
+          "You are about to apply the the species comment model to all other checklist and set this model as default for new checklist. This action cannot be undone."
+        )
+      ) {
+        this.forms.forEach((f) => {
+          f.species_comment = this.form_card.species_comment;
+        });
+        this.website.species_comment = this.form_card.species_comment;
+      }
+    },
+    eraseComment() {
+      if (
+        confirm(
+          "You are about to earse the content of the species comment. This action cannot be undone."
+        )
+      ) {
+        this.form_card.species_comment = "";
+      }
     },
   },
   computed: {
