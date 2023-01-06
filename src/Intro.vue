@@ -25,14 +25,12 @@ export default {
     <b-col lg="12">
       <h2 class="border-bottom pb-2 mb-3">Introduction</h2>
     </b-col>
-    <b-col lg="6">
+    <b-col lg="12">
       <p>
         <strong>Biolovision2eBird</strong> helps you to import your bird sightings from any
         Biolovision website (e.g.
         <b-link href="https://www.ornitho.ch/" target="_blank">ornitho.ch</b-link>,
         <b-link href="http://faune-alsace.org/" target="_blank">faune-alsace</b-link>,...) to eBird!
-      </p>
-      <p>
         It is now also possible to convert data from the Observation websites (e.g.,
         <b-link href="https://observation.org/" target="_blank">observation.org</b-link>,
         <b-link href="https://waarneming.nl/" target="_blank">waarneming.nl</b-link>,...),
@@ -41,7 +39,9 @@ export default {
         >
         and <b-link href="https://www.birdlasser.com/" target="_blank">Birdlasser</b-link>.
       </p>
-      <p>The process is quite simple:</p>
+    </b-col>
+    <b-col lg="6">
+      <p>The process involves the following steps:</p>
       <ol>
         <li>Generate your data from the original website and load them on this webapp.</li>
         <li>Create checklists and assign individual sightings to checklist.</li>
@@ -58,6 +58,17 @@ export default {
             >eBird import tool</b-link
           >.
         </li>
+        <li>
+          The post-processing steps include
+          <b-link
+            href="https://support.ebird.org/en/support/solutions/articles/48000907878-upload-spreadsheet-data-to-ebird#anchorCleanData"
+            target="_blank"
+            >fixing species name</b-link
+          >, potentially merging checklist location to hotspot (see the
+          <b-link href="https://zoziologie.raphaelnussbaumer.com/merge2hotspot/" target="_blank"
+            >Merge2Hotspot tool</b-link
+          >) and review your checklist for any issues.
+        </li>
       </ol>
     </b-col>
     <b-col lg="6">
@@ -68,7 +79,7 @@ export default {
         <h4 class="alert-heading">
           <b-icon icon="exclamation-octagon" class="mr-1"> </b-icon>Prerequisites
         </h4>
-        <b-form-group>
+        <b-form-group label="To use this app, we require you to:">
           <b-form-checkbox-group stacked v-model="important_information">
             <b-form-checkbox value="1">
               Be familiar with

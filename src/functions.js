@@ -13,10 +13,10 @@ export default {
         });
     },
     createForm(f, id) {
-        f = {
-            id: id,
+        return {
+            id: id, // required
             imported: f.imported || false,
-            exportable: false,
+            exportable: f.exportable || false,
             location_name: f.location_name || "New List " + f.id,
             lat: f.lat || null,
             lon: f.lon || null,
@@ -32,7 +32,22 @@ export default {
             path: f.path || null,
             static_map: f.static_map || true,
         };
-        return f;
+    },
+    createSighting(s) {
+        return {
+            id: s.id, // required
+            form_id: s.form_id, // required
+            location_name: s.location_name,
+            lat: s.lat || null,
+            lon: s.lon || null,
+            date: s.date || "",
+            time: s.time || "",
+            common_name: s.common_name || "",
+            scientific_name: s.scientific_name || "",
+            count: s.count || null,
+            count_precision: s.count_precision || "",
+            comment: s.comment || "",
+        };
     },
     protocol(f) {
         if (!f.date) {

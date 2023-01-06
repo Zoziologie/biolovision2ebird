@@ -222,7 +222,7 @@ import tile_providers from "/data/tile_providers.json";
       <b-col lg="3">
         <p>Change the party size for all lists with no party size</p>
         <b-input-group class="mt-3">
-          <b-form-spinbutton v-model="number_observer_for_all" step="1" min="0" max="100" />
+          <b-form-spinbutton v-model="number_observer_for_all" step="1" min="1" max="100" />
           <b-input-group-append>
             <b-button @click="setObserverForAll(number_observer_for_all)" variant="primary">
               <b-icon icon="files" />
@@ -1073,7 +1073,7 @@ export default {
   mounted() {
     const urlParams = new URLSearchParams(window.location.search);
     this.skip_intro = urlParams.get("skip_intro") ? true : false;
-    this.number_observer_for_all = this.$cookie.get("number_observer_for_all");
+    this.number_observer_for_all = parseInt(this.$cookie.get("number_observer_for_all"));
     this.assign_duration = this.$cookie.get("assign_duration");
     this.assign_distance = this.$cookie.get("assign_distance");
 

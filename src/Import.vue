@@ -27,7 +27,7 @@ export default {
       loading_file_status: null,
       number_imported_form: null,
       number_imported_sightings: null,
-      taxonomic_issues: [1],
+      taxonomic_issues: [],
     };
   },
   computed: {
@@ -61,14 +61,14 @@ export default {
         if (biolovision_species_list.hasOwnProperty(s.species["@id"])) {
           common_name = biolovision_species_list[s.species["@id"]];
         } else {
-          // let person = prompt("Please enter your name", "Harry Potter");
+          console.log(s.species);
           common_name = s.species.name;
           if (this.taxonomic_issues.indexOf(s.species)) {
             this.taxonomic_issues.push(s.species);
           }
         }
-
-        return {
+        return fx.createSighting({
+          id: s.observers[0].id_sighting,
           form_id: form_id,
           date: datetime.split("T")[0],
           time: datetime.split("T")[1],
@@ -77,11 +77,10 @@ export default {
           location_name: s.place.name,
           common_name: common_name,
           scientific_name: "",
-          species_count: s.observers[0].estimation_code == "NO_VALUE" ? "x" : s.observers[0].count,
-          species_count_precision: precision_match[s.observers[0].estimation_code],
+          count: s.observers[0].estimation_code == "NO_VALUE" ? "x" : s.observers[0].count,
+          count_precision: precision_match[s.observers[0].estimation_code],
           species_comment: comment,
-          website_id: s.observers[0].id_sighting || "",
-        };
+        });
       });
     },
     processFile(event) {
@@ -198,7 +197,7 @@ export default {
     </b-col>
     <b-col lg="6">
       <p>Select the website from which to import the data</p>
-      <b-select v-model="website_name">
+      <b-select v-model="website_name" size="lg">
         <b-select-option-group
           v-for="cat in new Set(websites_list.map((w) => w.category))"
           :label="cat"
@@ -322,6 +321,7 @@ export default {
           <b-link
             class="alert-link"
             href="https://support.ebird.org/en/support/solutions/articles/48000907878-upload-spreadsheet-data-to-ebird#anchorCleanData"
+            target="_blank"
             >Fix the species</b-link
           >
           on the eBird import tool.

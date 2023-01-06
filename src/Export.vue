@@ -18,23 +18,13 @@ export default {
   methods: {
     formatSightings(sightings) {
       return sightings.map((s) => {
-        var eBird_bird = jQuery.grep(eBird_birds_list, function (e) {
-          return e.id == s.species["@id"];
-        });
-
-        if (eBird_bird.length < 1) {
-          alert_sp.push(s.species.name);
-          eBird_bird.push([]);
-          eBird_bird[0].PRIMARY_COM_NAME = s.species.name;
-        }
-
         var f = this.forms.filter((f) => f.id == s.form_id)[0];
 
         return {
-          common_name: eBird_bird[0].PRIMARY_COM_NAME,
+          common_name: s.common_name,
           genus: "",
           specie: "",
-          count: s.species_count,
+          count: s.count,
           specie_comment: s.species_comment,
           location: f.location_name,
           lat: f.lat,
