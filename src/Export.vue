@@ -6,9 +6,15 @@ import fx from "./functions";
 export default {
   props: ["forms", "sightings", "forms_sightings"],
   data() {
-    return {};
+    return {
+      csv: [],
+    };
   },
-  computed: {},
+  computed: {
+    forms_exportable() {
+      return this.forms.filter((f) => f.exportable);
+    },
+  },
   methods: {
     formatSightings(sightings) {
       return sightings.map((s) => {
@@ -69,15 +75,18 @@ export default {
       downloadLink.click();
       document.body.removeChild(downloadLink);
     },
-    exportFile() {
-      const fid = this.forms.filter((f) => f.exportable).map((f) => f.id);
+    computeCSV() {
+      const fid = this.forms_exportable.map((f) => f.id);
+
       const sightings = [
         ...this.sightings.filter((s) => fid.includes(s.form_id)),
-        ...this.forms_sightings.filter((s) => fig.includes(s.form_id)),
+        ...this.forms_sightings.filter((s) => fid.includes(s.form_id)),
       ];
 
-      const csv = this.arrayObjectToCSV(this.formatSightings(sightings));
-
+      console.log(this.formatSightings(sightings));
+      this.csv = this.arrayObjectToCSV(this.formatSightings(sightings));
+    },
+    exportFile() {
       this.downloadFile(csv, "test.csv");
     },
   },
@@ -89,20 +98,29 @@ export default {
     <b-col lg="12">
       <h2 class="border-bottom pb-2 mb-3">4. Upload your data in eBird</h2>
     </b-col>
-    <b-col lg="12">
-      <p>
-        First, download the eBird file (.csv) for the checklist(s) by clicking on the buttons below
-      </p>
+    <b-col lg="12" v-if="forms_exportable.length === 0">
+      <b-alert show variant="secondary">
+        <h4 class="alert-heading">Not ready yet...</h4>
+        <p>None of the checklist have been marked as being ready. Go back to the previous step!</p>
+      </b-alert>
+    </b-col>
+    <b-col lg="12" v-else>
+      <b-alert show variant="secondary">
+        <h4 class="alert-heading">Well done!</h4>
 
-      <b-button @click="exportFile">Generate eBird file</b-button>
+        <p>
+          You are ready to export: <strong> {{ forms_exportable.length }} checklists</strong>!
+        </p>
+        <b-button class="text-center" @click="computeCSV">Preview CSV export</b-button>
+      </b-alert>
 
-      {{ forms_sightings }}
+      <b-table bordered small striped hover responsive :items="this.csv" />
+
       <p>Then, upload the eBird formatted file on eBird, following the process below:</p>
       <ol>
         <li>
           Open eBird, go to "Submit Observations", and "Import Data" or click on
           <a
-            class=""
             href="http://ebird.org/ebird/import/upload.form?theme=ebird"
             target="_blank"
             rel="noopener"

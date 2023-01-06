@@ -657,7 +657,7 @@ import tile_providers from "/data/tile_providers.json";
     <Export
       :forms="forms"
       :sightings="sightings"
-      :form_sightings="forms_sightings"
+      :forms_sightings="forms_sightings"
       v-if="forms.length > 0"
     />
 
