@@ -34,6 +34,9 @@ export default {
     website() {
       return websites_list.filter((w) => w.name == this.website_name)[0];
     },
+    taxonomic_issues_stringify() {
+      return JSON.stringify(this.taxonomic_issues, null, 2);
+    },
   },
   methods: {
     sightingsTransformation(sightings, form_id) {
@@ -110,7 +113,7 @@ export default {
           // convert form data
 
           this.website.species_comment =
-            '${species_count_precision}${species_count} ind. - ${time} - <a href="http://maps.google.com?q=${lat},${lon}&t=k">${lat}, ${lon}</a> - <a href="' +
+            '${count_precision}${count} ind. - ${time} - <a href="http://maps.google.com?q=${lat},${lon}&t=k">${lat}, ${lon}</a> - <a href="' +
             this.website.website +
             'index.php?m_id=54&id=${website_id}">' +
             this.website_name +
@@ -166,10 +169,6 @@ export default {
         } else {
           this.loading_file_status = -1;
           throw new Error("No correct system");
-        }
-
-        if (this.taxonomic_issues.length > 0) {
-          console.log(taxonomic_issues);
         }
 
         this.number_imported_form = export_data.forms.length;
@@ -328,10 +327,25 @@ export default {
           on the eBird import tool.
         </p>
         <p>
-          Could you send your json file at
-          <b-link class="alert-link" href="mailto:rafusss@gmail.com">rafusss@gmail.com</b-link> so
-          that I can investigate the issue and correct the taxonomic match.
+          Could you copy the code below and paste it
+          <b-link
+            class="alert-link"
+            href="https://github.com/Zoziologie/biolovision2ebird/issues/11"
+            target="_blank"
+            >in a new comment on this Github issue</b-link
+          >
+          so that I can add or correct the taxonomic match.
         </p>
+        <b-input-group>
+          <b-input type="text" v-model="taxonomic_issues_stringify" readonly></b-input>
+          <b-input-group-append>
+            <b-button
+              @click="fx.copyClipboard('\`\`\`\n' + taxonomic_issues_stringify + '\n\`\`\`')"
+            >
+              <b-icon icon="clipboard-check" />
+            </b-button>
+          </b-input-group-append>
+        </b-input-group>
       </b-alert>
     </b-col>
   </b-row>

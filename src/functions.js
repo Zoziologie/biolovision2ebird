@@ -71,5 +71,12 @@ export default {
                 return "danger";
         }
     },
-
+    async copyClipboard(mytext) {
+        try {
+            await navigator.clipboard.writeText(mytext);
+            alert('Copied');
+        } catch ($e) {
+            alert('Cannot copy');
+        }
+    }
 }
