@@ -13,7 +13,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src"
+    "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src",
+    "compile-species-list": "node compile-species-list.js"
   },
   "dependencies": {
     "@vitejs/plugin-vue2": "^2.2.0",
