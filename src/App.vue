@@ -663,7 +663,11 @@ import tile_providers from "/data/tile_providers.json";
 
     <b-row class="d-flex justify-content-between p-3 my-3 text-white rounded shadow-sm bg-blue">
       <b-col lg="12">
-        Any comments or suggestions? Please submit an issue on
+        Any issues or suggestions? Please check the
+        <b-link href="https://github.com/Zoziologie/biolovision2ebird/wiki/FAQ" target="_blank"
+          >FAQ</b-link
+        >
+        or submit an issue on
         <b-link
           class="btn btn-sm btn-outline-secondary"
           href="https://github.com/Zoziologie/Biolovision2eBird/issues"
@@ -1069,12 +1073,24 @@ export default {
   mounted() {
     const urlParams = new URLSearchParams(window.location.search);
     this.skip_intro = urlParams.get("skip_intro") ? true : false;
+    this.number_observer_for_all = this.$cookie.get("number_observer_for_all");
+    this.assign_duration = this.$cookie.get("assign_duration");
+    this.assign_distance = this.$cookie.get("assign_distance");
 
     this.mapbox_access_token = JSON.parse(this.$cookie.get("mapbox_access_token"));
   },
   watch: {
     mapbox_access_token() {
       this.$cookie.set("mapbox_access_token", JSON.stringify(this.mapbox_access_token), 365);
+    },
+    number_observer_for_all() {
+      this.$cookie.set("number_observer_for_all", this.number_observer_for_all, 365);
+    },
+    assign_duration() {
+      this.$cookie.set("assign_duration", this.assign_duration, 365);
+    },
+    assign_distance() {
+      this.$cookie.set("assign_distance", this.assign_distance, 365);
     },
   },
 };

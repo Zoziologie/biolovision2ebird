@@ -267,11 +267,6 @@ export default {
               >Export data from <strong>{{ website.name }}</strong>
             </a>
           </b-col>
-
-          <p>
-            In order for eBird to recognize the species, we are automatically matching the original
-            website taxonomy to eBird (clements).
-          </p>
         </template>
         <template v-else-if="website.system == 'observation'">
           <p>
