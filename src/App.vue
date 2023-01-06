@@ -153,7 +153,7 @@ import tile_providers from "/data/tile_providers.json";
               </div>
             </l-control>
 
-            <l-control-layers position="bottomright" />
+            <l-control-layers position="topright" />
             <l-tile-layer
               v-for="tileProvider in tile_providers"
               :key="tileProvider.name"
@@ -285,11 +285,16 @@ import tile_providers from "/data/tile_providers.json";
             </b-tab>
           </b-tabs>-->
           <b-card-body v-if="form_card">
-            <!--<b-alert show variant="danger" class="mt-2" v-if="getFormCardDuration() > 1440">
-              <b-icon-exclamation-triangle-fill class="mr-2" />The checklist
-              {{ f.location_name }} contains sightings from different days. It is strongly
-              recommended to split them into multiple checklists.
-            </b-alert>-->
+            <b-alert show variant="danger" class="mt-2" v-show="form_card_duration > 60 * 24">
+              <b-icon-exclamation-triangle-fill class="mr-2" />This checklist contains sightings
+              from different days which is not in agreement with
+              <b-link
+                href="https://ebird.freshdesk.com/en/support/solutions/articles/48000795623#eBird-Checklist-Basics"
+                class="alert-link"
+                target="_blank"
+                >eBird Core Rules & Requirements</b-link
+              >.
+            </b-alert>
             <b-row>
               <b-col lg="4">
                 <b-form-group label="Location Name:">
@@ -298,7 +303,7 @@ import tile_providers from "/data/tile_providers.json";
                     <b-input-group-append>
                       <b-button
                         variant="secondary"
-                        @click="form_card.location_name = getFormName()"
+                        @click="form_card.location_name = getFormName(form_card)"
                         v-b-tooltip.hover
                         title="Use the most common location name of all sightings"
                         ><b-icon icon="arrow-repeat"
@@ -318,7 +323,7 @@ import tile_providers from "/data/tile_providers.json";
                     <b-input-group-append>
                       <b-button
                         variant="secondary"
-                        @click="form_card.date = sightings_form_card[0].date"
+                        @click="form_card.date = form_card_sightings[0].date"
                         v-b-tooltip.hover
                         title="Compute earliest date of all sightings."
                         ><b-icon icon="arrow-repeat"
@@ -333,12 +338,13 @@ import tile_providers from "/data/tile_providers.json";
                     <b-form-input
                       v-model="form_card.time"
                       type="time"
+                      step="60"
                       :state="form_card.time != ''"
                     />
                     <b-input-group-append>
                       <b-button
                         variant="secondary"
-                        @click="form_card.time = sightings_form_card[0].time"
+                        @click="form_card.time = form_card_sightings[0].time"
                         v-b-tooltip.hover
                         title="Compute earliest time of all sightings."
                         ><b-icon icon="arrow-repeat"
@@ -363,7 +369,7 @@ import tile_providers from "/data/tile_providers.json";
                     <b-input-group-append>
                       <b-button
                         variant="secondary"
-                        @click="form_card.duration = getFormCardDuration()"
+                        @click="form_card.duration = form_card_duration"
                         v-b-tooltip.hover
                         title="Compute duration between the first and last sightings."
                         ><b-icon icon="arrow-repeat"
@@ -449,12 +455,21 @@ import tile_providers from "/data/tile_providers.json";
             </b-row>
             <b-row>
               <b-col lg="6">
-                <b-form-group
-                  label="Checklist Comments"
-                  description="We will automatically add 'Imported from biolvision2eBird' in the checklist comment."
-                >
+                <b-form-group label="Checklist Comments">
                   <b-form-textarea
                     v-model="form_card.comment"
+                    max-rows="6"
+                    no-resize
+                  ></b-form-textarea>
+                </b-form-group>
+              </b-col>
+              <b-col lg="6">
+                <b-form-group
+                  label="Species Comments"
+                  description="This code will be evaluated with."
+                >
+                  <b-form-textarea
+                    v-model="form_card.species_comment"
                     max-rows="6"
                     no-resize
                   ></b-form-textarea>
@@ -475,7 +490,7 @@ import tile_providers from "/data/tile_providers.json";
                     </template>
                     <b-form-input v-model="mapbox_access_token" type="text" />
                   </b-input-group>
-                  <b-img :src="static_map_link(form_card, sightings_form_card)" />
+                  <b-img :src="static_map_link(form_card, form_card_sightings)" />
                 </template>
               </b-col>
             </b-row>
@@ -507,7 +522,7 @@ import tile_providers from "/data/tile_providers.json";
               layer-type="base"
             />
             <l-circle-marker
-              v-for="s in sightings_form_card"
+              v-for="s in form_card_sightings"
               :key="s.time + s.common_name"
               :lat-lng="[s.lat, s.lon]"
               :radius="10"
@@ -583,6 +598,8 @@ import "leaflet";
 import "leaflet-draw/dist/leaflet.draw-src.js";
 import "leaflet-fullscreen/dist/Leaflet.fullscreen.js";
 import "polyline-encoded/Polyline.encoded.js";
+// fix for leaflet draw
+window.type = true;
 
 import {
   LMap,
@@ -643,17 +660,6 @@ export default {
     };
   },
   methods: {
-    openPopup(s, marker) {
-      this.popup_latLng = L.latLng([s.lat, s.lon]);
-      this.popup_s = s;
-      setTimeout(() => this.$refs[marker].mapObject.openPopup(), 100);
-    },
-    animateBezier() {
-      this.animate_bezier = true;
-      setTimeout(() => {
-        this.animate_bezier = false;
-      }, 5000);
-    },
     importData(d) {
       this.forms = d.forms;
       this.sightings = d.sightings;
@@ -702,6 +708,7 @@ export default {
       this.$refs.map_sightings.mapObject.addControl(new L.Control.Fullscreen());
       this.map_draw_rectangle = new L.Draw.Rectangle(this.$refs.map_sightings.mapObject);
       this.$refs.map_sightings.mapObject.on(L.Draw.Event.CREATED, (e) => {
+        console.log(e);
         if (e.layerType === "rectangle") {
           // find sightings inside rectangle
           let sightings = this.sightings.filter((s) =>
@@ -733,16 +740,8 @@ export default {
               s.form_id = this.assign_form_id;
             });
           }
-          // remove empty checklist
         }
       });
-    },
-    removeForm() {
-      // change all sightings from this id
-      this.sightings.forEach((s) => (s.form_id = s.form_id == this.assign_form_id ? 0 : s.form_id));
-      // remove the form
-      this.forms = this.forms.filter((i) => i.id !== this.assign_form_id);
-      this.assign_form_id = 0;
     },
     assignClean() {
       const form_id = this.sightings.reduce((prev, s, sid, self) => {
@@ -802,18 +801,18 @@ export default {
         this.form_card = fnew;
       }
     },
-    protocol(f) {
-      if (!f.date) {
+    protocol(form) {
+      if (!form.date) {
         return "invalid";
       }
-      if (f.primary_purpose) {
+      if (form.primary_purpose) {
         if (
-          !!f.time &&
-          parseFloat(f.distance) >= 0 &&
-          parseFloat(f.duration) > 0 &&
-          parseFloat(f.number_observer) > 0
+          !!form.time &&
+          parseFloat(form.distance) >= 0 &&
+          parseFloat(form.duration) > 0 &&
+          parseFloat(form.number_observer) > 0
         ) {
-          if (f.distance > 0) {
+          if (form.distance > 0) {
             return "traveling";
           } else {
             return "stationary";
@@ -886,13 +885,8 @@ export default {
             `Imported with <a href="https://zoziologie.raphaelnussbaumer.com/biolovision2ebird/">biolovision2eBird<a>.
       `;
     },
-    getFormName() {
-      return fx.mode(this.sightings_form_card.map((s) => s.location_name));
-    },
-    getFormCardDuration() {
-      console.log("getFormCardDuration");
-      const datetime = this.sightings_form_card.map((s) => new Date(s.date + "T" + s.time)).sort();
-      return Math.round((datetime[datetime.length - 1] - datetime[0]) / 1000 / 60);
+    getFormName(form) {
+      return fx.mode(this.form.map((s) => s.location_name));
     },
     setObserverForAll(nb) {
       const forms = this.forms.filter((f) => !(f.number_observer > 0));
@@ -908,9 +902,20 @@ export default {
         forms.forEach((f) => (f.number_observer = nb));
       }
     },
+    openPopup(s, marker) {
+      this.popup_latLng = L.latLng([s.lat, s.lon]);
+      this.popup_s = s;
+      setTimeout(() => this.$refs[marker].mapObject.openPopup(), 100);
+    },
+    animateBezier() {
+      this.animate_bezier = true;
+      setTimeout(() => {
+        this.animate_bezier = false;
+      }, 5000);
+    },
   },
   computed: {
-    sightings_form_card() {
+    form_card_sightings() {
       if (!this.form_card) {
         throw Error("Error with form_card");
       }
@@ -919,13 +924,18 @@ export default {
         ? this.forms_sightings[this.form_card.id - 1]
         : this.sightings.filter((s) => s.form_id == this.form_card.id);
 
-      console.log("sightings_form_card");
+      console.log("form_card_sightings");
       return sightings;
     },
     map_card_bounds() {
-      return this.sightings_form_card.length > 0
-        ? L.latLngBounds(this.sightings_form_card.map((s) => L.latLng(s.lat, s.lon))).pad(0.05)
+      return this.form_card_sightings.length > 0
+        ? L.latLngBounds(this.form_card_sightings.map((s) => L.latLng(s.lat, s.lon))).pad(0.05)
         : null;
+    },
+    form_card_duration() {
+      console.log("getFormCardDuration");
+      const datetime = this.form_card_sightings.map((s) => new Date(s.date + "T" + s.time)).sort();
+      return Math.round((datetime[datetime.length - 1] - datetime[0]) / 1000 / 60);
     },
   },
   mounted() {

@@ -34,6 +34,7 @@ export default {
           width: size + 'px',
           'text-align': 'center',
           'line-height': size + 'px',
+          color: '#FFFFFF',
         }"
       >
         {{ fid }}

@@ -122,3 +122,10 @@ h6,
   max-height: 400px;
   overflow-y: auto;
 }
+::-webkit-datetime-edit-second-field {
+  background: #fff;
+  color: transparent;
+  margin-left: -3px;
+  position: absolute;
+  width: 1px;
+}
