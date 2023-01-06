@@ -56,7 +56,8 @@ import tile_providers from "/data/tile_providers.json";
             Instead of doing this process manually, there is (new) an "Automatic Attribution". This
             "magic" function will create checklists and attribute the corresponding incidental
             sightings automotically. The function is based on a distance and duration threashold to
-            aggregate sightings together. You can still edit automotic attribution later.
+            aggregate sightings together. You can still edit automotic attribution later. We suggest
+            to start with values of 1km and 1hour and adjust based on your birding style.
           </p>
           <b-row>
             <b-col sm="4">
@@ -431,7 +432,7 @@ import tile_providers from "/data/tile_providers.json";
                     <b-form-checkbox
                       switch
                       v-model="form_card.full_form"
-                      v-b-tooltip.hover.html="
+                      v-b-tooltip.hover.bottom.html="
                         'In a <b>complete checklist</b>, you <i>report every species</i> you could identify to the best of your ability, by sight and/or sound.'
                       "
                     >
@@ -447,14 +448,7 @@ import tile_providers from "/data/tile_providers.json";
                   </div>
                 </div>
               </b-col>
-              <b-col lg="2">
-                <b-form-group label="">
-                  <b-form-checkbox v-model="form_card.exportable">Ready for export</b-form-checkbox>
-                </b-form-group>
-              </b-col>
-            </b-row>
-            <b-row>
-              <b-col lg="6">
+              <b-col lg="4">
                 <b-form-group>
                   <template #label>
                     Species Comment Model
@@ -477,7 +471,7 @@ import tile_providers from "/data/tile_providers.json";
                       <b-button
                         variant="primary"
                         v-b-tooltip.hover
-                        title="Apply this model to all other checklists and set as default for new."
+                        title="Apply this template to all other checklists and set as default for new."
                         @click="applyCommentToAll"
                       >
                         <b-icon icon="files" />
@@ -488,30 +482,26 @@ import tile_providers from "/data/tile_providers.json";
                     <div
                       v-html="
                         speciesComment(
-                          form_card.species_comment,
+                          form_card.species_comment_template,
                           form_card_sightings.slice(0, 1)
                         )[0]
                       "
                     ></div>
                   </b-card>
                 </b-form-group>
-
-                <b-modal id="modal-species-comment" size="lg" title="Edit Species Comment">
-                  <p class="mt-2">
-                    You can edit how the species comment looks like using the HTML code below.
-                  </p>
+                <b-modal id="modal-species-comment" title="Edit Species Comment Template">
+                  <p class="mt-2">You can edit the species comment using the HTML code below.</p>
                   <b-form-textarea
-                    v-model="form_card.species_comment"
+                    v-model="form_card.species_comment_template"
                     rows="6"
                     class="html-editor"
                   />
-
                   <h6 class="mt-4">Live Preview</h6>
                   <b-card>
                     <div
                       v-html="
                         speciesComment(
-                          form_card.species_comment,
+                          form_card.species_comment_template,
                           form_card_sightings.slice(0, 1)
                         )[0]
                       "
@@ -519,70 +509,36 @@ import tile_providers from "/data/tile_providers.json";
                     ></div>
                   </b-card>
                   <p class="mt-4">
-                    Use the notation <code>${Properties}</code> to disply dynamic information on
-                    each species. Use the table below to see all the properties available.
+                    Use the notation <code>${property}</code> to display dynamic information on each
+                    species. Use the table below to see all the properties available.
                   </p>
 
                   <b-table
                     bordered
                     small
                     striped
-                    hover
-                    responsive
                     v-if="form_card_sightings.length > 0"
                     :items="fx.object2Table(form_card_sightings[0])"
                   />
                 </b-modal>
               </b-col>
-              <b-col lg="6">
+              <b-col lg="4">
                 <b-form-group>
-                  <template #label>
-                    Checklist Comment
-                    <b-button-group size="sm">
-                      <b-button
-                        v-b-modal.modal-checklist-comment
-                        v-b-tooltip.hover
-                        title="Open edit windows"
-                      >
-                        <b-icon icon="pencil" />
-                      </b-button>
-                      <b-button
-                        variant="primary"
-                        v-b-tooltip.hover
-                        title="Apply this model to all other checklists and set as default for new."
-                        @click="applyCommentToAll"
-                      >
-                        <b-icon icon="files" />
-                      </b-button>
-                    </b-button-group>
-                  </template>
+                  <template #label> Checklist Comment: </template>
+                  <b-form-checkbox switch v-model="form_card.static_map"
+                    >Include static map</b-form-checkbox
+                  >
                   <b-card>
                     <div v-html="checklist_comment(form_card, form_card_sightings)"></div>
                   </b-card>
                 </b-form-group>
-
-                <b-modal id="modal-checklist-comment" size="lg" title="Edit Checklist Comment">
-                  <b-form-group label="Checklist Comments: ">
-                    <b-form-textarea
-                      v-model="form_card.checklist_comment"
-                      max-rows="6"
-                      no-resize
-                    ></b-form-textarea>
-                    <b-form-checkbox switch v-model="form_card.static_map"
-                      >Include static map</b-form-checkbox
-                    >
-                  </b-form-group>
-
-                  <template v-if="form_card.static_map">
-                    <b-form-group label="Mapobx Acccess Token: ">
-                      <b-form-input v-model="mapbox_access_token" type="text" />
-                    </b-form-group>
-                  </template>
-                  <p>Preview:</p>
-                  <b-card>
-                    <div v-html="checklist_comment(form_card, form_card_sightings)"></div>
-                  </b-card>
-                </b-modal>
+              </b-col>
+              <b-col lg="4">
+                <b-form-group label="Mark the checklist as exportable">
+                  <b-form-checkbox v-model="form_card.exportable" switch size="lg"
+                    >Ready for export</b-form-checkbox
+                  >
+                </b-form-group>
               </b-col>
             </b-row>
           </b-card-body>
@@ -663,11 +619,15 @@ import tile_providers from "/data/tile_providers.json";
 
     <b-row class="d-flex justify-content-between p-3 my-3 text-white rounded shadow-sm bg-blue">
       <b-col lg="12">
-        Any issues or suggestions? Please check the
-        <b-link href="https://github.com/Zoziologie/biolovision2ebird/wiki/FAQ" target="_blank"
-          >FAQ</b-link
+        <strong>Any issues or suggestions?</strong> Check the
+        <b-link
+          class="btn btn-sm btn-outline-secondary"
+          href="https://github.com/Zoziologie/biolovision2ebird/wiki/FAQ"
+          target="_blank"
         >
-        or submit an issue on
+          <b-icon icon="question-circle-fill" aria-hidden="true"> </b-icon> FAQ</b-link
+        >
+        first, and then submit an issue on
         <b-link
           class="btn btn-sm btn-outline-secondary"
           href="https://github.com/Zoziologie/Biolovision2eBird/issues"
@@ -676,9 +636,14 @@ import tile_providers from "/data/tile_providers.json";
           <b-icon icon="github" aria-hidden="true"> </b-icon> Github</b-link
         >
         or
-        <b-link class="btn btn-sm btn-outline-secondary" href="mailto:rafnuss@gmail.com">
-          <b-icon icon="envelope" aria-hidden="true"> </b-icon> Contact me</b-link
-        >.
+        <b-link
+          class="btn btn-sm btn-outline-secondary"
+          href="mailto:rafnuss@gmail.com"
+          target="_blank"
+        >
+          <b-icon icon="envelope-fill" aria-hidden="true"> </b-icon> Contact me</b-link
+        >
+        if necessary.
       </b-col>
     </b-row>
   </b-container>
@@ -695,6 +660,8 @@ import "leaflet-fullscreen/dist/Leaflet.fullscreen.js";
 import "polyline-encoded/Polyline.encoded.js";
 // fix for leaflet draw
 window.type = true;
+const mapbox_access_token =
+  "pk.eyJ1IjoicmFmbnVzcyIsImEiOiJjbGNsNWtyNm01enhnM3hsazNmamQ5dm5hIn0.DonKVX7CLLfMHIZiiSbYnQ";
 
 import {
   LMap,
@@ -752,7 +719,6 @@ export default {
       form_card: null,
       number_observer_for_all: 1,
       animate_bezier: false,
-      mapbox_access_token: "",
     };
   },
   methods: {
@@ -822,7 +788,7 @@ export default {
                   location_name: fx.mode(sightings.map((s) => s.location_name)),
                   lat: sightings.reduce((a, b) => a + b.lat, 0) / sightings.length,
                   lon: sightings.reduce((a, b) => a + b.lon, 0) / sightings.length,
-                  species_comment: this.website.species_comment,
+                  species_comment_template: this.website.species_comment_template,
                 },
                 this.count_forms + 1
               );
@@ -889,7 +855,7 @@ export default {
             time: sightings2[0].time,
             lat: sightings2.reduce((a, b) => a + b.lat, 0) / sightings2.length,
             lon: sightings2.reduce((a, b) => a + b.lon, 0) / sightings2.length,
-            species_comment: this.website.species_comment,
+            species_comment_template: this.website.species_comment_template,
           },
           this.count_forms + 1
         );
@@ -958,7 +924,7 @@ export default {
           sightings.map((x) => {
             return { x: x.lat, y: x.lon };
           }),
-          0.001
+          sightings.length > 100 ? 0.001 : 0.0001
         ).map((x) => [x.x, x.y]);
 
         let sightings_geojson = L.polyline(sightings_simplified).toGeoJSON();
@@ -967,18 +933,18 @@ export default {
           "marker-size": "s",
         };
         sightings_geojson.geometry.coordinates = sightings_geojson.geometry.coordinates.map((c) => [
-          Math.round(c[0] * 1000) / 1000,
-          Math.round(c[1] * 1000) / 1000,
+          Math.round(c[0] * 10000) / 10000,
+          Math.round(c[1] * 10000) / 10000,
         ]);
 
         const markers = "geojson(" + encodeURIComponent(JSON.stringify(sightings_geojson)) + ")";
 
-        return `https://api.mapbox.com/styles/v1/mapbox/satellite-v9/static/${path}${markers}/auto/300x200?access_token=${this.mapbox_access_token}&logo=false`;
+        return `https://api.mapbox.com/styles/v1/mapbox/satellite-v9/static/${path}${markers}/auto/300x200?access_token=${mapbox_access_token}&logo=false`;
       }
     },
-    speciesComment(species_comment, sightings) {
+    speciesComment(species_comment_template, sightings) {
       return sightings.map((s) => {
-        let cmt = species_comment;
+        let cmt = species_comment_template;
         Object.keys(s).forEach((k) => {
           cmt = cmt.replaceAll("${" + k + "}", s[k]);
         });
@@ -1027,22 +993,22 @@ export default {
     applyCommentToAll() {
       if (
         confirm(
-          "You are about to apply the the species comment model to all other checklist and set this model as default for new checklist. This action cannot be undone."
+          "You are about to apply this template to all other checklists and set it as default for new checklists. This action cannot be undone."
         )
       ) {
         this.forms.forEach((f) => {
-          f.species_comment = this.form_card.species_comment;
+          f.species_comment_template = this.form_card.species_comment_template;
         });
-        this.website.species_comment = this.form_card.species_comment;
+        this.website.species_comment_template = this.form_card.species_comment_template;
       }
     },
     eraseComment() {
       if (
         confirm(
-          "You are about to earse the content of the species comment. This action cannot be undone."
+          "You are about to erase the content of the species comment. This action cannot be undone."
         )
       ) {
-        this.form_card.species_comment = "";
+        this.form_card.species_comment_template = "";
       }
     },
   },
@@ -1074,15 +1040,10 @@ export default {
     const urlParams = new URLSearchParams(window.location.search);
     this.skip_intro = urlParams.get("skip_intro") ? true : false;
     this.number_observer_for_all = parseInt(this.$cookie.get("number_observer_for_all"));
-    this.assign_duration = this.$cookie.get("assign_duration");
-    this.assign_distance = this.$cookie.get("assign_distance");
-
-    this.mapbox_access_token = JSON.parse(this.$cookie.get("mapbox_access_token"));
+    this.assign_duration = parseFloat(this.$cookie.get("assign_duration"));
+    this.assign_distance = parseFloat(this.$cookie.get("assign_distance"));
   },
   watch: {
-    mapbox_access_token() {
-      this.$cookie.set("mapbox_access_token", JSON.stringify(this.mapbox_access_token), 365);
-    },
     number_observer_for_all() {
       this.$cookie.set("number_observer_for_all", this.number_observer_for_all, 365);
     },

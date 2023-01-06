@@ -28,7 +28,7 @@ export default {
             full_form: f.full_form || false,
             primary_purpose: f.primary_purpose || false,
             checklist_comment: f.checklist_comment || "",
-            species_comment: f.species_comment || "",
+            species_comment_template: f.species_comment_template || "",
             path: f.path || null,
             static_map: f.static_map || true,
         };
@@ -89,9 +89,9 @@ export default {
     async copyClipboard(mytext) {
         try {
             await navigator.clipboard.writeText(mytext);
-            alert('Copied');
+            alert('Copied to clipboard');
         } catch ($e) {
-            alert('Cannot copy');
+            alert('Cannot copy. Try manually.');
         }
     }
 }

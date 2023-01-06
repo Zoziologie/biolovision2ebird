@@ -79,7 +79,7 @@ export default {
           scientific_name: "",
           count: s.observers[0].estimation_code == "NO_VALUE" ? "x" : s.observers[0].count,
           count_precision: precision_match[s.observers[0].estimation_code],
-          species_comment: comment,
+          comment: comment,
         });
       });
     },
@@ -111,12 +111,12 @@ export default {
 
           // convert form data
 
-          this.website.species_comment =
+          this.website.species_comment_template =
             '${count_precision}${count} ind. - ${time} - <a href="http://maps.google.com?q=${lat},${lon}&t=k">${lat}, ${lon}</a> - <a href="' +
             this.website.website +
-            'index.php?m_id=54&id=${website_id}">' +
+            'index.php?m_id=54&id=${id}">' +
             this.website_name +
-            "<br>${species_comment}";
+            "</a><br>${comment}";
 
           export_data.forms = data.forms.map((f, id) => {
             const date = f.sightings[0].observers[0].timing["@ISO8601"].split("T")[0];
@@ -154,7 +154,7 @@ export default {
                 full_form: f.full_form == "1",
                 primary_purpose: true,
                 checklist_comment: f.comment || "",
-                species_comment: this.website.species_comment,
+                species_comment_template: this.website.species_comment_template,
                 path: path,
               },
               id + 1
