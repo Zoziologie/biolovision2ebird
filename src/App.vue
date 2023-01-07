@@ -26,7 +26,6 @@ import tile_providers from "/data/tile_providers.json";
         <b-img class="me-3" :src="logo" alt="" height="36" />
       </b-link>
     </b-row>
-
     <Intro v-if="!skip_intro" @skipIntro="skip_intro = true" />
 
     <Import v-else @exportData="importData" />
@@ -182,14 +181,7 @@ import tile_providers from "/data/tile_providers.json";
             <l-marker ref="marker_popup_sightings" :latLng="popup_latLng">
               <l-icon :popup-anchor="[0, 2]" :icon-size="[0, 0]" :icon-url="logo" />
               <l-popup>
-                <b-table
-                  bordered
-                  small
-                  striped
-                  hover
-                  responsive
-                  :items="fx.object2Table(popup_s)"
-                />
+                <b-table bordered small striped hover responsive :items="object2Table(popup_s)" />
               </l-popup>
             </l-marker>
             <l-marker
@@ -221,9 +213,9 @@ import tile_providers from "/data/tile_providers.json";
         <div class="align-self-center text-center m-auto">
           <h3 class="mb-0">
             <b-badge
-              v-b-tooltip.hover.html="fx.protocol(form_card).title"
-              :variant="fx.protocol(form_card).variant"
-              >{{ fx.protocol(form_card).name.toUpperCase() }}</b-badge
+              v-b-tooltip.hover.html="protocol(form_card).title"
+              :variant="protocol(form_card).variant"
+              >{{ protocol(form_card).name.toUpperCase() }}</b-badge
             >
           </h3>
         </div>
@@ -247,8 +239,8 @@ import tile_providers from "/data/tile_providers.json";
             </template>
             <b-dropdown-item href="#" v-for="f in forms" :key="f.id" @click="form_card = f">
               {{ f.id + ". " + f.location_name }}
-              <b-badge :variant="fx.protocol(f).variant" class="ml-2"
-                >{{ fx.protocol(f).letter }} </b-badge
+              <b-badge :variant="protocol(f).variant" class="ml-2"
+                >{{ protocol(f).letter }} </b-badge
               ><b-icon icon="check-lg" v-show="f.exportable" class="ml-2" variant="primary" />
             </b-dropdown-item>
           </b-dropdown>
@@ -517,7 +509,7 @@ import tile_providers from "/data/tile_providers.json";
                         small
                         striped
                         v-if="form_card_sightings.length > 0"
-                        :items="fx.object2Table(form_card_sightings[0])"
+                        :items="object2Table(form_card_sightings[0])"
                       />
                     </b-modal>
                   </b-col>
@@ -670,8 +662,6 @@ import {
   LIcon,
 } from "vue2-leaflet";
 
-import fx from "./functions";
-
 import IconChecklist from "./IconChecklist.vue";
 import Intro from "./Intro.vue";
 import Import from "./Import.vue";
@@ -781,9 +771,9 @@ export default {
           } else {
             // create new checklist if necessaary
             if (this.create_checklist) {
-              const fnew = fx.createForm(
+              const fnew = this.createForm(
                 {
-                  location_name: fx.mode(sightings.map((s) => s.location_name)),
+                  location_name: this.mathMode(sightings.map((s) => s.location_name)),
                   lat: sightings.reduce((a, b) => a + b.lat, 0) / sightings.length,
                   lon: sightings.reduce((a, b) => a + b.lon, 0) / sightings.length,
                   species_comment_template: this.website.species_comment_template,
@@ -846,9 +836,9 @@ export default {
 
       for (var i = this.count_forms + 1; i < form_id; i++) {
         var sightings2 = sightings.filter((s) => s.form_id == i);
-        var fnew = fx.createForm(
+        var fnew = this.createForm(
           {
-            location_name: fx.mode(sightings2.map((s) => s.location_name)),
+            location_name: this.mathMode(sightings2.map((s) => s.location_name)),
             date: sightings2[0].date,
             time: sightings2[0].time,
             lat: sightings2.reduce((a, b) => a + b.lat, 0) / sightings2.length,
@@ -894,8 +884,8 @@ export default {
           "marker-size": "s",
         };
         sightings_geojson.geometry.coordinates = sightings_geojson.geometry.coordinates.map((c) => [
-          Math.round(c[0] * 10000) / 10000,
-          Math.round(c[1] * 10000) / 10000,
+          this.mathRound(c[0], 4),
+          this.mathRound(c[1], 4),
         ]);
 
         const markers = "geojson(" + encodeURIComponent(JSON.stringify(sightings_geojson)) + ")";
@@ -924,7 +914,7 @@ export default {
       );
     },
     getFormName(form) {
-      return fx.mode(this.form.map((s) => s.location_name));
+      return this.mathMode(this.form.map((s) => s.location_name));
     },
     setObserverForAll(nb) {
       const forms = this.forms.filter((f) => !(f.number_observer > 0));

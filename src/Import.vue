@@ -5,7 +5,6 @@ import biolovision_species_list from "/data/biolovision_species_list_short.json"
 </script>
 
 <script>
-import fx from "./functions";
 import Wkt from "wicket/wicket.js";
 import "leaflet";
 
@@ -68,7 +67,7 @@ export default {
             this.taxonomic_issues.push(s.species);
           }
         }
-        return fx.createSighting({
+        return this.createSighting({
           id: s.observers[0].id_sighting,
           form_id: form_id,
           date: datetime.split("T")[0],
@@ -137,10 +136,10 @@ export default {
                   )[0] / 1000
               ).toFixed(2);
             }
-            return fx.createForm(
+            return this.createForm(
               {
                 imported: true,
-                location_name: fx.mode(f.sightings.map((s) => s.place.name)),
+                location_name: this.mathMode(f.sightings.map((s) => s.place.name)),
                 lat: f.lat,
                 lon: f.lon,
                 date: date,
@@ -165,8 +164,8 @@ export default {
         } else if (this.website.system == "birdlasser") {
           export_data.forms = [];
           export_data.forms_sightings = [];
-          export_data.sightings = fx.csvToArray(reader.result).map((s, id) => {
-            return fx.createSighting({
+          export_data.sightings = this.csvToArray(reader.result).map((s, id) => {
+            return this.createSighting({
               id: id,
               form_id: 0,
               date: s.Date.replaceAll("/", "-"),
@@ -355,7 +354,7 @@ export default {
           <b-input-group-append>
             <b-button
               @click="
-                fx.copyClipboard('\`\`\`\n' + taxonomic_issues_stringify + '\n\`\`\`');
+                copyClipboard('\`\`\`\n' + taxonomic_issues_stringify + '\n\`\`\`');
                 clipboard_icon = 'clipboard-check';
               "
             >

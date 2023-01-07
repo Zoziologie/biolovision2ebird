@@ -1,8 +1,6 @@
 <script setup></script>
 
 <script>
-import fx from "./functions";
-
 export default {
   props: ["forms", "sightings", "forms_sightings"],
   data() {
@@ -46,7 +44,7 @@ export default {
           "Start time": f.time_start ? f.time_start.substring(0, 5) : "",
           State: "",
           Country: "",
-          Protocol: fx.protocol(f),
+          Protocol: this.protocol(f),
           "Number of observers": f.number_observer,
           Duration: f.duration > 0 ? f.duration : "",
           "All observations reported?": f.full_form ? "Y" : "N",
