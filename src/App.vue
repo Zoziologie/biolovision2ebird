@@ -5,7 +5,6 @@ import logo from "/logo_w.svg";
 //import markerSoft from "/markers-soft.png";
 
 import marker_color from "/data/marker_color.json";
-import tile_providers from "/data/tile_providers.json";
 </script>
 
 <template class="bg-light">
@@ -160,12 +159,11 @@ import tile_providers from "/data/tile_providers.json";
 
             <l-control-layers position="topright" />
             <l-tile-layer
-              v-for="tileProvider in tile_providers"
-              :key="tileProvider.name"
-              :name="tileProvider.name"
-              :visible="tileProvider.visible"
-              :url="tileProvider.url"
-              :attribution="tileProvider.attribution"
+              v-for="(l, id) in mapbox_layers"
+              :key="l.text"
+              :name="l.text"
+              :visible="id == 1"
+              :url="`https://api.mapbox.com/styles/v1/mapbox/${l.value}/tiles/{z}/{x}/{y}?access_token=${mapbox_access_token}`"
               layer-type="base"
             />
             <l-circle-marker
@@ -386,7 +384,7 @@ import tile_providers from "/data/tile_providers.json";
                             v-b-tooltip.hover.bottom
                             title="Draw your path on the map to compute the distance."
                           >
-                            <b-icon icon="bezier" />
+                            <b-icon icon="map" />
                           </b-button>
                         </b-input-group-append>
                       </b-input-group>
@@ -520,9 +518,9 @@ import tile_providers from "/data/tile_providers.json";
                   <template #label> Checklist Comment: </template>
                   <b-form-checkbox switch v-model="form_card.static_map">
                     Include static map
-                    <b-button size="sm" v-b-modal.modal-card><b-icon icon="pencil" /></b-button>
+                    <b-button size="sm" v-b-modal.modal-card><b-icon icon="map" /></b-button>
                   </b-form-checkbox>
-                  <b-card>
+                  <b-card class="mt-2">
                     <div v-html="checklist_comment(form_card, form_card_sightings)"></div>
                   </b-card>
                 </b-form-group>
@@ -535,27 +533,29 @@ import tile_providers from "/data/tile_providers.json";
           <b-row>
             <b-col lg="8">
               <l-map class="w-100" style="height: 400px" ref="map_card" @ready="onMapCardReady">
-                <l-control-layers position="topright" />
                 <l-control position="topright">
                   <b-button
+                    variant="primary"
                     v-b-tooltip.hover="'Draw your path to measure distance'"
                     @click="map_card_polyline.enable()"
                   >
                     <b-icon icon="bezier" />
                   </b-button>
+                  <b-button
+                    variant="primary"
+                    v-b-tooltip.hover="'Use the current view for static map'"
+                    @click="makeSnapshot"
+                    class="ml-2"
+                  >
+                    <b-icon icon="camera" />
+                  </b-button>
                 </l-control>
                 <l-tile-layer
-                  v-for="tileProvider in tile_providers"
-                  :key="tileProvider.name"
-                  :name="tileProvider.name"
-                  :visible="tileProvider.visible"
-                  :url="tileProvider.url"
-                  :attribution="tileProvider.attribution"
-                  layer-type="base"
+                  :url="`https://api.mapbox.com/styles/v1/mapbox/${form_card.static_map.style}/tiles/{z}/{x}/{y}?access_token=${mapbox_access_token}`"
                 />
                 <l-circle-marker
                   v-for="s in form_card_sightings"
-                  :key="s.time + s.common_name"
+                  :key="s.id"
                   :lat-lng="[s.lat, s.lon]"
                   :radius="10"
                   :fillColor="marker_color[s.form_id % marker_color.length]"
@@ -594,13 +594,52 @@ import tile_providers from "/data/tile_providers.json";
             </b-col>
 
             <b-col lg="4">
-              <b-form-group>
-                <template #label> Checklist Comment: </template>
-                <b-form-checkbox switch v-model="form_card.static_map">
-                  Include static map
-                </b-form-checkbox>
-              </b-form-group>
               <b-img :src="static_map_link(form_card, form_card_sightings)" />
+              <b-card bg-variant="light" class="mt-2">
+                <b-form-group>
+                  <b-form-select v-model="form_card.static_map.style" :options="mapbox_layers" />
+                  <b-form-checkbox switch v-model="form_card.static_map.bounding_box_auto">
+                    Auto-bound
+                  </b-form-checkbox>
+                  <b-input type="number" v-model="form_card.static_map.size[0]" />
+                  <b-input type="number" v-model="form_card.static_map.size[1]" />
+                </b-form-group>
+                <b-form-group>
+                  <b-form-checkbox switch v-model="form_card.static_map.include_path">
+                    Path
+                  </b-form-checkbox>
+                  <b-input
+                    type="number"
+                    min="1"
+                    v-model="form_card.static_map.path_style.strokeWidth"
+                  />
+                  <b-input type="color" v-model="form_card.static_map.path_style.strokeColor" />
+                  <b-input
+                    type="range"
+                    min="0"
+                    max="1"
+                    step=".01"
+                    :lazy="true"
+                    v-model="form_card.static_map.path_style.strokeOpacity"
+                  />
+                </b-form-group>
+                <b-form-group>
+                  <b-form-select v-model="form_card.static_map.marker_style['marker-size']">
+                    <b-form-select-option value="small">Small</b-form-select-option>
+                    <b-form-select-option value="medium">Medium</b-form-select-option>
+                    <b-form-select-option value="large">Large</b-form-select-option>
+                  </b-form-select>
+                  <b-input
+                    type="text"
+                    lazy
+                    v-model="form_card.static_map.marker_style['marker-symbol']"
+                  />
+                  <b-input
+                    type="color"
+                    v-model="form_card.static_map.marker_style['marker-color']"
+                  />
+                </b-form-group>
+              </b-card>
             </b-col>
           </b-row>
         </b-modal>
@@ -658,6 +697,33 @@ window.type = true;
 const mapbox_access_token =
   "pk.eyJ1IjoicmFmbnVzcyIsImEiOiJjbGNsNWtyNm01enhnM3hsazNmamQ5dm5hIn0.DonKVX7CLLfMHIZiiSbYnQ";
 
+const mapbox_layers = [
+  {
+    text: "Satelite",
+    value: "satellite-v9",
+  },
+  {
+    text: "Street",
+    value: "streets-v11",
+  },
+  {
+    text: "Outdoor",
+    value: "outdoors-v9",
+  },
+  {
+    text: "Satelite-Street",
+    value: "satellite-streets-v11",
+  },
+  {
+    text: "Light",
+    value: "light-v10",
+  },
+  {
+    text: "Dark",
+    value: "dark-v10",
+  },
+];
+
 import {
   LMap,
   LTileLayer,
@@ -710,14 +776,12 @@ export default {
       map_draw_marker: null,
       map_card_polyline: null,
       form_card: null,
-      animate_bezier: false,
     };
   },
   methods: {
     importData(d) {
       this.forms = d.forms;
       this.sightings = d.sightings;
-      console.log(this.sightings);
       this.forms_sightings = d.forms_sightings;
       this.website = d.website;
 
@@ -846,44 +910,53 @@ export default {
       }
     },
     static_map_link(form, sightings) {
-      if (form && sightings) {
-        // Create path
-        let path = "";
-        if (form.path && form.path.length > 0) {
-          const path_simplified = L.LineUtil.simplify(
-            form.path.map((x) => {
-              return { x: x[0], y: x[1] };
-            }),
-            0.00001
-          ).map((x) => [x.x, x.y]);
-
-          const path_encodeded = L.PolylineUtil.encode(path_simplified, 5);
-
-          path = "path-5+AD8533(" + encodeURIComponent(path_encodeded) + "),";
-        }
-
-        // Create sightings markers
-        const sightings_simplified = L.LineUtil.simplify(
-          sightings.map((x) => {
-            return { x: x.lat, y: x.lon };
+      // Create path
+      let path = "";
+      if (form.path && form.path.length > 0 && form.static_map.include_path) {
+        const path_simplified = L.LineUtil.simplify(
+          form.path.map((x) => {
+            return { x: x[0], y: x[1] };
           }),
-          sightings.length > 100 ? 0.001 : 0.0001
+          0.00001
         ).map((x) => [x.x, x.y]);
 
-        let sightings_geojson = L.polyline(sightings_simplified).toGeoJSON();
-        sightings_geojson.geometry.type = "MultiPoint";
-        sightings_geojson.properties = {
-          "marker-size": "s",
-        };
-        sightings_geojson.geometry.coordinates = sightings_geojson.geometry.coordinates.map((c) => [
-          this.mathRound(c[0], 4),
-          this.mathRound(c[1], 4),
-        ]);
+        const path_encodeded = L.PolylineUtil.encode(path_simplified, 5);
 
-        const markers = "geojson(" + encodeURIComponent(JSON.stringify(sightings_geojson)) + ")";
-
-        return `https://api.mapbox.com/styles/v1/mapbox/satellite-v9/static/${path}${markers}/auto/300x200?access_token=${mapbox_access_token}&logo=false`;
+        const style = form.static_map.path_style;
+        path = `path-${style.strokeWidth}+${style.strokeColor.slice(1, style.strokeColor.length)}-${
+          style.strokeOpacity
+        }(${encodeURIComponent(path_encodeded)}),`;
       }
+
+      // Create sightings markers
+      const sightings_simplified = L.LineUtil.simplify(
+        sightings.map((x) => {
+          return { x: x.lat, y: x.lon };
+        }),
+        sightings.length > 100 ? 0.001 : 0.0001
+      ).map((x) => [x.x, x.y]);
+
+      let sightings_geojson = L.polyline(sightings_simplified).toGeoJSON();
+      sightings_geojson.geometry.type = "MultiPoint";
+      sightings_geojson.properties = form.static_map.marker_style;
+      sightings_geojson.geometry.coordinates = sightings_geojson.geometry.coordinates.map((c) => [
+        this.mathRound(c[0], 4),
+        this.mathRound(c[1], 4),
+      ]);
+
+      const markers = "geojson(" + encodeURIComponent(JSON.stringify(sightings_geojson)) + ")";
+
+      return `https://api.mapbox.com/styles/v1/mapbox/${
+        form.static_map.style
+      }/static/${path}${markers}/${
+        form.static_map.bounding_box_auto ? "auto" : "[" + form.static_map.bounding_box + "]"
+      }/300x200?access_token=${mapbox_access_token}&logo=false`;
+    },
+    makeSnapshot() {
+      this.form_card.static_map.bounding_box = this.$refs.map_card.mapObject
+        .getBounds()
+        .toBBoxString();
+      this.form_card.static_map.bounding_box_auto = false;
     },
     speciesComment(species_comment_template, sightings) {
       return sightings.map((s) => {

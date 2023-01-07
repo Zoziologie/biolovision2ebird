@@ -125,7 +125,7 @@ export default {
               var wkt = new Wkt.Wkt();
               wkt.read(f.protocol.wkt);
               path = wkt.toJson().coordinates.map((c) => [c[1], c[0]]);
-              distance = distanceFromLatLngs(path);
+              distance = this.distanceFromLatLngs(path);
             }
             return this.createForm(
               {

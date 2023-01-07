@@ -31,18 +31,19 @@ Vue.mixin({
             f.static_map = {
                 in_checklist_comment: true,
                 style: "satellite-v9",
-                bounding_box: "auto",
+                bounding_box_auto: true,
+                bounding_box: null,
                 size: [300, 200],
                 include_path: true,
                 path_style: {
-                    strokeWidth: "1",
-                    strokeColor: "AD8533",
-                    strokeOpacity: "5"
+                    strokeWidth: "5",
+                    strokeColor: "#AD8533",
+                    strokeOpacity: "1"
                 },
                 marker_style: {
-                    "marker-size": "s",
-                    "marker-symbol": "",
-                    "marker-color": ""
+                    "marker-size": "small",
+                    "marker-symbol": "circle",
+                    "marker-color": "#808080"
                 }
             };
 
