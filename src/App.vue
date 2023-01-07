@@ -728,30 +728,14 @@ export default {
       this.map_card_polyline = new L.Draw.Polyline(this.$refs.map_card.mapObject);
       this.$refs.map_card.mapObject.on(L.Draw.Event.CREATED, (e) => {
         if (e.layerType === "polyline") {
-          const latlngs = e.layer.getLatLngs();
-          // Compute distance as the cumulative distance between each point.
-          const dist = (
-            latlngs.reduce(
-              (acc, latlng) => {
-                return [acc[0] + acc[1].distanceTo(latlng), latlng];
-              },
-              [0, latlngs[0]]
-            )[0] / 1000
-          ).toFixed(2);
-          if (
-            confirm(
-              "Are you sure you want to reset the path on the map and set the distance to " +
-                dist +
-                "km? This action cannot be undone."
-            )
-          ) {
-            this.form_card.distance = dist;
-            this.form_card.path = latlngs.map((l) => [l.lat, l.lng]);
-          }
+          this.form_card.path = e.layer.getLatLngs().map((l) => [l.lat, l.lng]);
         }
       });
       setTimeout(() => {
         this.$refs.map_card.mapObject.invalidateSize();
+        this.$refs.map_card.mapObject.fitBounds(
+          L.latLngBounds(this.form_card_sightings.map((s) => L.latLng(s.lat, s.lon))).pad(0.05)
+        );
       }, 100);
     },
     async onMapSightingsReady() {
@@ -977,11 +961,6 @@ export default {
 
       console.log("form_card_sightings");
       return sightings;
-    },
-    map_card_bounds() {
-      return this.form_card_sightings.length > 0
-        ? L.latLngBounds(this.form_card_sightings.map((s) => L.latLng(s.lat, s.lon))).pad(0.05)
-        : null;
     },
     form_card_duration() {
       console.log("getFormCardDuration");

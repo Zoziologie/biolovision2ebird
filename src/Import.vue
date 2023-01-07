@@ -125,16 +125,7 @@ export default {
               var wkt = new Wkt.Wkt();
               wkt.read(f.protocol.wkt);
               path = wkt.toJson().coordinates.map((c) => [c[1], c[0]]);
-              distance = (
-                path
-                  .map((l) => L.latLng(l))
-                  .reduce(
-                    (acc, latlng) => {
-                      return [acc[0] + acc[1].distanceTo(latlng), latlng];
-                    },
-                    [0, L.latLng(path[0])]
-                  )[0] / 1000
-              ).toFixed(2);
+              distance = distanceFromLatLngs(path);
             }
             return this.createForm(
               {
