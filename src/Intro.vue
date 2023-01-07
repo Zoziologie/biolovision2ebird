@@ -154,6 +154,7 @@ export default {
     <b-col lg="12" class="text-center">
       <b-button
         variant="secondary"
+        size="lg"
         :disabled="important_information.length < 3"
         @click="$emit('skipIntro')"
       >

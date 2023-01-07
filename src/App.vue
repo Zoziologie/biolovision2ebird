@@ -27,9 +27,9 @@ import tile_providers from "/data/tile_providers.json";
       </b-link>
     </b-row>
 
-    <Intro v-show="!skip_intro" @skipIntro="skip_intro = true" />
+    <Intro v-if="!skip_intro" @skipIntro="skip_intro = true" />
 
-    <Import v-show="skip_intro" @exportData="importData" />
+    <Import v-else @exportData="importData" />
 
     <b-row class="my-3 p-3 bg-white rounded shadow-sm" v-if="count_forms != null">
       <b-col lg="12">
@@ -132,7 +132,7 @@ import tile_providers from "/data/tile_providers.json";
                       variant="primary"
                       @click="map_draw_rectangle.enable()"
                       v-show="forms.length > 0"
-                      v-b-tooltip.hover="
+                      v-b-tooltip.hove.right="
                         'Draw a rectangle on the map to assign sightings to the checklist selected.'
                       "
                     >
@@ -171,7 +171,7 @@ import tile_providers from "/data/tile_providers.json";
             />
             <l-circle-marker
               v-for="s in sightings"
-              :key="s.time + s.common_name"
+              :key="s.id"
               :lat-lng="[s.lat, s.lon]"
               :radius="10"
               :fillColor="marker_color[s.form_id % marker_color.length]"
@@ -234,15 +234,15 @@ import tile_providers from "/data/tile_providers.json";
           <b-dropdown class="w-100">
             <template #button-content>
               {{ form_card.id + ". " + form_card.location_name }}
-              <b-badge :variant="protocol_variant(protocol(form_card))" class="ml-2"
-                >{{ protocol(form_card).slice(0, 1).toUpperCase() }}
+              <b-badge :variant="fx.protocol(form_card).variant" class="ml-2"
+                >{{ fx.protocol(form_card).letter }}
               </b-badge>
             </template>
             <b-dropdown-item href="#" v-for="f in forms" :key="f.id" @click="form_card = f">
               {{ f.id + ". " + f.location_name }}
-              <b-badge :variant="protocol_variant(protocol(f))" class="ml-2"
-                >{{ protocol(f).slice(0, 1).toUpperCase() }} </b-badge
-              ><b-icon icon="check" v-show="f.exportable" class="ml-2" />
+              <b-badge :variant="fx.protocol(f).variant" class="ml-2"
+                >{{ fx.protocol(f).letter }} </b-badge
+              ><b-icon icon="check-lg" v-show="f.exportable" class="ml-2" variant="primary" />
             </b-dropdown-item>
           </b-dropdown>
           <b-button
@@ -258,7 +258,12 @@ import tile_providers from "/data/tile_providers.json";
         </b-button-group>
       </b-col>
       <b-col lg="3">
-        <b-form-checkbox v-model="form_card.exportable" switch size="lg"
+        <b-form-checkbox
+          v-model="form_card.exportable"
+          switch
+          size="lg"
+          v-b-tooltip.hover
+          title="Mark as ready to include the checklist in the export file."
           >Ready for export</b-form-checkbox
         >
       </b-col>
@@ -353,7 +358,7 @@ import tile_providers from "/data/tile_providers.json";
                           <b-button
                             variant="secondary"
                             @click="form_card.duration = form_card_duration"
-                            v-b-tooltip.hover
+                            v-b-tooltip.hover.bottom
                             title="Compute duration between the first and last sightings."
                             ><b-icon icon="arrow-repeat"
                           /></b-button>
@@ -376,7 +381,12 @@ import tile_providers from "/data/tile_providers.json";
                           "
                         />
                         <b-input-group-append>
-                          <b-button variant="secondary" v-b-modal.modal-card>
+                          <b-button
+                            variant="secondary"
+                            v-b-modal.modal-card
+                            v-b-tooltip.hover.bottom
+                            title="Draw your path on the map to compute the distance."
+                          >
                             <b-icon icon="bezier" />
                           </b-button>
                         </b-input-group-append>
@@ -398,7 +408,7 @@ import tile_providers from "/data/tile_providers.json";
                           <b-button
                             variant="primary"
                             size="sm"
-                            v-b-tooltip.hover
+                            v-b-tooltip.hover.bottom
                             title="Change the party size for all lists with no party size"
                             @click="setObserverForAll(form_card.number_observer)"
                           >
@@ -432,9 +442,12 @@ import tile_providers from "/data/tile_providers.json";
                       </div>
                       <div class="align-self-center text-center m-auto">
                         <h4 variant>
-                          <b-badge :variant="protocol_variant(protocol(form_card))">{{
-                            protocol(form_card).toUpperCase()
-                          }}</b-badge>
+                          <b-badge
+                            :variant="fx.protocol(form_card).variant"
+                            v-b-tooltip.hover.bottom
+                            title="Change the party size for all lists with no party size"
+                            >{{ fx.protocol(form_card).name }}</b-badge
+                          >
                         </h4>
                       </div>
                     </div>
@@ -855,43 +868,6 @@ export default {
         this.count_forms++;
         this.assign_form_id = fnew.id;
         this.form_card = fnew;
-      }
-    },
-    protocol(form) {
-      if (!form.date) {
-        return "invalid";
-      }
-      if (form.primary_purpose) {
-        if (
-          !!form.time &&
-          parseFloat(form.distance) >= 0 &&
-          parseFloat(form.duration) > 0 &&
-          parseFloat(form.number_observer) > 0
-        ) {
-          if (form.distance > 0) {
-            return "traveling";
-          } else {
-            return "stationary";
-          }
-        } else {
-          return "historical";
-        }
-      } else {
-        return "incidental";
-      }
-    },
-    protocol_variant(p) {
-      switch (p) {
-        case "traveling":
-          return "success";
-        case "stationary":
-          return "success";
-        case "historical":
-          return "warning";
-        case "incidental":
-          return "warning";
-        case "invalid":
-          return "danger";
       }
     },
     static_map_link(form, sightings) {

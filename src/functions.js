@@ -50,8 +50,43 @@ export default {
         };
     },
     protocol(f) {
+
+        const protocol = {
+            invalid: {
+                name: "Invalid",
+                letter: "X",
+                variant: "danger",
+                title: "Your checklist is currently not acceptable for eBird. You are probably missing a Date."
+            },
+            incidental: {
+                name: "Incidental",
+                letter: "I",
+                variant: "warning",
+                title: "Incidental protocol is used when birding was not you primary purpose. The checklist will have little value."
+            },
+            historical: {
+                name: "Historical",
+                letter: "H",
+                variant: "warning",
+                title: "Can you add all effort information (time, duration, party size and distance)? This would really improve the value of your data!"
+            },
+            invalid: {
+                name: "Stationary",
+                letter: "S",
+                variant: "success",
+                title: "Great, stationary protocol are the best value!"
+            },
+            invalid: {
+                name: "Traveling",
+                letter: "T",
+                variant: "success",
+                title: "Nice! the traveling protocol is ideal!"
+            },
+        }
+
+        console.log(f)
         if (!f.date) {
-            return "invalid";
+            return protocol.invalid;
         }
         if (f.primary_purpose) {
             if (
@@ -61,29 +96,15 @@ export default {
                 parseFloat(f.number_observer) > 0
             ) {
                 if (f.distance > 0) {
-                    return "traveling";
+                    return protocol.traveling;
                 } else {
-                    return "stationary";
+                    return protocol.stationary;
                 }
             } else {
-                return "historical";
+                return protocol.historical;
             }
         } else {
-            return "incidental";
-        }
-    },
-    protocol_variant(p) {
-        switch (p) {
-            case "traveling":
-                return "success";
-            case "stationary":
-                return "success";
-            case "warning":
-                return "success";
-            case "incidental":
-                return "warning";
-            case "invalid":
-                return "danger";
+            return protocol.incidental;
         }
     },
     async copyClipboard(mytext) {
