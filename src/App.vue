@@ -518,9 +518,10 @@ import tile_providers from "/data/tile_providers.json";
               <b-col lg="3">
                 <b-form-group>
                   <template #label> Checklist Comment: </template>
-                  <b-form-checkbox switch v-model="form_card.static_map"
-                    >Include static map</b-form-checkbox
-                  >
+                  <b-form-checkbox switch v-model="form_card.static_map">
+                    Include static map
+                    <b-button size="sm" v-b-modal.modal-card><b-icon icon="pencil" /></b-button>
+                  </b-form-checkbox>
                   <b-card>
                     <div v-html="checklist_comment(form_card, form_card_sightings)"></div>
                   </b-card>
@@ -529,72 +530,79 @@ import tile_providers from "/data/tile_providers.json";
             </b-row>
           </b-card-body>
         </b-card>
-        <b-modal id="modal-card" :title="form_card.location_name">
+        <b-modal size="xl" id="modal-card" :title="form_card.location_name">
           <p>Draw a path (polyline) on the map to compute the distance.</p>
-          <l-map
-            class="w-100"
-            style="height: 400px"
-            :bounds="map_card_bounds"
-            ref="map_card"
-            @ready="onMapCardReady"
-          >
-            <l-control-layers position="topright" />
-            <l-control position="topright">
-              <b-button
-                :pressed="animate_bezier"
-                v-b-tooltip.hover="'Draw your path to measure distance'"
-                @click="map_card_polyline.enable()"
-              >
-                <b-icon icon="bezier" :animation="animate_bezier ? 'throb' : 'false'" />
-              </b-button>
-            </l-control>
-            <l-tile-layer
-              v-for="tileProvider in tile_providers"
-              :key="tileProvider.name"
-              :name="tileProvider.name"
-              :visible="tileProvider.visible"
-              :url="tileProvider.url"
-              :attribution="tileProvider.attribution"
-              layer-type="base"
-            />
-            <l-circle-marker
-              v-for="s in form_card_sightings"
-              :key="s.time + s.common_name"
-              :lat-lng="[s.lat, s.lon]"
-              :radius="10"
-              :fillColor="marker_color[s.form_id % marker_color.length]"
-              :color="marker_color[s.form_id % marker_color.length]"
-              @click="openPopup(s, 'marker_popup_card')"
-            >
-            </l-circle-marker>
-            <l-marker ref="marker_popup_card" :latLng="popup_latLng">
-              <l-icon :popup-anchor="[0, 2]" :icon-size="[0, 0]" :icon-url="logo" />
-              <l-popup>
-                <b-table
-                  bordered
-                  small
-                  striped
-                  hover
-                  responsive
-                  :items="fx.object2Table(popup_s)"
+          <b-row>
+            <b-col lg="8">
+              <l-map class="w-100" style="height: 400px" ref="map_card" @ready="onMapCardReady">
+                <l-control-layers position="topright" />
+                <l-control position="topright">
+                  <b-button
+                    v-b-tooltip.hover="'Draw your path to measure distance'"
+                    @click="map_card_polyline.enable()"
+                  >
+                    <b-icon icon="bezier" />
+                  </b-button>
+                </l-control>
+                <l-tile-layer
+                  v-for="tileProvider in tile_providers"
+                  :key="tileProvider.name"
+                  :name="tileProvider.name"
+                  :visible="tileProvider.visible"
+                  :url="tileProvider.url"
+                  :attribution="tileProvider.attribution"
+                  layer-type="base"
                 />
-              </l-popup>
-            </l-marker>
-            <l-marker
-              :lat-lng="[form_card.lat, form_card.lon]"
-              :draggable="true"
-              @update:lat-lng="
-                (latlng) => {
-                  form_card.lat = latlng.lat;
-                  form_card.lon = latlng.lng;
-                }
-              "
-              :zIndexOffset="1000"
-            >
-              <IconChecklist :size="24" :fid="form_card.id" />
-            </l-marker>
-            <l-polyline :lat-lngs="form_card.path" :color="'brown'" v-if="form_card.path" />
-          </l-map>
+                <l-circle-marker
+                  v-for="s in form_card_sightings"
+                  :key="s.time + s.common_name"
+                  :lat-lng="[s.lat, s.lon]"
+                  :radius="10"
+                  :fillColor="marker_color[s.form_id % marker_color.length]"
+                  :color="marker_color[s.form_id % marker_color.length]"
+                  @click="openPopup(s, 'marker_popup_card')"
+                >
+                </l-circle-marker>
+                <l-marker ref="marker_popup_card" :latLng="popup_latLng">
+                  <l-icon :popup-anchor="[0, 2]" :icon-size="[0, 0]" :icon-url="logo" />
+                  <l-popup>
+                    <b-table
+                      bordered
+                      small
+                      striped
+                      hover
+                      responsive
+                      :items="object2Table(popup_s)"
+                    />
+                  </l-popup>
+                </l-marker>
+                <l-marker
+                  :lat-lng="[form_card.lat, form_card.lon]"
+                  :draggable="true"
+                  @update:lat-lng="
+                    (latlng) => {
+                      form_card.lat = latlng.lat;
+                      form_card.lon = latlng.lng;
+                    }
+                  "
+                  :zIndexOffset="1000"
+                >
+                  <IconChecklist :size="24" :fid="form_card.id" />
+                </l-marker>
+                <l-polyline :lat-lngs="form_card.path" :color="'brown'" v-if="form_card.path" />
+              </l-map>
+            </b-col>
+
+            <b-col lg="4">
+              <b-form-group>
+                <template #label> Checklist Comment: </template>
+                <b-form-checkbox switch v-model="form_card.static_map">
+                  Include static map
+                </b-form-checkbox>
+              </b-form-group>
+              <b-img :src="static_map_link(form_card, form_card_sightings)" />
+            </b-col>
+          </b-row>
         </b-modal>
       </b-col>
     </b-row>
@@ -890,11 +898,12 @@ export default {
       return (
         form.checklist_comment +
         (form.static_map
-          ? "<img src=" +
-            this.static_map_link(form, sightings) +
-            " style='max-width:300px;width:100%'>"
+          ? `<img src="${this.static_map_link(
+              form,
+              sightings
+            )}" style="max-width:300px;width:100%">`
           : "") +
-        '<br/><small>Imported with <a href="https://zoziologie.raphaelnussbaumer.com/biolovision2ebird/">biolovision2eBird</a>.</small>'
+        "<br/><small>Imported with <a href='https://zoziologie.raphaelnussbaumer.com/biolovision2ebird/'>biolovision2eBird</a>.</small>"
       );
     },
     getFormName(form) {
@@ -920,12 +929,6 @@ export default {
       this.popup_latLng = L.latLng([s.lat, s.lon]);
       this.popup_s = s;
       setTimeout(() => this.$refs[marker].mapObject.openPopup(), 100);
-    },
-    animateBezier() {
-      this.animate_bezier = true;
-      setTimeout(() => {
-        this.animate_bezier = false;
-      }, 5000);
     },
     applyCommentToAll() {
       if (
