@@ -476,7 +476,11 @@ import marker_color from "/data/marker_color.json";
                         ></div>
                       </b-card>
                     </b-form-group>
-                    <b-modal id="modal-species-comment" title="Edit Species Comment Template">
+                    <b-modal
+                      id="modal-species-comment"
+                      title="Edit Species Comment Template"
+                      hide-footer
+                    >
                       <p class="mt-2">
                         You can edit the species comment using the HTML code below.
                       </p>
@@ -528,11 +532,29 @@ import marker_color from "/data/marker_color.json";
             </b-row>
           </b-card-body>
         </b-card>
-        <b-modal size="xl" id="modal-card" :title="form_card.location_name">
+        <b-modal size="xl" id="modal-card" :title="form_card.location_name" hide-footer>
           <p>Draw a path (polyline) on the map to compute the distance.</p>
+          <b-input-group class="mt-3">
+            <template #prepend>
+              <b-input-group-text><b-icon icon="bezier" /></b-input-group-text>
+            </template>
+            <b-form-input readonly v-model="form_card_distance_bezier"></b-form-input>
+            <b-input-group-append>
+              <b-button
+                variant="primary"
+                @click="
+                  form_card.distance = form_card_distance_bezier
+                    ? form_card_distance_bezier
+                    : form_card.distance
+                "
+                >Button</b-button
+              >
+            </b-input-group-append>
+          </b-input-group>
+
           <b-row>
             <b-col lg="8">
-              <l-map class="w-100" style="height: 400px" ref="map_card" @ready="onMapCardReady">
+              <l-map class="w-100" style="height: 100%" ref="map_card" @ready="onMapCardReady">
                 <l-control position="topright">
                   <b-button
                     variant="primary"
@@ -776,6 +798,7 @@ export default {
       map_draw_marker: null,
       map_card_polyline: null,
       form_card: null,
+      form_card_distance_bezier: null,
     };
   },
   methods: {
@@ -801,6 +824,7 @@ export default {
       this.$refs.map_card.mapObject.on(L.Draw.Event.CREATED, (e) => {
         if (e.layerType === "polyline") {
           this.form_card.path = e.layer.getLatLngs().map((l) => [l.lat, l.lng]);
+          this.form_card_distance_bezier = this.distanceFromLatLngs(this.form_card.path);
         }
       });
       setTimeout(() => {
