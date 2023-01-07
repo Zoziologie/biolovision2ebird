@@ -50,7 +50,6 @@ export default {
         };
     },
     protocol(f) {
-
         const protocol = {
             invalid: {
                 name: "Invalid",
@@ -83,8 +82,6 @@ export default {
                 title: "Nice! the traveling protocol is ideal!"
             },
         }
-
-        console.log(f)
         if (!f.date) {
             return protocol.invalid;
         }

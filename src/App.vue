@@ -217,7 +217,17 @@ import tile_providers from "/data/tile_providers.json";
       <b-col lg="12">
         <h2 class="border-bottom pb-2 mb-3">3. Provide checklist details</h2>
       </b-col>
-      <b-col lg="3"></b-col>
+      <b-col lg="3">
+        <div class="align-self-center text-center m-auto">
+          <h3 class="mb-0">
+            <b-badge
+              v-b-tooltip.hover.html="fx.protocol(form_card).title"
+              :variant="fx.protocol(form_card).variant"
+              >{{ fx.protocol(form_card).name.toUpperCase() }}</b-badge
+            >
+          </h3>
+        </div>
+      </b-col>
       <b-col lg="6" class="m-auto text-center">
         <b-button-group size="lg" class="w-100">
           <b-button
@@ -234,9 +244,6 @@ import tile_providers from "/data/tile_providers.json";
           <b-dropdown class="w-100">
             <template #button-content>
               {{ form_card.id + ". " + form_card.location_name }}
-              <b-badge :variant="fx.protocol(form_card).variant" class="ml-2"
-                >{{ fx.protocol(form_card).letter }}
-              </b-badge>
             </template>
             <b-dropdown-item href="#" v-for="f in forms" :key="f.id" @click="form_card = f">
               {{ f.id + ". " + f.location_name }}
@@ -418,41 +425,27 @@ import tile_providers from "/data/tile_providers.json";
                       </b-input-group>
                     </b-form-group>
                   </b-col>
-                  <b-col lg="6">
+                  <b-col lg="4">
                     Effort:
-                    <div class="d-flex">
-                      <div>
-                        <b-form-checkbox
-                          switch
-                          v-model="form_card.primary_purpose"
-                          v-b-tooltip.hover.html="
-                            'When birding is your <b>primary purpose</b>, you <i>are making an effort</i> to find all the birds around you to the best of your ability.'
-                          "
-                          >Primary Purpose
-                        </b-form-checkbox>
-                        <b-form-checkbox
-                          switch
-                          v-model="form_card.full_form"
-                          v-b-tooltip.hover.bottom.html="
-                            'In a <b>complete checklist</b>, you <i>report every species</i> you could identify to the best of your ability, by sight and/or sound.'
-                          "
-                        >
-                          Complete Checklist
-                        </b-form-checkbox>
-                      </div>
-                      <div class="align-self-center text-center m-auto">
-                        <h4 variant>
-                          <b-badge
-                            :variant="fx.protocol(form_card).variant"
-                            v-b-tooltip.hover.bottom
-                            title="Change the party size for all lists with no party size"
-                            >{{ fx.protocol(form_card).name }}</b-badge
-                          >
-                        </h4>
-                      </div>
-                    </div>
+                    <b-form-checkbox
+                      switch
+                      v-model="form_card.primary_purpose"
+                      v-b-tooltip.hover.html="
+                        'When birding is your <b>primary purpose</b>, you <i>are making an effort</i> to find all the birds around you to the best of your ability.'
+                      "
+                      >Primary Purpose
+                    </b-form-checkbox>
+                    <b-form-checkbox
+                      switch
+                      v-model="form_card.full_form"
+                      v-b-tooltip.hover.bottom.html="
+                        'In a <b>complete checklist</b>, you <i>report every species</i> you could identify to the best of your ability, by sight and/or sound.'
+                      "
+                    >
+                      Complete Checklist
+                    </b-form-checkbox>
                   </b-col>
-                  <b-col lg="6">
+                  <b-col lg="8">
                     <b-form-group>
                       <template #label>
                         Species Comment Model
