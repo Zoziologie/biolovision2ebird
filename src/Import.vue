@@ -88,14 +88,10 @@ export default {
       const file = event.target.files[0];
 
       const reader = new FileReader();
-      if (file.type == "xlsx") {
-        reader.readAsBinaryString(file);
-      } else {
-        reader.readAsText(file);
-      }
+      reader.readAsText(file);
       reader.onerror = (error) => {
-        throw new Error(error);
         this.loading_file_status = -1;
+        throw new Error(error);
       };
       reader.onload = (e) => {
         let export_data = {};
@@ -165,6 +161,26 @@ export default {
           export_data.forms_sightings = data.forms.map((f, fid) => {
             return this.sightingsBiolovisionTransformation(f.sightings, export_data.forms[fid].id);
           });
+        } else if (this.website.system == "birdlasser") {
+          export_data.forms = [];
+          export_data.forms_sightings = [];
+          export_data.sightings = fx.csvToArray(reader.result).map((s, id) => {
+            return fx.createSighting({
+              id: id,
+              form_id: 0,
+              date: s.Date.replaceAll("/", "-"),
+              time: s.Time,
+              lat: parseFloat(s.Latitude),
+              lon: parseFloat(s.Longitude),
+              location_name: s.Pentad,
+              common_name: s["Species primary name"],
+              scientific_name: "",
+              count: s.Count,
+              count_precision: s["Count Type"] == "Not specified" ? "" : s["Count Type"],
+              comment: s.Notes,
+            });
+          });
+          this.website.species_comment_template = "";
         } else {
           this.loading_file_status = -1;
           throw new Error("No correct system");
@@ -272,9 +288,12 @@ export default {
         </template>
         <template v-else-if="website.system == 'birdlasser'">
           <p>
-            Data from birdlasser can only be downloaded from the app (to my knowledge). Selec the
-            trip card and use "Export (CSV) trip card". Upload the CSV file below.
+            You can download your Birdlasser data from the app (use "Export (CSV) trip card") or
+            from the website (click on the trip card and "Basic Export" button)
           </p>
+          <a href="https://www.birdlasser.com/user/" target="_blank" class="btn btn-secondary"
+            >Export data from <strong> Birdlasser</strong>
+          </a>
         </template>
       </b-row>
     </b-col>
@@ -296,7 +315,7 @@ export default {
       </b-alert>
       <b-alert v-else-if="loading_file_status == 1" variant="success" show>
         <b-icon icon="check-circle-fill" class="mr-2"> </b-icon>
-        <strong>Data loaded successfuly! </strong>
+        <strong>Data loaded successfully! </strong>
         {{ number_imported_form }} forms and {{ number_imported_sightings }} individual sightings.
       </b-alert>
       <b-alert v-else-if="loading_file_status == -1" variant="danger" show>

@@ -709,6 +709,7 @@ export default {
     importData(d) {
       this.forms = d.forms;
       this.sightings = d.sightings;
+      console.log(this.sightings);
       this.forms_sightings = d.forms_sightings;
       this.website = d.website;
 

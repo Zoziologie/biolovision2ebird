@@ -17,11 +17,11 @@ export default {
             id: id, // required
             imported: f.imported || false,
             exportable: f.exportable || false,
-            location_name: f.location_name || "New List " + f.id,
-            lat: parseFloat(f.lat).toFixed(6) || null,
-            lon: parseFloat(f.lon).toFixed(6) || null,
+            location_name: f.location_name || "New List " + id,
+            lat: f.lon ? (Math.round(parseFloat(f.lat) * 1e6) / 1e6) : null,
+            lon: f.lat ? (Math.round(parseFloat(f.lon) * 1e6) / 1e6) : null,
             date: f.date || "",
-            time: f.time.substring(0, 5) || "",
+            time: f.time ? f.time.substring(0, 5) : "",
             duration: f.duration || "",
             distance: f.distance || "",
             number_observer: f.number_observer || "",
@@ -37,11 +37,11 @@ export default {
         return {
             id: s.id, // required
             form_id: s.form_id, // required
-            location_name: s.location_name,
-            lat: parseFloat(s.lat).toFixed(6) || null,
-            lon: parseFloat(s.lon).toFixed(6) || null,
-            date: s.date || "",
-            time: s.time.substring(0, 5) || "",
+            location_name: s.location_name, // required
+            lat: (Math.round(parseFloat(s.lat) * 1e6) / 1e6),// required
+            lon: (Math.round(parseFloat(s.lon) * 1e6) / 1e6),// required
+            date: s.date, // required
+            time: s.time ? s.time.substring(0, 5) : "",
             common_name: s.common_name || "",
             scientific_name: s.scientific_name || "",
             count: s.count || null,
@@ -93,5 +93,17 @@ export default {
         } catch ($e) {
             alert('Cannot copy. Try manually.');
         }
+    },
+    csvToArray(str, delimiter = ",") {
+        const headers = str.slice(0, str.indexOf("\n")).split(delimiter).map(x => x.replaceAll('"', ""));
+        const rows = str.slice(str.indexOf("\n") + 1).split("\n").filter(row => row.length > 0);
+        return rows.map(function (row) {
+            const values = row.split(delimiter).map(x => x.replaceAll('"', ""));
+            const el = headers.reduce(function (object, header, index) {
+                object[header] = values[index];
+                return object;
+            }, {});
+            return el;
+        });
     }
 }
