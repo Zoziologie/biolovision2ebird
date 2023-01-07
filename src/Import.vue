@@ -28,6 +28,7 @@ export default {
       number_imported_form: null,
       number_imported_sightings: null,
       taxonomic_issues: [],
+      clipboard_icon: "clipboard",
     };
   },
   computed: {
@@ -353,9 +354,12 @@ export default {
           <b-input type="text" v-model="taxonomic_issues_stringify" readonly></b-input>
           <b-input-group-append>
             <b-button
-              @click="fx.copyClipboard('\`\`\`\n' + taxonomic_issues_stringify + '\n\`\`\`')"
+              @click="
+                fx.copyClipboard('\`\`\`\n' + taxonomic_issues_stringify + '\n\`\`\`');
+                clipboard_icon = 'clipboard-check';
+              "
             >
-              <b-icon icon="clipboard-check" />
+              <b-icon :icon="clipboard_icon" />
             </b-button>
           </b-input-group-append>
         </b-input-group>
