@@ -272,9 +272,6 @@ export default {
             your name top right of the page: https://observation.org/
           </p>
         </template>
-        <template v-else-if="website.system == 'birdtrack'">
-          <p>https://app.bto.org/birdtrack/explore/emr.jsp</p>
-        </template>
         <template v-else-if="website.system == 'birdlasser'">
           <p>
             Data from birdlasser can only be downloaded from the app (to my knowledge). Selec the

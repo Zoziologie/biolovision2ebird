@@ -33,11 +33,8 @@ export default {
         <b-link href="http://faune-alsace.org/" target="_blank">faune-alsace</b-link>,...) to eBird!
         It is now also possible to convert data from the Observation websites (e.g.,
         <b-link href="https://observation.org/" target="_blank">observation.org</b-link>,
-        <b-link href="https://waarneming.nl/" target="_blank">waarneming.nl</b-link>,...),
-        <b-link href="https://www.bto.org/our-science/projects/birdtrack" target="_blank"
-          >Birdtrack</b-link
-        >
-        and <b-link href="https://www.birdlasser.com/" target="_blank">Birdlasser</b-link>.
+        <b-link href="https://waarneming.nl/" target="_blank">waarneming.nl</b-link>,...) and
+        <b-link href="https://www.birdlasser.com/" target="_blank">Birdlasser</b-link>.
       </p>
     </b-col>
     <b-col lg="6">

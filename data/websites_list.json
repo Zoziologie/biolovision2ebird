@@ -323,13 +323,6 @@
     },
     {
         "category": "Others",
-        "extension": ".xlsx",
-        "name": "birdtrack",
-        "system": "birdtrack",
-        "website": "birdtrack/"
-    },
-    {
-        "category": "Others",
         "extension": ".csv",
         "name": "observation.org",
         "system": "observation",
