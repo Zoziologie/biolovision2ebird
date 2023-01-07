@@ -15,10 +15,13 @@ import tile_providers from "/data/tile_providers.json";
         <h1 class="mb-0">Biolovision2eBird</h1>
         <h6>Convert biolovision data to eBird</h6>
       </div>
-      <b-link class="py-3 px-0 px-lg-3 rounded text-white text-decoration-none bg-primary" href="/">
+      <b-link
+        class="py-3 px-0 px-lg-3 rounded text-white text-decoration-none bg-primary"
+        href="https://zoziologie.raphaelnussbaumer.com/"
+      >
         <span class="mr-1">Powered by</span>
 
-        <b-img class="me-3" :src="logo" alt="" height="38" />
+        <b-img class="me-3" :src="logo" alt="" height="36" />
       </b-link>
     </b-row>
 
@@ -40,54 +43,50 @@ import tile_providers from "/data/tile_providers.json";
       <template v-else>
         <b-col lg="6">
           <p>
-            First, create checklist(s) by adding marker(s) on the map. Then, select in the dropdown
-            the checklists on which you want to assign the individual sightings. Finally, draw a
-            rectangle on the map around the sightings to attribute them to the checklist.
+            First click on "Create a checklist" to combine sightings into a checklist by drawing a
+            rectanlge over them on the map. You can still modify the sightings allocation by first
+            selecting the checklist in the dropdown list, and click on
+            <b-icon icon="box-arrow-in-down" /> to draw a new rectangle.
           </p>
-          <small>
-            The number of the marker on the map corresponds to the order in the dropdown and the
-            color of the sightings match those of the marker. The sightings left on "Non-assign"
-            will not be exported.
-          </small>
+          <p>The sightings under "0. Non-assigned" will not be exported.</p>
         </b-col>
         <b-col lg="6">
-          <h5>Automatic attribution</h5>
-          <p>
-            Instead of doing this process manually, there is (new) an "Automatic Attribution". This
-            "magic" function will create checklists and attribute the corresponding incidental
-            sightings automotically. The function is based on a distance and duration threashold to
-            aggregate sightings together. You can still edit automotic attribution later. We suggest
-            to start with values of 1km and 1hour and adjust based on your birding style.
-          </p>
-          <b-row>
-            <b-col sm="4">
-              <b-input-group append="hr">
-                <b-form-input
-                  v-model="assign_duration"
-                  type="number"
-                  step="0.1"
-                  min="0.1"
-                  max="24"
-                />
-              </b-input-group>
-            </b-col>
-            <b-col sm="4">
-              <b-input-group append="km">
-                <b-form-input
-                  v-model="assign_distance"
-                  type="number"
-                  step="0.1"
-                  min="0.1"
-                  max="5"
-                />
-              </b-input-group>
-            </b-col>
-            <b-col sm="4">
-              <b-button variant="primary" block @click="assignMagic">
-                <b-icon icon="arrow-repeat" class="mr-1"></b-icon>Magic tool
-              </b-button>
-            </b-col>
-          </b-row>
+          <div class="p-3 text-white rounded shadow-sm bg-blue">
+            <h5>Automatic attribution</h5>
+            <p>
+              Use this "magic" function to automatically create checklists. The function clusters
+              sightings which are within a given distance and duration to one another.
+            </p>
+            <b-row>
+              <b-col sm="4">
+                <b-input-group append="hr">
+                  <b-form-input
+                    v-model="assign_duration"
+                    type="number"
+                    step="0.1"
+                    min="0.1"
+                    max="24"
+                  />
+                </b-input-group>
+              </b-col>
+              <b-col sm="4">
+                <b-input-group append="km">
+                  <b-form-input
+                    v-model="assign_distance"
+                    type="number"
+                    step="0.1"
+                    min="0.1"
+                    max="5"
+                  />
+                </b-input-group>
+              </b-col>
+              <b-col sm="4">
+                <b-button variant="primary" block @click="assignMagic">
+                  <b-icon icon="arrow-repeat" class="mr-1"></b-icon>Magic tool
+                </b-button>
+              </b-col>
+            </b-row>
+          </div>
         </b-col>
 
         <b-col lg="12">
@@ -108,7 +107,7 @@ import tile_providers from "/data/tile_providers.json";
                     map_draw_rectangle.enable();
                   "
                   v-b-tooltip.hover="
-                    'Draw a rectangle on the map to initialize the new checklists with sightings included in the rectangle.'
+                    'Draw a rectangle over the sightings to be included in a new checklist.'
                   "
                 >
                   <b-icon icon="plus" /> Create a checklist
@@ -132,7 +131,7 @@ import tile_providers from "/data/tile_providers.json";
                       @click="map_draw_rectangle.enable()"
                       v-show="forms.length > 0"
                       v-b-tooltip.hover="
-                        'Draw a rectangle on the map to assign checklist to the checklist selected.'
+                        'Draw a rectangle on the map to assign sightings to the checklist selected.'
                       "
                     >
                       <b-icon icon="box-arrow-in-down" />
@@ -140,14 +139,14 @@ import tile_providers from "/data/tile_providers.json";
                   </b-input-group-append>
                 </b-input-group>
                 <b-button-group class="mt-2">
-                  <b-button @click="assignClean" v-b-tooltip.bottom title="Delete empty checklists"
+                  <b-button @click="assignClean" v-b-tooltip.bottom title="Delete empty checklists."
                     ><b-icon icon="trash" /> Clean</b-button
                   >
                   <b-button
                     @click="assignReset"
                     variant="danger"
                     v-b-tooltip.bottom
-                    title="Delete all checklists"
+                    title="Delete all checklists."
                     ><b-icon icon="arrow-counterclockwise" /> Reset</b-button
                   >
                 </b-button-group>
@@ -208,33 +207,14 @@ import tile_providers from "/data/tile_providers.json";
       </template>
     </b-row>
 
-    <b-row class="my-3 p-3 bg-white rounded shadow-sm" v-if="forms.length > 0">
+    <b-row class="my-3 p-3 bg-white rounded shadow-sm align-items-center" v-if="forms.length > 0">
       <b-col lg="12">
-        <h2 class="border-bottom pb-2 mb-3">3. Provide checklists details</h2>
+        <h2 class="border-bottom pb-2 mb-3">3. Provide checklist details</h2>
       </b-col>
-      <b-col lg="9">
-        <p>
-          You can navigate into each checklist by clicking on the tab and modify each of them as
-          desire. In addition, we automatically added a few improvement such as exact timing and
-          location of each observation in comment or a static map with location of your sightings.
-          Feel free to remove them of modify them
-        </p>
-      </b-col>
-      <b-col lg="3">
-        <p>Change the party size for all lists with no party size</p>
-        <b-input-group class="mt-3">
-          <b-form-spinbutton v-model="number_observer_for_all" step="1" min="1" max="100" />
-          <b-input-group-append>
-            <b-button @click="setObserverForAll(number_observer_for_all)" variant="primary">
-              <b-icon icon="files" />
-            </b-button>
-          </b-input-group-append>
-        </b-input-group>
-      </b-col>
+      <b-col lg="3"></b-col>
       <b-col lg="6" class="m-auto text-center">
         <b-button-group size="lg" class="w-100">
           <b-button
-            variant="blue"
             @click="
               {
                 let idx = forms.map((f) => f.id).indexOf(form_card.id);
@@ -245,12 +225,12 @@ import tile_providers from "/data/tile_providers.json";
           >
             <b-icon icon="chevron-left" />
           </b-button>
-          <b-dropdown variant="blue" class="w-100">
+          <b-dropdown class="w-100">
             <template #button-content>
               {{ form_card.id + ". " + form_card.location_name }}
               <b-badge :variant="protocol_variant(protocol(form_card))" class="ml-2"
-                >{{ protocol(form_card).slice(0, 1).toUpperCase() }} </b-badge
-              ><b-icon icon="check" v-show="form_card.exportable" class="ml-2" />
+                >{{ protocol(form_card).slice(0, 1).toUpperCase() }}
+              </b-badge>
             </template>
             <b-dropdown-item href="#" v-for="f in forms" :key="f.id" @click="form_card = f">
               {{ f.id + ". " + f.location_name }}
@@ -260,7 +240,6 @@ import tile_providers from "/data/tile_providers.json";
             </b-dropdown-item>
           </b-dropdown>
           <b-button
-            variant="blue"
             @click="
               {
                 let idx = forms.map((f) => f.id).indexOf(form_card.id);
@@ -272,19 +251,13 @@ import tile_providers from "/data/tile_providers.json";
           /></b-button>
         </b-button-group>
       </b-col>
+      <b-col lg="3">
+        <b-form-checkbox v-model="form_card.exportable" switch size="lg"
+          >Ready for export</b-form-checkbox
+        >
+      </b-col>
       <b-col lg="12" class="mt-3">
         <b-card no-body>
-          <!--<b-tabs pills card no-fade :small="forms.length > 7">
-            <b-tab v-for="f in forms" :key="f.id" @click="form_card = f">
-              <template #title class="d-inline">
-                {{
-                  (f.location_name.length > 15) & (forms.length > 5)
-                    ? f.location_name.slice(0, 15 - 1) + "..."
-                    : f.location_name
-                }}
-              </template>
-            </b-tab>
-          </b-tabs>-->
           <b-card-body v-if="form_card">
             <b-alert show variant="danger" class="mt-2" v-show="form_card_duration > 60 * 24">
               <b-icon-exclamation-triangle-fill class="mr-2" />This checklist contains sightings
@@ -297,232 +270,248 @@ import tile_providers from "/data/tile_providers.json";
               >.
             </b-alert>
             <b-row>
-              <b-col lg="4">
-                <b-form-group label="Location Name:">
-                  <b-input-group>
-                    <b-form-input v-model="form_card.location_name" type="text" />
-                    <b-input-group-append>
-                      <b-button
-                        variant="secondary"
-                        @click="form_card.location_name = getFormName(form_card)"
-                        v-b-tooltip.hover
-                        title="Use the most common location name of all sightings"
-                        ><b-icon icon="arrow-repeat"
-                      /></b-button>
-                    </b-input-group-append>
-                  </b-input-group>
-                </b-form-group>
-              </b-col>
-              <b-col lg="3">
-                <b-form-group label="Date:">
-                  <b-input-group>
-                    <b-form-input
-                      v-model="form_card.date"
-                      type="date"
-                      :state="form_card.date != ''"
-                    />
-                    <b-input-group-append>
-                      <b-button
-                        variant="secondary"
-                        @click="form_card.date = form_card_sightings[0].date"
-                        v-b-tooltip.hover
-                        title="Compute earliest date of all sightings."
-                        ><b-icon icon="arrow-repeat"
-                      /></b-button>
-                    </b-input-group-append>
-                  </b-input-group>
-                </b-form-group>
-              </b-col>
-              <b-col lg="3">
-                <b-form-group label="Time:">
-                  <b-input-group>
-                    <b-form-input
-                      v-model="form_card.time"
-                      type="time"
-                      step="60"
-                      :state="form_card.time != ''"
-                    />
-                    <b-input-group-append>
-                      <b-button
-                        variant="secondary"
-                        @click="form_card.time = form_card_sightings[0].time"
-                        v-b-tooltip.hover
-                        title="Compute earliest time of all sightings."
-                        ><b-icon icon="arrow-repeat"
-                      /></b-button>
-                    </b-input-group-append>
-                  </b-input-group>
-                </b-form-group>
-              </b-col>
-              <b-col lg="2">
-                <b-form-group label="Duration (minutes):">
-                  <b-input-group>
-                    <b-form-input
-                      v-model="form_card.duration"
-                      type="number"
-                      step="1"
-                      min="1"
-                      max="1440"
-                      :state="
-                        parseFloat(form_card.duration) > 0 && parseFloat(form_card.duration) <= 1440
-                      "
-                    />
-                    <b-input-group-append>
-                      <b-button
-                        variant="secondary"
-                        @click="form_card.duration = form_card_duration"
-                        v-b-tooltip.hover
-                        title="Compute duration between the first and last sightings."
-                        ><b-icon icon="arrow-repeat"
-                      /></b-button>
-                    </b-input-group-append>
-                  </b-input-group>
-                </b-form-group>
-              </b-col>
-              <b-col lg="3">
-                <b-form-group label="Distance (km):">
-                  <b-input-group>
-                    <b-form-input
-                      v-model="form_card.distance"
-                      step="0.1"
-                      min="0"
-                      max="100"
-                      type="number"
-                      :state="
-                        parseFloat(form_card.distance) >= 0 && parseFloat(form_card.distance) <= 80
-                      "
-                    />
-                    <b-input-group-append>
-                      <b-button
-                        variant="secondary"
-                        v-b-tooltip.click="
-                          'Click on the map below to draw your path and update distance'
-                        "
-                        @click="animateBezier"
-                      >
-                        <b-icon icon="bezier" />
-                      </b-button>
-                    </b-input-group-append>
-                  </b-input-group>
-                </b-form-group>
-              </b-col>
-              <b-col lg="3">
-                <b-form-group label="Party size:">
-                  <b-form-spinbutton
-                    v-model="form_card.number_observer"
-                    step="1"
-                    min="1"
-                    max="100"
-                    :state="parseFloat(form_card.number_observer) > 0"
-                  />
-                </b-form-group>
-              </b-col>
-              <b-col lg="4">
-                Effort:
-                <div class="d-flex">
-                  <div>
-                    <b-form-checkbox
-                      switch
-                      v-model="form_card.primary_purpose"
-                      v-b-tooltip.hover.html="
-                        'When birding is your <b>primary purpose</b>, you <i>are making an effort</i> to find all the birds around you to the best of your ability.'
-                      "
-                      >Primary Purpose
-                    </b-form-checkbox>
-                    <b-form-checkbox
-                      switch
-                      v-model="form_card.full_form"
-                      v-b-tooltip.hover.bottom.html="
-                        'In a <b>complete checklist</b>, you <i>report every species</i> you could identify to the best of your ability, by sight and/or sound.'
-                      "
-                    >
-                      Complete Checklist
-                    </b-form-checkbox>
-                  </div>
-                  <div class="align-self-center text-center m-auto">
-                    <h4 variant>
-                      <b-badge :variant="protocol_variant(protocol(form_card))">{{
-                        protocol(form_card).toUpperCase()
-                      }}</b-badge>
-                    </h4>
-                  </div>
-                </div>
-              </b-col>
-              <b-col lg="4">
-                <b-form-group>
-                  <template #label>
-                    Species Comment Model
-                    <b-button-group size="sm">
-                      <b-button
-                        v-b-modal.modal-species-comment
-                        v-b-tooltip.hover
-                        title="Open edit windows"
-                      >
-                        <b-icon icon="pencil" />
-                      </b-button>
-                      <b-button
-                        variant="danger"
-                        v-b-tooltip.hover
-                        title="Erase comment"
-                        @click="eraseComment"
-                      >
-                        <b-icon icon="trash" />
-                      </b-button>
-                      <b-button
-                        variant="primary"
-                        v-b-tooltip.hover
-                        title="Apply this template to all other checklists and set as default for new."
-                        @click="applyCommentToAll"
-                      >
-                        <b-icon icon="files" />
-                      </b-button>
-                    </b-button-group>
-                  </template>
-                  <b-card>
-                    <div
-                      v-html="
-                        speciesComment(
-                          form_card.species_comment_template,
-                          form_card_sightings.slice(0, 1)
-                        )[0]
-                      "
-                    ></div>
-                  </b-card>
-                </b-form-group>
-                <b-modal id="modal-species-comment" title="Edit Species Comment Template">
-                  <p class="mt-2">You can edit the species comment using the HTML code below.</p>
-                  <b-form-textarea
-                    v-model="form_card.species_comment_template"
-                    rows="6"
-                    class="html-editor"
-                  />
-                  <h6 class="mt-4">Live Preview</h6>
-                  <b-card>
-                    <div
-                      v-html="
-                        speciesComment(
-                          form_card.species_comment_template,
-                          form_card_sightings.slice(0, 1)
-                        )[0]
-                      "
-                      class="mr-2 b-2"
-                    ></div>
-                  </b-card>
-                  <p class="mt-4">
-                    Use the notation <code>${property}</code> to display dynamic information on each
-                    species. Use the table below to see all the properties available.
-                  </p>
+              <b-col lg="9">
+                <b-row>
+                  <b-col lg="4">
+                    <b-form-group label="Location Name:">
+                      <b-input-group>
+                        <b-form-input v-model="form_card.location_name" type="text" />
+                        <b-input-group-append>
+                          <b-button
+                            variant="secondary"
+                            @click="form_card.location_name = getFormName(form_card)"
+                            v-b-tooltip.hover
+                            title="Use the most common location name of all sightings"
+                            ><b-icon icon="arrow-repeat"
+                          /></b-button>
+                        </b-input-group-append>
+                      </b-input-group>
+                    </b-form-group>
+                  </b-col>
+                  <b-col lg="4">
+                    <b-form-group label="Date:">
+                      <b-input-group>
+                        <b-form-input
+                          v-model="form_card.date"
+                          type="date"
+                          :state="form_card.date != ''"
+                        />
+                        <b-input-group-append>
+                          <b-button
+                            variant="secondary"
+                            @click="form_card.date = form_card_sightings[0].date"
+                            v-b-tooltip.hover
+                            title="Compute earliest date of all sightings."
+                            ><b-icon icon="arrow-repeat"
+                          /></b-button>
+                        </b-input-group-append>
+                      </b-input-group>
+                    </b-form-group>
+                  </b-col>
+                  <b-col lg="4">
+                    <b-form-group label="Time:">
+                      <b-input-group>
+                        <b-form-input
+                          v-model="form_card.time"
+                          type="time"
+                          step="60"
+                          :state="form_card.time != ''"
+                        />
+                        <b-input-group-append>
+                          <b-button
+                            variant="secondary"
+                            @click="form_card.time = form_card_sightings[0].time"
+                            v-b-tooltip.hover
+                            title="Compute earliest time of all sightings."
+                            ><b-icon icon="arrow-repeat"
+                          /></b-button>
+                        </b-input-group-append>
+                      </b-input-group>
+                    </b-form-group>
+                  </b-col>
+                  <b-col lg="4">
+                    <b-form-group label="Duration (minutes):">
+                      <b-input-group>
+                        <b-form-input
+                          v-model="form_card.duration"
+                          type="number"
+                          step="1"
+                          min="1"
+                          max="1440"
+                          :state="
+                            parseFloat(form_card.duration) > 0 &&
+                            parseFloat(form_card.duration) <= 1440
+                          "
+                        />
+                        <b-input-group-append>
+                          <b-button
+                            variant="secondary"
+                            @click="form_card.duration = form_card_duration"
+                            v-b-tooltip.hover
+                            title="Compute duration between the first and last sightings."
+                            ><b-icon icon="arrow-repeat"
+                          /></b-button>
+                        </b-input-group-append>
+                      </b-input-group>
+                    </b-form-group>
+                  </b-col>
+                  <b-col lg="4">
+                    <b-form-group label="Distance (km):">
+                      <b-input-group>
+                        <b-form-input
+                          v-model="form_card.distance"
+                          step="0.1"
+                          min="0"
+                          max="100"
+                          type="number"
+                          :state="
+                            parseFloat(form_card.distance) >= 0 &&
+                            parseFloat(form_card.distance) <= 80
+                          "
+                        />
+                        <b-input-group-append>
+                          <b-button variant="secondary" v-b-modal.modal-card>
+                            <b-icon icon="bezier" />
+                          </b-button>
+                        </b-input-group-append>
+                      </b-input-group>
+                    </b-form-group>
+                  </b-col>
+                  <b-col lg="4">
+                    <b-form-group label="Party size:">
+                      <template #label> Party size: </template>
+                      <b-input-group>
+                        <b-form-spinbutton
+                          v-model="form_card.number_observer"
+                          step="1"
+                          min="1"
+                          max="100"
+                          :state="parseFloat(form_card.number_observer) > 0"
+                        />
+                        <b-input-group-append>
+                          <b-button
+                            variant="primary"
+                            size="sm"
+                            v-b-tooltip.hover
+                            title="Change the party size for all lists with no party size"
+                            @click="setObserverForAll(form_card.number_observer)"
+                          >
+                            <b-icon icon="files" />
+                          </b-button>
+                        </b-input-group-append>
+                      </b-input-group>
+                    </b-form-group>
+                  </b-col>
+                  <b-col lg="6">
+                    Effort:
+                    <div class="d-flex">
+                      <div>
+                        <b-form-checkbox
+                          switch
+                          v-model="form_card.primary_purpose"
+                          v-b-tooltip.hover.html="
+                            'When birding is your <b>primary purpose</b>, you <i>are making an effort</i> to find all the birds around you to the best of your ability.'
+                          "
+                          >Primary Purpose
+                        </b-form-checkbox>
+                        <b-form-checkbox
+                          switch
+                          v-model="form_card.full_form"
+                          v-b-tooltip.hover.bottom.html="
+                            'In a <b>complete checklist</b>, you <i>report every species</i> you could identify to the best of your ability, by sight and/or sound.'
+                          "
+                        >
+                          Complete Checklist
+                        </b-form-checkbox>
+                      </div>
+                      <div class="align-self-center text-center m-auto">
+                        <h4 variant>
+                          <b-badge :variant="protocol_variant(protocol(form_card))">{{
+                            protocol(form_card).toUpperCase()
+                          }}</b-badge>
+                        </h4>
+                      </div>
+                    </div>
+                  </b-col>
+                  <b-col lg="6">
+                    <b-form-group>
+                      <template #label>
+                        Species Comment Model
+                        <b-button-group size="sm">
+                          <b-button
+                            v-b-modal.modal-species-comment
+                            v-b-tooltip.hover
+                            title="Open edit windows"
+                          >
+                            <b-icon icon="pencil" />
+                          </b-button>
+                          <b-button
+                            variant="danger"
+                            v-b-tooltip.hover
+                            title="Erase comment"
+                            @click="eraseComment"
+                          >
+                            <b-icon icon="trash" />
+                          </b-button>
+                          <b-button
+                            variant="primary"
+                            v-b-tooltip.hover
+                            title="Apply this template to all other checklists and set as default for new."
+                            @click="applyCommentToAll"
+                          >
+                            <b-icon icon="files" />
+                          </b-button>
+                        </b-button-group>
+                      </template>
+                      <b-card>
+                        <div
+                          v-html="
+                            speciesComment(
+                              form_card.species_comment_template,
+                              form_card_sightings.slice(0, 1)
+                            )[0]
+                          "
+                        ></div>
+                      </b-card>
+                    </b-form-group>
+                    <b-modal id="modal-species-comment" title="Edit Species Comment Template">
+                      <p class="mt-2">
+                        You can edit the species comment using the HTML code below.
+                      </p>
+                      <b-form-textarea
+                        v-model="form_card.species_comment_template"
+                        rows="6"
+                        class="html-editor"
+                      />
+                      <h6 class="mt-4">Live Preview</h6>
+                      <b-card>
+                        <div
+                          v-html="
+                            speciesComment(
+                              form_card.species_comment_template,
+                              form_card_sightings.slice(0, 1)
+                            )[0]
+                          "
+                          class="mr-2 b-2"
+                        ></div>
+                      </b-card>
+                      <p class="mt-4">
+                        Use the notation <code>${property}</code> to display dynamic information on
+                        each species. Use the table below to see all the properties available.
+                      </p>
 
-                  <b-table
-                    bordered
-                    small
-                    striped
-                    v-if="form_card_sightings.length > 0"
-                    :items="fx.object2Table(form_card_sightings[0])"
-                  />
-                </b-modal>
+                      <b-table
+                        bordered
+                        small
+                        striped
+                        v-if="form_card_sightings.length > 0"
+                        :items="fx.object2Table(form_card_sightings[0])"
+                      />
+                    </b-modal>
+                  </b-col>
+                </b-row>
               </b-col>
-              <b-col lg="4">
+              <b-col lg="3">
                 <b-form-group>
                   <template #label> Checklist Comment: </template>
                   <b-form-checkbox switch v-model="form_card.static_map"
@@ -533,15 +522,11 @@ import tile_providers from "/data/tile_providers.json";
                   </b-card>
                 </b-form-group>
               </b-col>
-              <b-col lg="4">
-                <b-form-group label="Mark the checklist as exportable">
-                  <b-form-checkbox v-model="form_card.exportable" switch size="lg"
-                    >Ready for export</b-form-checkbox
-                  >
-                </b-form-group>
-              </b-col>
             </b-row>
           </b-card-body>
+        </b-card>
+        <b-modal id="modal-card" :title="form_card.location_name">
+          <p>Draw a path (polyline) on the map to compute the distance.</p>
           <l-map
             class="w-100"
             style="height: 400px"
@@ -606,7 +591,7 @@ import tile_providers from "/data/tile_providers.json";
             </l-marker>
             <l-polyline :lat-lngs="form_card.path" :color="'brown'" v-if="form_card.path" />
           </l-map>
-        </b-card>
+        </b-modal>
       </b-col>
     </b-row>
 
@@ -717,7 +702,6 @@ export default {
       map_draw_marker: null,
       map_card_polyline: null,
       form_card: null,
-      number_observer_for_all: 1,
       animate_bezier: false,
     };
   },
@@ -765,6 +749,9 @@ export default {
           }
         }
       });
+      setTimeout(() => {
+        this.$refs.map_card.mapObject.invalidateSize();
+      }, 100);
     },
     async onMapSightingsReady() {
       await this.$nextTick();
@@ -957,9 +944,9 @@ export default {
         (form.static_map
           ? "<img src=" +
             this.static_map_link(form, sightings) +
-            " style='max-width:300px;width:100%'><br/>"
+            " style='max-width:300px;width:100%'>"
           : "") +
-        'Imported with <a href="https://zoziologie.raphaelnussbaumer.com/biolovision2ebird/">biolovision2eBird<a>.'
+        '<br/><small>Imported with <a href="https://zoziologie.raphaelnussbaumer.com/biolovision2ebird/">biolovision2eBird</a>.</small>'
       );
     },
     getFormName(form) {
@@ -967,7 +954,9 @@ export default {
     },
     setObserverForAll(nb) {
       const forms = this.forms.filter((f) => !(f.number_observer > 0));
-      if (
+      if (forms.length == 0) {
+        alert("No other checklists have an empty party size.");
+      } else if (
         confirm(
           "Are you sure you want to set the party size for " +
             forms.map((f) => f.location_name).join(", ") +
@@ -1039,14 +1028,10 @@ export default {
   mounted() {
     const urlParams = new URLSearchParams(window.location.search);
     this.skip_intro = urlParams.get("skip_intro") ? true : false;
-    this.number_observer_for_all = parseInt(this.$cookie.get("number_observer_for_all"));
     this.assign_duration = parseFloat(this.$cookie.get("assign_duration"));
     this.assign_distance = parseFloat(this.$cookie.get("assign_distance"));
   },
   watch: {
-    number_observer_for_all() {
-      this.$cookie.set("number_observer_for_all", this.number_observer_for_all, 365);
-    },
     assign_duration() {
       this.$cookie.set("assign_duration", this.assign_duration, 365);
     },

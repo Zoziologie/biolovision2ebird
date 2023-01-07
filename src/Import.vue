@@ -39,7 +39,7 @@ export default {
     },
   },
   methods: {
-    sightingsTransformation(sightings, form_id) {
+    sightingsBiolovisionTransformation(sightings, form_id) {
       return sightings.map((s) => {
         const datetime = s.observers[0].timing["@ISO8601"].split("+")[0];
 
@@ -107,7 +107,7 @@ export default {
           data.sightings = data.sightings || [];
 
           // Convert individual sightings
-          export_data.sightings = this.sightingsTransformation(data.sightings, 0);
+          export_data.sightings = this.sightingsBiolovisionTransformation(data.sightings, 0);
 
           // convert form data
 
@@ -163,7 +163,7 @@ export default {
 
           // Convert sightings from the forms, keep them seperate
           export_data.forms_sightings = data.forms.map((f, fid) => {
-            return this.sightingsTransformation(f.sightings, export_data.forms[fid].id);
+            return this.sightingsBiolovisionTransformation(f.sightings, export_data.forms[fid].id);
           });
         } else {
           this.loading_file_status = -1;
@@ -196,29 +196,27 @@ export default {
       <h2 class="border-bottom pb-2 mb-3">1. Generate and load Biolovision data</h2>
     </b-col>
     <b-col lg="6">
-      <p>Select the website from which to import the data</p>
-      <b-select v-model="website_name" size="lg">
-        <b-select-option-group
-          v-for="cat in new Set(websites_list.map((w) => w.category))"
-          :label="cat"
-          :key="cat"
-        >
-          <b-select-option
-            v-for="w in websites_list.filter((wl) => wl.category == cat)"
-            :key="w.name"
-            :value="w.name"
+      <b-form-group label="Select the website from which to import the data">
+        <b-select v-model="website_name" size="lg">
+          <b-select-option-group
+            v-for="cat in new Set(websites_list.map((w) => w.category))"
+            :label="cat"
+            :key="cat"
           >
-            {{ w.name }}
-          </b-select-option>
-        </b-select-option-group>
-      </b-select>
+            <b-select-option
+              v-for="w in websites_list.filter((wl) => wl.category == cat)"
+              :key="w.name"
+              :value="w.name"
+            >
+              {{ w.name }}
+            </b-select-option>
+          </b-select-option-group>
+        </b-select>
+      </b-form-group>
       <b-row class="m-3 p-3 text-white rounded shadow-sm bg-blue" v-if="website">
         <template v-if="website.system == 'biolovision'">
-          <p>
-            For biolovision website, export your data file as json
-            <b-img :src="jsonIcon" />. You can use the form below as a starting point to generate
-            the file.
-          </p>
+          <p>For Biolovision websites, export your data file as json <b-img :src="jsonIcon" />.</p>
+          <p>You can use the button below to directly reach the page to export your data:</p>
           <b-col lg="12">
             <b-form-radio v-model="import_query_date" value="offset">
               <b-input-group append="days ago">
@@ -281,18 +279,17 @@ export default {
       </b-row>
     </b-col>
     <b-col lg="6" v-if="website">
-      <p>
-        Load the data file into the webapp (the data remains in your browser and are never send on
-        internet).
-      </p>
-      <b-form-file
-        size="lg"
-        @change="processFile"
-        :accept="website.extension"
-        :placeholder="'Click to load your ' + website.extension + ' file'"
-        class="mb-2"
-        no-drop
-      />
+      <b-form-group label="Upload the exported file">
+        <b-form-file
+          size="lg"
+          @change="processFile"
+          :accept="website.extension"
+          :placeholder="'Click to load your ' + website.extension + ' file'"
+          class="mb-2"
+          no-drop
+        />
+      </b-form-group>
+
       <b-alert v-if="loading_file_status == 0" variant="warning" show>
         <b-spinner small variant="warning" class="mr-2"> </b-spinner>
         <strong class="me-1">Loading data...</strong>
@@ -310,21 +307,21 @@ export default {
         <b-icon icon="exclamation-triangle" class="mr-1" />
         <strong class="me-1">Taxonomic matching issue.</strong>
         <p>
-          We are detecting {{ taxonomic_issues.length }} species with unsuccesfull taxonomic match:
+          We are detecting {{ taxonomic_issues.length }} species with unsuccessful taxonomic match:
           {{ taxonomic_issues.map((s) => s.common_name).join(", ") }}
         </p>
         <p>
-          You can proceed with the import, but you will to
+          You can proceed with the import, but you will need to
           <b-link
             class="alert-link"
             href="https://support.ebird.org/en/support/solutions/articles/48000907878-upload-spreadsheet-data-to-ebird#anchorCleanData"
             target="_blank"
-            >Fix the species</b-link
+            >fix the species</b-link
           >
           on the eBird import tool.
         </p>
         <p>
-          Could you copy the code below and paste it
+          Please, copy the code below and paste it
           <b-link
             class="alert-link"
             href="https://github.com/Zoziologie/biolovision2ebird/issues/11"
