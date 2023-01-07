@@ -10,7 +10,9 @@ import tile_providers from "/data/tile_providers.json";
 
 <template class="bg-light">
   <b-container>
-    <b-row class="d-flex justify-content-between p-3 my-3 text-white rounded shadow-sm bg-blue">
+    <b-row
+      class="d-flex justify-content-between p-3 my-3 text-white rounded shadow-sm bg-secondary"
+    >
       <div>
         <h1 class="mb-0">Biolovision2eBird</h1>
         <h6>Convert biolovision data to eBird</h6>
@@ -51,7 +53,7 @@ import tile_providers from "/data/tile_providers.json";
           <p>The sightings under "0. Non-assigned" will not be exported.</p>
         </b-col>
         <b-col lg="6">
-          <div class="p-3 text-white rounded shadow-sm bg-blue">
+          <div class="p-3 text-white rounded shadow-sm bg-secondary">
             <h5>Automatic attribution</h5>
             <p>
               Use this "magic" function to automatically create checklists. The function clusters
@@ -139,7 +141,11 @@ import tile_providers from "/data/tile_providers.json";
                   </b-input-group-append>
                 </b-input-group>
                 <b-button-group class="mt-2">
-                  <b-button @click="assignClean" v-b-tooltip.bottom title="Delete empty checklists."
+                  <b-button
+                    @click="assignClean"
+                    v-b-tooltip.bottom
+                    title="Delete empty checklists."
+                    variant="warning"
                     ><b-icon icon="trash" /> Clean</b-button
                   >
                   <b-button
@@ -602,11 +608,13 @@ import tile_providers from "/data/tile_providers.json";
       v-if="forms.length > 0"
     />
 
-    <b-row class="d-flex justify-content-between p-3 my-3 text-white rounded shadow-sm bg-blue">
+    <b-row
+      class="d-flex justify-content-between p-3 my-3 text-white rounded shadow-sm bg-secondary"
+    >
       <b-col lg="12">
         <strong>Any issues or suggestions?</strong> Check the
         <b-link
-          class="btn btn-sm btn-outline-secondary"
+          class="btn btn-sm btn-primary"
           href="https://github.com/Zoziologie/biolovision2ebird/wiki/FAQ"
           target="_blank"
         >
@@ -614,18 +622,14 @@ import tile_providers from "/data/tile_providers.json";
         >
         first, and then submit an issue on
         <b-link
-          class="btn btn-sm btn-outline-secondary"
+          class="btn btn-sm btn-primary"
           href="https://github.com/Zoziologie/Biolovision2eBird/issues"
           target="_blank"
         >
           <b-icon icon="github" aria-hidden="true"> </b-icon> Github</b-link
         >
         or
-        <b-link
-          class="btn btn-sm btn-outline-secondary"
-          href="mailto:rafnuss@gmail.com"
-          target="_blank"
-        >
+        <b-link class="btn btn-sm btn-primary" href="mailto:rafnuss@gmail.com" target="_blank">
           <b-icon icon="envelope-fill" aria-hidden="true"> </b-icon> Contact me</b-link
         >
         if necessary.
@@ -882,8 +886,8 @@ export default {
           return "success";
         case "stationary":
           return "success";
-        case "warning":
-          return "success";
+        case "historical":
+          return "warning";
         case "incidental":
           return "warning";
         case "invalid":

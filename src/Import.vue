@@ -229,7 +229,7 @@ export default {
           </b-select-option-group>
         </b-select>
       </b-form-group>
-      <b-row class="m-3 p-3 text-white rounded shadow-sm bg-blue" v-if="website">
+      <b-row class="m-3 p-3 text-white rounded shadow-sm bg-secondary" v-if="website">
         <template v-if="website.system == 'biolovision'">
           <p>For Biolovision websites, export your data file as json <b-img :src="jsonIcon" />.</p>
           <p>You can use the button below to directly reach the page to export your data:</p>
