@@ -7,7 +7,7 @@ export default {
   props: ["forms", "sightings", "forms_sightings"],
   data() {
     return {
-      csv: [],
+      formattedSightings: [],
     };
   },
   computed: {
@@ -16,45 +16,53 @@ export default {
     },
   },
   methods: {
-    formatSightings(sightings) {
-      return sightings.map((s) => {
-        var f = this.forms.filter((f) => f.id == s.form_id)[0];
+    formatSightings() {
+      const fid = this.forms_exportable.map((f) => f.id);
 
+      const sightings = [
+        ...this.sightings.filter((s) => fid.includes(s.form_id)),
+        ...this.forms_sightings.filter((s) => fid.includes(s.form_id)),
+      ];
+
+      this.formattedSightings = sightings.map((s) => {
+        let f = this.forms.filter((f) => f.id == s.form_id)[0];
+        let date = new Date(f.date);
+        date =
+          (date.getMonth() > 8 ? date.getMonth() + 1 : "0" + (date.getMonth() + 1)) +
+          "/" +
+          (date.getDate() > 9 ? date.getDate() : "0" + date.getDate()) +
+          "/" +
+          date.getFullYear();
         return {
-          common_name: s.common_name,
-          genus: "",
-          specie: "",
-          count: s.count,
-          specie_comment: s.species_comment,
-          location: f.location_name,
-          lat: f.lat,
-          lng: f.lon,
-          date: moment(f.date).format("MM/DD/YYYY"),
-          start_time: f.time_start,
-          state: "",
-          country: "",
-          protocol: fx.protocol(f),
-          party_size: f.number_observer,
-          duration: f.duration > 0 ? f.duration : "",
-          full_form: f.full_form ? "Y" : "N",
-          distance: f.distance * 0.621371 > 0 ? (f.distance * 0.621371).toString() : "",
-          area: "",
-          form_comment: f.checklist_comment,
+          "Common Name": s.common_name,
+          Genus: "",
+          Species: "",
+          "Species Count": s.count,
+          "Species Comments": s.comment,
+          "Location Name": f.location_name,
+          Latitude: f.lat.toFixed(6),
+          Longitude: f.lon.toFixed(6),
+          "Observation date": date,
+          "Start time": f.time_start ? f.time_start.substring(0, 5) : "",
+          State: "",
+          Country: "",
+          Protocol: fx.protocol(f),
+          "Number of observers": f.number_observer,
+          Duration: f.duration > 0 ? f.duration : "",
+          "All observations reported?": f.full_form ? "Y" : "N",
+          "Distance covered": f.distance * 0.621371 > 0 ? (f.distance * 0.621371).toString() : "",
+          "Area covered": "",
+          "Checklist Comments": f.comment,
         };
       });
-
-      // Check for duplicate
     },
-    arrayObjectToCSV(sightings) {
-      const array = [Object.keys(sightings[0])].concat(sightings);
-
-      return array
+    downloadFile(filename) {
+      const csv = this.formattedSightings
         .map((it) => {
           return Object.values(it).toString();
         })
         .join("\n");
-    },
-    downloadFile(csv, filename) {
+
       const downloadLink = document.createElement("a");
       downloadLink.setAttribute("type", "text/csv");
       downloadLink.setAttribute("target", "_blank");
@@ -64,20 +72,6 @@ export default {
       document.body.appendChild(downloadLink);
       downloadLink.click();
       document.body.removeChild(downloadLink);
-    },
-    computeCSV() {
-      const fid = this.forms_exportable.map((f) => f.id);
-
-      const sightings = [
-        ...this.sightings.filter((s) => fid.includes(s.form_id)),
-        ...this.forms_sightings.filter((s) => fid.includes(s.form_id)),
-      ];
-
-      console.log(this.formatSightings(sightings));
-      this.csv = this.arrayObjectToCSV(this.formatSightings(sightings));
-    },
-    exportFile() {
-      this.downloadFile(csv, "test.csv");
     },
   },
 };
@@ -97,14 +91,14 @@ export default {
     <b-col lg="12" v-else>
       <b-alert show variant="secondary">
         <h4 class="alert-heading">Well done!</h4>
-
         <p>
           You are ready to export: <strong> {{ forms_exportable.length }} checklists</strong>!
         </p>
-        <b-button class="text-center" @click="computeCSV">Preview CSV export</b-button>
+        <b-button class="text-center" @click="formatSightings">Preview CSV export</b-button>
+        <b-button class="text-center" @click="downloadFile('file')">Preview CSV export</b-button>
       </b-alert>
 
-      <b-table bordered small striped hover responsive :items="this.csv" />
+      <b-table bordered small striped hover responsive :items="formattedSightings" sticky-header />
 
       <p>Then, upload the eBird formatted file on eBird, following the process below:</p>
       <ol>
