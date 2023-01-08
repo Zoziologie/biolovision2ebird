@@ -257,16 +257,18 @@ import marker_color from "/data/marker_color.json";
       <b-col lg="3">
         <b-form-checkbox
           v-model="form_card.exportable"
+          :disabled="form_card_invalid"
           switch
           size="lg"
           v-b-tooltip.hover
-          title="Mark as ready to include the checklist in the export file."
+          title="Mark as ready to include the checklist in the export file. A checklist cannot be exported if invalid."
           >Ready for export</b-form-checkbox
         >
       </b-col>
       <b-col lg="12" class="mt-3">
         <b-card no-body>
           <b-card-body v-if="form_card">
+            {{ form_card_duration }}
             <b-alert show variant="danger" class="mt-2" v-show="form_card_duration > 60 * 24">
               <b-icon-exclamation-triangle-fill class="mr-2" />This checklist contains sightings
               from different days which is not in agreement with
@@ -277,11 +279,15 @@ import marker_color from "/data/marker_color.json";
                 >eBird Core Rules & Requirements</b-link
               >.
             </b-alert>
+            <b-alert show variant="danger" class="mt-2" v-show="form_card_sightings.length == 0">
+              <b-icon-exclamation-triangle-fill class="mr-2" />This checklist contains no sightings.
+              Please add sightings in step 2.
+            </b-alert>
             <b-row>
               <b-col lg="9">
                 <b-row>
                   <b-col lg="4">
-                    <b-form-group label="Location Name:">
+                    <b-form-group label="Location name:">
                       <b-input-group>
                         <b-form-input v-model="form_card.location_name" type="text" />
                         <b-input-group-append>
@@ -403,7 +409,6 @@ import marker_color from "/data/marker_color.json";
                         />
                         <b-input-group-append>
                           <b-button
-                            variant="primary"
                             size="sm"
                             v-b-tooltip.hover.bottom
                             title="Change the party size for all lists with no party size"
@@ -438,7 +443,7 @@ import marker_color from "/data/marker_color.json";
                   <b-col lg="8">
                     <b-form-group>
                       <template #label>
-                        Species Comment Model
+                        Species comment template
                         <b-button-group size="sm">
                           <b-button
                             v-b-modal.modal-species-comment
@@ -465,7 +470,7 @@ import marker_color from "/data/marker_color.json";
                           </b-button>
                         </b-button-group>
                       </template>
-                      <b-card>
+                      <b-card class="bg-light">
                         <div
                           v-html="
                             speciesComment(
@@ -478,7 +483,7 @@ import marker_color from "/data/marker_color.json";
                     </b-form-group>
                     <b-modal
                       id="modal-species-comment"
-                      title="Edit Species Comment Template"
+                      title="Species comment template"
                       hide-footer
                     >
                       <p class="mt-2">
@@ -489,8 +494,8 @@ import marker_color from "/data/marker_color.json";
                         rows="6"
                         class="html-editor"
                       />
-                      <h6 class="mt-4">Live Preview</h6>
-                      <b-card>
+                      <h6 class="mt-4">Preview</h6>
+                      <b-card class="bg-light">
                         <div
                           v-html="
                             speciesComment(
@@ -519,12 +524,18 @@ import marker_color from "/data/marker_color.json";
               </b-col>
               <b-col lg="3">
                 <b-form-group>
-                  <template #label> Checklist Comment: </template>
-                  <b-form-checkbox switch v-model="form_card.static_map">
+                  <template #label> Checklist comment: </template>
+                  <b-form-checkbox switch v-model="form_card.static_map.in_checklist_comment">
                     Include static map
-                    <b-button size="sm" v-b-modal.modal-card><b-icon icon="map" /></b-button>
+                    <b-button
+                      size="sm"
+                      v-b-modal.modal-card
+                      v-if="form_card.static_map.in_checklist_comment"
+                    >
+                      <b-icon icon="map" />
+                    </b-button>
                   </b-form-checkbox>
-                  <b-card class="mt-2">
+                  <b-card class="mt-2 bg-light">
                     <div v-html="checklist_comment(form_card, form_card_sightings)"></div>
                   </b-card>
                 </b-form-group>
@@ -533,133 +544,168 @@ import marker_color from "/data/marker_color.json";
           </b-card-body>
         </b-card>
         <b-modal size="xl" id="modal-card" :title="form_card.location_name" hide-footer>
-          <p>Draw a path (polyline) on the map to compute the distance.</p>
-          <b-input-group class="mt-3">
-            <template #prepend>
-              <b-input-group-text><b-icon icon="bezier" /></b-input-group-text>
-            </template>
-            <b-form-input readonly v-model="form_card_distance_bezier"></b-form-input>
-            <b-input-group-append>
-              <b-button
-                variant="primary"
-                @click="
-                  form_card.distance = form_card_distance_bezier
-                    ? form_card_distance_bezier
-                    : form_card.distance
-                "
-                >Button</b-button
-              >
-            </b-input-group-append>
-          </b-input-group>
-
           <b-row>
             <b-col lg="8">
-              <l-map class="w-100" style="height: 100%" ref="map_card" @ready="onMapCardReady">
-                <l-control position="topright">
-                  <b-button
-                    variant="primary"
-                    v-b-tooltip.hover="'Draw your path to measure distance'"
-                    @click="map_card_polyline.enable()"
+              <b-form inline>
+                Draw a path (polyline) on the map to compute the distance.
+                <b-input-group class="d-flex">
+                  <template #prepend>
+                    <b-input-group-text><b-icon icon="bezier" /></b-input-group-text>
+                  </template>
+                  <b-form-input readonly v-model="form_card_distance_bezier" />
+                  <b-input-group-append>
+                    <b-button
+                      variant="primary"
+                      @click="
+                        form_card.distance = form_card_distance_bezier
+                          ? form_card_distance_bezier
+                          : form_card.distance
+                      "
+                      >Apply distance to checklist</b-button
+                    >
+                  </b-input-group-append>
+                </b-input-group>
+              </b-form>
+              <b-aspect aspect="3:2" class="mt-3">
+                <l-map class="w-100" ref="map_card" @ready="onMapCardReady">
+                  <l-control position="topright">
+                    <b-button
+                      variant="primary"
+                      v-b-tooltip.hover="'Draw your path to measure distance'"
+                      @click="map_card_polyline.enable()"
+                    >
+                      <b-icon icon="bezier" />
+                    </b-button>
+                  </l-control>
+                  <l-tile-layer
+                    :url="`https://api.mapbox.com/styles/v1/mapbox/${form_card.static_map.style}/tiles/{z}/{x}/{y}?access_token=${mapbox_access_token}`"
+                  />
+                  <l-circle-marker
+                    v-for="s in form_card_sightings"
+                    :key="s.id"
+                    :lat-lng="[s.lat, s.lon]"
+                    :radius="10"
+                    :fillColor="marker_color[s.form_id % marker_color.length]"
+                    :color="marker_color[s.form_id % marker_color.length]"
+                    @click="openPopup(s, 'marker_popup_card')"
                   >
-                    <b-icon icon="bezier" />
-                  </b-button>
-                  <b-button
-                    variant="primary"
-                    v-b-tooltip.hover="'Use the current view for static map'"
-                    @click="makeSnapshot"
-                    class="ml-2"
+                  </l-circle-marker>
+                  <l-marker ref="marker_popup_card" :latLng="popup_latLng">
+                    <l-icon :popup-anchor="[0, 2]" :icon-size="[0, 0]" :icon-url="logo" />
+                    <l-popup>
+                      <b-table
+                        bordered
+                        small
+                        striped
+                        hover
+                        responsive
+                        :items="object2Table(popup_s)"
+                      />
+                    </l-popup>
+                  </l-marker>
+                  <l-marker
+                    :lat-lng="[form_card.lat, form_card.lon]"
+                    :draggable="true"
+                    @update:lat-lng="
+                      (latlng) => {
+                        form_card.lat = latlng.lat;
+                        form_card.lon = latlng.lng;
+                      }
+                    "
+                    :zIndexOffset="1000"
                   >
-                    <b-icon icon="camera" />
-                  </b-button>
-                </l-control>
-                <l-tile-layer
-                  :url="`https://api.mapbox.com/styles/v1/mapbox/${form_card.static_map.style}/tiles/{z}/{x}/{y}?access_token=${mapbox_access_token}`"
-                />
-                <l-circle-marker
-                  v-for="s in form_card_sightings"
-                  :key="s.id"
-                  :lat-lng="[s.lat, s.lon]"
-                  :radius="10"
-                  :fillColor="marker_color[s.form_id % marker_color.length]"
-                  :color="marker_color[s.form_id % marker_color.length]"
-                  @click="openPopup(s, 'marker_popup_card')"
-                >
-                </l-circle-marker>
-                <l-marker ref="marker_popup_card" :latLng="popup_latLng">
-                  <l-icon :popup-anchor="[0, 2]" :icon-size="[0, 0]" :icon-url="logo" />
-                  <l-popup>
-                    <b-table
-                      bordered
-                      small
-                      striped
-                      hover
-                      responsive
-                      :items="object2Table(popup_s)"
-                    />
-                  </l-popup>
-                </l-marker>
-                <l-marker
-                  :lat-lng="[form_card.lat, form_card.lon]"
-                  :draggable="true"
-                  @update:lat-lng="
-                    (latlng) => {
-                      form_card.lat = latlng.lat;
-                      form_card.lon = latlng.lng;
-                    }
-                  "
-                  :zIndexOffset="1000"
-                >
-                  <IconChecklist :size="24" :fid="form_card.id" />
-                </l-marker>
-                <l-polyline :lat-lngs="form_card.path" :color="'brown'" v-if="form_card.path" />
-              </l-map>
+                    <IconChecklist :size="24" :fid="form_card.id" />
+                  </l-marker>
+                  <l-polyline :lat-lngs="form_card.path" :color="'brown'" v-if="form_card.path" />
+                </l-map>
+              </b-aspect>
             </b-col>
 
             <b-col lg="4">
               <b-img :src="static_map_link(form_card, form_card_sightings)" />
               <b-card bg-variant="light" class="mt-2">
-                <b-form-group>
-                  <b-form-select v-model="form_card.static_map.style" :options="mapbox_layers" />
-                  <b-form-checkbox switch v-model="form_card.static_map.bounding_box_auto">
+                <b-form-group label="Background style: ">
+                  <b-form-select
+                    size="sm"
+                    v-model="form_card.static_map.style"
+                    :options="mapbox_layers"
+                  />
+                </b-form-group>
+                <b-form-group label="View:">
+                  {{ form_card.static_map.bounding_box }}
+                  <b-button size="sm" @click="makeSnapshot">
+                    <b-icon icon="camera" /> Use current map view
+                  </b-button>
+                  <b-form-checkbox
+                    switch
+                    v-model="form_card.static_map.bounding_box_auto"
+                    :disabled="!form_card.static_map.bounding_box"
+                  >
                     Auto-bound
                   </b-form-checkbox>
-                  <b-input type="number" v-model="form_card.static_map.size[0]" />
-                  <b-input type="number" v-model="form_card.static_map.size[1]" />
                 </b-form-group>
-                <b-form-group>
-                  <b-form-checkbox switch v-model="form_card.static_map.include_path">
-                    Path
+                <b-form-group v-if="false">
+                  <b-input-group size="sm">
+                    <b-input type="number" v-model="form_card.static_map.size[0]" size="sm" />
+                    <b-input-group-addon>
+                      <b-input-group-text> &#215; </b-input-group-text>
+                    </b-input-group-addon>
+                    <b-input type="number" v-model="form_card.static_map.size[1]" />
+                  </b-input-group>
+                </b-form-group>
+                <b-form-group label="Path:">
+                  <b-form-checkbox switch v-model="form_card.static_map.include_path" class="mb-1">
+                    Include path in static map
                   </b-form-checkbox>
-                  <b-input
-                    type="number"
-                    min="1"
-                    v-model="form_card.static_map.path_style.strokeWidth"
-                  />
-                  <b-input type="color" v-model="form_card.static_map.path_style.strokeColor" />
-                  <b-input
-                    type="range"
-                    min="0"
-                    max="1"
-                    step=".01"
-                    :lazy="true"
-                    v-model="form_card.static_map.path_style.strokeOpacity"
-                  />
+                  <b-input-group v-if="form_card.static_map.include_path" size="sm">
+                    <b-input
+                      type="number"
+                      min="1"
+                      v-model="form_card.static_map.path_style.strokeWidth"
+                      v-b-tooltip.hover.bottom
+                      title="line width"
+                    />
+                    <b-input
+                      type="color"
+                      v-model="form_card.static_map.path_style.strokeColor"
+                      v-b-tooltip.hover.bottom
+                      title="line color"
+                    />
+                    <b-input
+                      type="number"
+                      min="0"
+                      max="1"
+                      step=".1"
+                      v-model="form_card.static_map.path_style.strokeOpacity"
+                      v-b-tooltip.hover.bottom
+                      title="line opacity"
+                    />
+                  </b-input-group>
                 </b-form-group>
-                <b-form-group>
-                  <b-form-select v-model="form_card.static_map.marker_style['marker-size']">
-                    <b-form-select-option value="small">Small</b-form-select-option>
-                    <b-form-select-option value="medium">Medium</b-form-select-option>
-                    <b-form-select-option value="large">Large</b-form-select-option>
-                  </b-form-select>
-                  <b-input
-                    type="text"
-                    lazy
-                    v-model="form_card.static_map.marker_style['marker-symbol']"
-                  />
-                  <b-input
-                    type="color"
-                    v-model="form_card.static_map.marker_style['marker-color']"
-                  />
+                <b-form-group label="Markers:" class="mb-0">
+                  <b-input-group size="sm">
+                    <b-form-select
+                      v-model="form_card.static_map.marker_style['marker-size']"
+                      v-b-tooltip.hover.bottom
+                      title="marker size"
+                    >
+                      <b-form-select-option value="small">Small</b-form-select-option>
+                      <b-form-select-option value="medium">Medium</b-form-select-option>
+                      <b-form-select-option value="large">Large</b-form-select-option>
+                    </b-form-select>
+                    <b-select
+                      v-model="form_card.static_map.marker_style['marker-symbol']"
+                      :options="maki_icon_list"
+                      v-b-tooltip.hover.bottom
+                      title="marker symbol"
+                    />
+                    <b-input
+                      type="color"
+                      v-model="form_card.static_map.marker_style['marker-color']"
+                      v-b-tooltip.hover.bottom
+                      title="marker color"
+                    />
+                  </b-input-group>
                 </b-form-group>
               </b-card>
             </b-col>
@@ -799,6 +845,7 @@ export default {
       map_card_polyline: null,
       form_card: null,
       form_card_distance_bezier: null,
+      maki_icon_list: null,
     };
   },
   methods: {
@@ -878,7 +925,10 @@ export default {
       const form_id = this.sightings.reduce((prev, s, sid, self) => {
         return prev.includes(s.form_id) ? prev : [...prev, s.form_id];
       }, []);
-      this.forms = this.forms.filter((f) => f.imported | form_id.includes(f.id));
+      this.forms = this.forms.filter((f) => f.imported || form_id.includes(f.id));
+      if (!form_id.includes(this.form_card.id)) {
+        this.form_card = this.forms[this.forms.length - 1];
+      }
     },
     assignReset() {
       if (confirm("Are you sure you want to reset the assign map? This action cannot be undone.")) {
@@ -886,6 +936,10 @@ export default {
         this.forms = this.forms.filter((f) => f.imported);
         this.count_forms = this.forms.length;
         this.count_forms > 0 ? this.forms[this.count_forms - 1] : null;
+        const form_id = this.forms.map((f) => f.id);
+        if (!form_id.includes(this.form_card.id)) {
+          this.form_card = this.forms[this.forms.length - 1];
+        }
       }
     },
     assignMagic() {
@@ -991,18 +1045,6 @@ export default {
         return cmt;
       });
     },
-    checklist_comment(form, sightings) {
-      return (
-        form.checklist_comment +
-        (form.static_map
-          ? `<img src="${this.static_map_link(
-              form,
-              sightings
-            )}" style="max-width:300px;width:100%">`
-          : "") +
-        "<br/><small>Imported with <a href='https://zoziologie.raphaelnussbaumer.com/biolovision2ebird/'>biolovision2eBird</a>.</small>"
-      );
-    },
     getFormName(form) {
       return this.mathMode(this.form.map((s) => s.location_name));
     },
@@ -1051,10 +1093,6 @@ export default {
   },
   computed: {
     form_card_sightings() {
-      if (!this.form_card) {
-        throw Error("Error with form_card");
-      }
-
       const sightings = this.form_card.imported
         ? this.forms_sightings[this.form_card.id - 1]
         : this.sightings.filter((s) => s.form_id == this.form_card.id);
@@ -1063,9 +1101,18 @@ export default {
       return sightings;
     },
     form_card_duration() {
-      console.log("getFormCardDuration");
-      const datetime = this.form_card_sightings.map((s) => new Date(s.date + "T" + s.time)).sort();
+      const datetime = this.form_card_sightings
+        .map((s) => new Date(s.date + "T" + s.time))
+        .sort((a, b) => a - b);
       return Math.round((datetime[datetime.length - 1] - datetime[0]) / 1000 / 60);
+    },
+    form_card_invalid() {
+      if (this.protocol(this.form_card).name == "Invalid") {
+        this.form_card.exportable = false;
+        return true;
+      } else {
+        return false;
+      }
     },
   },
   mounted() {
@@ -1073,6 +1120,15 @@ export default {
     this.skip_intro = urlParams.get("skip_intro") ? true : false;
     this.assign_duration = parseFloat(this.$cookie.get("assign_duration"));
     this.assign_distance = parseFloat(this.$cookie.get("assign_distance"));
+
+    const t = this;
+    fetch("https://raw.githubusercontent.com/mapbox/maki/main/layouts/all.json")
+      .then((response) => {
+        return response.json();
+      })
+      .then((res) => {
+        t.maki_icon_list = JSON.parse(JSON.stringify(res));
+      });
   },
   watch: {
     assign_duration() {

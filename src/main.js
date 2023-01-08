@@ -27,26 +27,15 @@ Vue.mixin({
                 return { Properties: k, Value: v };
             });
         },
+        copyClipboard(mytext) {
+            try {
+                //await navigator.clipboard.writeText(mytext);
+                alert('Copied to clipboard');
+            } catch ($e) {
+                alert('Cannot copy. Try manually.');
+            }
+        },
         createForm(f, id) {
-            f.static_map = {
-                in_checklist_comment: true,
-                style: "satellite-v9",
-                bounding_box_auto: true,
-                bounding_box: null,
-                size: [300, 200],
-                include_path: true,
-                path_style: {
-                    strokeWidth: "5",
-                    strokeColor: "#AD8533",
-                    strokeOpacity: "1"
-                },
-                marker_style: {
-                    "marker-size": "small",
-                    "marker-symbol": "circle",
-                    "marker-color": "#808080"
-                }
-            };
-
             return {
                 id: id, // required
                 imported: f.imported || false,
@@ -65,7 +54,24 @@ Vue.mixin({
                 species_comment_template: f.species_comment_template || "",
                 path: f.path || null,
                 path_distance: null,
-                static_map: f.static_map || true,
+                static_map: {
+                    in_checklist_comment: true,
+                    style: "satellite-v9",
+                    bounding_box_auto: true,
+                    bounding_box: null,
+                    size: [300, 200],
+                    include_path: true,
+                    path_style: {
+                        strokeWidth: "5",
+                        strokeColor: "#AD8533",
+                        strokeOpacity: "1"
+                    },
+                    marker_style: {
+                        "marker-size": "small",
+                        "marker-symbol": "circle",
+                        "marker-color": "#808080"
+                    }
+                },
             };
         },
         createSighting(s) {
@@ -124,13 +130,13 @@ Vue.mixin({
                     variant: "warning",
                     title: "Can you add all effort information (time, duration, party size and distance)? This would really improve the value of your data!"
                 },
-                invalid: {
+                stationary: {
                     name: "Stationary",
                     letter: "S",
                     variant: "success",
                     title: "Great, stationary protocol are the best value!"
                 },
-                invalid: {
+                traveling: {
                     name: "Traveling",
                     letter: "T",
                     variant: "success",
@@ -159,13 +165,17 @@ Vue.mixin({
                 return protocol.incidental;
             }
         },
-        copyClipboard(mytext) {
-            try {
-                //await navigator.clipboard.writeText(mytext);
-                alert('Copied to clipboard');
-            } catch ($e) {
-                alert('Cannot copy. Try manually.');
-            }
+        checklist_comment(form, sightings) {
+            return (
+                form.checklist_comment +
+                (form.static_map.in_checklist_comment
+                    ? `<img src="${this.static_map_link(
+                        form,
+                        sightings
+                    )}" style="max-width:300px;width:100%">`
+                    : "") +
+                "<br/><small>Imported with <a href='https://zoziologie.raphaelnussbaumer.com/biolovision2ebird/'>biolovision2eBird</a>.</small>"
+            );
         },
         csvToArray(str, delimiter = ",") {
             const headers = str.slice(0, str.indexOf("\n")).split(delimiter).map(x => x.replaceAll('"', ""));
