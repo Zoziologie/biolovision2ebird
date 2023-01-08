@@ -44,6 +44,11 @@ Vue.mixin({
             }
         },
         createForm(f, id) {
+            let species_comment_template = f.species_comment_template || {}
+            species_comment_template.long = f.species_comment_template.long || ""
+            species_comment_template.short = f.species_comment_template.short || ""
+            species_comment_template.limit = f.species_comment_template.limit || 5
+
             return {
                 id: id, // required
                 imported: f.imported || false,
@@ -59,7 +64,7 @@ Vue.mixin({
                 full_form: f.full_form || false,
                 primary_purpose: f.primary_purpose || false,
                 checklist_comment: f.checklist_comment || "",
-                species_comment_template: f.species_comment_template || "",
+                species_comment_template: species_comment_template,
                 path: f.path || null,
                 path_distance: null,
                 static_map: {
@@ -181,12 +186,20 @@ Vue.mixin({
                 "<br/><small>Imported with <a href='https://zoziologie.raphaelnussbaumer.com/biolovision2ebird/'>biolovision2eBird</a>.</small>"
             );
         },
-        speciesComment(species_comment_template, s) {
-            let cmt = species_comment_template;
-            Object.keys(s).forEach((k) => {
-                cmt = cmt.replaceAll("${" + k + "}", s[k]);
-            });
-            return cmt;
+        speciesComment(species_comment_template, sightings) {
+            if (sightings.length < species_comment_template.limit) {
+                var sep = "<br/>"
+                var cmt = species_comment_template.short;
+            } else {
+                var sep = ", "
+                var cmt = species_comment_template.long;
+            }
+            return sightings.map(s => {
+                Object.keys(s).forEach((k) => {
+                    cmt = cmt.replaceAll("${" + k + "}", s[k]);
+                });
+                return cmt;
+            }).join(sep)
         },
         csvToArray(str, delimiter = ",") {
             const headers = str.slice(0, str.indexOf("\n")).split(delimiter).map(x => x.replaceAll('"', ""));

@@ -107,12 +107,18 @@ export default {
 
           // convert form data
 
-          this.website.species_comment_template =
-            '${count_precision}${count} ind. - ${time} - <a href="http://maps.google.com?q=${lat},${lon}&t=k">${lat}, ${lon}</a> - <a href="' +
-            this.website.website +
-            'index.php?m_id=54&id=${id}">' +
-            this.website_name +
-            "</a><br>${comment}";
+          this.website.species_comment_template = {
+            short:
+              '${count_precision}${count} ind. - ${time} - <a href="http://maps.google.com?q=${lat},${lon}&t=k">${lat}, ${lon}</a> - <a href="' +
+              this.website.website +
+              'index.php?m_id=54&id=${id}">' +
+              this.website_name +
+              "</a><br>${comment}",
+            long:
+              '<a href="' +
+              this.website.website +
+              'index.php?m_id=54&id=${id}">${count_precision}${count}-${time}</a>${comment}',
+          };
 
           export_data.forms = data.forms.map((f, id) => {
             const date = f.sightings[0].observers[0].timing["@ISO8601"].split("T")[0];
@@ -171,7 +177,8 @@ export default {
               comment: s.Notes,
             });
           });
-          this.website.species_comment_template = "";
+          this.website.species_comment_template.short = "";
+          this.website.species_comment_template.long = "";
         } else {
           this.loading_file_status = -1;
           throw new Error("No correct system");

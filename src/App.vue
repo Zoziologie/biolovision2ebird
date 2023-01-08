@@ -488,10 +488,9 @@ import marker_color from "/data/marker_color.json";
                       <b-card class="bg-light">
                         <div
                           v-html="
-                            speciesComment(
-                              form_card.species_comment_template,
-                              form_card_sightings[0]
-                            )
+                            speciesComment(form_card.species_comment_template, [
+                              form_card_sightings[0],
+                            ])
                           "
                         ></div>
                       </b-card>
@@ -499,40 +498,96 @@ import marker_color from "/data/marker_color.json";
                     <b-modal
                       id="modal-species-comment"
                       title="Species comment template"
+                      size="lg"
                       hide-footer
                     >
-                      <p class="mt-2">
-                        You can edit the species comment using the HTML code below.
-                      </p>
-                      <b-form-textarea
-                        v-model="form_card.species_comment_template"
-                        rows="6"
-                        class="html-editor"
-                      />
-                      <h6 class="mt-4">Preview</h6>
-                      <b-card class="bg-light">
-                        <div
-                          v-html="
-                            speciesComment(
-                              form_card.species_comment_template,
-                              form_card_sightings[0]
-                            )
-                          "
-                          class="mr-2 b-2"
-                        ></div>
-                      </b-card>
-                      <p class="mt-4">
-                        Use the notation <code>${property}</code> to display dynamic information on
-                        each species. Use the table below to see all the properties available.
-                      </p>
-
-                      <b-table
-                        bordered
-                        small
-                        striped
-                        v-if="form_card_sightings.length > 0"
-                        :items="object2Table(form_card_sightings[0])"
-                      />
+                      <b-row>
+                        <b-col lg="8">
+                          <p class="mt-2">
+                            You can edit the species comment using the HTML code below. Use the
+                            notation <code>${property}</code> to display dynamic information on each
+                            species. Use the table below to see all the properties available.
+                          </p>
+                          <b-form-textarea
+                            v-model="form_card.species_comment_template.short"
+                            rows="6"
+                            class="html-editor"
+                          />
+                          <h6 class="mt-4 mb-0">Preview</h6>
+                          <b-card class="bg-light">
+                            <div
+                              v-html="
+                                speciesComment(form_card.species_comment_template, [
+                                  form_card_sightings[0],
+                                ])
+                              "
+                              class="mr-2 b-2"
+                            ></div>
+                          </b-card>
+                          <h6 class="mt-5">Multiple sightings</h6>
+                          <p>
+                            With the current template, we expect that when around
+                            {{
+                              Math.floor(
+                                8000 /
+                                  (speciesComment(form_card.species_comment_template, [
+                                    form_card_sightings[0],
+                                  ]).length +
+                                    5)
+                              )
+                            }}
+                            sightings of the same species have been recorded on the same checklist,
+                            the comment will exceed eBird limit size (8000 characters).
+                          </p>
+                          <p>
+                            You can use this secondary species comment template, which will be used
+                            when more than
+                            <b-input
+                              size="sm"
+                              class="d-inline"
+                              style="width: 50px"
+                              type="number"
+                              v-model="form_card.species_comment_template.limit"
+                            />
+                            sightings of the same species are recorded.
+                          </p>
+                          <b-form-textarea
+                            v-model="form_card.species_comment_template.long"
+                            rows="4"
+                            class="html-editor"
+                          />
+                          <h6 class="mt-4 mb-0">
+                            Preview for 20 sightings of the same species:
+                            <small>(duplicated for the example here)</small>
+                          </h6>
+                          <b-card class="bg-light">
+                            <div
+                              v-html="
+                                speciesComment(
+                                  form_card.species_comment_template,
+                                  Array(10)
+                                    .fill()
+                                    .map(
+                                      () =>
+                                        form_card_sightings[
+                                          ~~(Math.random() * form_card_sightings.length)
+                                        ]
+                                    )
+                                )
+                              "
+                            ></div>
+                          </b-card>
+                        </b-col>
+                        <b-col lg="4">
+                          <b-table
+                            bordered
+                            small
+                            striped
+                            v-if="form_card_sightings.length > 0"
+                            :items="object2Table(form_card_sightings[0])"
+                          />
+                        </b-col>
+                      </b-row>
                     </b-modal>
                   </b-col>
                 </b-row>
