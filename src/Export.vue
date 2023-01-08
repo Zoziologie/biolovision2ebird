@@ -1,12 +1,12 @@
-<script setup></script>
+<script setup>
+import { Parser } from "@json2csv/plainjs";
+</script>
 
 <script>
 export default {
   props: ["forms", "sightings", "forms_sightings"],
   data() {
-    return {
-      formattedSightings: [],
-    };
+    return {};
   },
   computed: {
     forms_exportable() {
@@ -14,37 +14,30 @@ export default {
     },
   },
   methods: {
-    formatSightings() {
+    downloadFile() {
       const fid = this.forms_exportable.map((f) => f.id);
 
       const sightings = [
         ...this.sightings.filter((s) => fid.includes(s.form_id)),
-        ...this.forms_sightings.filter((s) => fid.includes(s.form_id)),
+        ...this.forms_sightings.flat(1).filter((s) => fid.includes(s.form_id)),
       ];
 
-      this.formattedSightings = sightings.map((s) => {
+      const formatedSightings = sightings.map((s) => {
         let f = this.forms.filter((f) => f.id == s.form_id)[0];
-        let date = new Date(f.date);
-        date =
-          (date.getMonth() > 8 ? date.getMonth() + 1 : "0" + (date.getMonth() + 1)) +
-          "/" +
-          (date.getDate() > 9 ? date.getDate() : "0" + date.getDate()) +
-          "/" +
-          date.getFullYear();
         return {
           "Common Name": s.common_name,
           Genus: "",
           Species: "",
           "Species Count": s.count,
-          "Species Comments": s.comment,
+          "Species Comments": this.speciesComment(f.species_comment_template, s),
           "Location Name": f.location_name,
           Latitude: parseFloat(f.lat).toFixed(6),
           Longitude: parseFloat(f.lon).toFixed(6),
-          "Observation date": date,
+          "Observation date": this.formatDate(f.date, "/"),
           "Start time": f.time_start ? f.time_start.substring(0, 5) : "",
           State: "",
           Country: "",
-          Protocol: this.protocol(f),
+          Protocol: this.protocol(f).name,
           "Number of observers": f.number_observer,
           Duration: f.duration > 0 ? f.duration : "",
           "All observations reported?": f.full_form ? "Y" : "N",
@@ -53,13 +46,17 @@ export default {
           "Checklist Comments": f.comment,
         };
       });
-    },
-    downloadFile(filename) {
-      const csv = this.formattedSightings
-        .map((it) => {
-          return Object.values(it).toString();
-        })
-        .join("\n");
+
+      const parser = new Parser({ header: false });
+      const csv = parser.parse(formatedSightings);
+
+      const filename =
+        new Date().toISOString().slice(0, 19).replaceAll(":", "") +
+        "_" +
+        this.forms_exportable.length +
+        "forms_" +
+        sightings.length +
+        "sightings_biolovision2Bird";
 
       const downloadLink = document.createElement("a");
       downloadLink.setAttribute("type", "text/csv");
@@ -87,39 +84,46 @@ export default {
       </b-alert>
     </b-col>
     <b-col lg="12" v-else>
-      <b-alert show variant="secondary">
+      <b-alert show variant="secondary" class="mx-auto" style="max-width: 600px">
         <h4 class="alert-heading">Well done!</h4>
         <p>
-          You are ready to export: <strong> {{ forms_exportable.length }} checklists</strong>!
+          You are ready to export <strong> {{ forms_exportable.length }} checklists</strong> out of
+          {{ forms.length }} checklists available!
         </p>
-        <b-button class="text-center" @click="formatSightings">Preview CSV export</b-button>
-        <b-button class="text-center" @click="downloadFile('file')">Preview CSV export</b-button>
+        <b-button class="mx-auto" @click="downloadFile">Download CSV file</b-button>
       </b-alert>
+      <h5>Final steps:</h5>
+      <p>
+        Go to
+        <a
+          href="http://ebird.org/ebird/import/upload.form?theme=ebird"
+          target="_blank"
+          rel="noopener"
+          >eBird Import</a
+        >, choose "eBird Record Format (Extended)", select the csv file on your computer and click
+        on "Import File".
+      </p>
 
-      <b-table bordered small striped hover responsive :items="formattedSightings" sticky-header />
-
-      <p>Then, upload the eBird formatted file on eBird, following the process below:</p>
-      <ol>
-        <li>
-          Open eBird, go to "Submit Observations", and "Import Data" or click on
-          <a
-            href="http://ebird.org/ebird/import/upload.form?theme=ebird"
-            target="_blank"
-            rel="noopener"
-            >eBird Import</a
-          >
-        </li>
-        <li>
-          Choose "eBird Record Format (Extended)", and load the file which was downloaded at the
-          ttvious step.
-        </li>
-        <li>Click on "Import File"</li>
-        <li>
-          Probably that some specie won't be recognized. You will have to match them with the
-          correct specie. Don't worry, this is only done once per specie, then eBird memorize the
-          match!
-        </li>
-      </ol>
+      <p>
+        The import process on eBird
+        <b-link
+          href="https://github.com/Zoziologie/biolovision2ebird/wiki/FAQ#long-processing-time"
+          target="_blank"
+          >might take a while</b-link
+        >, don't worry. After it has been processed, you might still have to
+        <b-link
+          href="https://support.ebird.org/en/support/solutions/articles/48000907878-upload-spreadsheet-data-to-ebird#anchorCleanData"
+          target="_blank"
+          >fix species name </b-link
+        >before the data will appear on your eBird profile.
+      </p>
+      <p>
+        Make sure you carefully review your checklist: merge locations to hotspots when possible and
+        check the texts and links in species comment. If you see an error, it is best to
+        <b-link href="https://ebird.org/import/status/all.htm" target="_blank"
+          >delete your import</b-link
+        >, and re-upload a new version rather than fix them on eBird.
+      </p>
     </b-col>
   </b-row>
 </template>

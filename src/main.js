@@ -22,6 +22,14 @@ Vue.mixin({
         mathRound(x, exp) {
             return x ? (Math.round(parseFloat(x) * Math.pow(10, exp)) / Math.pow(10, exp)) : x
         },
+        formatDate(date, sep = "-") {
+            date = new Date(date)
+            return (date.getMonth() > 8 ? date.getMonth() + 1 : "0" + (date.getMonth() + 1)) +
+                sep +
+                (date.getDate() > 9 ? date.getDate() : "0" + date.getDate()) +
+                sep +
+                date.getFullYear();
+        },
         object2Table(s) {
             return Object.entries(s).map(([k, v]) => {
                 return { Properties: k, Value: v };
@@ -91,16 +99,12 @@ Vue.mixin({
             };
         },
         distanceFromLatLngs(latlngs) {
-            console.log(latlngs)
-            // Compute distance as the cumulative distance between each point.
             if (Array.isArray(latlngs) && !(latlngs[0] instanceof L.LatLng)) {
                 latlngs = L.polyline(latlngs)
             }
-            console.log(latlngs)
             if (latlngs instanceof L.Polyline) {
                 latlngs = latlngs.getLatLngs()
             }
-            console.log(latlngs)
             return this.mathRound(
                 latlngs.reduce(
                     (acc, latlng) => {
@@ -176,6 +180,13 @@ Vue.mixin({
                     : "") +
                 "<br/><small>Imported with <a href='https://zoziologie.raphaelnussbaumer.com/biolovision2ebird/'>biolovision2eBird</a>.</small>"
             );
+        },
+        speciesComment(species_comment_template, s) {
+            let cmt = species_comment_template;
+            Object.keys(s).forEach((k) => {
+                cmt = cmt.replaceAll("${" + k + "}", s[k]);
+            });
+            return cmt;
         },
         csvToArray(str, delimiter = ",") {
             const headers = str.slice(0, str.indexOf("\n")).split(delimiter).map(x => x.replaceAll('"', ""));

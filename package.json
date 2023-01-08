@@ -17,6 +17,7 @@
     "compile-species-list": "node compile-species-list.js"
   },
   "dependencies": {
+    "@json2csv/plainjs": "^6.1.2",
     "@vitejs/plugin-vue2": "^2.2.0",
     "bootstrap-vue": "^2.23.1",
     "leaflet": "^1.9.3",

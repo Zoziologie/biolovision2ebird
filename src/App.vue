@@ -268,7 +268,6 @@ import marker_color from "/data/marker_color.json";
       <b-col lg="12" class="mt-3">
         <b-card no-body>
           <b-card-body v-if="form_card">
-            {{ form_card_duration }}
             <b-alert show variant="danger" class="mt-2" v-show="form_card_duration > 60 * 24">
               <b-icon-exclamation-triangle-fill class="mr-2" />This checklist contains sightings
               from different days which is not in agreement with
@@ -289,11 +288,15 @@ import marker_color from "/data/marker_color.json";
                   <b-col lg="4">
                     <b-form-group label="Location name:">
                       <b-input-group>
-                        <b-form-input v-model="form_card.location_name" type="text" />
+                        <b-form-input
+                          v-model="form_card.location_name"
+                          type="text"
+                          :state="form_card.location_name.length > 0"
+                        />
                         <b-input-group-append>
                           <b-button
                             variant="secondary"
-                            @click="form_card.location_name = getFormName(form_card)"
+                            @click="getFormName"
                             v-b-tooltip.hover
                             title="Use the most common location name of all sightings"
                             ><b-icon icon="arrow-repeat"
@@ -475,8 +478,8 @@ import marker_color from "/data/marker_color.json";
                           v-html="
                             speciesComment(
                               form_card.species_comment_template,
-                              form_card_sightings.slice(0, 1)
-                            )[0]
+                              form_card_sightings[0]
+                            )
                           "
                         ></div>
                       </b-card>
@@ -500,8 +503,8 @@ import marker_color from "/data/marker_color.json";
                           v-html="
                             speciesComment(
                               form_card.species_comment_template,
-                              form_card_sightings.slice(0, 1)
-                            )[0]
+                              form_card_sightings[0]
+                            )
                           "
                           class="mr-2 b-2"
                         ></div>
@@ -632,7 +635,6 @@ import marker_color from "/data/marker_color.json";
                   />
                 </b-form-group>
                 <b-form-group label="View:">
-                  {{ form_card.static_map.bounding_box }}
                   <b-button size="sm" @click="makeSnapshot">
                     <b-icon icon="camera" /> Use current map view
                   </b-button>
@@ -944,6 +946,9 @@ export default {
     },
     assignMagic() {
       let sightings = this.sightings.filter((s) => s.form_id == 0);
+      if (sightings.length == 0) {
+        alert("There are no sightings to assign. Click on 'Reset' to start again.");
+      }
       const datetime = sightings.map((s) => new Date(s.date + "T" + s.time));
       var form_id = this.count_forms + 1;
 
@@ -1036,17 +1041,10 @@ export default {
         .toBBoxString();
       this.form_card.static_map.bounding_box_auto = false;
     },
-    speciesComment(species_comment_template, sightings) {
-      return sightings.map((s) => {
-        let cmt = species_comment_template;
-        Object.keys(s).forEach((k) => {
-          cmt = cmt.replaceAll("${" + k + "}", s[k]);
-        });
-        return cmt;
-      });
-    },
-    getFormName(form) {
-      return this.mathMode(this.form.map((s) => s.location_name));
+    getFormName() {
+      this.form_card.location_name = this.mathMode(
+        this.form_card_sightings.map((s) => s.location_name)
+      );
     },
     setObserverForAll(nb) {
       const forms = this.forms.filter((f) => !(f.number_observer > 0));
@@ -1096,8 +1094,6 @@ export default {
       const sightings = this.form_card.imported
         ? this.forms_sightings[this.form_card.id - 1]
         : this.sightings.filter((s) => s.form_id == this.form_card.id);
-
-      console.log("form_card_sightings");
       return sightings;
     },
     form_card_duration() {
@@ -1118,8 +1114,6 @@ export default {
   mounted() {
     const urlParams = new URLSearchParams(window.location.search);
     this.skip_intro = urlParams.get("skip_intro") ? true : false;
-    this.assign_duration = parseFloat(this.$cookie.get("assign_duration"));
-    this.assign_distance = parseFloat(this.$cookie.get("assign_distance"));
 
     const t = this;
     fetch("https://raw.githubusercontent.com/mapbox/maki/main/layouts/all.json")
@@ -1129,14 +1123,6 @@ export default {
       .then((res) => {
         t.maki_icon_list = JSON.parse(JSON.stringify(res));
       });
-  },
-  watch: {
-    assign_duration() {
-      this.$cookie.set("assign_duration", this.assign_duration, 365);
-    },
-    assign_distance() {
-      this.$cookie.set("assign_distance", this.assign_distance, 365);
-    },
   },
 };
 </script>
