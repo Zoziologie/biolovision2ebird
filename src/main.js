@@ -147,7 +147,7 @@ Vue.mixin({
                     title: "Nice! the traveling protocol is ideal!"
                 },
             }
-            if (!f.date) {
+            if (!f.date || f.duration >= 1440) {
                 return protocol.invalid;
             }
             if (f.primary_purpose) {

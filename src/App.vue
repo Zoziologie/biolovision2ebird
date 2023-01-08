@@ -282,6 +282,18 @@ import marker_color from "/data/marker_color.json";
               <b-icon-exclamation-triangle-fill class="mr-2" />This checklist contains no sightings.
               Please add sightings in step 2.
             </b-alert>
+            <b-alert show variant="danger" class="mt-2" v-show="form_card_invalid">
+              <b-icon-exclamation-triangle-fill class="mr-2" />This checklist is invalid according
+              to
+              <b-link
+                href="https://ebird.freshdesk.com/en/support/solutions/articles/48000795623#eBird-Checklist-Basics"
+                class="alert-link"
+                target="_blank"
+                >eBird Core Rules & Requirements</b-link
+              >
+              and cannot be exported. Please make sure to include a valid date and a duration less
+              than a day.
+            </b-alert>
             <b-row>
               <b-col lg="9">
                 <b-row>
