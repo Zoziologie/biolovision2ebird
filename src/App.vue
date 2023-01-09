@@ -504,44 +504,59 @@ import marker_color from "/data/marker_color.json";
                       <b-row>
                         <b-col lg="8">
                           <p class="mt-2">
-                            You can edit the species comment using the HTML code below. Use the
-                            notation <code>${property}</code> to display dynamic information on each
-                            species. Use the table below to see all the properties available.
+                            You can edit the species comment template using the HTML/JS code below.
+                            Use the notation <code>${ <i>javascript code</i> }</code> to display
+                            dynamic information on each species. You can acess the variable at the
+                            species level using <code>${ s.<i>property</i> }</code> where the
+                            properties are listed on the table on the right.
                           </p>
                           <b-form-textarea
                             v-model="form_card.species_comment_template.short"
                             rows="6"
                             class="html-editor"
                           />
-                          <h6 class="mt-4 mb-0">Preview</h6>
+                          <h6 class="mt-4 mb-0">
+                            Preview:
+                            <b-select
+                              size="sm"
+                              class="d-inline"
+                              style="width: 240px"
+                              :options="
+                                form_card_sightings.map((s) => {
+                                  return { text: s.common_name, value: s };
+                                })
+                              "
+                              v-model="template_s"
+                            />
+                          </h6>
                           <b-card class="bg-light">
                             <div
                               v-html="
-                                speciesComment(form_card.species_comment_template, [
-                                  form_card_sightings[0],
-                                ])
+                                speciesComment(form_card.species_comment_template, [template_s])
                               "
                               class="mr-2 b-2"
                             ></div>
                           </b-card>
                           <h6 class="mt-5">Multiple sightings</h6>
                           <p>
-                            With the current template, we expect that when around
+                            When a species is recorded multiple time, we add the count and join the
+                            comments in a new line.
+                          </p>
+                          <p>
+                            With the current template, you can expect to exceed eBird's limit of
+                            characters (8000) with around
                             {{
                               Math.floor(
                                 8000 /
-                                  (speciesComment(form_card.species_comment_template, [
-                                    form_card_sightings[0],
-                                  ]).length +
+                                  (speciesComment(form_card.species_comment_template, [template_s])
+                                    .length +
                                     5)
                               )
                             }}
-                            sightings of the same species have been recorded on the same checklist,
-                            the comment will exceed eBird limit size (8000 characters).
+                            sightings of the same species.
                           </p>
                           <p>
-                            You can use this secondary species comment template, which will be used
-                            when more than
+                            You can use a secondary species comment template active when more than
                             <b-input
                               size="sm"
                               class="d-inline"
@@ -565,14 +580,7 @@ import marker_color from "/data/marker_color.json";
                               v-html="
                                 speciesComment(
                                   form_card.species_comment_template,
-                                  Array(10)
-                                    .fill()
-                                    .map(
-                                      () =>
-                                        form_card_sightings[
-                                          ~~(Math.random() * form_card_sightings.length)
-                                        ]
-                                    )
+                                  Array(20).fill(template_s)
                                 )
                               "
                             ></div>
@@ -584,7 +592,7 @@ import marker_color from "/data/marker_color.json";
                             small
                             striped
                             v-if="form_card_sightings.length > 0"
-                            :items="object2Table(form_card_sightings[0])"
+                            :items="object2Table(template_s)"
                           />
                         </b-col>
                       </b-row>
@@ -606,7 +614,7 @@ import marker_color from "/data/marker_color.json";
                     </b-button>
                   </b-form-checkbox>
                   <b-card class="mt-2 bg-light">
-                    <div v-html="checklist_comment(form_card, form_card_sightings)"></div>
+                    <div v-html="checklistComment(form_card, form_card_sightings)"></div>
                   </b-card>
                 </b-form-group>
               </b-col>
@@ -692,7 +700,7 @@ import marker_color from "/data/marker_color.json";
             </b-col>
 
             <b-col lg="4">
-              <b-img :src="static_map_link(form_card, form_card_sightings)" />
+              <b-img :src="staticMapLink(form_card, form_card_sightings)" />
               <b-card bg-variant="light" class="mt-2">
                 <b-form-group label="Background style: ">
                   <b-form-select
@@ -829,10 +837,8 @@ import "leaflet";
 import "leaflet-draw/dist/leaflet.draw-src.js";
 import "leaflet-fullscreen/dist/Leaflet.fullscreen.js";
 import "polyline-encoded/Polyline.encoded.js";
-// fix for leaflet draw
-window.type = true;
-const mapbox_access_token =
-  "pk.eyJ1IjoicmFmbnVzcyIsImEiOiJjbGNsNWtyNm01enhnM3hsazNmamQ5dm5hIn0.DonKVX7CLLfMHIZiiSbYnQ";
+
+window.type = true; // fix for leaflet draw
 
 const mapbox_layers = [
   {
@@ -915,6 +921,7 @@ export default {
       form_card: null,
       form_card_distance_bezier: null,
       maki_icon_list: null,
+      template_s: null,
     };
   },
   methods: {
@@ -1059,49 +1066,6 @@ export default {
         this.form_card = fnew;
       }
     },
-    static_map_link(form, sightings) {
-      // Create path
-      let path = "";
-      if (form.path && form.path.length > 0 && form.static_map.include_path) {
-        const path_simplified = L.LineUtil.simplify(
-          form.path.map((x) => {
-            return { x: x[0], y: x[1] };
-          }),
-          0.00001
-        ).map((x) => [x.x, x.y]);
-
-        const path_encodeded = L.PolylineUtil.encode(path_simplified, 5);
-
-        const style = form.static_map.path_style;
-        path = `path-${style.strokeWidth}+${style.strokeColor.slice(1, style.strokeColor.length)}-${
-          style.strokeOpacity
-        }(${encodeURIComponent(path_encodeded)}),`;
-      }
-
-      // Create sightings markers
-      const sightings_simplified = L.LineUtil.simplify(
-        sightings.map((x) => {
-          return { x: x.lat, y: x.lon };
-        }),
-        sightings.length > 100 ? 0.001 : 0.0001
-      ).map((x) => [x.x, x.y]);
-
-      let sightings_geojson = L.polyline(sightings_simplified).toGeoJSON();
-      sightings_geojson.geometry.type = "MultiPoint";
-      sightings_geojson.properties = form.static_map.marker_style;
-      sightings_geojson.geometry.coordinates = sightings_geojson.geometry.coordinates.map((c) => [
-        this.mathRound(c[0], 4),
-        this.mathRound(c[1], 4),
-      ]);
-
-      const markers = "geojson(" + encodeURIComponent(JSON.stringify(sightings_geojson)) + ")";
-
-      return `https://api.mapbox.com/styles/v1/mapbox/${
-        form.static_map.style
-      }/static/${path}${markers}/${
-        form.static_map.bounding_box_auto ? "auto" : "[" + form.static_map.bounding_box + "]"
-      }/300x200?access_token=${mapbox_access_token}&logo=false`;
-    },
     makeSnapshot() {
       this.form_card.static_map.bounding_box = this.$refs.map_card.mapObject
         .getBounds()
@@ -1161,6 +1125,7 @@ export default {
       const sightings = this.form_card.imported
         ? this.forms_sightings[this.form_card.id - 1]
         : this.sightings.filter((s) => s.form_id == this.form_card.id);
+      this.template_s = sightings[0];
       return sightings;
     },
     form_card_duration() {

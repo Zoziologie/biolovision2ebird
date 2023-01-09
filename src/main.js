@@ -9,7 +9,15 @@ import VueCookie from "vue-cookie";
 Vue.use(VueCookie);
 
 
+
 Vue.mixin({
+    data() {
+        return {
+            mapbox_access_token:
+                "pk.eyJ1IjoicmFmbnVzcyIsImEiOiJjbGNsNWtyNm01enhnM3hsazNmamQ5dm5hIn0.DonKVX7CLLfMHIZiiSbYnQ"
+
+        }
+    },
     methods: {
         formatNb(x) {
             return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -174,17 +182,57 @@ Vue.mixin({
                 return protocol.incidental;
             }
         },
-        checklist_comment(form, sightings) {
+        checklistComment(form, sightings) {
             return (
                 form.checklist_comment +
                 (form.static_map.in_checklist_comment
-                    ? `<img src="${this.static_map_link(
+                    ? `<img src="${this.staticMapLink(
                         form,
                         sightings
                     )}" style="max-width:300px;width:100%">`
                     : "") +
                 "<br/><small>Imported with <a href='https://zoziologie.raphaelnussbaumer.com/biolovision2ebird/'>biolovision2eBird</a>.</small>"
             );
+        },
+        staticMapLink(form, sightings) {
+            // Create path
+            let path = "";
+            if (form.path && form.path.length > 0 && form.static_map.include_path) {
+                const path_simplified = L.LineUtil.simplify(
+                    form.path.map((x) => {
+                        return { x: x[0], y: x[1] };
+                    }),
+                    0.00001
+                ).map((x) => [x.x, x.y]);
+
+                const path_encodeded = L.PolylineUtil.encode(path_simplified, 5);
+
+                const style = form.static_map.path_style;
+                path = `path-${style.strokeWidth}+${style.strokeColor.slice(1, style.strokeColor.length)}-${style.strokeOpacity
+                    }(${encodeURIComponent(path_encodeded)}),`;
+            }
+
+            // Create sightings markers
+            const sightings_simplified = L.LineUtil.simplify(
+                sightings.map((x) => {
+                    return { x: x.lat, y: x.lon };
+                }),
+                sightings.length > 100 ? 0.001 : 0.0001
+            ).map((x) => [x.x, x.y]);
+
+            let sightings_geojson = L.polyline(sightings_simplified).toGeoJSON();
+            sightings_geojson.geometry.type = "MultiPoint";
+            sightings_geojson.properties = form.static_map.marker_style;
+            sightings_geojson.geometry.coordinates = sightings_geojson.geometry.coordinates.map((c) => [
+                this.mathRound(c[0], 4),
+                this.mathRound(c[1], 4),
+            ]);
+
+            const markers = "geojson(" + encodeURIComponent(JSON.stringify(sightings_geojson)) + ")";
+
+            return `https://api.mapbox.com/styles/v1/mapbox/${form.static_map.style
+                }/static/${path}${markers}/${form.static_map.bounding_box_auto ? "auto" : "[" + form.static_map.bounding_box + "]"
+                }/300x200?access_token=${this.mapbox_access_token}&logo=false`;
         },
         speciesComment(species_comment_template, sightings) {
             if (sightings.length < species_comment_template.limit) {
@@ -195,10 +243,17 @@ Vue.mixin({
                 var cmt = species_comment_template.long;
             }
             return sightings.map(s => {
-                Object.keys(s).forEach((k) => {
-                    cmt = cmt.replaceAll("${" + k + "}", s[k]);
-                });
-                return cmt;
+                return cmt.split('${').map((str, id) => {
+                    if (id == 0) {
+                        return str
+                    }
+                    let tmp = str.split('}')
+                    try {
+                        return String(eval(tmp[0])).replace(/(?:\r\n|\r|\n)/g, '<br>') + tmp[1]
+                    } catch {
+                        return tmp[1]
+                    }
+                }).join("")
             }).join(sep)
         },
         csvToArray(str, delimiter = ",") {

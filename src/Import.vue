@@ -61,6 +61,7 @@ export default {
         if (biolovision_species_list.hasOwnProperty(s.species["@id"])) {
           common_name = biolovision_species_list[s.species["@id"]];
         } else {
+          // Return in console species with tax issue
           console.log(s.species);
           common_name = s.species.name;
           if (this.taxonomic_issues.indexOf(s.species)) {
@@ -109,15 +110,15 @@ export default {
 
           this.website.species_comment_template = {
             short:
-              '${count_precision}${count} ind. - ${time} - <a href="http://maps.google.com?q=${lat},${lon}&t=k">${lat}, ${lon}</a> - <a href="' +
+              '${ s.count_precision }${ s.count } ind. - ${ s.time } - <a href="http://maps.google.com?q=${s.lat},${s.lon}&t=k">${ s.lat }, ${ s.lon }</a> - <a href="' +
               this.website.website +
-              'index.php?m_id=54&id=${id}">' +
+              'index.php?m_id=54&id=${ s.id }">' +
               this.website_name +
-              "</a><br>${comment}",
+              '</a>${ s.comment ? " - " + s.comment : "" }',
             long:
-              '<a href="' +
+              '${ s.count_precision }${ s.count } - <a href="' +
               this.website.website +
-              'index.php?m_id=54&id=${id}">${count_precision}${count}-${time}</a>${comment}',
+              'index.php?m_id=54&id=${ s.id }">${ s.time }</a>${ s.comment ? " - " + s.comment : "" }',
           };
 
           export_data.forms = data.forms.map((f, id) => {
