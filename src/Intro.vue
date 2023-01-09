@@ -85,17 +85,17 @@ export default {
                 target="_blank"
                 class="alert-link"
               >
-                eBird Core Rules & Requirements.
-              </b-link>
+                eBird Core Rules & Requirements </b-link
+              >.
             </b-form-checkbox>
             <b-form-checkbox value="2">
               Understand the differences between
               <b-link
-                href="https://support.ebird.org/en/support/solutions/articles/48000950859-guide-to-ebird-protocols"
+                href="https://support.ebird.org/en/support/solutions/articles/48000950859-guide-to-ebird-protocols#anchorQuickProtocols"
                 class="alert-link"
                 target="_blank"
               >
-                eBird Core Protocols </b-link
+                eBird Core Protocols</b-link
               >.
             </b-form-checkbox>
             <b-form-checkbox value="3">
@@ -116,10 +116,10 @@ export default {
         </h4>
         <ol>
           <li>
-            Mapping the protocol of the original system used (biolovision, Birdlasser, Birdtrack) to
-            eBird is not always simple. In accordance with
+            Mapping the protocol of the original system used (Biolovision, Birdlasser or
+            Observation) to eBird is not always simple. In accordance with
             <b-link
-              href="https://support.ebird.org/en/support/solutions/articles/48000967748-birding-as-your-primary-purpose-and-complete-checklists"
+              href="https://support.ebird.org/en/support/solutions/articles/48000795623-ebird-rules-and-best-practices"
               target="_blank"
               class="alert-link"
               >eBird best practice</b-link
@@ -139,7 +139,7 @@ export default {
             For importing a life list without complying to eBird core requirement (e.g., over
             multiple days or locations), read
             <b-link
-              href="hhttps://support.ebird.org/en/support/solutions/articles/48000804866-enter-your-pre-ebird-life-list"
+              href="https://support.ebird.org/en/support/solutions/articles/48000804866-enter-your-pre-ebird-life-list"
               target="_blank"
               class="alert-link"
               >Enter your pre-eBird life list</b-link
