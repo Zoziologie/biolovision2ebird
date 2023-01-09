@@ -1,0 +1,367 @@
+<script setup>
+import websites_list from "/data/websites_list.json";
+import jsonIcon from "/json.png";
+import biolovision_species_list from "/data/biolovision_species_list_short.json";
+</script>
+
+<script>
+import Wkt from "wicket/wicket.js";
+import "leaflet";
+
+const precision_match = {
+  MINIMUM: ">",
+  EXACT_VALUE: "=",
+  ESTIMATION: "~",
+  NO_VALUE: "",
+};
+
+export default {
+  data() {
+    return {
+      website_name: "",
+      import_query_date: "offset",
+      import_query_date_offset: 1,
+      import_query_date_range_from: "",
+      import_query_date_range_to: "",
+      loading_file_status: null,
+      number_imported_form: null,
+      number_imported_sightings: null,
+      taxonomic_issues: [],
+      clipboard_icon: "clipboard",
+    };
+  },
+  computed: {
+    website() {
+      return websites_list.filter((w) => w.name == this.website_name)[0];
+    },
+    taxonomic_issues_stringify() {
+      return JSON.stringify(this.taxonomic_issues, null, 2);
+    },
+  },
+  methods: {
+    sightingsBiolovisionTransformation(sightings, form_id) {
+      return sightings.map((s) => {
+        const datetime = s.observers[0].timing["@ISO8601"].split("+")[0];
+
+        let comment = s.observers[0].comment || "";
+        if (s.observers[0].details) {
+          comment += s.observers[0].details
+            .map((d) => {
+              return (
+                d.count +
+                "x " +
+                (d.sex["@id"] != "U" ? d.sex["#text"] + " " : "") +
+                (d.age["@id"] != "U" ? d.age["#text"] + " " : "")
+              );
+            })
+            .join(", ");
+        }
+
+        let common_name = "";
+        if (biolovision_species_list.hasOwnProperty(s.species["@id"])) {
+          common_name = biolovision_species_list[s.species["@id"]];
+        } else {
+          // Return in console species with tax issue
+          console.log(s.species);
+          common_name = s.species.name;
+          if (this.taxonomic_issues.indexOf(s.species)) {
+            this.taxonomic_issues.push(s.species);
+          }
+        }
+        return this.createSighting({
+          id: s.observers[0].id_sighting,
+          form_id: form_id,
+          date: datetime.split("T")[0],
+          time: datetime.split("T")[1],
+          lat: parseFloat(s.observers[0].coord_lat),
+          lon: parseFloat(s.observers[0].coord_lon),
+          location_name: s.place.name,
+          common_name: common_name,
+          scientific_name: "",
+          count: s.observers[0].estimation_code == "NO_VALUE" ? "x" : s.observers[0].count,
+          count_precision: precision_match[s.observers[0].estimation_code],
+          comment: comment,
+        });
+      });
+    },
+    processFile(event) {
+      this.loading_file_status = 0;
+      const file = event.target.files[0];
+
+      const reader = new FileReader();
+      reader.readAsText(file);
+      reader.onerror = (error) => {
+        this.loading_file_status = -1;
+        throw new Error(error);
+      };
+      reader.onload = (e) => {
+        let export_data = {};
+        if (this.website.system == "biolovision") {
+          const data = JSON.parse(reader.result).data;
+
+          // Create empty forms and sightings if not presents
+          data.forms = data.forms || [];
+          data.sightings = data.sightings || [];
+
+          // Convert individual sightings
+          export_data.sightings = this.sightingsBiolovisionTransformation(data.sightings, 0);
+
+          // convert form data
+
+          this.website.species_comment_template = {
+            short:
+              '${ s.count_precision }${ s.count } ind. - ${ s.time } - <a href="http://maps.google.com?q=${s.lat},${s.lon}&t=k">${ s.lat }, ${ s.lon }</a> - <a href="' +
+              this.website.website +
+              'index.php?m_id=54&id=${ s.id }">' +
+              this.website_name +
+              '</a>${ s.comment ? " - " + s.comment : "" }',
+            long:
+              '${ s.count_precision }${ s.count } - <a href="' +
+              this.website.website +
+              'index.php?m_id=54&id=${ s.id }">${ s.time }</a>${ s.comment ? " - " + s.comment : "" }',
+          };
+
+          export_data.forms = data.forms.map((f, id) => {
+            const date = f.sightings[0].observers[0].timing["@ISO8601"].split("T")[0];
+            const timeStart = date + "T" + f.time_start;
+            const timeStop = date + "T" + f.time_stop;
+
+            var path = null;
+            var distance = null;
+            if (f.protocol && f.protocol.wkt) {
+              var wkt = new Wkt.Wkt();
+              wkt.read(f.protocol.wkt);
+              path = wkt.toJson().coordinates.map((c) => [c[1], c[0]]);
+              distance = this.distanceFromLatLngs(path);
+            }
+            return this.createForm(
+              {
+                imported: true,
+                location_name: this.mathMode(f.sightings.map((s) => s.place.name)),
+                lat: f.lat,
+                lon: f.lon,
+                date: date,
+                time: f.time_start,
+                duration: (new Date(timeStop) - new Date(timeStart)) / 1000 / 60,
+                distance: distance,
+                number_observer: null,
+                full_form: f.full_form == "1",
+                primary_purpose: true,
+                checklist_comment: f.comment || "",
+                species_comment_template: this.website.species_comment_template,
+                path: path,
+              },
+              id + 1
+            );
+          });
+
+          // Convert sightings from the forms, keep them seperate
+          export_data.forms_sightings = data.forms.map((f, fid) => {
+            return this.sightingsBiolovisionTransformation(f.sightings, export_data.forms[fid].id);
+          });
+        } else if (this.website.system == "birdlasser") {
+          export_data.forms = [];
+          export_data.forms_sightings = [];
+          export_data.sightings = this.csvToArray(reader.result).map((s, id) => {
+            return this.createSighting({
+              id: id,
+              form_id: 0,
+              date: s.Date.replaceAll("/", "-"),
+              time: s.Time,
+              lat: parseFloat(s.Latitude),
+              lon: parseFloat(s.Longitude),
+              location_name: s.Pentad,
+              common_name: s["Species primary name"],
+              scientific_name: "",
+              count: s.Count,
+              count_precision: s["Count Type"] == "Not specified" ? "" : s["Count Type"],
+              comment: s.Notes,
+            });
+          });
+          this.website.species_comment_template.short = "";
+          this.website.species_comment_template.long = "";
+        } else {
+          this.loading_file_status = -1;
+          throw new Error("No correct system");
+        }
+
+        this.number_imported_form = export_data.forms.length;
+        this.number_imported_sightings = export_data.sightings.length;
+
+        export_data.website = this.website;
+        this.$emit("exportData", export_data);
+        this.loading_file_status = 1;
+      };
+    },
+  },
+  mounted() {
+    this.website_name = this.$cookie.get("website_name");
+  },
+  watch: {
+    website_name() {
+      this.$cookie.set("website_name", this.website_name, 365);
+    },
+  },
+};
+</script>
+
+<template>
+  <b-row class="my-3 p-3 bg-white rounded shadow-sm">
+    <b-col lg="12">
+      <h2 class="border-bottom pb-2 mb-3">1. Generate and load Biolovision data</h2>
+    </b-col>
+    <b-col lg="6">
+      <b-form-group label="Select the website from which to import the data">
+        <b-select v-model="website_name" size="lg">
+          <b-select-option-group
+            v-for="cat in new Set(websites_list.map((w) => w.category))"
+            :label="cat"
+            :key="cat"
+          >
+            <b-select-option
+              v-for="w in websites_list.filter((wl) => wl.category == cat)"
+              :key="w.name"
+              :value="w.name"
+            >
+              {{ w.name }}
+            </b-select-option>
+          </b-select-option-group>
+        </b-select>
+      </b-form-group>
+      <b-row class="m-3 p-3 text-white rounded shadow-sm bg-secondary" v-if="website">
+        <template v-if="website.system == 'biolovision'">
+          <p>For Biolovision websites, export your data file as json <b-img :src="jsonIcon" />.</p>
+          <p>You can use the button below to directly reach the page to export your data:</p>
+          <b-col lg="12">
+            <b-form-radio v-model="import_query_date" value="offset">
+              <b-input-group append="days ago">
+                <b-form-input
+                  v-model="import_query_date_offset"
+                  min="0"
+                  type="number"
+                  value="1"
+                  :disabled="import_query_date != 'offset'"
+                />
+              </b-input-group>
+            </b-form-radio>
+          </b-col>
+          <b-col lg="12" class="mt-2">
+            <b-form-radio v-model="import_query_date" value="range">
+              <b-input-group>
+                <b-form-input
+                  v-model="import_query_date_range_from"
+                  type="date"
+                  :disabled="import_query_date != 'range'"
+                />
+                <b-input-group-text class="rounded-0">to</b-input-group-text>
+                <b-form-input
+                  v-model="import_query_date_range_to"
+                  type="date"
+                  :disabled="import_query_date != 'range'"
+                />
+              </b-input-group>
+            </b-form-radio>
+          </b-col>
+          <b-col lg="12" class="text-center mt-2">
+            <a
+              :href="`${
+                website.website
+              }index.php?m_id=31&sp_DChoice=${import_query_date}&sp_DFrom=${new Date(
+                import_query_date_range_from
+              ).toLocaleDateString('fr-CH')}&sp_DTo=${new Date(
+                import_query_date_range_to
+              ).toLocaleDateString(
+                'fr-CH'
+              )}&sp_DOffset=${import_query_date_offset}&sp_SChoice=all&sp_PChoice=all&sp_OnlyMyData=1`"
+              target="_blank"
+              class="btn btn-secondary"
+              >Export data from <strong>{{ website.name }}</strong>
+            </a>
+          </b-col>
+        </template>
+        <template v-else-if="website.system == 'observation'">
+          <p>
+            Data from observation.org can be exported from the Observations menu. Login and click on
+            your name top right of the page: https://observation.org/
+          </p>
+        </template>
+        <template v-else-if="website.system == 'birdlasser'">
+          <p>
+            You can download your Birdlasser data from the app (use "Export (CSV) trip card") or
+            from the website (click on the trip card and "Basic Export" button)
+          </p>
+          <a href="https://www.birdlasser.com/user/" target="_blank" class="btn btn-secondary"
+            >Export data from <strong> Birdlasser</strong>
+          </a>
+        </template>
+      </b-row>
+    </b-col>
+    <b-col lg="6" v-if="website">
+      <b-form-group label="Upload the exported file">
+        <b-form-file
+          size="lg"
+          @change="processFile"
+          :accept="website.extension"
+          :placeholder="'Click to load your ' + website.extension + ' file'"
+          class="mb-2"
+          no-drop
+        />
+      </b-form-group>
+
+      <b-alert v-if="loading_file_status == 0" variant="warning" show>
+        <b-spinner small variant="warning" class="mr-2"> </b-spinner>
+        <strong class="me-1">Loading data...</strong>
+      </b-alert>
+      <b-alert v-else-if="loading_file_status == 1" variant="success" show>
+        <b-icon icon="check-circle-fill" class="mr-2"> </b-icon>
+        <strong>Data loaded successfully! </strong>
+        {{ number_imported_form }} forms and {{ number_imported_sightings }} individual sightings.
+      </b-alert>
+      <b-alert v-else-if="loading_file_status == -1" variant="danger" show>
+        <b-icon icon="exclamation-triangle" class="mr-2"> </b-icon>
+        <strong>There is an error! </strong>
+      </b-alert>
+      <b-alert v-if="taxonomic_issues.length > 0" variant="warning" show>
+        <b-icon icon="exclamation-triangle" class="mr-1" />
+        <strong class="me-1">Taxonomic matching issue.</strong>
+        <p>
+          We are detecting {{ taxonomic_issues.length }} species with unsuccessful taxonomic match:
+          {{ taxonomic_issues.map((s) => s.common_name).join(", ") }}
+        </p>
+        <p>
+          You can proceed with the import, but you will need to
+          <b-link
+            class="alert-link"
+            href="https://support.ebird.org/en/support/solutions/articles/48000907878-upload-spreadsheet-data-to-ebird#anchorCleanData"
+            target="_blank"
+            >fix the species</b-link
+          >
+          on the eBird import tool.
+        </p>
+        <p>
+          Please, copy the code below and paste it
+          <b-link
+            class="alert-link"
+            href="https://github.com/Zoziologie/biolovision2ebird/issues/11"
+            target="_blank"
+            >in a new comment on this Github issue</b-link
+          >
+          so that I can add or correct the taxonomic match.
+        </p>
+        <b-input-group>
+          <b-input type="text" v-model="taxonomic_issues_stringify" readonly></b-input>
+          <b-input-group-append>
+            <b-button
+              @click="
+                copyClipboard('\`\`\`\n' + taxonomic_issues_stringify + '\n\`\`\`');
+                clipboard_icon = 'clipboard-check';
+              "
+            >
+              <b-icon :icon="clipboard_icon" />
+            </b-button>
+          </b-input-group-append>
+        </b-input-group>
+      </b-alert>
+    </b-col>
+  </b-row>
+</template>

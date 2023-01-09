@@ -1,0 +1,560 @@
+{
+    "data": {
+        "sightings": [
+            {
+                "date": {
+                    "@timestamp": "1622757600",
+                    "@notime": "1",
+                    "@offset": "7200",
+                    "@ISO8601": "2021-06-04T00:00:00+02:00",
+                    "#text": "vendredi 4 juin 2021"
+                },
+                "species": {
+                    "@id": "160",
+                    "sys_order": "2070",
+                    "taxonomy": "1",
+                    "rarity": "rare",
+                    "name": "Vautour fauve",
+                    "latin_name": "Gyps fulvus",
+                    "category": "A"
+                },
+                "place": {
+                    "@id": "9836",
+                    "name": "Sur les Eaux",
+                    "altitude": "2154",
+                    "place_type": "place",
+                    "loc_precision": "0",
+                    "coord_lat": "46.433595940264",
+                    "coord_lon": "7.1859023178037",
+                    "municipality": "Ch\u00e2teau-d'Oex",
+                    "county": "VD",
+                    "country": ""
+                },
+                "observers": [
+                    {
+                        "@id": "11346",
+                        "@uid": "61856",
+                        "@vowa_id": "4035",
+                        "code": "3afd90058a79",
+                        "name": "Rapha\u00ebl Nussbaumer",
+                        "anonymous": "0",
+                        "second_hand": "0",
+                        "traid": "11346",
+                        "id_sighting": "23413585",
+                        "id_universal": "1_23413585",
+                        "timing": {
+                            "@timestamp": "1622804372",
+                            "@notime": "0",
+                            "@offset": "7200",
+                            "@ISO8601": "2021-06-04T12:59:32+02:00",
+                            "#text": "vendredi 4 juin 2021, 12:59:32"
+                        },
+                        "coord_lat": "46.437715",
+                        "coord_lon": "7.186229",
+                        "altitude": "2154",
+                        "atlas_grid_name": "58 14 (Saanen)",
+                        "precision": "precise",
+                        "estimation_code": "EXACT_VALUE",
+                        "count": "7",
+                        "flight_number": "1",
+                        "source": "MOBILE_LIVE",
+                        "insert_date": {
+                            "@timestamp": "1623488681",
+                            "@notime": "0",
+                            "@offset": "7200",
+                            "@ISO8601": "2021-06-12T11:04:41+02:00",
+                            "#text": "samedi 12 juin 2021, 11:04:41"
+                        },
+                        "is_exported": "1",
+                        "export_date": {
+                            "@timestamp": "1624502702",
+                            "@notime": "0",
+                            "@offset": "7200",
+                            "@ISO8601": "2021-06-24T04:45:02+02:00",
+                            "#text": "jeudi 24 juin 2021, 04:45:02"
+                        }
+                    }
+                ]
+            },
+            {
+                "date": {
+                    "@timestamp": "1623448800",
+                    "@notime": "1",
+                    "@offset": "7200",
+                    "@ISO8601": "2021-06-12T00:00:00+02:00",
+                    "#text": "samedi 12 juin 2021"
+                },
+                "species": {
+                    "@id": "183",
+                    "sys_order": "730",
+                    "taxonomy": "1",
+                    "rarity": "unusual",
+                    "name": "Lagop\u00e8de alpin",
+                    "latin_name": "Lagopus muta",
+                    "category": "A",
+                    "atlas_13_16": {
+                        "@id": "V",
+                        "#text": "V"
+                    }
+                },
+                "place": {
+                    "@id": "1339",
+                    "name": "Cr\u00eata de Vella",
+                    "altitude": "2406",
+                    "place_type": "place",
+                    "loc_precision": "0",
+                    "coord_lat": "45.959752438253",
+                    "coord_lon": "7.1735146949575",
+                    "municipality": "Liddes",
+                    "county": "VS",
+                    "country": ""
+                },
+                "observers": [
+                    {
+                        "@id": "11346",
+                        "@uid": "61856",
+                        "@vowa_id": "4035",
+                        "code": "3afd90058a79",
+                        "name": "Rapha\u00ebl Nussbaumer",
+                        "anonymous": "0",
+                        "second_hand": "0",
+                        "traid": "11346",
+                        "id_sighting": "23413586",
+                        "id_universal": "1_23413586",
+                        "timing": {
+                            "@timestamp": "1623488666",
+                            "@notime": "0",
+                            "@offset": "7200",
+                            "@ISO8601": "2021-06-12T11:04:26+02:00",
+                            "#text": "samedi 12 juin 2021, 11:04:26"
+                        },
+                        "coord_lat": "45.962004",
+                        "coord_lon": "7.178493",
+                        "altitude": "2406",
+                        "atlas_grid_name": "57 09 (Orsi\u00e8res)",
+                        "precision": "precise",
+                        "estimation_code": "MINIMUM",
+                        "count": "3",
+                        "flight_number": "1",
+                        "source": "MOBILE_LIVE",
+                        "insert_date": {
+                            "@timestamp": "1623488681",
+                            "@notime": "0",
+                            "@offset": "7200",
+                            "@ISO8601": "2021-06-12T11:04:41+02:00",
+                            "#text": "samedi 12 juin 2021, 11:04:41"
+                        },
+                        "is_exported": "1",
+                        "export_date": {
+                            "@timestamp": "1624502702",
+                            "@notime": "0",
+                            "@offset": "7200",
+                            "@ISO8601": "2021-06-24T04:45:02+02:00",
+                            "#text": "jeudi 24 juin 2021, 04:45:02"
+                        },
+                        "atlas_code": {
+                            "@id": "3_2",
+                            "#text": "2"
+                        }
+                    }
+                ]
+            },
+            {
+                "date": {
+                    "@timestamp": "1623448800",
+                    "@notime": "1",
+                    "@offset": "7200",
+                    "@ISO8601": "2021-06-12T00:00:00+02:00",
+                    "#text": "samedi 12 juin 2021"
+                },
+                "species": {
+                    "@id": "182",
+                    "sys_order": "740",
+                    "taxonomy": "1",
+                    "rarity": "unusual",
+                    "name": "T\u00e9tras lyre",
+                    "latin_name": "Lyrurus tetrix",
+                    "category": "A",
+                    "atlas_13_16": {
+                        "@id": "V",
+                        "#text": "V"
+                    }
+                },
+                "place": {
+                    "@id": "19257",
+                    "name": "Liddes [579\/91]",
+                    "altitude": "2024",
+                    "place_type": "square",
+                    "loc_precision": "0",
+                    "coord_lat": "45.974758248574",
+                    "coord_lon": "7.1741516251709",
+                    "municipality": "Liddes",
+                    "county": "VS",
+                    "country": ""
+                },
+                "observers": [
+                    {
+                        "@id": "11346",
+                        "@uid": "61856",
+                        "@vowa_id": "4035",
+                        "code": "3afd90058a79",
+                        "name": "Rapha\u00ebl Nussbaumer",
+                        "anonymous": "0",
+                        "second_hand": "0",
+                        "traid": "11346",
+                        "id_sighting": "23505490",
+                        "id_universal": "1_23505490",
+                        "timing": {
+                            "@timestamp": "1623497024",
+                            "@notime": "0",
+                            "@offset": "7200",
+                            "@ISO8601": "2021-06-12T13:23:44+02:00",
+                            "#text": "samedi 12 juin 2021, 13:23:44"
+                        },
+                        "coord_lat": "45.97283",
+                        "coord_lon": "7.173883",
+                        "altitude": "2024",
+                        "atlas_grid_name": "57 09 (Orsi\u00e8res)",
+                        "precision": "precise",
+                        "estimation_code": "EXACT_VALUE",
+                        "count": "1",
+                        "flight_number": "1",
+                        "hidden": "1",
+                        "source": "MOBILE_LIVE",
+                        "insert_date": {
+                            "@timestamp": "1624817526",
+                            "@notime": "0",
+                            "@offset": "7200",
+                            "@ISO8601": "2021-06-27T20:12:06+02:00",
+                            "#text": "dimanche 27 juin 2021, 20:12:06"
+                        },
+                        "is_exported": "1",
+                        "export_date": {
+                            "@timestamp": "1625712301",
+                            "@notime": "0",
+                            "@offset": "7200",
+                            "@ISO8601": "2021-07-08T04:45:01+02:00",
+                            "#text": "jeudi 8 juillet 2021, 04:45:01"
+                        },
+                        "atlas_code": {
+                            "@id": "3_2",
+                            "#text": "2"
+                        }
+                    }
+                ]
+            },
+            {
+                "date": {
+                    "@timestamp": "1627682400",
+                    "@notime": "1",
+                    "@offset": "7200",
+                    "@ISO8601": "2021-07-31T00:00:00+02:00",
+                    "#text": "samedi 31 juillet 2021"
+                },
+                "species": {
+                    "@id": "160",
+                    "sys_order": "2070",
+                    "taxonomy": "1",
+                    "rarity": "rare",
+                    "name": "Vautour fauve",
+                    "latin_name": "Gyps fulvus",
+                    "category": "A"
+                },
+                "place": {
+                    "@id": "19679",
+                    "name": "Rougemont [581\/151]",
+                    "altitude": "1657",
+                    "place_type": "square",
+                    "loc_precision": "0",
+                    "coord_lat": "46.514546273473",
+                    "coord_lon": "7.197577735574",
+                    "municipality": "Rougemont",
+                    "county": "VD",
+                    "country": ""
+                },
+                "observers": [
+                    {
+                        "@id": "11346",
+                        "@uid": "61856",
+                        "@vowa_id": "4035",
+                        "code": "3afd90058a79",
+                        "name": "Rapha\u00ebl Nussbaumer",
+                        "anonymous": "0",
+                        "second_hand": "0",
+                        "traid": "11346",
+                        "id_sighting": "23673212",
+                        "id_universal": "1_23673212",
+                        "timing": {
+                            "@timestamp": "1627720978",
+                            "@notime": "0",
+                            "@offset": "7200",
+                            "@ISO8601": "2021-07-31T10:42:58+02:00",
+                            "#text": "samedi 31 juillet 2021, 10:42:58"
+                        },
+                        "coord_lat": "46.515551",
+                        "coord_lon": "7.191578",
+                        "altitude": "1657",
+                        "atlas_grid_name": "58 15 (Dent de Ruth)",
+                        "precision": "precise",
+                        "estimation_code": "EXACT_VALUE",
+                        "count": "5",
+                        "flight_number": "1",
+                        "source": "MOBILE_LIVE",
+                        "insert_date": {
+                            "@timestamp": "1627730120",
+                            "@notime": "0",
+                            "@offset": "7200",
+                            "@ISO8601": "2021-07-31T13:15:20+02:00",
+                            "#text": "samedi 31 juillet 2021, 13:15:20"
+                        },
+                        "is_exported": "1",
+                        "export_date": {
+                            "@timestamp": "1628736301",
+                            "@notime": "0",
+                            "@offset": "7200",
+                            "@ISO8601": "2021-08-12T04:45:01+02:00",
+                            "#text": "jeudi 12 ao\u00fbt 2021, 04:45:01"
+                        }
+                    }
+                ]
+            },
+            {
+                "date": {
+                    "@timestamp": "1627682400",
+                    "@notime": "1",
+                    "@offset": "7200",
+                    "@ISO8601": "2021-07-31T00:00:00+02:00",
+                    "#text": "samedi 31 juillet 2021"
+                },
+                "species": {
+                    "@id": "168",
+                    "sys_order": "2110",
+                    "taxonomy": "1",
+                    "rarity": "rare",
+                    "name": "Circa\u00e8te Jean-le-Blanc",
+                    "latin_name": "Circaetus gallicus",
+                    "category": "A",
+                    "atlas_13_16": {
+                        "@id": "S",
+                        "#text": "S"
+                    }
+                },
+                "place": {
+                    "@id": "19679",
+                    "name": "Rougemont [581\/151]",
+                    "altitude": "1658",
+                    "place_type": "square",
+                    "loc_precision": "0",
+                    "coord_lat": "46.514546273473",
+                    "coord_lon": "7.197577735574",
+                    "municipality": "Rougemont",
+                    "county": "VD",
+                    "country": ""
+                },
+                "observers": [
+                    {
+                        "@id": "11346",
+                        "@uid": "61856",
+                        "@vowa_id": "4035",
+                        "code": "3afd90058a79",
+                        "name": "Rapha\u00ebl Nussbaumer",
+                        "anonymous": "0",
+                        "second_hand": "0",
+                        "traid": "11346",
+                        "id_sighting": "23673213",
+                        "id_universal": "1_23673213",
+                        "timing": {
+                            "@timestamp": "1627720966",
+                            "@notime": "0",
+                            "@offset": "7200",
+                            "@ISO8601": "2021-07-31T10:42:46+02:00",
+                            "#text": "samedi 31 juillet 2021, 10:42:46"
+                        },
+                        "coord_lat": "46.515559",
+                        "coord_lon": "7.19159",
+                        "altitude": "1658",
+                        "atlas_grid_name": "58 15 (Dent de Ruth)",
+                        "precision": "precise",
+                        "estimation_code": "EXACT_VALUE",
+                        "count": "1",
+                        "flight_number": "1",
+                        "hidden": "1",
+                        "source": "MOBILE_LIVE",
+                        "insert_date": {
+                            "@timestamp": "1627730120",
+                            "@notime": "0",
+                            "@offset": "7200",
+                            "@ISO8601": "2021-07-31T13:15:20+02:00",
+                            "#text": "samedi 31 juillet 2021, 13:15:20"
+                        },
+                        "is_exported": "1",
+                        "export_date": {
+                            "@timestamp": "1628736301",
+                            "@notime": "0",
+                            "@offset": "7200",
+                            "@ISO8601": "2021-08-12T04:45:01+02:00",
+                            "#text": "jeudi 12 ao\u00fbt 2021, 04:45:01"
+                        },
+                        "atlas_code": {
+                            "@id": "3_2",
+                            "#text": "2"
+                        }
+                    }
+                ]
+            },
+            {
+                "date": {
+                    "@timestamp": "1627682400",
+                    "@notime": "1",
+                    "@offset": "7200",
+                    "@ISO8601": "2021-07-31T00:00:00+02:00",
+                    "#text": "samedi 31 juillet 2021"
+                },
+                "species": {
+                    "@id": "160",
+                    "sys_order": "2070",
+                    "taxonomy": "1",
+                    "rarity": "rare",
+                    "name": "Vautour fauve",
+                    "latin_name": "Gyps fulvus",
+                    "category": "A"
+                },
+                "place": {
+                    "@id": "9443",
+                    "name": "Rochers des Rayes E",
+                    "altitude": "2007",
+                    "place_type": "place",
+                    "loc_precision": "0",
+                    "coord_lat": "46.526285910204",
+                    "coord_lon": "7.2063749707715",
+                    "municipality": "Rougemont",
+                    "county": "VD",
+                    "country": ""
+                },
+                "observers": [
+                    {
+                        "@id": "11346",
+                        "@uid": "61856",
+                        "@vowa_id": "4035",
+                        "code": "3afd90058a79",
+                        "name": "Rapha\u00ebl Nussbaumer",
+                        "anonymous": "0",
+                        "second_hand": "0",
+                        "traid": "11346",
+                        "id_sighting": "23673214",
+                        "id_universal": "1_23673214",
+                        "timing": {
+                            "@timestamp": "1627730112",
+                            "@notime": "0",
+                            "@offset": "7200",
+                            "@ISO8601": "2021-07-31T13:15:12+02:00",
+                            "#text": "samedi 31 juillet 2021, 13:15:12"
+                        },
+                        "coord_lat": "46.527828",
+                        "coord_lon": "7.203781",
+                        "altitude": "2007",
+                        "atlas_grid_name": "58 15 (Dent de Ruth)",
+                        "precision": "precise",
+                        "estimation_code": "EXACT_VALUE",
+                        "count": "1",
+                        "flight_number": "1",
+                        "source": "MOBILE_LIVE",
+                        "insert_date": {
+                            "@timestamp": "1627730120",
+                            "@notime": "0",
+                            "@offset": "7200",
+                            "@ISO8601": "2021-07-31T13:15:20+02:00",
+                            "#text": "samedi 31 juillet 2021, 13:15:20"
+                        },
+                        "is_exported": "1",
+                        "export_date": {
+                            "@timestamp": "1628736301",
+                            "@notime": "0",
+                            "@offset": "7200",
+                            "@ISO8601": "2021-08-12T04:45:01+02:00",
+                            "#text": "jeudi 12 ao\u00fbt 2021, 04:45:01"
+                        }
+                    }
+                ]
+            },
+            {
+                "date": {
+                    "@timestamp": "1630101600",
+                    "@notime": "1",
+                    "@offset": "7200",
+                    "@ISO8601": "2021-08-28T00:00:00+02:00",
+                    "#text": "samedi 28 ao\u00fbt 2021"
+                },
+                "species": {
+                    "@id": "159",
+                    "sys_order": "2100",
+                    "taxonomy": "1",
+                    "rarity": "veryrare",
+                    "name": "Vautour moine",
+                    "latin_name": "Aegypius monachus",
+                    "category": "A"
+                },
+                "place": {
+                    "@id": "95880",
+                    "name": "La Berthe",
+                    "altitude": "1963",
+                    "place_type": "place",
+                    "loc_precision": "0",
+                    "coord_lat": "46.147726331601",
+                    "coord_lon": "6.7946321302881",
+                    "municipality": "Champ\u00e9ry",
+                    "county": "VS",
+                    "country": ""
+                },
+                "observers": [
+                    {
+                        "@id": "11346",
+                        "@uid": "61856",
+                        "@vowa_id": "4035",
+                        "code": "3afd90058a79",
+                        "name": "Rapha\u00ebl Nussbaumer",
+                        "anonymous": "0",
+                        "second_hand": "0",
+                        "traid": "11346",
+                        "id_sighting": "23814638",
+                        "id_universal": "1_23814638",
+                        "timing": {
+                            "@timestamp": "1630151938",
+                            "@notime": "0",
+                            "@offset": "7200",
+                            "@ISO8601": "2021-08-28T13:58:58+02:00",
+                            "#text": "samedi 28 ao\u00fbt 2021, 13:58:58"
+                        },
+                        "coord_lat": "46.147802",
+                        "coord_lon": "6.794624",
+                        "altitude": "1963",
+                        "atlas_grid_name": "55 11 (Champ\u00e9ry)",
+                        "precision": "precise",
+                        "estimation_code": "EXACT_VALUE",
+                        "count": "1",
+                        "flight_number": "1",
+                        "source": "MOBILE_LIVE",
+                        "insert_date": {
+                            "@timestamp": "1630151947",
+                            "@notime": "0",
+                            "@offset": "7200",
+                            "@ISO8601": "2021-08-28T13:59:07+02:00",
+                            "#text": "samedi 28 ao\u00fbt 2021, 13:59:07"
+                        },
+                        "is_exported": "1",
+                        "export_date": {
+                            "@timestamp": "1631155501",
+                            "@notime": "0",
+                            "@offset": "7200",
+                            "@ISO8601": "2021-09-09T04:45:01+02:00",
+                            "#text": "jeudi 9 septembre 2021, 04:45:01"
+                        },
+                        "committees_validation": {
+                            "cavs": "REQUESTED"
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}
