@@ -164,7 +164,7 @@ export default {
           export_data.forms_sightings = [];
           export_data.sightings = this.csvToArray(reader.result).map((s, id) => {
             return this.createSighting({
-              id: id,
+              id: "s" + id,
               form_id: 0,
               date: s.Date.replaceAll("/", "-"),
               time: s.Time,
@@ -178,8 +178,12 @@ export default {
               comment: s.Notes,
             });
           });
-          this.website.species_comment_template.short = "";
-          this.website.species_comment_template.long = "";
+          this.website.species_comment_template = {
+            short:
+              '${ s.count_precision }${ s.count } ind. - ${ s.time } - <a href="http://maps.google.com?q=${s.lat},${s.lon}&t=k">${ s.lat }, ${ s.lon }</a>${ s.comment ? " - " + s.comment : "" }',
+            long: '${ s.count_precision }${ s.count } ind. - ${ s.time } - ${ s.lat }, ${ s.lon }${ s.comment ? " - " + s.comment : "" }',
+            limit: 20,
+          };
         } else {
           this.loading_file_status = -1;
           throw new Error("No correct system");
@@ -274,15 +278,15 @@ export default {
                 'fr-CH'
               )}&sp_DOffset=${import_query_date_offset}&sp_SChoice=all&sp_PChoice=all&sp_OnlyMyData=1`"
               target="_blank"
-              class="btn btn-secondary"
+              class="btn btn-btn-primary"
               >Export data from <strong>{{ website.name }}</strong>
             </a>
           </b-col>
         </template>
         <template v-else-if="website.system == 'observation'">
           <p>
-            Data from observation.org can be exported from the Observations menu. Login and click on
-            your name top right of the page: https://observation.org/
+            We are currently not supporting the converstion of observation data. It's coming up
+            soon!
           </p>
         </template>
         <template v-else-if="website.system == 'birdlasser'">
@@ -290,9 +294,11 @@ export default {
             You can download your Birdlasser data from the app (use "Export (CSV) trip card") or
             from the website (click on the trip card and "Basic Export" button)
           </p>
-          <a href="https://www.birdlasser.com/user/" target="_blank" class="btn btn-secondary"
-            >Export data from <strong> Birdlasser</strong>
-          </a>
+          <b-col lg="12" class="text-center">
+            <a href="https://www.birdlasser.com/user/" target="_blank" class="btn btn-primary"
+              >Export data from <strong> Birdlasser</strong>
+            </a>
+          </b-col>
         </template>
       </b-row>
     </b-col>
