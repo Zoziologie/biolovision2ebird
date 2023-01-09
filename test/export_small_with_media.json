@@ -1,0 +1,202 @@
+{
+    "data": {
+        "sightings": [
+            {
+                "date": {
+                    "@timestamp": "1671663600",
+                    "@notime": "1",
+                    "@offset": "3600",
+                    "@ISO8601": "2022-12-22T00:00:00+01:00",
+                    "#text": "jeudi 22 d\u00e9cembre 2022"
+                },
+                "species": {
+                    "@id": "73",
+                    "sys_order": "190",
+                    "taxonomy": "1",
+                    "rarity": "escaped",
+                    "name": "Bernache \u00e0 cou roux",
+                    "latin_name": "Branta ruficollis",
+                    "category": "A"
+                },
+                "place": {
+                    "@id": "95616",
+                    "name": "La Sauge canal de la Broye",
+                    "altitude": "427",
+                    "place_type": "place",
+                    "loc_precision": "0",
+                    "coord_lat": "46.97690493578",
+                    "coord_lon": "7.0528280393798",
+                    "municipality": "Cudrefin",
+                    "county": "VD",
+                    "country": ""
+                },
+                "observers": [
+                    {
+                        "@id": "11346",
+                        "@uid": "61856",
+                        "@vowa_id": "4035",
+                        "code": "3afd90058a79",
+                        "name": "Nussbaumer Rapha\u00ebl",
+                        "anonymous": "0",
+                        "second_hand": "0",
+                        "traid": "11346",
+                        "id_sighting": "26882111",
+                        "id_universal": "1_26882111",
+                        "timing": {
+                            "@timestamp": "1671705240",
+                            "@notime": "0",
+                            "@offset": "3600",
+                            "@ISO8601": "2022-12-22T11:34:00+01:00",
+                            "#text": "jeudi 22 d\u00e9cembre 2022, 11:34:00"
+                        },
+                        "coord_lat": "46.97671",
+                        "coord_lon": "7.053666",
+                        "altitude": "427",
+                        "atlas_grid_name": "57 20 (Ins)",
+                        "precision": "precise",
+                        "estimation_code": "EXACT_VALUE",
+                        "count": "2",
+                        "flight_number": "1",
+                        "comment": "Seen in flight coming from Chablais and landed with other Greylag goose at 46.9725750, 7.0633567.\r\nWith 2 barnacle geese.",
+                        "source": "MOBILE_LIVE",
+                        "medias": [
+                            {
+                                "@id": "919822",
+                                "type": "PHOTO",
+                                "media_is_hidden": "0",
+                                "has_large": "1",
+                                "path": "https:\/\/cdnmedia3.biolovision.net\/www.ornitho.ch\/2022-12",
+                                "filename": "11346-26882111-3445.jpg",
+                                "metadata": "{\"Make\": \"Google\", \"Flash\": \"16\", \"Model\": \"Pixel 6a\", \"FNumber\": \"173\/100\", \"COMPUTED\": {\"html\": \"width=\\\"2007\\\" height=\\\"1505\\\"\", \"Width\": 2007, \"Height\": 1505, \"IsColor\": 1, \"FocusDistance\": \"1.06m\", \"ApertureFNumber\": \"f\/1.7\", \"Thumbnail.Width\": 504, \"Thumbnail.Height\": 378, \"ByteOrderMotorola\": 0}, \"DateTime\": \"2022:12:22 11:48:03\", \"FileName\": \"phpfiMIfz\", \"FileSize\": \"470772\", \"FileType\": \"2\", \"MimeType\": \"image\/jpeg\", \"Software\": \"Google\", \"SceneType\": \"\\u0001\", \"THUMBNAIL\": {\"ImageWidth\": 504, \"Compression\": 6, \"ImageLength\": 378, \"XResolution\": \"72\/1\", \"YResolution\": \"72\/1\", \"ResolutionUnit\": 2}, \"ColorSpace\": \"1\", \"ImageWidth\": \"2007\", \"SubSecTime\": \"937\", \"ExifVersion\": \"0232\", \"FocalLength\": \"4380\/1000\", \"GPSAltitude\": \"47749\/100\", \"GPSLatitude\": [\"46\/1\", \"58\/1\", \"3335\/100\"], \"ImageLength\": \"1505\", \"Orientation\": \"1\", \"XResolution\": \"72\/1\", \"YResolution\": \"72\/1\", \"ExposureTime\": \"3763\/1000000\", \"FileDateTime\": \"1671729290\", \"GPSDateStamp\": \"2022:12:22\", \"GPSLongitude\": [\"7\/1\", \"3\/1\", \"2593\/100\"], \"GPSTimeStamp\": [\"10\/1\", \"46\/1\", \"9\/1\"], \"MeteringMode\": \"2\", \"ApertureValue\": \"158\/100\", \"SectionsFound\": \"ANY_TAG, IFD0, THUMBNAIL, EXIF, GPS, INTEROP\", \"SensingMethod\": \"2\", \"CustomRendered\": \"1\", \"ExifImageWidth\": \"4032\", \"GPSAltitudeRef\": \"\\\\0\", \"GPSLatitudeRef\": \"N\", \"ResolutionUnit\": \"2\", \"BrightnessValue\": \"434\/100\", \"ExifImageLength\": \"3024\", \"ExposureProgram\": \"2\", \"FlashPixVersion\": \"0100\", \"GPSImgDirection\": \"7\/1\", \"GPSLongitudeRef\": \"E\", \"GPS_IFD_Pointer\": \"964\", \"ISOSpeedRatings\": \"123\", \"SubjectDistance\": \"1057\/1000\", \"DateTimeOriginal\": \"2022:12:22 11:46:58\", \"DigitalZoomRatio\": \"200\/100\", \"Exif_IFD_Pointer\": \"229\", \"MaxApertureValue\": \"158\/100\", \"YCbCrPositioning\": \"1\", \"DateTimeDigitized\": \"2022:12:22 11:46:58\", \"ExposureBiasValue\": \"0\/6\", \"ShutterSpeedValue\": \"805\/100\", \"GPSImgDirectionRef\": \"M\", \"SubSecTimeOriginal\": \"937\", \"SubSecTimeDigitized\": \"937\", \"UndefinedTag:0x9010\": \"+01:00\", \"UndefinedTag:0x9011\": \"+01:00\", \"UndefinedTag:0x9012\": \"+01:00\", \"UndefinedTag:0xA433\": \"Google\", \"UndefinedTag:0xA434\": \"Pixel 6a back camera 4.38mm f\/1.73\", \"UndefinedTag:0xA460\": \"3\", \"SubjectDistanceRange\": \"2\", \"FocalLengthIn35mmFilm\": \"27\", \"InterOperabilityIndex\": \"R98\", \"InteroperabilityOffset\": \"934\", \"ComponentsConfiguration\": \"\\u0001\\u0002\\u0003\\\\0\", \"InterOperabilityVersion\": \"0100\"}",
+                                "insert_date": {
+                                    "@timestamp": "1671729291",
+                                    "@notime": "0",
+                                    "@offset": "3600",
+                                    "@ISO8601": "2022-12-22T18:14:51+01:00",
+                                    "#text": "jeudi 22 d\u00e9cembre 2022, 18:14:51"
+                                }
+                            }
+                        ],
+                        "insert_date": {
+                            "@timestamp": "1671705256",
+                            "@notime": "0",
+                            "@offset": "3600",
+                            "@ISO8601": "2022-12-22T11:34:16+01:00",
+                            "#text": "jeudi 22 d\u00e9cembre 2022, 11:34:16"
+                        },
+                        "update_date": {
+                            "@timestamp": "1672921891",
+                            "@notime": "0",
+                            "@offset": "3600",
+                            "@ISO8601": "2023-01-05T13:31:31+01:00",
+                            "#text": "jeudi 5 janvier 2023, 13:31:31"
+                        },
+                        "is_exported": "1",
+                        "export_date": {
+                            "@timestamp": "1672921889",
+                            "@notime": "0",
+                            "@offset": "3600",
+                            "@ISO8601": "2023-01-05T13:31:29+01:00",
+                            "#text": "jeudi 5 janvier 2023, 13:31:29"
+                        },
+                        "committees_validation": {
+                            "cavs": "REQUESTED"
+                        },
+                        "extended_info": {
+                            "rarities_committee": {}
+                        }
+                    }
+                ]
+            }
+        ],
+        "forms": [
+            {
+                "@id": "262528",
+                "id_form_universal": "1_262528",
+                "time_start": "10:00:00",
+                "time_stop": "10:01:00",
+                "full_form": "1",
+                "version": "0",
+                "lat": "46.946574289342",
+                "lon": "7.3926648607002",
+                "place_type": "place",
+                "comment": "dsfsdfddsdf",
+                "sightings": [
+                    {
+                        "date": {
+                            "@timestamp": "1672873200",
+                            "@notime": "1",
+                            "@offset": "3600",
+                            "@ISO8601": "2023-01-05T00:00:00+01:00",
+                            "#text": "jeudi 5 janvier 2023"
+                        },
+                        "species": {
+                            "@id": "54",
+                            "sys_order": "40",
+                            "taxonomy": "1",
+                            "rarity": "verycommon",
+                            "name": "Cygne tubercul\u00e9",
+                            "latin_name": "Cygnus olor",
+                            "category": "C",
+                            "atlas_13_16": {
+                                "@id": "V",
+                                "#text": "V"
+                            }
+                        },
+                        "place": {
+                            "@id": "22297",
+                            "name": "Bern [596\/199]",
+                            "altitude": "560",
+                            "place_type": "square",
+                            "loc_precision": "0",
+                            "coord_lat": "46.946574289342",
+                            "coord_lon": "7.3926648607002",
+                            "municipality": "Bern",
+                            "county": "BE",
+                            "country": ""
+                        },
+                        "observers": [
+                            {
+                                "@id": "11346",
+                                "@uid": "61856",
+                                "@vowa_id": "4035",
+                                "code": "3afd90058a79",
+                                "name": "Nussbaumer Rapha\u00ebl",
+                                "anonymous": "0",
+                                "second_hand": "0",
+                                "traid": "11346",
+                                "id_sighting": "26984047",
+                                "id_universal": "1_26984047",
+                                "timing": {
+                                    "@timestamp": "1672873200",
+                                    "@notime": "1",
+                                    "@offset": "3600",
+                                    "@ISO8601": "2023-01-05T00:00:00+01:00",
+                                    "#text": "jeudi 5 janvier 2023"
+                                },
+                                "coord_lat": "46.946574289342",
+                                "coord_lon": "7.3926648607002",
+                                "altitude": "560",
+                                "atlas_grid_name": "59 19 (K\u00f6niz)",
+                                "id_form": "262528",
+                                "id_form_universal": "1_262528",
+                                "precision": "square",
+                                "estimation_code": "EXACT_VALUE",
+                                "count": "1",
+                                "flight_number": "1",
+                                "source": "WEB",
+                                "insert_date": {
+                                    "@timestamp": "1672937362",
+                                    "@notime": "0",
+                                    "@offset": "3600",
+                                    "@ISO8601": "2023-01-05T17:49:22+01:00",
+                                    "#text": "jeudi 5 janvier 2023, 17:49:22"
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}
