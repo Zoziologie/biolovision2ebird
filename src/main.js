@@ -195,44 +195,73 @@ Vue.mixin({
             );
         },
         staticMapLink(form, sightings) {
-            // Create path
-            let path = "";
-            if (form.path && form.path.length > 0 && form.static_map.include_path) {
-                const path_simplified = L.LineUtil.simplify(
-                    form.path.map((x) => {
-                        return { x: x[0], y: x[1] };
-                    }),
-                    0.00001
-                ).map((x) => [x.x, x.y]);
 
-                const path_encodeded = L.PolylineUtil.encode(path_simplified, 5);
-
-                const style = form.static_map.path_style;
-                path = `path-${style.strokeWidth}+${style.strokeColor.slice(1, style.strokeColor.length)}-${style.strokeOpacity
-                    }(${encodeURIComponent(path_encodeded)}),`;
-            }
-
-            // Create sightings markers
+            // Create the sightings markers
+            // get fewer markers but "simplifying" a path created from the markers. 
             const sightings_simplified = L.LineUtil.simplify(
                 sightings.map((x) => {
                     return { x: x.lat, y: x.lon };
                 }),
                 sightings.length > 100 ? 0.001 : 0.0001
             ).map((x) => [x.x, x.y]);
-
+            // Convert sightings to a geojson format
             let sightings_geojson = L.polyline(sightings_simplified).toGeoJSON();
+            // change polyline to multipoint
             sightings_geojson.geometry.type = "MultiPoint";
+            // Add markes style
             sightings_geojson.properties = form.static_map.marker_style;
+            // round the position to 4 digits (~1-10m precision)
             sightings_geojson.geometry.coordinates = sightings_geojson.geometry.coordinates.map((c) => [
                 this.mathRound(c[0], 4),
                 this.mathRound(c[1], 4),
             ]);
-
             const markers = "geojson(" + encodeURIComponent(JSON.stringify(sightings_geojson)) + ")";
+            // Compute the bounds of the sightings
+            let bounds = L.latLngBounds(sightings.map((s) => L.latLng(s.lat, s.lon)))
+
+            // Create path
+            let path = "";
+            if (form.path && form.path.length > 0 && form.static_map.include_path) {
+                // Simmplifly path to 5 digits
+                const path_simplified = L.LineUtil.simplify(
+                    form.path.map((x) => {
+                        return { x: x[0], y: x[1] };
+                    }),
+                    0.00001
+                ).map((x) => [x.x, x.y]);
+                // Encode to
+                const path_encodeded = L.PolylineUtil.encode(path_simplified, 5);
+                // Add style and encode for URI
+                const style = form.static_map.path_style;
+                path = `path-${style.strokeWidth}+${style.strokeColor.slice(1, style.strokeColor.length)}-${style.strokeOpacity
+                    }(${encodeURIComponent(path_encodeded)}),`;
+                // Extend the bound of the map for path
+                bounds = bounds.extend(L.polyline(form.path).getBounds())
+            }
+
+            // Compute auto-bound with a min 500m windows.
+            if (form.static_map.bounding_box_auto) {
+                const dlat = 1 / 111151 * 500; // °/m@46° /100m
+                const dlon = 1 / 77463 * 500; // °/m@46°  /100m
+                let s = bounds.pad(.1).getSouth()
+                let n = bounds.pad(.3).getNorth()
+                let e = bounds.pad(.2).getEast()
+                let w = bounds.pad(.2).getWest()
+                if ((n - s) < dlat) {
+                    let c = (n + s) / 2
+                    n = c + dlat / 2
+                    s = c - dlat / 2
+                }
+                if ((w - e) < dlon) {
+                    let c = (e + w) / 2;
+                    w = c - dlon / 2
+                    e = c + dlon / 2
+                }
+                form.static_map.bounding_box = `${w},${s},${e},${n}`
+            }
 
             return `https://api.mapbox.com/styles/v1/mapbox/${form.static_map.style
-                }/static/${path}${markers}/${form.static_map.bounding_box_auto ? "auto" : "[" + form.static_map.bounding_box + "]"
-                }/300x200?access_token=${this.mapbox_access_token}&logo=false`;
+                }/static/${path}${markers}/[${form.static_map.bounding_box}]/300x200?access_token=${this.mapbox_access_token}&logo=false`;
         },
         speciesComment(species_comment_template, sightings) {
             if (sightings.length < species_comment_template.limit) {
