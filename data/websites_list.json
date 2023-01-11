@@ -1,6 +1,8 @@
 [
     {
         "category": "Main Biolovision",
+        "osm_level": "country",
+        "osm_region": "France",
         "extension": ".json",
         "name": "faune-france.org",
         "system": "biolovision",
@@ -8,6 +10,8 @@
     },
     {
         "category": "Main Biolovision",
+        "osm_level": "country",
+        "osm_region": "Austria",
         "extension": ".json",
         "name": "ornitho.at",
         "system": "biolovision",
@@ -15,6 +19,8 @@
     },
     {
         "category": "Main Biolovision",
+        "osm_level": "state",
+        "osm_region": "Catalonia",
         "extension": ".json",
         "name": "ornitho.cat",
         "system": "biolovision",
@@ -22,6 +28,8 @@
     },
     {
         "category": "Main Biolovision",
+        "osm_level": "country",
+        "osm_region": "Switzerland",
         "extension": ".json",
         "name": "ornitho.ch",
         "system": "biolovision",
@@ -29,6 +37,8 @@
     },
     {
         "category": "Main Biolovision",
+        "osm_level": "country",
+        "osm_region": "Germany",
         "extension": ".json",
         "name": "ornitho.de",
         "system": "biolovision",
@@ -36,6 +46,8 @@
     },
     {
         "category": "Main Biolovision",
+        "osm_level": "",
+        "osm_region": "",
         "extension": ".json",
         "name": "ornitho.eus",
         "system": "biolovision",
@@ -43,6 +55,8 @@
     },
     {
         "category": "Main Biolovision",
+        "osm_level": "country",
+        "osm_region": "Italy",
         "extension": ".json",
         "name": "ornitho.it",
         "system": "biolovision",
@@ -50,6 +64,8 @@
     },
     {
         "category": "Main Biolovision",
+        "osm_level": "country",
+        "osm_region": "Luxembourg",
         "extension": ".json",
         "name": "ornitho.lu",
         "system": "biolovision",
@@ -57,6 +73,8 @@
     },
     {
         "category": "Main Biolovision",
+        "osm_level": "country",
+        "osm_region": "Poland",
         "extension": ".json",
         "name": "ornitho.pl",
         "system": "biolovision",
@@ -64,6 +82,8 @@
     },
     {
         "category": "Main Biolovision",
+        "osm_level": "",
+        "osm_region": "",
         "extension": ".json",
         "name": "biolovision.net",
         "system": "biolovision",
@@ -71,6 +91,8 @@
     },
     {
         "category": "French Biolovision",
+        "osm_level": "",
+        "osm_region": "",
         "extension": ".json",
         "name": "faune-cher.org",
         "system": "biolovision",
@@ -78,6 +100,8 @@
     },
     {
         "category": "French Biolovision",
+        "osm_level": "county",
+        "osm_region": "",
         "extension": ".json",
         "name": "faune-ain.org",
         "system": "biolovision",
@@ -85,6 +109,8 @@
     },
     {
         "category": "French Biolovision",
+        "osm_level": "state",
+        "osm_region": "Grand Est",
         "extension": ".json",
         "name": "faune-alsace.org",
         "system": "biolovision",
@@ -92,6 +118,8 @@
     },
     {
         "category": "French Biolovision",
+        "osm_level": "",
+        "osm_region": "",
         "extension": ".json",
         "name": "faune-anjou.org",
         "system": "biolovision",
@@ -99,6 +127,8 @@
     },
     {
         "category": "French Biolovision",
+        "osm_level": "state",
+        "osm_region": "Aquitaine",
         "extension": ".json",
         "name": "faune-aquitaine.org",
         "system": "biolovision",
@@ -106,6 +136,8 @@
     },
     {
         "category": "French Biolovision",
+        "osm_level": "",
+        "osm_region": "",
         "extension": ".json",
         "name": "faune-ardeche.org",
         "system": "biolovision",
@@ -113,6 +145,8 @@
     },
     {
         "category": "French Biolovision",
+        "osm_level": "",
+        "osm_region": "",
         "extension": ".json",
         "name": "faune-auvergne.org",
         "system": "biolovision",
@@ -120,6 +154,8 @@
     },
     {
         "category": "French Biolovision",
+        "osm_level": "state",
+        "osm_region": "Brittany",
         "extension": ".json",
         "name": "faune-bretagne.org",
         "system": "biolovision",
@@ -127,6 +163,8 @@
     },
     {
         "category": "French Biolovision",
+        "osm_level": "",
+        "osm_region": "",
         "extension": ".json",
         "name": "faune-champagne-ardenne.org",
         "system": "biolovision",
@@ -134,6 +172,8 @@
     },
     {
         "category": "French Biolovision",
+        "osm_level": "",
+        "osm_region": "",
         "extension": ".json",
         "name": "faune-charente-maritime.org",
         "system": "biolovision",
@@ -141,6 +181,8 @@
     },
     {
         "category": "French Biolovision",
+        "osm_level": "",
+        "osm_region": "",
         "extension": ".json",
         "name": "faune-charente.org",
         "system": "biolovision",
@@ -148,6 +190,8 @@
     },
     {
         "category": "French Biolovision",
+        "osm_level": "",
+        "osm_region": "",
         "extension": ".json",
         "name": "faune-drome.org",
         "system": "biolovision",
@@ -155,6 +199,8 @@
     },
     {
         "category": "French Biolovision",
+        "osm_level": "state",
+        "osm_region": "Ile-de-France",
         "extension": ".json",
         "name": "faune-iledefrance.org",
         "system": "biolovision",
@@ -162,6 +208,8 @@
     },
     {
         "category": "French Biolovision",
+        "osm_level": "",
+        "osm_region": "",
         "extension": ".json",
         "name": "faune-isere.org",
         "system": "biolovision",
@@ -169,6 +217,8 @@
     },
     {
         "category": "French Biolovision",
+        "osm_level": "",
+        "osm_region": "",
         "extension": ".json",
         "name": "faune-limousin.eu",
         "system": "biolovision",
@@ -176,6 +226,8 @@
     },
     {
         "category": "French Biolovision",
+        "osm_level": "",
+        "osm_region": "",
         "extension": ".json",
         "name": "faune-loire-atlantique.org",
         "system": "biolovision",
@@ -183,6 +235,8 @@
     },
     {
         "category": "French Biolovision",
+        "osm_level": "",
+        "osm_region": "",
         "extension": ".json",
         "name": "faune-loire.org",
         "system": "biolovision",
@@ -190,6 +244,8 @@
     },
     {
         "category": "French Biolovision",
+        "osm_level": "state",
+        "osm_region": "Grand Est",
         "extension": ".json",
         "name": "faune-lorraine.org",
         "system": "biolovision",
@@ -197,6 +253,8 @@
     },
     {
         "category": "French Biolovision",
+        "osm_level": "state",
+        "osm_region": "Occitania",
         "extension": ".json",
         "name": "faune-lr.org",
         "system": "biolovision",
@@ -204,6 +262,8 @@
     },
     {
         "category": "French Biolovision",
+        "osm_level": "",
+        "osm_region": "",
         "extension": ".json",
         "name": "faune-maine.org",
         "system": "biolovision",
@@ -211,6 +271,8 @@
     },
     {
         "category": "French Biolovision",
+        "osm_level": "",
+        "osm_region": "",
         "extension": ".json",
         "name": "faune-martinique.org",
         "system": "biolovision",
@@ -218,6 +280,8 @@
     },
     {
         "category": "French Biolovision",
+        "osm_level": "",
+        "osm_region": "",
         "extension": ".json",
         "name": "faune-nievre.org",
         "system": "biolovision",
@@ -225,6 +289,8 @@
     },
     {
         "category": "French Biolovision",
+        "osm_level": "state",
+        "osm_region": "Provence-Alpes-Côte d'Azur",
         "extension": ".json",
         "name": "faune-paca.org",
         "system": "biolovision",
@@ -232,6 +298,8 @@
     },
     {
         "category": "French Biolovision",
+        "osm_level": "state",
+        "osm_region": "Réunion",
         "extension": ".json",
         "name": "faune-reunion.fr",
         "system": "biolovision",
@@ -239,6 +307,8 @@
     },
     {
         "category": "French Biolovision",
+        "osm_level": "county",
+        "osm_region": "Rhône",
         "extension": ".json",
         "name": "faune-rhone.org",
         "system": "biolovision",
@@ -246,6 +316,8 @@
     },
     {
         "category": "French Biolovision",
+        "osm_level": "county",
+        "osm_region": "Savoy",
         "extension": ".json",
         "name": "faune-savoie.org",
         "system": "biolovision",
@@ -253,6 +325,8 @@
     },
     {
         "category": "French Biolovision",
+        "osm_level": "",
+        "osm_region": "",
         "extension": ".json",
         "name": "faune-tarn-aveyron.org",
         "system": "biolovision",
@@ -260,6 +334,8 @@
     },
     {
         "category": "French Biolovision",
+        "osm_level": "county",
+        "osm_region": "",
         "extension": ".json",
         "name": "faune-touraine.org",
         "system": "biolovision",
@@ -267,6 +343,8 @@
     },
     {
         "category": "French Biolovision",
+        "osm_level": "",
+        "osm_region": "",
         "extension": ".json",
         "name": "faune-vendee.org",
         "system": "biolovision",
@@ -274,6 +352,8 @@
     },
     {
         "category": "French Biolovision",
+        "osm_level": "",
+        "osm_region": "",
         "extension": ".json",
         "name": "faune-yonne.org",
         "system": "biolovision",
@@ -281,6 +361,8 @@
     },
     {
         "category": "French Biolovision",
+        "osm_level": "state",
+        "osm_region": "Bourgogne-Franche-Comté",
         "extension": ".json",
         "name": "franche-comte.lpo.fr",
         "system": "biolovision",
@@ -288,6 +370,8 @@
     },
     {
         "category": "French Biolovision",
+        "osm_level": "county",
+        "osm_region": "Upper Savoy",
         "extension": ".json",
         "name": "haute-savoie.lpo.fr",
         "system": "biolovision",
@@ -295,6 +379,8 @@
     },
     {
         "category": "French Biolovision",
+        "osm_level": "",
+        "osm_region": "",
         "extension": ".json",
         "name": "nature79.org",
         "system": "biolovision",
@@ -302,6 +388,8 @@
     },
     {
         "category": "French Biolovision",
+        "osm_level": "county",
+        "osm_region": "Côte-d'Or",
         "extension": ".json",
         "name": "oiseaux-cote-dor.org",
         "system": "biolovision",
@@ -309,6 +397,8 @@
     },
     {
         "category": "French Biolovision",
+        "osm_level": "county",
+        "osm_region": "Vienne",
         "extension": ".json",
         "name": "vienne.lpo.fr",
         "system": "biolovision",
@@ -316,6 +406,8 @@
     },
     {
         "category": "Others",
+        "osm_level": "",
+        "osm_region": "",
         "extension": ".csv",
         "name": "Birdlasser",
         "system": "birdlasser",
@@ -323,6 +415,8 @@
     },
     {
         "category": "Others",
+        "osm_level": "",
+        "osm_region": "",
         "extension": ".csv",
         "name": "observation.org",
         "system": "observation",
@@ -330,6 +424,8 @@
     },
     {
         "category": "Others",
+        "osm_level": "country",
+        "osm_region": "Netherland",
         "extension": ".csv",
         "name": "waarneming.nl",
         "system": "observation",
@@ -337,6 +433,8 @@
     },
     {
         "category": "Others",
+        "osm_level": "country",
+        "osm_region": "Belgium",
         "extension": ".csv",
         "name": "waarnemingen.be",
         "system": "observation",

@@ -242,10 +242,42 @@ export default {
         this.number_imported_form = export_data.forms.length;
         this.number_imported_sightings = export_data.sightings.length;
 
+        this.checkWebsite(export_data);
+
         export_data.website = this.website;
         this.$emit("exportData", export_data);
         this.loading_file_status = 1;
       };
+    },
+    async checkWebsite(export_data) {
+      // Check that the website can be validated.
+      if (!this.website.osm_level) {
+        alert(
+          "We could not verify that the file uploaded comes from the website selected. Please check manually before continuing."
+        );
+        return;
+      }
+
+      // Check the first sightings available
+      const d =
+        export_data.sightings.length > 0
+          ? export_data.sightings[0]
+          : export_data.forms_sightings[0][0];
+
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse.php?lat=${d.lat}&lon=${d.lon}&zoom=8&format=jsonv2`
+      );
+      const reverse = await response.json();
+      if (reverse.address[this.website.osm_level] != this.website.osm_region) {
+        console.log(reverse);
+        alert(
+          "The file uploaded doesn't seem to match the website selected (" +
+            this.website.name +
+            ").The first sightings seems to be located in " +
+            reverse.display_name +
+            ". Please check before continuing."
+        );
+      }
     },
   },
   mounted() {
