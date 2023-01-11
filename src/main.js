@@ -61,7 +61,7 @@ Vue.mixin({
                 id: id, // required
                 imported: f.imported || false,
                 exportable: f.exportable || false,
-                location_name: f.location_name || "New List " + id,
+                location_name: f.location_name.normalize("NFD").replace(/[\u0300-\u036f]/g, "") || "New List " + id,
                 lat: this.mathRound(f.lat, 6),
                 lon: this.mathRound(f.lon, 6),
                 date: f.date || "",
@@ -99,7 +99,7 @@ Vue.mixin({
             return {
                 id: s.id, // required
                 form_id: s.form_id, // required
-                location_name: s.location_name, // required
+                location_name: s.location_name.normalize("NFD").replace(/[\u0300-\u036f]/g, ""), // required
                 lat: this.mathRound(s.lat, 6),// required
                 lon: this.mathRound(s.lon, 6),// required
                 date: s.date, // required
