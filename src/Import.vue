@@ -72,7 +72,7 @@ export default {
           id: s.observers[0].id_sighting,
           form_id: form_id,
           date: datetime.split("T")[0],
-          time: datetime.split("T")[1],
+          time: s.observers[0].timing["@notime"] == "1" ? "" : datetime.split("T")[1],
           lat: parseFloat(s.observers[0].coord_lat),
           lon: parseFloat(s.observers[0].coord_lon),
           location_name: s.place.name,
@@ -110,7 +110,7 @@ export default {
 
           this.website.species_comment_template = {
             short:
-              '${ s.count_precision }${ s.count } ind. - ${ s.time } - <a href="http://maps.google.com?q=${s.lat},${s.lon}&t=k">${ s.lat }, ${ s.lon }</a> - <a href="' +
+              '${ s.count_precision }${ s.count } ind. ${ s.time ? " - " + s.time : "" } - <a href="http://maps.google.com?q=${s.lat},${s.lon}&t=k">${ s.lat }, ${ s.lon }</a> - <a href="' +
               this.website.website +
               'index.php?m_id=54&id=${ s.id }">' +
               this.website_name +
