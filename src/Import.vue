@@ -7,12 +7,22 @@ import biolovision_species_list from "/data/biolovision_species_list_short.json"
 <script>
 import Wkt from "wicket/wicket.js";
 import "leaflet";
+import Papa from "papaparse/papaparse.js";
 
-const precision_match = {
+const precision_match_biolovision = {
   MINIMUM: ">",
   EXACT_VALUE: "=",
   ESTIMATION: "~",
   NO_VALUE: "",
+};
+
+const precision_match_observation = {
+  unknown: ">",
+  "seen not counted": "",
+  "real count": "=",
+  estimated: "~",
+  extrapolated: "~",
+  abundance: "~",
 };
 
 export default {
@@ -79,7 +89,7 @@ export default {
           common_name: common_name,
           scientific_name: "",
           count: s.observers[0].estimation_code == "NO_VALUE" ? "x" : s.observers[0].count,
-          count_precision: precision_match[s.observers[0].estimation_code],
+          count_precision: precision_match_biolovision[s.observers[0].estimation_code],
           comment: comment,
         });
       });
@@ -167,7 +177,10 @@ export default {
         } else if (this.website.system == "birdlasser") {
           export_data.forms = [];
           export_data.forms_sightings = [];
-          export_data.sightings = this.csvToArray(reader.result).map((s, id) => {
+          export_data.sightings = Papa.parse(reader.result, {
+            skipEmptyLines: true,
+            header: true,
+          }).data.map((s, id) => {
             return this.createSighting({
               id: "s" + id,
               form_id: 0,
@@ -187,6 +200,38 @@ export default {
             short:
               '${ s.count_precision }${ s.count } ind. - ${ s.time } - <a href="http://maps.google.com?q=${s.lat},${s.lon}&t=k">${ s.lat }, ${ s.lon }</a>${ s.comment ? " - " + s.comment : "" }',
             long: '${ s.count_precision }${ s.count } ind. - ${ s.time } - ${ s.lat }, ${ s.lon }${ s.comment ? " - " + s.comment : "" }',
+            limit: 20,
+          };
+        } else if (this.website.system == "observation") {
+          export_data.forms = [];
+          export_data.forms_sightings = [];
+          export_data.sightings = Papa.parse(reader.result, {
+            skipEmptyLines: true,
+            header: true,
+          }).data.map((s) => {
+            return this.createSighting({
+              id: s.id,
+              form_id: 0,
+              date: s.date,
+              time: s.time,
+              lat: parseFloat(s.lat),
+              lon: parseFloat(s.lng),
+              location_name: s.location,
+              common_name: s["species name"],
+              scientific_name: "",
+              count: s["counting method"] == "seen not counted" ? "x" : s.number,
+              count_precision: precision_match_observation[s["counting method"]],
+              comment: s.notes,
+            });
+          });
+          this.website.species_comment_template = {
+            short:
+              '${ s.count_precision }${ s.count } ind. ${ s.time ? " - " + s.time : "" } - <a href="https://maps.google.com?q=${s.lat},${s.lon}&t=k">${ s.lat }, ${ s.lon }</a> - <a href="' +
+              this.website.website +
+              'observation/${ s.id }">' +
+              this.website_name +
+              '</a>${ s.comment ? " - " + s.comment : "" }',
+            long: '${ s.count_precision }${ s.count } ind. - ${ s.time ? " - " + s.time : "" } - ${ s.lat }, ${ s.lon }${ s.comment ? " - " + s.comment : "" }',
             limit: 20,
           };
         } else {
@@ -290,9 +335,12 @@ export default {
         </template>
         <template v-else-if="website.system == 'observation'">
           <p>
-            We are currently not supporting the converstion of observation data. It's coming up
-            soon!
+            Export your data from the "Observations" page which can be found in the menu under your
+            name on the top right of the page after you've logged in. Select the CSV option.
           </p>
+          <a :href="website.website" target="_blank" class="btn btn-primary"
+            >Export data from <strong>{{ website.name }}</strong>
+          </a>
         </template>
         <template v-else-if="website.system == 'birdlasser'">
           <p>

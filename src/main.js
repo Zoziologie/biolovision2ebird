@@ -256,18 +256,6 @@ Vue.mixin({
                 }).join("")
             }).join(sep)
         },
-        csvToArray(str, delimiter = ",") {
-            const headers = str.slice(0, str.indexOf("\n")).split(delimiter).map(x => x.replaceAll('"', ""));
-            const rows = str.slice(str.indexOf("\n") + 1).split("\n").filter(row => row.length > 0);
-            return rows.map(function (row) {
-                const values = row.split(delimiter).map(x => x.replaceAll('"', ""));
-                const el = headers.reduce(function (object, header, index) {
-                    object[header] = values[index];
-                    return object;
-                }, {});
-                return el;
-            });
-        }
     }
 })
 
