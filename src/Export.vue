@@ -8,7 +8,10 @@ export default {
   data() {
     return {
       sightings_error: [],
-      download_status: null,
+      prepare_status: null,
+      nb_sightings: null,
+      csv: "",
+      filename: "",
     };
   },
   computed: {
@@ -17,8 +20,8 @@ export default {
     },
   },
   methods: {
-    downloadFile() {
-      this.download_status = 0;
+    prepareFile() {
+      this.prepare_status = 0;
       const fid = this.forms_exportable.map((f) => f.id);
 
       const all_sightings = [
@@ -92,27 +95,30 @@ export default {
         return -1;
       }
 
-      const parser = new Parser({ header: false });
-      const csv = parser.parse(formatted_merged_sightings);
+      this.nb_sightings = formatted_merged_sightings.length;
 
-      const filename =
+      const parser = new Parser({ header: false });
+      this.csv = parser.parse(formatted_merged_sightings);
+
+      this.filename =
         new Date().toISOString().slice(0, 19).replaceAll(":", "") +
         "_" +
         this.forms_exportable.length +
         "forms_" +
-        all_sightings.length +
-        "sightings_biolovision2Bird";
-
+        this.nb_sightings +
+        "sightings.csv";
+      return 1;
+    },
+    downloadFile() {
       const downloadLink = document.createElement("a");
       downloadLink.setAttribute("type", "text/csv");
       downloadLink.setAttribute("target", "_blank");
-      var blob = new Blob(["\ufeff", csv], { type: "text/csv" });
+      var blob = new Blob(["\ufeff", this.csv], { type: "text/csv" });
       downloadLink.href = URL.createObjectURL(blob);
-      downloadLink.download = filename + ".csv";
+      downloadLink.download = this.filename;
       document.body.appendChild(downloadLink);
       downloadLink.click();
       document.body.removeChild(downloadLink);
-      return 1;
     },
   },
 };
@@ -136,13 +142,29 @@ export default {
           You are ready to export <strong> {{ forms_exportable.length }} checklists</strong> out of
           {{ forms.length }} checklists available!
         </p>
-        <b-button class="mx-auto" @click="download_status = downloadFile()">
-          <b-icon v-if="download_status == null" icon="download" />
-          <b-spinner v-else-if="download_status == 0" small style="width: 1.3rem; height: 1.3rem" />
-          <b-icon v-else-if="download_status == 1" icon="check-circle-fill" />
-          <b-icon v-else-if="download_status == -1" icon="x-lg" />
-          Download CSV file
+        <b-button class="mx-auto" @click="prepare_status = prepareFile()">
+          <span v-if="prepare_status == null"><b-icon icon="table" /> Prepare CSV</span>
+          <span v-else-if="prepare_status == 0"
+            ><b-spinner small style="width: 1.3rem; height: 1.3rem" /> Preparing CSV</span
+          >
+          <span v-else><b-icon icon="table" /> Refresh CSV file</span>
         </b-button>
+        <template v-if="prepare_status == 1">
+          <hr />
+          <h5 class="alert-heading">
+            <b-icon icon="check-circle-fill" /> CSV ready with {{ nb_sightings }} records!
+          </h5>
+          <p>
+            Once imported on eBird, the filename will be the only way to find out which import
+            correspond to which data. We encourage you to use a name which make sence to you.
+          </p>
+          <b-input-group prepend="filename">
+            <b-form-input type="text" v-model="filename"></b-form-input>
+          </b-input-group>
+          <b-button class="mx-auto mt-2" @click="downloadFile">
+            <b-icon icon="download" /> Download CSV
+          </b-button>
+        </template>
       </b-alert>
       <b-alert variant="danger" v-if="sightings_error.length > 0" show>
         <h4 class="alert-heading">Sorry, there has been an issue!</h4>
