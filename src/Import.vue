@@ -167,7 +167,10 @@ export default {
         } else if (this.website.system == "birdlasser") {
           export_data.forms = [];
           export_data.forms_sightings = [];
-          export_data.sightings = this.csvToArray(reader.result).map((s, id) => {
+          export_data.sightings = Papa.parse(reader.result, {
+            skipEmptyLines: true,
+            header: true,
+          }).data.map((s, id) => {
             return this.createSighting({
               id: "s" + id,
               form_id: 0,

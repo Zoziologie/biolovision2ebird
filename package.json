@@ -23,6 +23,7 @@
     "leaflet": "^1.9.3",
     "leaflet-draw": "^1.0.4",
     "leaflet-fullscreen": "^1.0.2",
+    "papaparse": "^5.3.2",
     "polyline-encoded": "^0.0.9",
     "sass": "^1.57.1",
     "vite": "^4.0.4",
