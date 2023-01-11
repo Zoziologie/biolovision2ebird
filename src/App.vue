@@ -716,7 +716,7 @@ import marker_color from "/data/marker_color.json";
                   <b-form-checkbox
                     switch
                     v-model="form_card.static_map.bounding_box_auto"
-                    :disabled="!form_card.static_map.bounding_box"
+                    :disabled="form_card.static_map.bounding_box_auto"
                   >
                     Auto-bound
                   </b-form-checkbox>
