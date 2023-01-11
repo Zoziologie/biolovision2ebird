@@ -209,7 +209,6 @@ export default {
             skipEmptyLines: true,
             header: true,
           }).data.map((s) => {
-            console.log(s);
             return this.createSighting({
               id: s.id,
               form_id: 0,
@@ -218,7 +217,7 @@ export default {
               lat: parseFloat(s.lat),
               lon: parseFloat(s.lng),
               location_name: s.location,
-              common_name: s["Species name"],
+              common_name: s["species name"],
               scientific_name: "",
               count: s["counting method"] == "seen not counted" ? "x" : s.number,
               count_precision: precision_match_observation[s["counting method"]],
@@ -232,7 +231,7 @@ export default {
               'observation/${ s.id }">' +
               this.website_name +
               '</a>${ s.comment ? " - " + s.comment : "" }',
-            long: '${ s.count_precision }${ s.count } ind. - ${ s.time } - ${ s.lat }, ${ s.lon }${ s.comment ? " - " + s.comment : "" }',
+            long: '${ s.count_precision }${ s.count } ind. - ${ s.time ? " - " + s.time : "" } - ${ s.lat }, ${ s.lon }${ s.comment ? " - " + s.comment : "" }',
             limit: 20,
           };
         } else {
