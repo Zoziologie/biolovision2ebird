@@ -28,6 +28,7 @@ const precision_match_observation = {
 export default {
   data() {
     return {
+      file: null,
       website_name: "",
       import_query_date: "offset",
       import_query_date_offset: 1,
@@ -94,12 +95,48 @@ export default {
         });
       });
     },
-    processFile(event) {
-      this.loading_file_status = 0;
-      const file = event.target.files[0];
+    async checkWebsite(export_data) {
+      // Check that the website can be validated.
+      if (!this.website.osm_level) {
+        alert(
+          "We could not verify that the file uploaded comes from the website selected. Please check manually before continuing."
+        );
+        return;
+      }
 
+      // Check the first sightings available
+      const d =
+        export_data.sightings.length > 0
+          ? export_data.sightings[0]
+          : export_data.forms_sightings[0][0];
+
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse.php?lat=${d.lat}&lon=${d.lon}&zoom=8&format=jsonv2`
+      );
+      const reverse = await response.json();
+      if (reverse.address[this.website.osm_level] != this.website.osm_region) {
+        console.log(reverse);
+        alert(
+          "The file uploaded doesn't seem to match the website selected (" +
+            this.website.name +
+            ").The first sightings seems to be located in " +
+            reverse.display_name +
+            ". Please check before continuing."
+        );
+      }
+    },
+  },
+  mounted() {
+    this.website_name = this.$cookie.get("website_name");
+  },
+  watch: {
+    website_name() {
+      this.$cookie.set("website_name", this.website_name, 365);
+    },
+    file() {
+      this.loading_file_status = 0;
       const reader = new FileReader();
-      reader.readAsText(file);
+      reader.readAsText(this.file);
       reader.onerror = (error) => {
         this.loading_file_status = -1;
         throw new Error(error);
@@ -249,44 +286,6 @@ export default {
         this.loading_file_status = 1;
       };
     },
-    async checkWebsite(export_data) {
-      // Check that the website can be validated.
-      if (!this.website.osm_level) {
-        alert(
-          "We could not verify that the file uploaded comes from the website selected. Please check manually before continuing."
-        );
-        return;
-      }
-
-      // Check the first sightings available
-      const d =
-        export_data.sightings.length > 0
-          ? export_data.sightings[0]
-          : export_data.forms_sightings[0][0];
-
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/reverse.php?lat=${d.lat}&lon=${d.lon}&zoom=8&format=jsonv2`
-      );
-      const reverse = await response.json();
-      if (reverse.address[this.website.osm_level] != this.website.osm_region) {
-        console.log(reverse);
-        alert(
-          "The file uploaded doesn't seem to match the website selected (" +
-            this.website.name +
-            ").The first sightings seems to be located in " +
-            reverse.display_name +
-            ". Please check before continuing."
-        );
-      }
-    },
-  },
-  mounted() {
-    this.website_name = this.$cookie.get("website_name");
-  },
-  watch: {
-    website_name() {
-      this.$cookie.set("website_name", this.website_name, 365);
-    },
   },
 };
 </script>
@@ -391,11 +390,10 @@ export default {
       <b-form-group label="Upload the exported file">
         <b-form-file
           size="lg"
-          @change="processFile"
+          v-model="file"
           :accept="website.extension"
           :placeholder="'Click to load your ' + website.extension + ' file'"
           class="mb-2"
-          no-drop
         />
       </b-form-group>
 
