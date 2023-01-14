@@ -26,7 +26,7 @@ const precision_match_observation = {
 };
 
 export default {
-  props: ["language"],
+  props: ["language_in", "static_map_in"],
   data() {
     return {
       file: null,
@@ -126,13 +126,11 @@ export default {
   },
   mounted() {
     this.website_name = this.$cookie.get("website_name");
-
-    fetch(`https://api.ebird.org/v2/ref/taxonomy/ebird?key=vcs68p4j67pt&fmt=json&locale=${this.language}`)
+    fetch(`https://api.ebird.org/v2/ref/taxonomy/ebird?key=vcs68p4j67pt&fmt=json&locale=${this.language_in}`)
       .then((response) => {
         return response.json();
       })
       .then((json) => {
-        console.log(json);
         for (var sp in biolovision_species_list) {
           let sp_found = json.find((e) => e.speciesCode == biolovision_species_list[sp]);
           if (sp_found) {

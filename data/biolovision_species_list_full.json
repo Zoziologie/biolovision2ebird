@@ -5350,6 +5350,16 @@
         "SPECIES_CODE": "cacgoo1"
     },
     {
+        "id": 1500,
+        "latin": "",
+        "english": "unidentified Bird",
+        "EN": "",
+        "SCI_NAME": "",
+        "PRIMARY_COM_NAME": "",
+        "en_IOC": "",
+        "SPECIES_CODE": "bird1"
+    },
+    {
         "id": 1501,
         "latin": "Phylloscopus collybita ssp.",
         "english": "Siberian-type Chiffchaff",

@@ -56,7 +56,6 @@ Vue.mixin({
             species_comment_template.long = f.species_comment_template.long || ""
             species_comment_template.short = f.species_comment_template.short || ""
             species_comment_template.limit = f.species_comment_template.limit || 5
-
             return {
                 id: id, // required
                 imported: f.imported || false,
@@ -76,22 +75,12 @@ Vue.mixin({
                 path: f.path || null,
                 path_distance: null,
                 static_map: {
-                    in_checklist_comment: true,
-                    style: "satellite-v9",
+                    in_checklist_comment: this.static_map_in.show,
+                    style: this.static_map_in.style,
                     bounding_box_auto: true,
                     bounding_box: null,
                     size: [300, 200],
-                    include_path: true,
-                    path_style: {
-                        strokeWidth: "5",
-                        strokeColor: "#AD8533",
-                        strokeOpacity: "1"
-                    },
-                    marker_style: {
-                        "marker-size": "small",
-                        "marker-symbol": "circle",
-                        "marker-color": "#808080"
-                    }
+                    include_path: true
                 },
             };
         },
@@ -209,7 +198,7 @@ Vue.mixin({
             // change polyline to multipoint
             sightings_geojson.geometry.type = "MultiPoint";
             // Add markes style
-            sightings_geojson.properties = form.static_map.marker_style;
+            sightings_geojson.properties = this.static_map.marker_style;
             // round the position to 4 digits (~1-10m precision)
             sightings_geojson.geometry.coordinates = sightings_geojson.geometry.coordinates.map((c) => [
                 this.mathRound(c[0], 4),
@@ -232,7 +221,7 @@ Vue.mixin({
                 // Encode to
                 const path_encodeded = L.PolylineUtil.encode(path_simplified, 5);
                 // Add style and encode for URI
-                const style = form.static_map.path_style;
+                const style = this.static_map.path_style;
                 path = `path-${style.strokeWidth}+${style.strokeColor.slice(1, style.strokeColor.length)}-${style.strokeOpacity
                     }(${encodeURIComponent(path_encodeded)}),`;
                 // Extend the bound of the map for path

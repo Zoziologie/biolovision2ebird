@@ -43,11 +43,67 @@ import marker_color from "/data/marker_color.json";
           <span class="text-danger">Refresh page to make effective.</span>
         </template>
       </b-form-group>
+      <hr />
+      <h4>Static Map</h4>
+      <small class="text-danger">Only apply for new checklists.</small>
+      <b-form-group>
+        <b-form-checkbox v-model="static_map.show" switch> Include static map in checklist comment </b-form-checkbox>
+      </b-form-group>
+      <b-form-group label="Background style: ">
+        <b-form-select size="sm" v-model="static_map.style" :options="mapbox_layers" />
+      </b-form-group>
+      <b-form-group label="Path style:">
+        <b-input-group size="sm">
+          <b-input
+            type="number"
+            min="1"
+            v-model="static_map.path_style.strokeWidth"
+            v-b-tooltip.hover.bottom
+            title="line width"
+          />
+          <b-input
+            type="color"
+            v-model="static_map.path_style.strokeColor"
+            v-b-tooltip.hover.bottom
+            title="line color"
+          />
+          <b-input
+            type="number"
+            min="0"
+            max="1"
+            step=".1"
+            v-model="static_map.path_style.strokeOpacity"
+            v-b-tooltip.hover.bottom
+            title="line opacity"
+          />
+        </b-input-group>
+      </b-form-group>
+      <b-form-group label="Markers style:" class="mb-0">
+        <b-input-group size="sm">
+          <b-form-select v-model="static_map.marker_style['marker-size']" v-b-tooltip.hover.bottom title="marker size">
+            <b-form-select-option value="small">Small</b-form-select-option>
+            <b-form-select-option value="medium">Medium</b-form-select-option>
+            <b-form-select-option value="large">Large</b-form-select-option>
+          </b-form-select>
+          <b-select
+            v-model="static_map.marker_style['marker-symbol']"
+            :options="maki_icon_list"
+            v-b-tooltip.hover.bottom
+            title="marker symbol"
+          />
+          <b-input
+            type="color"
+            v-model="static_map.marker_style['marker-color']"
+            v-b-tooltip.hover.bottom
+            title="marker color"
+          />
+        </b-input-group>
+      </b-form-group>
     </b-modal>
 
     <Intro v-if="!skip_intro" @skipIntro="skip_intro = true" />
 
-    <Import v-else @exportData="importData" :language="language" />
+    <Import v-else @exportData="importData" :language_in="language" :static_map_in="static_map" />
 
     <b-row class="my-3 p-3 bg-white rounded shadow-sm" v-if="count_forms != null">
       <b-col lg="12">
@@ -656,59 +712,10 @@ import marker_color from "/data/marker_color.json";
                     <b-input type="number" v-model="form_card.static_map.size[1]" />
                   </b-input-group>
                 </b-form-group>
-                <b-form-group label="Path:">
+                <b-form-group>
                   <b-form-checkbox switch v-model="form_card.static_map.include_path" class="mb-1">
                     Include path in static map
                   </b-form-checkbox>
-                  <b-input-group v-if="form_card.static_map.include_path" size="sm">
-                    <b-input
-                      type="number"
-                      min="1"
-                      v-model="form_card.static_map.path_style.strokeWidth"
-                      v-b-tooltip.hover.bottom
-                      title="line width"
-                    />
-                    <b-input
-                      type="color"
-                      v-model="form_card.static_map.path_style.strokeColor"
-                      v-b-tooltip.hover.bottom
-                      title="line color"
-                    />
-                    <b-input
-                      type="number"
-                      min="0"
-                      max="1"
-                      step=".1"
-                      v-model="form_card.static_map.path_style.strokeOpacity"
-                      v-b-tooltip.hover.bottom
-                      title="line opacity"
-                    />
-                  </b-input-group>
-                </b-form-group>
-                <b-form-group label="Markers:" class="mb-0">
-                  <b-input-group size="sm">
-                    <b-form-select
-                      v-model="form_card.static_map.marker_style['marker-size']"
-                      v-b-tooltip.hover.bottom
-                      title="marker size"
-                    >
-                      <b-form-select-option value="small">Small</b-form-select-option>
-                      <b-form-select-option value="medium">Medium</b-form-select-option>
-                      <b-form-select-option value="large">Large</b-form-select-option>
-                    </b-form-select>
-                    <b-select
-                      v-model="form_card.static_map.marker_style['marker-symbol']"
-                      :options="maki_icon_list"
-                      v-b-tooltip.hover.bottom
-                      title="marker symbol"
-                    />
-                    <b-input
-                      type="color"
-                      v-model="form_card.static_map.marker_style['marker-color']"
-                      v-b-tooltip.hover.bottom
-                      title="marker color"
-                    />
-                  </b-input-group>
                 </b-form-group>
               </b-card>
             </b-col>
@@ -761,7 +768,7 @@ window.type = true; // fix for leaflet draw
 
 const mapbox_layers = [
   {
-    text: "Satelite",
+    text: "Satellite",
     value: "satellite-v9",
   },
   {
@@ -773,7 +780,7 @@ const mapbox_layers = [
     value: "outdoors-v9",
   },
   {
-    text: "Satelite-Street",
+    text: "Satellite-Street",
     value: "satellite-streets-v11",
   },
   {
@@ -921,7 +928,20 @@ export default {
       // global settings
       skip_intro: false,
       language: "fr",
-      static_map_in_checklist_comment: true,
+      static_map: {
+        show: true,
+        style: "satellite-v9",
+        path_style: {
+          strokeWidth: "5",
+          strokeColor: "#AD8533",
+          strokeOpacity: "1",
+        },
+        marker_style: {
+          "marker-size": "small",
+          "marker-symbol": "circle",
+          "marker-color": "#808080",
+        },
+      },
       website: null,
       sightings: [],
       forms: [],
@@ -1151,16 +1171,16 @@ export default {
     },
   },
   mounted() {
-    this.skip_intro = JSON.parse(this.$cookie.get("skip_intro"));
-    this.language = JSON.parse(this.$cookie.get("language"));
+    if (JSON.parse(this.$cookie.get("skip_intro"))) this.skip_intro = JSON.parse(this.$cookie.get("skip_intro"));
+    if (JSON.parse(this.$cookie.get("language"))) this.language = JSON.parse(this.$cookie.get("language"));
+    if (JSON.parse(this.$cookie.get("static_map"))) this.static_map = JSON.parse(this.$cookie.get("static_map"));
 
-    const t = this;
     fetch("https://raw.githubusercontent.com/mapbox/maki/main/layouts/all.json")
       .then((response) => {
         return response.json();
       })
       .then((json) => {
-        t.maki_icon_list = json;
+        this.maki_icon_list = json;
       });
   },
   watch: {
@@ -1169,6 +1189,12 @@ export default {
     },
     language() {
       this.$cookie.set("language", JSON.stringify(this.language), 365);
+    },
+    static_map: {
+      handler() {
+        this.$cookie.set("static_map", JSON.stringify(this.static_map), 365);
+      },
+      deep: true,
     },
   },
 };
