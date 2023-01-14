@@ -137,7 +137,6 @@ export default {
             >. On the webapp, import all your sightings and create a single checklist at the step 2. Assign individual
             sightings. Then, modify location and dates in eBird as recommended on the link above.
           </li>
-          <li>Skip the intro by adding <code>?skip_intro=true</code> to the url</li>
         </ol>
       </b-alert>
     </b-col>

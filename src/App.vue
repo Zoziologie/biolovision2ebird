@@ -9,7 +9,7 @@ import marker_color from "/data/marker_color.json";
 
 <template class="bg-light">
   <b-container>
-    <b-row class="d-flex justify-content-between p-3 my-3 text-white rounded shadow-sm bg-secondary">
+    <b-row class="d-flex p-3 my-3 text-white rounded shadow-sm bg-secondary">
       <div>
         <h1 class="mb-0">Biolovision2eBird</h1>
         <h6>Convert biolovision data to eBird</h6>
@@ -19,10 +19,18 @@ import marker_color from "/data/marker_color.json";
         href="https://zoziologie.raphaelnussbaumer.com/"
       >
         <span class="mr-1">Powered by</span>
-
         <b-img class="me-3" :src="logo" alt="" height="36" />
       </b-link>
+
+      <b-button size="sm" class="ml-auto my-auto p" v-b-modal.modal-settings variant="light">
+        <b-icon icon="gear-fill" aria-hidden="true"></b-icon> Settings
+      </b-button>
     </b-row>
+
+    <b-modal id="modal-settings" title="Global settings" hide-footer>
+      <b-form-checkbox v-model="skip_intro"> Skip introduction </b-form-checkbox>
+    </b-modal>
+
     <Intro v-if="!skip_intro" @skipIntro="skip_intro = true" />
 
     <Import v-else @exportData="importData" />
@@ -799,11 +807,14 @@ export default {
   },
   data() {
     return {
+      // global settings
+      skip_intro: false,
+      static_map_in_checklist_comment: true,
+
       website: null,
       sightings: [],
       forms: [],
       forms_sightings: [],
-      skip_intro: false,
       count_forms: null,
       popup_latLng: [0, 0],
       popup_s: {},
@@ -1029,8 +1040,7 @@ export default {
     },
   },
   mounted() {
-    const urlParams = new URLSearchParams(window.location.search);
-    this.skip_intro = urlParams.get("skip_intro") ? true : false;
+    this.skip_intro = JSON.parse(this.$cookie.get("skip_intro"));
 
     const t = this;
     fetch("https://raw.githubusercontent.com/mapbox/maki/main/layouts/all.json")
@@ -1040,6 +1050,11 @@ export default {
       .then((res) => {
         t.maki_icon_list = JSON.parse(JSON.stringify(res));
       });
+  },
+  watch: {
+    skip_intro() {
+      this.$cookie.set("skip_intro", JSON.stringify(this.skip_intro), 365);
+    },
   },
 };
 </script>
