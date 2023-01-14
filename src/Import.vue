@@ -105,10 +105,7 @@ export default {
       }
 
       // Check the first sightings available
-      const d =
-        export_data.sightings.length > 0
-          ? export_data.sightings[0]
-          : export_data.forms_sightings[0][0];
+      const d = export_data.sightings.length > 0 ? export_data.sightings[0] : export_data.forms_sightings[0][0];
 
       const response = await fetch(
         `https://nominatim.openstreetmap.org/reverse.php?lat=${d.lat}&lon=${d.lon}&zoom=8&format=jsonv2`
@@ -298,11 +295,7 @@ export default {
     <b-col lg="6">
       <b-form-group label="Select the website from which to import the data">
         <b-select v-model="website_name" size="lg">
-          <b-select-option-group
-            v-for="cat in new Set(websites_list.map((w) => w.category))"
-            :label="cat"
-            :key="cat"
-          >
+          <b-select-option-group v-for="cat in new Set(websites_list.map((w) => w.category))" :label="cat" :key="cat">
             <b-select-option
               v-for="w in websites_list.filter((wl) => wl.category == cat)"
               :key="w.name"
@@ -349,13 +342,9 @@ export default {
           </b-col>
           <b-col lg="12" class="text-center mt-2">
             <a
-              :href="`${
-                website.website
-              }index.php?m_id=31&sp_DChoice=${import_query_date}&sp_DFrom=${new Date(
+              :href="`${website.website}index.php?m_id=31&sp_DChoice=${import_query_date}&sp_DFrom=${new Date(
                 import_query_date_range_from
-              ).toLocaleDateString('fr-CH')}&sp_DTo=${new Date(
-                import_query_date_range_to
-              ).toLocaleDateString(
+              ).toLocaleDateString('fr-CH')}&sp_DTo=${new Date(import_query_date_range_to).toLocaleDateString(
                 'fr-CH'
               )}&sp_DOffset=${import_query_date_offset}&sp_SChoice=all&sp_PChoice=all&sp_OnlyMyData=1`"
               target="_blank"
@@ -366,8 +355,8 @@ export default {
         </template>
         <template v-else-if="website.system == 'observation'">
           <p>
-            Export your data from the "Observations" page which can be found in the menu under your
-            name on the top right of the page after you've logged in. Select the CSV option.
+            Export your data from the "Observations" page which can be found in the menu under your name on the top
+            right of the page after you've logged in. Select the CSV option.
           </p>
           <a :href="website.website" target="_blank" class="btn btn-primary"
             >Export data from <strong>{{ website.name }}</strong>
@@ -375,8 +364,8 @@ export default {
         </template>
         <template v-else-if="website.system == 'birdlasser'">
           <p>
-            You can download your Birdlasser data from the app (use "Export (CSV) trip card") or
-            from the website (click on the trip card and "Basic Export" button)
+            You can download your Birdlasser data from the app (use "Export (CSV) trip card") or from the website (click
+            on the trip card and "Basic Export" button)
           </p>
           <b-col lg="12" class="text-center">
             <a href="https://www.birdlasser.com/user/" target="_blank" class="btn btn-primary"
@@ -429,10 +418,7 @@ export default {
         </p>
         <p>
           Please, copy the code below and paste it
-          <b-link
-            class="alert-link"
-            href="https://github.com/Zoziologie/biolovision2ebird/issues/11"
-            target="_blank"
+          <b-link class="alert-link" href="https://github.com/Zoziologie/biolovision2ebird/issues/11" target="_blank"
             >in a new comment on this Github issue</b-link
           >
           so that I can add or correct the taxonomic match.

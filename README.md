@@ -10,5 +10,4 @@ The process involves the following steps:
 4. Download an [eBird Record Format](https://support.ebird.org/en/support/solutions/articles/48000907878-upload-spreadsheet-data-to-ebird#anchorRecordFormat) file and upload it to [eBird import tool](https://ebird.org/import/upload.form).
 5. The post-processing steps include [fixing species name](https://support.ebird.org/en/support/solutions/articles/48000907878-upload-spreadsheet-data-to-ebird#anchorCleanData), potentially merging checklist location to hotspot (have a look at [Merge2Hotspot](https://zoziologie.raphaelnussbaumer.com/merge2hotspot/)) and review your checklist for any issues.
 
-
 ![Example](/assets/b2e.gif)

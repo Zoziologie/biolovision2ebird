@@ -151,26 +151,22 @@ export default {
         </b-button>
         <template v-if="prepare_status == 1">
           <hr />
-          <h5 class="alert-heading">
-            <b-icon icon="check-circle-fill" /> CSV ready with {{ nb_sightings }} records!
-          </h5>
+          <h5 class="alert-heading"><b-icon icon="check-circle-fill" /> CSV ready with {{ nb_sightings }} records!</h5>
           <p>
-            Once imported on eBird, the filename will be the only way to find out which import
-            correspond to which data. We encourage you to use a name which make sence to you.
+            Once imported on eBird, the filename will be the only way to find out which import correspond to which data.
+            We encourage you to use a name which make sence to you.
           </p>
           <b-input-group prepend="filename">
             <b-form-input type="text" v-model="filename"></b-form-input>
           </b-input-group>
-          <b-button class="mx-auto mt-2" @click="downloadFile">
-            <b-icon icon="download" /> Download CSV
-          </b-button>
+          <b-button class="mx-auto mt-2" @click="downloadFile"> <b-icon icon="download" /> Download CSV </b-button>
         </template>
       </b-alert>
       <b-alert variant="danger" v-if="sightings_error.length > 0" show>
         <h4 class="alert-heading">Sorry, there has been an issue!</h4>
         <p>
-          The following {{ sightings_error.length }} entries are not acceptable by eBird. The most
-          common issue is that the species comments exceed 8000 character.
+          The following {{ sightings_error.length }} entries are not acceptable by eBird. The most common issue is that
+          the species comments exceed 8000 character.
         </p>
       </b-alert>
       {{ sightings_error[0] }}
@@ -179,20 +175,13 @@ export default {
       <h5>Final steps:</h5>
       <p>
         Go to
-        <a
-          href="http://ebird.org/ebird/import/upload.form?theme=ebird"
-          target="_blank"
-          rel="noopener"
-          >eBird Import</a
-        >, choose "eBird Record Format (Extended)", select the csv file on your computer and click
-        on "Import File".
+        <a href="http://ebird.org/ebird/import/upload.form?theme=ebird" target="_blank" rel="noopener">eBird Import</a>,
+        choose "eBird Record Format (Extended)", select the csv file on your computer and click on "Import File".
       </p>
 
       <p>
         The import process on eBird
-        <b-link
-          href="https://github.com/Zoziologie/biolovision2ebird/wiki/FAQ#long-processing-time"
-          target="_blank"
+        <b-link href="https://github.com/Zoziologie/biolovision2ebird/wiki/FAQ#long-processing-time" target="_blank"
           >might take a while</b-link
         >, don't worry. After it has been processed, you might still have to
         <b-link
@@ -202,11 +191,10 @@ export default {
         >before the data will appear on your eBird profile.
       </p>
       <p>
-        Make sure you carefully review your checklist: merge locations to hotspots when possible and
-        check the texts and links in species comment. If you see an error, it is best to
-        <b-link href="https://ebird.org/import/status/all.htm" target="_blank"
-          >delete your import</b-link
-        >, and re-upload a new version rather than fix them on eBird.
+        Make sure you carefully review your checklist: merge locations to hotspots when possible and check the texts and
+        links in species comment. If you see an error, it is best to
+        <b-link href="https://ebird.org/import/status/all.htm" target="_blank">delete your import</b-link>, and
+        re-upload a new version rather than fix them on eBird.
       </p>
     </b-col>
   </b-row>

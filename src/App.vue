@@ -9,9 +9,7 @@ import marker_color from "/data/marker_color.json";
 
 <template class="bg-light">
   <b-container>
-    <b-row
-      class="d-flex justify-content-between p-3 my-3 text-white rounded shadow-sm bg-secondary"
-    >
+    <b-row class="d-flex justify-content-between p-3 my-3 text-white rounded shadow-sm bg-secondary">
       <div>
         <h1 class="mb-0">Biolovision2eBird</h1>
         <h6>Convert biolovision data to eBird</h6>
@@ -34,18 +32,14 @@ import marker_color from "/data/marker_color.json";
         <h2 class="border-bottom pb-2 mb-3">2. Assign individual sightings to checklists</h2>
       </b-col>
       <template v-if="sightings.length == 0">
-        <b-col
-          ><p>
-            The data uploaded does not contain individual sightings. You can go to step 3.
-          </p></b-col
-        >
+        <b-col><p>The data uploaded does not contain individual sightings. You can go to step 3.</p></b-col>
       </template>
       <template v-else>
         <b-col lg="6">
           <p>
-            First click on "Create a checklist" to combine sightings into a checklist by drawing a
-            rectanlge over them on the map. You can still modify the sightings allocation by first
-            selecting the checklist in the dropdown list, and click on
+            First click on "Create a checklist" to combine sightings into a checklist by drawing a rectanlge over them
+            on the map. You can still modify the sightings allocation by first selecting the checklist in the dropdown
+            list, and click on
             <b-icon icon="box-arrow-in-down" /> to draw a new rectangle.
           </p>
           <p>The sightings under "0. Non-assigned" will not be exported.</p>
@@ -54,30 +48,18 @@ import marker_color from "/data/marker_color.json";
           <div class="p-3 text-white rounded shadow-sm bg-secondary">
             <h5>Automatic attribution</h5>
             <p>
-              Use this "magic" function to automatically create checklists. The function clusters
-              sightings which are within a given distance and duration to one another.
+              Use this "magic" function to automatically create checklists. The function clusters sightings which are
+              within a given distance and duration to one another.
             </p>
             <b-row>
               <b-col sm="4">
                 <b-input-group append="hr">
-                  <b-form-input
-                    v-model="assign_duration"
-                    type="number"
-                    step="0.1"
-                    min="0.1"
-                    max="24"
-                  />
+                  <b-form-input v-model="assign_duration" type="number" step="0.1" min="0.1" max="24" />
                 </b-input-group>
               </b-col>
               <b-col sm="4">
                 <b-input-group append="km">
-                  <b-form-input
-                    v-model="assign_distance"
-                    type="number"
-                    step="0.1"
-                    min="0.1"
-                    max="5"
-                  />
+                  <b-form-input v-model="assign_distance" type="number" step="0.1" min="0.1" max="5" />
                 </b-input-group>
               </b-col>
               <b-col sm="4">
@@ -106,9 +88,7 @@ import marker_color from "/data/marker_color.json";
                     create_checklist = true;
                     map_draw_rectangle.enable();
                   "
-                  v-b-tooltip.hover="
-                    'Draw a rectangle over the sightings to be included in a new checklist.'
-                  "
+                  v-b-tooltip.hover="'Draw a rectangle over the sightings to be included in a new checklist.'"
                 >
                   <b-icon icon="plus" /> Create a checklist
                 </b-button>
@@ -139,18 +119,10 @@ import marker_color from "/data/marker_color.json";
                   </b-input-group-append>
                 </b-input-group>
                 <b-button-group class="mt-2">
-                  <b-button
-                    @click="assignClean"
-                    v-b-tooltip.bottom
-                    title="Delete empty checklists."
-                    variant="warning"
+                  <b-button @click="assignClean" v-b-tooltip.bottom title="Delete empty checklists." variant="warning"
                     ><b-icon icon="trash" /> Clean</b-button
                   >
-                  <b-button
-                    @click="assignReset"
-                    variant="danger"
-                    v-b-tooltip.bottom
-                    title="Delete all checklists."
+                  <b-button @click="assignReset" variant="danger" v-b-tooltip.bottom title="Delete all checklists."
                     ><b-icon icon="arrow-counterclockwise" /> Reset</b-button
                   >
                 </b-button-group>
@@ -210,11 +182,9 @@ import marker_color from "/data/marker_color.json";
       <b-col lg="3">
         <div class="align-self-center text-center m-auto">
           <h3 class="mb-0">
-            <b-badge
-              v-b-tooltip.hover.html="protocol(form_card).title"
-              :variant="protocol(form_card).variant"
-              >{{ protocol(form_card).name.toUpperCase() }}</b-badge
-            >
+            <b-badge v-b-tooltip.hover.html="protocol(form_card).title" :variant="protocol(form_card).variant">{{
+              protocol(form_card).name.toUpperCase()
+            }}</b-badge>
           </h3>
         </div>
       </b-col>
@@ -237,8 +207,7 @@ import marker_color from "/data/marker_color.json";
             </template>
             <b-dropdown-item href="#" v-for="f in forms" :key="f.id" @click="form_card = f">
               {{ f.id + ". " + f.location_name }}
-              <b-badge :variant="protocol(f).variant" class="ml-2"
-                >{{ protocol(f).letter }} </b-badge
+              <b-badge :variant="protocol(f).variant" class="ml-2">{{ protocol(f).letter }} </b-badge
               ><b-icon icon="check-lg" v-show="f.exportable" class="ml-2" variant="primary" />
             </b-dropdown-item>
           </b-dropdown>
@@ -269,8 +238,8 @@ import marker_color from "/data/marker_color.json";
         <b-card no-body>
           <b-card-body v-if="form_card">
             <b-alert show variant="danger" class="mt-2" v-show="form_card_duration > 60 * 24">
-              <b-icon-exclamation-triangle-fill class="mr-2" />This checklist contains sightings
-              from different days which is not in agreement with
+              <b-icon-exclamation-triangle-fill class="mr-2" />This checklist contains sightings from different days
+              which is not in agreement with
               <b-link
                 href="https://ebird.freshdesk.com/en/support/solutions/articles/48000795623#eBird-Checklist-Basics"
                 class="alert-link"
@@ -279,20 +248,18 @@ import marker_color from "/data/marker_color.json";
               >.
             </b-alert>
             <b-alert show variant="danger" class="mt-2" v-show="form_card_sightings.length == 0">
-              <b-icon-exclamation-triangle-fill class="mr-2" />This checklist contains no sightings.
-              Please add sightings in step 2.
+              <b-icon-exclamation-triangle-fill class="mr-2" />This checklist contains no sightings. Please add
+              sightings in step 2.
             </b-alert>
             <b-alert show variant="danger" class="mt-2" v-show="form_card_invalid">
-              <b-icon-exclamation-triangle-fill class="mr-2" />This checklist is invalid according
-              to
+              <b-icon-exclamation-triangle-fill class="mr-2" />This checklist is invalid according to
               <b-link
                 href="https://ebird.freshdesk.com/en/support/solutions/articles/48000795623#eBird-Checklist-Basics"
                 class="alert-link"
                 target="_blank"
                 >eBird Core Rules & Requirements</b-link
               >
-              and cannot be exported. Please make sure to include a valid date and a duration less
-              than a day.
+              and cannot be exported. Please make sure to include a valid date and a duration less than a day.
             </b-alert>
             <b-row>
               <b-col lg="9">
@@ -320,11 +287,7 @@ import marker_color from "/data/marker_color.json";
                   <b-col lg="4">
                     <b-form-group label="Date:">
                       <b-input-group>
-                        <b-form-input
-                          v-model="form_card.date"
-                          type="date"
-                          :state="form_card.date != ''"
-                        />
+                        <b-form-input v-model="form_card.date" type="date" :state="form_card.date != ''" />
                         <b-input-group-append>
                           <b-button
                             variant="secondary"
@@ -340,12 +303,7 @@ import marker_color from "/data/marker_color.json";
                   <b-col lg="4">
                     <b-form-group label="Time:">
                       <b-input-group>
-                        <b-form-input
-                          v-model="form_card.time"
-                          type="time"
-                          step="60"
-                          :state="form_card.time != ''"
-                        />
+                        <b-form-input v-model="form_card.time" type="time" step="60" :state="form_card.time != ''" />
                         <b-input-group-append>
                           <b-button
                             variant="secondary"
@@ -367,10 +325,7 @@ import marker_color from "/data/marker_color.json";
                           step="1"
                           min="1"
                           max="1440"
-                          :state="
-                            parseFloat(form_card.duration) > 0 &&
-                            parseFloat(form_card.duration) <= 1440
-                          "
+                          :state="parseFloat(form_card.duration) > 0 && parseFloat(form_card.duration) <= 1440"
                         />
                         <b-input-group-append>
                           <b-button
@@ -393,10 +348,7 @@ import marker_color from "/data/marker_color.json";
                           min="0"
                           max="100"
                           type="number"
-                          :state="
-                            parseFloat(form_card.distance) >= 0 &&
-                            parseFloat(form_card.distance) <= 80
-                          "
+                          :state="parseFloat(form_card.distance) >= 0 && parseFloat(form_card.distance) <= 80"
                         />
                         <b-input-group-append>
                           <b-button
@@ -460,19 +412,10 @@ import marker_color from "/data/marker_color.json";
                       <template #label>
                         Species comment template
                         <b-button-group size="sm">
-                          <b-button
-                            v-b-modal.modal-species-comment
-                            v-b-tooltip.hover
-                            title="Open edit windows"
-                          >
+                          <b-button v-b-modal.modal-species-comment v-b-tooltip.hover title="Open edit windows">
                             <b-icon icon="pencil" />
                           </b-button>
-                          <b-button
-                            variant="danger"
-                            v-b-tooltip.hover
-                            title="Erase comment"
-                            @click="eraseComment"
-                          >
+                          <b-button variant="danger" v-b-tooltip.hover title="Erase comment" @click="eraseComment">
                             <b-icon icon="trash" />
                           </b-button>
                           <b-button
@@ -487,28 +430,18 @@ import marker_color from "/data/marker_color.json";
                       </template>
                       <b-card class="bg-light">
                         <div
-                          v-html="
-                            speciesComment(form_card.species_comment_template, [
-                              form_card_sightings[0],
-                            ])
-                          "
+                          v-html="speciesComment(form_card.species_comment_template, [form_card_sightings[0]])"
                         ></div>
                       </b-card>
                     </b-form-group>
-                    <b-modal
-                      id="modal-species-comment"
-                      title="Species comment template"
-                      size="lg"
-                      hide-footer
-                    >
+                    <b-modal id="modal-species-comment" title="Species comment template" size="lg" hide-footer>
                       <b-row>
                         <b-col lg="8">
                           <p class="mt-2">
-                            You can edit the species comment template using the HTML/JS code below.
-                            Use the notation <code>${ <i>javascript code</i> }</code> to display
-                            dynamic information on each species. You can acess the variable at the
-                            species level using <code>${ s.<i>property</i> }</code> where the
-                            properties are listed on the table on the right.
+                            You can edit the species comment template using the HTML/JS code below. Use the notation
+                            <code>${ <i>javascript code</i> }</code> to display dynamic information on each species. You
+                            can acess the variable at the species level using <code>${ s.<i>property</i> }</code> where
+                            the properties are listed on the table on the right.
                           </p>
                           <b-form-textarea
                             v-model="form_card.species_comment_template.short"
@@ -531,26 +464,21 @@ import marker_color from "/data/marker_color.json";
                           </h6>
                           <b-card class="bg-light">
                             <div
-                              v-html="
-                                speciesComment(form_card.species_comment_template, [template_s])
-                              "
+                              v-html="speciesComment(form_card.species_comment_template, [template_s])"
                               class="mr-2 b-2"
                             ></div>
                           </b-card>
                           <h6 class="mt-5">Multiple sightings</h6>
                           <p>
-                            When a species is recorded multiple time, we add the count and join the
-                            comments in a new line.
+                            When a species is recorded multiple time, we add the count and join the comments in a new
+                            line.
                           </p>
                           <p>
-                            With the current template, you can expect to exceed eBird's limit of
-                            characters (8000) with around
+                            With the current template, you can expect to exceed eBird's limit of characters (8000) with
+                            around
                             {{
                               Math.floor(
-                                8000 /
-                                  (speciesComment(form_card.species_comment_template, [template_s])
-                                    .length +
-                                    5)
+                                8000 / (speciesComment(form_card.species_comment_template, [template_s]).length + 5)
                               )
                             }}
                             sightings of the same species.
@@ -577,12 +505,7 @@ import marker_color from "/data/marker_color.json";
                           </h6>
                           <b-card class="bg-light">
                             <div
-                              v-html="
-                                speciesComment(
-                                  form_card.species_comment_template,
-                                  Array(20).fill(template_s)
-                                )
-                              "
+                              v-html="speciesComment(form_card.species_comment_template, Array(20).fill(template_s))"
                             ></div>
                           </b-card>
                         </b-col>
@@ -605,11 +528,7 @@ import marker_color from "/data/marker_color.json";
                   <template #label> Checklist comment: </template>
                   <b-form-checkbox switch v-model="form_card.static_map.in_checklist_comment">
                     Include static map
-                    <b-button
-                      size="sm"
-                      v-b-modal.modal-card
-                      v-if="form_card.static_map.in_checklist_comment"
-                    >
+                    <b-button size="sm" v-b-modal.modal-card v-if="form_card.static_map.in_checklist_comment">
                       <b-icon icon="map" />
                     </b-button>
                   </b-form-checkbox>
@@ -635,9 +554,7 @@ import marker_color from "/data/marker_color.json";
                     <b-button
                       variant="primary"
                       @click="
-                        form_card.distance = form_card_distance_bezier
-                          ? form_card_distance_bezier
-                          : form_card.distance
+                        form_card.distance = form_card_distance_bezier ? form_card_distance_bezier : form_card.distance
                       "
                       >Apply distance to checklist</b-button
                     >
@@ -671,14 +588,7 @@ import marker_color from "/data/marker_color.json";
                   <l-marker ref="marker_popup_card" :latLng="popup_latLng">
                     <l-icon :popup-anchor="[0, 2]" :icon-size="[0, 0]" :icon-url="logo" />
                     <l-popup>
-                      <b-table
-                        bordered
-                        small
-                        striped
-                        hover
-                        responsive
-                        :items="object2Table(popup_s)"
-                      />
+                      <b-table bordered small striped hover responsive :items="object2Table(popup_s)" />
                     </l-popup>
                   </l-marker>
                   <l-marker
@@ -703,16 +613,10 @@ import marker_color from "/data/marker_color.json";
               <b-img :src="staticMapLink(form_card, form_card_sightings)" />
               <b-card bg-variant="light" class="mt-2">
                 <b-form-group label="Background style: ">
-                  <b-form-select
-                    size="sm"
-                    v-model="form_card.static_map.style"
-                    :options="mapbox_layers"
-                  />
+                  <b-form-select size="sm" v-model="form_card.static_map.style" :options="mapbox_layers" />
                 </b-form-group>
                 <b-form-group label="View:">
-                  <b-button size="sm" @click="makeSnapshot">
-                    <b-icon icon="camera" /> Use current map view
-                  </b-button>
+                  <b-button size="sm" @click="makeSnapshot"> <b-icon icon="camera" /> Use current map view </b-button>
                   <b-form-checkbox
                     switch
                     v-model="form_card.static_map.bounding_box_auto"
@@ -791,16 +695,9 @@ import marker_color from "/data/marker_color.json";
       </b-col>
     </b-row>
 
-    <Export
-      :forms="forms"
-      :sightings="sightings"
-      :forms_sightings="forms_sightings"
-      v-if="forms.length > 0"
-    />
+    <Export :forms="forms" :sightings="sightings" :forms_sightings="forms_sightings" v-if="forms.length > 0" />
 
-    <b-row
-      class="d-flex justify-content-between p-3 my-3 text-white rounded shadow-sm bg-secondary"
-    >
+    <b-row class="d-flex justify-content-between p-3 my-3 text-white rounded shadow-sm bg-secondary">
       <b-col lg="12">
         <strong>Any issues or suggestions?</strong> Check the
         <b-link
@@ -964,9 +861,7 @@ export default {
       this.$refs.map_sightings.mapObject.on(L.Draw.Event.CREATED, (e) => {
         if (e.layerType === "rectangle") {
           // find sightings inside rectangle
-          let sightings = this.sightings.filter((s) =>
-            e.layer.getBounds().contains(L.latLng(s.lat, s.lon))
-          );
+          let sightings = this.sightings.filter((s) => e.layer.getBounds().contains(L.latLng(s.lat, s.lon)));
           if (sightings.length == 0) {
             alert(
               "You tried to create a checklist with no sightings. Please try again by drawing the rectangle over sightings"
@@ -1067,15 +962,11 @@ export default {
       }
     },
     makeSnapshot() {
-      this.form_card.static_map.bounding_box = this.$refs.map_card.mapObject
-        .getBounds()
-        .toBBoxString();
+      this.form_card.static_map.bounding_box = this.$refs.map_card.mapObject.getBounds().toBBoxString();
       this.form_card.static_map.bounding_box_auto = false;
     },
     getFormName() {
-      this.form_card.location_name = this.mathMode(
-        this.form_card_sightings.map((s) => s.location_name)
-      );
+      this.form_card.location_name = this.mathMode(this.form_card_sightings.map((s) => s.location_name));
     },
     setObserverForAll(nb) {
       const forms = this.forms.filter((f) => !(f.number_observer > 0));
@@ -1111,11 +1002,7 @@ export default {
       }
     },
     eraseComment() {
-      if (
-        confirm(
-          "You are about to erase the content of the species comment. This action cannot be undone."
-        )
-      ) {
+      if (confirm("You are about to erase the content of the species comment. This action cannot be undone.")) {
         this.form_card.species_comment_template = "";
       }
     },
@@ -1129,9 +1016,7 @@ export default {
       return sightings;
     },
     form_card_duration() {
-      const datetime = this.form_card_sightings
-        .map((s) => new Date(s.date + "T" + s.time))
-        .sort((a, b) => a - b);
+      const datetime = this.form_card_sightings.map((s) => new Date(s.date + "T" + s.time)).sort((a, b) => a - b);
       return Math.round((datetime[datetime.length - 1] - datetime[0]) / 1000 / 60);
     },
     form_card_invalid() {
