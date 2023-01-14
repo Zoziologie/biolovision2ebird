@@ -29,7 +29,7 @@ export default {
         ...this.forms_sightings.flat(1).filter((s) => fid.includes(s.form_id)),
       ];
 
-      const formatted_merged_sightings = this.forms
+      const formatted_merged_sightings = this.forms_exportable
         .map((f) => {
           const filtered_sightings = all_sightings.filter((s) => f.id == s.form_id);
 
