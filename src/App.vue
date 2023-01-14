@@ -15,7 +15,7 @@ import marker_color from "/data/marker_color.json";
         <h6>Convert biolovision data to eBird</h6>
       </div>
       <b-link
-        class="py-3 px-0 px-lg-3 rounded text-white text-decoration-none bg-primary"
+        class="py-3 px-0 px-lg-3 rounded text-white text-decoration-none bg-primary my-auto ml-4"
         href="https://zoziologie.raphaelnussbaumer.com/"
       >
         <span class="mr-1">Powered by</span>
@@ -28,12 +28,26 @@ import marker_color from "/data/marker_color.json";
     </b-row>
 
     <b-modal id="modal-settings" title="Global settings" hide-footer>
-      <b-form-checkbox v-model="skip_intro"> Skip introduction </b-form-checkbox>
+      <b-alert show>These settings are saved in your coockies so that they can be re-used in futur visit.</b-alert>
+      <b-form-group>
+        <b-form-checkbox v-model="skip_intro" switch> Skip introduction on future visit </b-form-checkbox>
+      </b-form-group>
+      <b-form-group description="">
+        <template #label>
+          Select the language used in
+          <b-link href="https://ebird.org/prefs" target="_blank">your eBird account</b-link>:
+        </template>
+        <b-form-select :options="language_options" v-model="language" />
+        <template #description>
+          Language used for the taxonomy matching on the import in eBird.
+          <span class="text-danger">Refresh page to make effective.</span>
+        </template>
+      </b-form-group>
     </b-modal>
 
     <Intro v-if="!skip_intro" @skipIntro="skip_intro = true" />
 
-    <Import v-else @exportData="importData" />
+    <Import v-else @exportData="importData" :language="language" />
 
     <b-row class="my-3 p-3 bg-white rounded shadow-sm" v-if="count_forms != null">
       <b-col lg="12">
@@ -772,6 +786,103 @@ const mapbox_layers = [
   },
 ];
 
+const language_options = [
+  { value: "en_US", text: "English (United States)" },
+  { value: "en_UK", text: "English (UK)" },
+  { value: "fr", text: "French" },
+  { value: "de", text: "German" },
+  { value: "af", text: "Afrikaans" },
+  { value: "sq", text: "Albanian" },
+  { value: "ar", text: "Arabic" },
+  { value: "hy", text: "Armenian" },
+  { value: "as", text: "Assamese" },
+  { value: "ast", text: "Asturian" },
+  { value: "az", text: "Azerbaijani" },
+  { value: "bn", text: "Bangla" },
+  { value: "eu", text: "Basque" },
+  { value: "bg", text: "Bulgarian" },
+  { value: "ca", text: "Catalan" },
+  { value: "zh", text: "Chinese" },
+  { value: "zh_SIM", text: "Chinese (SIM)" },
+  { value: "hr", text: "Croatian" },
+  { value: "cs", text: "Czech" },
+  { value: "da", text: "Danish" },
+  { value: "nl", text: "Dutch" },
+  { value: "en", text: "English" },
+  { value: "en_AU", text: "English (Australia)" },
+  { value: "en_BD", text: "English (Bangladesh)" },
+  { value: "en_HAW", text: "English (HAW)" },
+  { value: "en_HBW", text: "English (HBW)" },
+  { value: "en_IN", text: "English (India)" },
+  { value: "en_IOC", text: "English (IOC)" },
+  { value: "en_KE", text: "English (Kenya)" },
+  { value: "en_MY", text: "English (Malaysia)" },
+  { value: "en_NZ", text: "English (New Zealand)" },
+  { value: "en_PH", text: "English (Philippines)" },
+  { value: "en_ZA", text: "English (South Africa)" },
+  { value: "en_AE", text: "English (United Arab Emirates)" },
+  { value: "fo", text: "Faroese" },
+  { value: "fi", text: "Finnish" },
+  { value: "fr_AOU", text: "French (AOU)" },
+  { value: "fr_CA", text: "French (Canada)" },
+  { value: "fr_FR", text: "French (France)" },
+  { value: "fr_GF", text: "French (French Guiana)" },
+  { value: "fr_GP", text: "French (Guadeloupe)" },
+  { value: "fr_HT", text: "French (Haiti)" },
+  { value: "gl", text: "Galician" },
+  { value: "el", text: "Greek" },
+  { value: "gu", text: "Gujarati" },
+  { value: "ht_HT", text: "Haitian Creole (Haiti)" },
+  { value: "he", text: "Hebrew" },
+  { value: "hi", text: "Hindi" },
+  { value: "hu", text: "Hungarian" },
+  { value: "is", text: "Icelandic" },
+  { value: "in", text: "Indonesian" },
+  { value: "it", text: "Italian" },
+  { value: "ja", text: "Japanese" },
+  { value: "ko", text: "Korean" },
+  { value: "lv", text: "Latvian" },
+  { value: "lt", text: "Lithuanian" },
+  { value: "ml", text: "Malayalam" },
+  { value: "mr", text: "Marathi" },
+  { value: "mn", text: "Mongolian" },
+  { value: "no", text: "Norwegian" },
+  { value: "or", text: "Odia" },
+  { value: "fa", text: "Persian" },
+  { value: "pl", text: "Polish" },
+  { value: "pt_AO", text: "Portuguese (Angola)" },
+  { value: "pt_BR", text: "Portuguese (Brazil)" },
+  { value: "pt_PT", text: "Portuguese (Portugal)" },
+  { value: "pt_RAA", text: "Portuguese (RAA)" },
+  { value: "pt_RAM", text: "Portuguese (RAM)" },
+  { value: "ro", text: "Romanian" },
+  { value: "ru", text: "Russian" },
+  { value: "sr", text: "Serbian" },
+  { value: "sk", text: "Slovak" },
+  { value: "sl", text: "Slovenian" },
+  { value: "es", text: "Spanish" },
+  { value: "es_AR", text: "Spanish (Argentina)" },
+  { value: "es_CL", text: "Spanish (Chile)" },
+  { value: "es_CR", text: "Spanish (Costa Rica)" },
+  { value: "es_CU", text: "Spanish (Cuba)" },
+  { value: "es_DO", text: "Spanish (Dominican Republic)" },
+  { value: "es_EC", text: "Spanish (Ecuador)" },
+  { value: "es_HN", text: "Spanish (Honduras)" },
+  { value: "es_MX", text: "Spanish (Mexico)" },
+  { value: "es_PA", text: "Spanish (Panama)" },
+  { value: "es_PY", text: "Spanish (Paraguay)" },
+  { value: "es_PE", text: "Spanish (Peru)" },
+  { value: "es_PR", text: "Spanish (Puerto Rico)" },
+  { value: "es_ES", text: "Spanish (Spain)" },
+  { value: "es_UY", text: "Spanish (Uruguay)" },
+  { value: "es_VE", text: "Spanish (Venezuela)" },
+  { value: "sv", text: "Swedish" },
+  { value: "te", text: "Telugu" },
+  { value: "th", text: "Thai" },
+  { value: "tr", text: "Turkish" },
+  { value: "uk", text: "Ukrainian" },
+];
+
 import {
   LMap,
   LTileLayer,
@@ -809,8 +920,8 @@ export default {
     return {
       // global settings
       skip_intro: false,
+      language: "fr",
       static_map_in_checklist_comment: true,
-
       website: null,
       sightings: [],
       forms: [],
@@ -1041,19 +1152,23 @@ export default {
   },
   mounted() {
     this.skip_intro = JSON.parse(this.$cookie.get("skip_intro"));
+    this.language = JSON.parse(this.$cookie.get("language"));
 
     const t = this;
     fetch("https://raw.githubusercontent.com/mapbox/maki/main/layouts/all.json")
       .then((response) => {
         return response.json();
       })
-      .then((res) => {
-        t.maki_icon_list = JSON.parse(JSON.stringify(res));
+      .then((json) => {
+        t.maki_icon_list = json;
       });
   },
   watch: {
     skip_intro() {
       this.$cookie.set("skip_intro", JSON.stringify(this.skip_intro), 365);
+    },
+    language() {
+      this.$cookie.set("language", JSON.stringify(this.language), 365);
     },
   },
 };

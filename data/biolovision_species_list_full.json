@@ -677,7 +677,7 @@
         "SCI_NAME": "Cairina moschata (Domestic type)",
         "PRIMARY_COM_NAME": "Muscovy Duck (Domestic type)",
         "en_IOC": "Muscovy Duck (Domestic type)",
-        "SPECIES_CODE": "musduc2"
+        "SPECIES_CODE": "musduc3"
     },
     {
         "id": 84,
@@ -1417,7 +1417,7 @@
         "SCI_NAME": "Circus cyaneus",
         "PRIMARY_COM_NAME": "Hen Harrier",
         "en_IOC": "Hen Harrier",
-        "SPECIES_CODE": "henhar"
+        "SPECIES_CODE": "norhar1"
     },
     {
         "id": 164,
@@ -3917,7 +3917,7 @@
         "SCI_NAME": "Regulus ignicapilla",
         "PRIMARY_COM_NAME": "Firecrest",
         "en_IOC": "Madeira/Common Firecrest",
-        "SPECIES_CODE": "firecr2"
+        "SPECIES_CODE": "firecr1"
     },
     {
         "id": 457,
@@ -4977,7 +4977,7 @@
         "SCI_NAME": "Melanitta deglandi",
         "PRIMARY_COM_NAME": "BWhite-winged scoter",
         "en_IOC": "White-winged scoter",
-        "SPECIES_CODE": ""
+        "SPECIES_CODE": "whwsco2"
     },
     {
         "id": 1083,
@@ -5127,7 +5127,7 @@
         "SCI_NAME": "Acrocephalus palustris/scirpaceus",
         "PRIMARY_COM_NAME": "Eurasian Reed or Marsh Warbler",
         "en_IOC": "Marsh Warbler/Eurasian Reed Warbler",
-        "SPECIES_CODE": "y00624"
+        "SPECIES_CODE": "y01046"
     },
     {
         "id": 1185,
