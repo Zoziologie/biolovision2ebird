@@ -102,6 +102,9 @@ Vue.mixin({
             };
         },
         distanceFromLatLngs(latlngs) {
+            if (latlngs.length == null) {
+                return null // if no path were defined before
+            }
             if (Array.isArray(latlngs) && !(latlngs[0] instanceof L.LatLng)) {
                 latlngs = L.polyline(latlngs)
             }
