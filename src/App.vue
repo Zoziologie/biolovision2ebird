@@ -28,7 +28,9 @@ import marker_color from "/data/marker_color.json";
     </b-row>
 
     <b-modal id="modal-settings" title="Global settings" hide-footer>
-      <b-alert show>These settings are saved in your coockies so that they can be re-used in futur visit.</b-alert>
+      <b-alert show
+        >These settings are saved in your browser's coockies so that they can be re-used in future visit.</b-alert
+      >
       <b-form-group>
         <b-form-checkbox v-model="skip_intro" switch> Skip introduction on future visit </b-form-checkbox>
       </b-form-group>
@@ -49,11 +51,11 @@ import marker_color from "/data/marker_color.json";
       <b-form-group>
         <b-form-checkbox v-model="static_map.show" switch> Include static map in checklist comment </b-form-checkbox>
       </b-form-group>
-      <b-form-group label="Background style: ">
-        <b-form-select size="sm" v-model="static_map.style" :options="mapbox_layers" />
+      <b-form-group label="Background style: " label-cols-lg="4">
+        <b-form-select v-model="static_map.style" :options="mapbox_layers" />
       </b-form-group>
-      <b-form-group label="Path style:">
-        <b-input-group size="sm">
+      <b-form-group label="Path style:" label-cols-lg="4">
+        <b-input-group>
           <b-input
             type="number"
             min="1"
@@ -78,8 +80,8 @@ import marker_color from "/data/marker_color.json";
           />
         </b-input-group>
       </b-form-group>
-      <b-form-group label="Markers style:" class="mb-0">
-        <b-input-group size="sm">
+      <b-form-group label="Markers style:" label-cols-lg="4">
+        <b-input-group>
           <b-form-select v-model="static_map.marker_style['marker-size']" v-b-tooltip.hover.bottom title="marker size">
             <b-form-select-option value="small">Small</b-form-select-option>
             <b-form-select-option value="medium">Medium</b-form-select-option>
