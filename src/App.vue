@@ -351,10 +351,9 @@ import marker_color from "/data/marker_color.json";
                     <b-input-group-append>
                       <b-button
                         variant="secondary"
-                        @click="getFormName"
                         v-b-tooltip.hover
-                        title="Use the most common location name of all sightings"
-                        ><b-icon icon="arrow-repeat"
+                        title="Select a hotspot from the map below if appropriate."
+                        ><b-icon icon="map"
                       /></b-button>
                     </b-input-group-append>
                   </b-input-group>
@@ -527,6 +526,39 @@ import marker_color from "/data/marker_color.json";
                       <IconChecklist :size="24" :fid="form_card.id" />
                     </l-marker>
                     <l-polyline :lat-lngs="form_card.path" :color="'brown'" v-if="form_card.path" />
+                    <l-marker
+                      v-for="h in form_card.hotspots"
+                      :key="h.locId"
+                      :lat-lng="[h.lat, h.lng]"
+                      :zIndexOffset="999"
+                    >
+                      <l-icon
+                        icon-url="hotspot.png"
+                        :icon-size="[25, 34]"
+                        :icon-anchor="[12.5, 34]"
+                        :popupAnchor="[0, -34]"
+                      />
+                      <l-popup>
+                        <a :href="`https://ebird.org/hotspot/${h.locId}`" target="_blank">
+                          <h6>{{ h.locName }}</h6>
+                        </a>
+                        <b>Number of species:</b> {{ h.numSpeciesAllTime }}<br />
+                        <b>Last checklist:</b> {{ h.latestObsDt }}<br />
+                        <b-button
+                          class="mt-2"
+                          variant="primary"
+                          @click="
+                            () => {
+                              form_card.location_name = h.locName;
+                              form_card.lon = h.lng;
+                              form_card.lat = h.lat;
+                            }
+                          "
+                        >
+                          Use as checklist location</b-button
+                        >
+                      </l-popup>
+                    </l-marker>
                   </l-map>
                 </b-aspect>
               </b-col>
@@ -1074,9 +1106,6 @@ export default {
       this.form_card.static_map.bounding_box = this.$refs.map_card.mapObject.getBounds().toBBoxString();
       this.form_card.static_map.bounding_box_auto = false;
     },
-    getFormName() {
-      this.form_card.location_name = this.mathMode(this.form_card_sightings.map((s) => s.location_name));
-    },
     setObserverForAll(nb) {
       const forms = this.forms.filter((f) => !(f.number_observer > 0));
       if (forms.length == 0) {
@@ -1152,6 +1181,19 @@ export default {
       });
   },
   watch: {
+    form_card() {
+      if (this.form_card.hotspots.length == 0) {
+        fetch(
+          `https://api.ebird.org/v2/ref/hotspot/geo?lat=${this.form_card.lat}&lng=${this.form_card.lon}&dist=10&fmt=json&key=vcs68p4j67pt`
+        )
+          .then((response) => {
+            return response.json();
+          })
+          .then((json) => {
+            this.form_card.hotspots = json;
+          });
+      }
+    },
     form_card_sightings() {
       if (this.$refs.map_card) {
         this.$refs.map_card.mapObject.fitBounds(

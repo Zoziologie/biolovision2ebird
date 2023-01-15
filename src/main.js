@@ -82,6 +82,7 @@ Vue.mixin({
                     size: [330, 220],
                     include_path: true
                 },
+                hotspots: []
             };
         },
         createSighting(s) {
