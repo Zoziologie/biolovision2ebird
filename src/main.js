@@ -128,7 +128,7 @@ Vue.mixin({
         checklistComment(form, sightings) {
             return (
                 form.checklist_comment +
-                (form.static_map.in_checklist_comment
+                (form.static_map.show
                     ? `<img src="${this.staticMapLink(
                         form,
                         sightings
