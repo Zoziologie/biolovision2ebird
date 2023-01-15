@@ -49,23 +49,25 @@ import marker_color from "/data/marker_color.json";
       <h4>Static Map</h4>
       <small class="text-danger">Only apply for new checklists.</small>
       <b-form-group>
-        <b-form-checkbox v-model="static_map.show" switch> Include static map in checklist comment </b-form-checkbox>
+        <b-form-checkbox v-model="global_static_map.show" switch>
+          Include static map in checklist comment
+        </b-form-checkbox>
       </b-form-group>
       <b-form-group label="Background style: " label-cols-lg="4">
-        <b-form-select v-model="static_map.style" :options="mapbox_layers" />
+        <b-form-select v-model="global_static_map.style" :options="mapbox_layers" />
       </b-form-group>
       <b-form-group label="Path style:" label-cols-lg="4">
         <b-input-group>
           <b-input
             type="number"
             min="1"
-            v-model="static_map.path_style.strokeWidth"
+            v-model="global_static_map.path_style.strokeWidth"
             v-b-tooltip.hover.bottom
             title="line width"
           />
           <b-input
             type="color"
-            v-model="static_map.path_style.strokeColor"
+            v-model="global_static_map.path_style.strokeColor"
             v-b-tooltip.hover.bottom
             title="line color"
           />
@@ -74,7 +76,7 @@ import marker_color from "/data/marker_color.json";
             min="0"
             max="1"
             step=".1"
-            v-model="static_map.path_style.strokeOpacity"
+            v-model="global_static_map.path_style.strokeOpacity"
             v-b-tooltip.hover.bottom
             title="line opacity"
           />
@@ -82,20 +84,24 @@ import marker_color from "/data/marker_color.json";
       </b-form-group>
       <b-form-group label="Markers style:" label-cols-lg="4">
         <b-input-group>
-          <b-form-select v-model="static_map.marker_style['marker-size']" v-b-tooltip.hover.bottom title="marker size">
+          <b-form-select
+            v-model="global_static_map.marker_style['marker-size']"
+            v-b-tooltip.hover.bottom
+            title="marker size"
+          >
             <b-form-select-option value="small">Small</b-form-select-option>
             <b-form-select-option value="medium">Medium</b-form-select-option>
             <b-form-select-option value="large">Large</b-form-select-option>
           </b-form-select>
           <b-select
-            v-model="static_map.marker_style['marker-symbol']"
+            v-model="global_static_map.marker_style['marker-symbol']"
             :options="maki_icon_list"
             v-b-tooltip.hover.bottom
             title="marker symbol"
           />
           <b-input
             type="color"
-            v-model="static_map.marker_style['marker-color']"
+            v-model="global_static_map.marker_style['marker-color']"
             v-b-tooltip.hover.bottom
             title="marker color"
           />
@@ -105,7 +111,7 @@ import marker_color from "/data/marker_color.json";
 
     <Intro v-if="!skip_intro" @skipIntro="skip_intro = true" />
 
-    <Import v-else @exportData="importData" :language_in="language" :static_map_in="static_map" />
+    <Import v-else @exportData="importData" @exportForm="createForm" :language="language" />
 
     <b-row class="my-3 p-3 bg-white rounded shadow-sm" v-if="count_forms != null">
       <b-col lg="12">
@@ -920,7 +926,7 @@ export default {
     return {
       skip_intro: false,
       language: "en",
-      static_map: {
+      global_static_map: {
         show: true,
         style: "satellite-v9",
         path_style: {
@@ -955,8 +961,46 @@ export default {
     };
   },
   methods: {
+    createForm(f, id) {
+      let species_comment_template = f.species_comment_template || {};
+      species_comment_template.long = f.species_comment_template.long || "";
+      species_comment_template.short = f.species_comment_template.short || "";
+      species_comment_template.limit = f.species_comment_template.limit || 5;
+      const fnew = {
+        id: id, // required
+        imported: f.imported || false,
+        exportable: f.exportable || false,
+        location_name: f.location_name.normalize("NFD").replace(/[\u0300-\u036f]/g, "") || "New List " + id,
+        lat: this.mathRound(f.lat, 6),
+        lon: this.mathRound(f.lon, 6),
+        date: f.date || "",
+        time: f.time ? f.time.substring(0, 5) : "",
+        duration: f.duration || "",
+        distance: f.distance || "",
+        number_observer: f.number_observer || "",
+        full_form: f.full_form || false,
+        primary_purpose: f.primary_purpose || false,
+        checklist_comment: f.checklist_comment || "",
+        species_comment_template: species_comment_template,
+        path: f.path || null,
+        path_distance: null,
+        static_map: {
+          show: this.global_static_map.show,
+          style: this.global_static_map.style,
+          path_style: this.global_static_map.path_style,
+          marker_style: this.global_static_map.marker_style,
+          bounding_box_auto: true,
+          bounding_box: null,
+          size: [330, 220],
+          include_path: true,
+        },
+        hotspots: [],
+      };
+      this.forms.push(fnew);
+      return fnew;
+    },
     importData(d) {
-      this.forms = d.forms;
+      //this.forms = d.forms;
       this.sightings = d.sightings;
       this.forms_sightings = d.forms_sightings;
       this.website = d.website;
@@ -1017,10 +1061,8 @@ export default {
                   lon: sightings.reduce((a, b) => a + b.lon, 0) / sightings.length,
                   species_comment_template: this.website.species_comment_template,
                 },
-                this.count_forms + 1,
-                this.static_map
+                this.count_forms + 1
               );
-              this.forms.push(fnew);
               this.assign_form_id = fnew.id;
               this.form_card = fnew;
               this.count_forms++;
@@ -1085,8 +1127,8 @@ export default {
       }
 
       for (var i = this.count_forms + 1; i < form_id; i++) {
-        var sightings2 = sightings.filter((s) => s.form_id == i);
-        var fnew = this.createForm(
+        const sightings2 = sightings.filter((s) => s.form_id == i);
+        const fnew = this.createForm(
           {
             location_name: this.mathMode(sightings2.map((s) => s.location_name)),
             date: sightings2[0].date,
@@ -1095,10 +1137,8 @@ export default {
             lon: sightings2.reduce((a, b) => a + b.lon, 0) / sightings2.length,
             species_comment_template: this.website.species_comment_template,
           },
-          this.count_forms + 1,
-          this.static_map
+          this.count_forms + 1
         );
-        this.forms.push(fnew);
         this.count_forms++;
         this.assign_form_id = fnew.id;
         this.form_card = fnew;
@@ -1172,7 +1212,8 @@ export default {
   mounted() {
     if (JSON.parse(this.$cookie.get("skip_intro"))) this.skip_intro = JSON.parse(this.$cookie.get("skip_intro"));
     if (JSON.parse(this.$cookie.get("language"))) this.language = JSON.parse(this.$cookie.get("language"));
-    if (JSON.parse(this.$cookie.get("static_map"))) this.static_map = JSON.parse(this.$cookie.get("static_map"));
+    if (JSON.parse(this.$cookie.get("global_static_map")))
+      this.global_static_map = JSON.parse(this.$cookie.get("global_static_map"));
 
     fetch("https://raw.githubusercontent.com/mapbox/maki/main/layouts/all.json")
       .then((response) => {
@@ -1209,9 +1250,9 @@ export default {
     language() {
       this.$cookie.set("language", JSON.stringify(this.language), 365);
     },
-    static_map: {
+    global_static_map: {
       handler() {
-        this.$cookie.set("static_map", JSON.stringify(this.static_map), 365);
+        this.$cookie.set("global_static_map", JSON.stringify(this.global_static_map), 365);
       },
       deep: true,
     },

@@ -26,7 +26,7 @@ const precision_match_observation = {
 };
 
 export default {
-  props: ["language_in", "static_map_in"],
+  props: ["language"],
   data() {
     return {
       file: null,
@@ -36,7 +36,7 @@ export default {
       import_query_date_range_from: "",
       import_query_date_range_to: "",
       loading_file_status: null,
-      number_imported_form: null,
+      number_imported_form: 0,
       number_imported_sightings: null,
       taxonomic_issues: [],
       clipboard_icon: "clipboard",
@@ -51,6 +51,22 @@ export default {
     },
   },
   methods: {
+    createSighting(s) {
+      return {
+        id: s.id, // required
+        form_id: s.form_id, // required
+        location_name: s.location_name.normalize("NFD").replace(/[\u0300-\u036f]/g, ""), // required
+        lat: this.mathRound(s.lat, 6), // required
+        lon: this.mathRound(s.lon, 6), // required
+        date: s.date, // required
+        time: s.time ? s.time.substring(0, 5) : "",
+        common_name: s.common_name || "",
+        scientific_name: s.scientific_name || "",
+        count: s.count || null,
+        count_precision: s.count_precision || "",
+        comment: s.comment || "",
+      };
+    },
     sightingsBiolovisionTransformation(sightings, form_id) {
       return sightings.map((s) => {
         const datetime = s.observers[0].timing["@ISO8601"].split("+")[0];
@@ -126,7 +142,7 @@ export default {
   },
   mounted() {
     this.website_name = this.$cookie.get("website_name");
-    fetch(`https://api.ebird.org/v2/ref/taxonomy/ebird?key=vcs68p4j67pt&fmt=json&locale=${this.language_in}`)
+    fetch(`https://api.ebird.org/v2/ref/taxonomy/ebird?key=vcs68p4j67pt&fmt=json&locale=${this.language}`)
       .then((response) => {
         return response.json();
       })
@@ -180,7 +196,7 @@ export default {
               'index.php?m_id=54&id=${ s.id }">${ s.time }</a>${ s.comment ? " - " + s.comment : "" }',
           };
 
-          export_data.forms = data.forms.map((f, id) => {
+          data.forms.forEach((f, id) => {
             const date = f.sightings[0].observers[0].timing["@ISO8601"].split("T")[0];
             const timeStart = date + "T" + f.time_start;
             const timeStop = date + "T" + f.time_stop;
@@ -198,34 +214,32 @@ export default {
               path = wkt.toJson().coordinates.map((c) => [c[1], c[0]]);
               distance = this.distanceFromLatLngs(path);
             }
-            return this.createForm(
-              {
-                imported: true,
-                location_name: this.mathMode(f.sightings.map((s) => s.place.name)),
-                lat: f.lat,
-                lon: f.lon,
-                date: date,
-                time: f.time_start,
-                duration: (new Date(timeStop) - new Date(timeStart)) / 1000 / 60,
-                distance: distance,
-                number_observer: null,
-                full_form: f.full_form == "1",
-                primary_purpose: true,
-                checklist_comment: f.comment || "",
-                species_comment_template: this.website.species_comment_template,
-                path: path,
-              },
-              id + 1,
-              this.static_map_in
-            );
+            const f_out = {
+              imported: true,
+              location_name: this.mathMode(f.sightings.map((s) => s.place.name)),
+              lat: f.lat,
+              lon: f.lon,
+              date: date,
+              time: f.time_start,
+              duration: (new Date(timeStop) - new Date(timeStart)) / 1000 / 60,
+              distance: distance,
+              number_observer: null,
+              full_form: f.full_form == "1",
+              primary_purpose: true,
+              checklist_comment: f.comment || "",
+              species_comment_template: this.website.species_comment_template,
+              path: path,
+            };
+            this.$emit("exportForm", f_out, id + 1);
           });
 
+          this.number_imported_form = data.forms.length;
+
           // Convert sightings from the forms, keep them seperate
-          export_data.forms_sightings = data.forms.map((f, fid) => {
-            return this.sightingsBiolovisionTransformation(f.sightings, export_data.forms[fid].id);
+          export_data.forms_sightings = data.forms.map((f, id) => {
+            return this.sightingsBiolovisionTransformation(f.sightings, id + 1);
           });
         } else if (this.website.system == "birdlasser") {
-          export_data.forms = [];
           export_data.forms_sightings = [];
           export_data.sightings = Papa.parse(reader.result, {
             skipEmptyLines: true,
@@ -253,7 +267,6 @@ export default {
             limit: 20,
           };
         } else if (this.website.system == "observation") {
-          export_data.forms = [];
           export_data.forms_sightings = [];
           export_data.sightings = Papa.parse(reader.result, {
             skipEmptyLines: true,
@@ -289,7 +302,6 @@ export default {
           throw new Error("No correct system");
         }
 
-        this.number_imported_form = export_data.forms.length;
         this.number_imported_sightings = export_data.sightings.length;
 
         this.checkWebsite(export_data);

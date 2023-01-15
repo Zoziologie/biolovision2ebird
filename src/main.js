@@ -51,56 +51,6 @@ Vue.mixin({
                 alert('Cannot copy. Try manually.');
             }
         },
-        createForm(f, id, static_map) {
-            let species_comment_template = f.species_comment_template || {}
-            species_comment_template.long = f.species_comment_template.long || ""
-            species_comment_template.short = f.species_comment_template.short || ""
-            species_comment_template.limit = f.species_comment_template.limit || 5
-            return {
-                id: id, // required
-                imported: f.imported || false,
-                exportable: f.exportable || false,
-                location_name: f.location_name.normalize("NFD").replace(/[\u0300-\u036f]/g, "") || "New List " + id,
-                lat: this.mathRound(f.lat, 6),
-                lon: this.mathRound(f.lon, 6),
-                date: f.date || "",
-                time: f.time ? f.time.substring(0, 5) : "",
-                duration: f.duration || "",
-                distance: f.distance || "",
-                number_observer: f.number_observer || "",
-                full_form: f.full_form || false,
-                primary_purpose: f.primary_purpose || false,
-                checklist_comment: f.checklist_comment || "",
-                species_comment_template: species_comment_template,
-                path: f.path || null,
-                path_distance: null,
-                static_map: {
-                    in_checklist_comment: static_map.show,
-                    style: static_map.style,
-                    bounding_box_auto: true,
-                    bounding_box: null,
-                    size: [330, 220],
-                    include_path: true
-                },
-                hotspots: []
-            };
-        },
-        createSighting(s) {
-            return {
-                id: s.id, // required
-                form_id: s.form_id, // required
-                location_name: s.location_name.normalize("NFD").replace(/[\u0300-\u036f]/g, ""), // required
-                lat: this.mathRound(s.lat, 6),// required
-                lon: this.mathRound(s.lon, 6),// required
-                date: s.date, // required
-                time: s.time ? s.time.substring(0, 5) : "",
-                common_name: s.common_name || "",
-                scientific_name: s.scientific_name || "",
-                count: s.count || null,
-                count_precision: s.count_precision || "",
-                comment: s.comment || "",
-            };
-        },
         distanceFromLatLngs(latlngs) {
             if (latlngs.length == null) {
                 return null // if no path were defined before
@@ -202,7 +152,7 @@ Vue.mixin({
             // change polyline to multipoint
             sightings_geojson.geometry.type = "MultiPoint";
             // Add markes style
-            sightings_geojson.properties = this.static_map.marker_style;
+            sightings_geojson.properties = form.static_map.marker_style;
             // round the position to 4 digits (~1-10m precision)
             sightings_geojson.geometry.coordinates = sightings_geojson.geometry.coordinates.map((c) => [
                 this.mathRound(c[0], 4),
@@ -225,7 +175,7 @@ Vue.mixin({
                 // Encode to
                 const path_encodeded = L.PolylineUtil.encode(path_simplified, 5);
                 // Add style and encode for URI
-                const style = this.static_map.path_style;
+                const style = form.static_map.path_style;
                 path = `path-${style.strokeWidth}+${style.strokeColor.slice(1, style.strokeColor.length)}-${style.strokeOpacity
                     }(${encodeURIComponent(path_encodeded)}),`;
                 // Extend the bound of the map for path
