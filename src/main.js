@@ -79,7 +79,7 @@ Vue.mixin({
                     style: this.static_map_in.style,
                     bounding_box_auto: true,
                     bounding_box: null,
-                    size: [300, 200],
+                    size: [330, 220],
                     include_path: true
                 },
             };

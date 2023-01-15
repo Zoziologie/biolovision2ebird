@@ -340,387 +340,346 @@ import marker_color from "/data/marker_color.json";
               and cannot be exported. Please make sure to include a valid date and a duration less than a day.
             </b-alert>
             <b-row>
-              <b-col lg="9">
-                <b-row>
-                  <b-col lg="4">
-                    <b-form-group label="Location name:">
-                      <b-input-group>
-                        <b-form-input
-                          v-model="form_card.location_name"
-                          type="text"
-                          :state="form_card.location_name.length > 0"
-                        />
-                        <b-input-group-append>
-                          <b-button
-                            variant="secondary"
-                            @click="getFormName"
-                            v-b-tooltip.hover
-                            title="Use the most common location name of all sightings"
-                            ><b-icon icon="arrow-repeat"
-                          /></b-button>
-                        </b-input-group-append>
-                      </b-input-group>
-                    </b-form-group>
-                  </b-col>
-                  <b-col lg="4">
-                    <b-form-group label="Date:">
-                      <b-input-group>
-                        <b-form-input v-model="form_card.date" type="date" :state="form_card.date != ''" />
-                        <b-input-group-append>
-                          <b-button
-                            variant="secondary"
-                            @click="form_card.date = form_card_sightings[0].date"
-                            v-b-tooltip.hover
-                            title="Compute earliest date of all sightings."
-                            ><b-icon icon="arrow-repeat"
-                          /></b-button>
-                        </b-input-group-append>
-                      </b-input-group>
-                    </b-form-group>
-                  </b-col>
-                  <b-col lg="4">
-                    <b-form-group label="Time:">
-                      <b-input-group>
-                        <b-form-input v-model="form_card.time" type="time" step="60" :state="form_card.time != ''" />
-                        <b-input-group-append>
-                          <b-button
-                            variant="secondary"
-                            @click="form_card.time = form_card_sightings[0].time"
-                            v-b-tooltip.hover
-                            title="Compute earliest time of all sightings."
-                            ><b-icon icon="arrow-repeat"
-                          /></b-button>
-                        </b-input-group-append>
-                      </b-input-group>
-                    </b-form-group>
-                  </b-col>
-                  <b-col lg="4">
-                    <b-form-group label="Duration (minutes):">
-                      <b-input-group>
-                        <b-form-input
-                          v-model="form_card.duration"
-                          type="number"
-                          step="1"
-                          min="1"
-                          max="1440"
-                          :state="parseFloat(form_card.duration) > 0 && parseFloat(form_card.duration) <= 1440"
-                        />
-                        <b-input-group-append>
-                          <b-button
-                            variant="secondary"
-                            @click="form_card.duration = form_card_duration"
-                            v-b-tooltip.hover.bottom
-                            title="Compute duration between the first and last sightings."
-                            ><b-icon icon="arrow-repeat"
-                          /></b-button>
-                        </b-input-group-append>
-                      </b-input-group>
-                    </b-form-group>
-                  </b-col>
-                  <b-col lg="4">
-                    <b-form-group label="Distance (km):">
-                      <b-input-group>
-                        <b-form-input
-                          v-model="form_card.distance"
-                          step="0.1"
-                          min="0"
-                          max="100"
-                          type="number"
-                          :state="parseFloat(form_card.distance) >= 0 && parseFloat(form_card.distance) <= 80"
-                        />
-                        <b-input-group-append>
-                          <b-button
-                            variant="secondary"
-                            v-b-modal.modal-card
-                            v-b-tooltip.hover.bottom
-                            title="Draw your path on the map to compute the distance."
-                          >
-                            <b-icon icon="map" />
-                          </b-button>
-                        </b-input-group-append>
-                      </b-input-group>
-                    </b-form-group>
-                  </b-col>
-                  <b-col lg="4">
-                    <b-form-group label="Party size:">
-                      <template #label> Party size: </template>
-                      <b-input-group>
-                        <b-form-spinbutton
-                          v-model="form_card.number_observer"
-                          step="1"
-                          min="1"
-                          max="100"
-                          :state="parseFloat(form_card.number_observer) > 0"
-                        />
-                        <b-input-group-append>
-                          <b-button
-                            size="sm"
-                            v-b-tooltip.hover.bottom
-                            title="Change the party size for all lists with no party size"
-                            @click="setObserverForAll(form_card.number_observer)"
-                          >
-                            <b-icon icon="files" />
-                          </b-button>
-                        </b-input-group-append>
-                      </b-input-group>
-                    </b-form-group>
-                  </b-col>
-                  <b-col lg="4">
-                    Effort:
-                    <b-form-checkbox
-                      switch
-                      v-model="form_card.primary_purpose"
-                      v-b-tooltip.hover.html="
-                        'When birding is your <b>primary purpose</b>, you <i>are making an effort</i> to find all the birds around you to the best of your ability.'
-                      "
-                      >Primary Purpose
-                    </b-form-checkbox>
-                    <b-form-checkbox
-                      switch
-                      v-model="form_card.full_form"
-                      v-b-tooltip.hover.bottom.html="
-                        'In a <b>complete checklist</b>, you <i>report every species</i> you could identify to the best of your ability, by sight and/or sound.'
-                      "
-                    >
-                      Complete Checklist
-                    </b-form-checkbox>
-                  </b-col>
-                  <b-col lg="8">
-                    <b-form-group>
-                      <template #label>
-                        Species comment template
-                        <b-button-group size="sm">
-                          <b-button v-b-modal.modal-species-comment v-b-tooltip.hover title="Open edit windows">
-                            <b-icon icon="pencil" />
-                          </b-button>
-                          <b-button variant="danger" v-b-tooltip.hover title="Erase comment" @click="eraseComment">
-                            <b-icon icon="trash" />
-                          </b-button>
-                          <b-button
-                            variant="primary"
-                            v-b-tooltip.hover
-                            title="Apply this template to all other checklists and set as default for new."
-                            @click="applyCommentToAll"
-                          >
-                            <b-icon icon="files" />
-                          </b-button>
-                        </b-button-group>
-                      </template>
-                      <b-card class="bg-light">
-                        <div
-                          v-html="speciesComment(form_card.species_comment_template, [form_card_sightings[0]])"
-                        ></div>
-                      </b-card>
-                    </b-form-group>
-                    <b-modal id="modal-species-comment" title="Species comment template" size="lg" hide-footer>
-                      <b-row>
-                        <b-col lg="8">
-                          <p class="mt-2">
-                            You can edit the species comment template using the HTML/JS code below. Use the notation
-                            <code>${ <i>javascript code</i> }</code> to display dynamic information on each species. You
-                            can acess the variable at the species level using <code>${ s.<i>property</i> }</code> where
-                            the properties are listed on the table on the right.
-                          </p>
-                          <b-form-textarea
-                            v-model="form_card.species_comment_template.short"
-                            rows="6"
-                            class="html-editor"
-                          />
-                          <h6 class="mt-4 mb-0">
-                            Preview:
-                            <b-select
-                              size="sm"
-                              class="d-inline"
-                              style="width: 240px"
-                              :options="
-                                form_card_sightings.map((s) => {
-                                  return { text: s.common_name, value: s };
-                                })
-                              "
-                              v-model="template_s"
-                            />
-                          </h6>
-                          <b-card class="bg-light">
-                            <div
-                              v-html="speciesComment(form_card.species_comment_template, [template_s])"
-                              class="mr-2 b-2"
-                            ></div>
-                          </b-card>
-                          <h6 class="mt-5">Multiple sightings</h6>
-                          <p>
-                            When a species is recorded multiple time, we add the count and join the comments in a new
-                            line.
-                          </p>
-                          <p>
-                            With the current template, you can expect to exceed eBird's limit of characters (8000) with
-                            around
-                            {{
-                              Math.floor(
-                                8000 / (speciesComment(form_card.species_comment_template, [template_s]).length + 5)
-                              )
-                            }}
-                            sightings of the same species.
-                          </p>
-                          <p>
-                            You can use a secondary species comment template active when more than
-                            <b-input
-                              size="sm"
-                              class="d-inline"
-                              style="width: 50px"
-                              type="number"
-                              v-model="form_card.species_comment_template.limit"
-                            />
-                            sightings of the same species are recorded.
-                          </p>
-                          <b-form-textarea
-                            v-model="form_card.species_comment_template.long"
-                            rows="4"
-                            class="html-editor"
-                          />
-                          <h6 class="mt-4 mb-0">
-                            Preview for 20 sightings of the same species:
-                            <small>(duplicated for the example here)</small>
-                          </h6>
-                          <b-card class="bg-light">
-                            <div
-                              v-html="speciesComment(form_card.species_comment_template, Array(20).fill(template_s))"
-                            ></div>
-                          </b-card>
-                        </b-col>
-                        <b-col lg="4">
-                          <b-table
-                            bordered
-                            small
-                            striped
-                            v-if="form_card_sightings.length > 0"
-                            :items="object2Table(template_s)"
-                          />
-                        </b-col>
-                      </b-row>
-                    </b-modal>
-                  </b-col>
-                </b-row>
+              <b-col lg="5" sm="6">
+                <b-form-group label="Location name:">
+                  <b-input-group>
+                    <b-form-input
+                      v-model="form_card.location_name"
+                      type="text"
+                      :state="form_card.location_name.length > 0"
+                    />
+                    <b-input-group-append>
+                      <b-button
+                        variant="secondary"
+                        @click="getFormName"
+                        v-b-tooltip.hover
+                        title="Use the most common location name of all sightings"
+                        ><b-icon icon="arrow-repeat"
+                      /></b-button>
+                    </b-input-group-append>
+                  </b-input-group>
+                </b-form-group>
               </b-col>
-              <b-col lg="3">
+              <b-col lg="4" sm="6">
+                <b-form-group label="Date:">
+                  <b-input-group>
+                    <b-form-input v-model="form_card.date" type="date" :state="form_card.date != ''" />
+                    <b-input-group-append>
+                      <b-button
+                        variant="secondary"
+                        @click="form_card.date = form_card_sightings[0].date"
+                        v-b-tooltip.hover
+                        title="Compute earliest date of all sightings."
+                        ><b-icon icon="arrow-repeat"
+                      /></b-button>
+                    </b-input-group-append>
+                  </b-input-group>
+                </b-form-group>
+              </b-col>
+              <b-col lg="3" sm="6">
+                <b-form-group label="Party size:">
+                  <template #label> Party size: </template>
+                  <b-input-group>
+                    <b-form-spinbutton
+                      v-model="form_card.number_observer"
+                      step="1"
+                      min="1"
+                      max="100"
+                      :state="parseFloat(form_card.number_observer) > 0"
+                    />
+                    <b-input-group-append>
+                      <b-button
+                        size="sm"
+                        v-b-tooltip.hover.top
+                        title="Change the party size for all lists with no party size"
+                        @click="setObserverForAll(form_card.number_observer)"
+                      >
+                        <b-icon icon="files" />
+                      </b-button>
+                    </b-input-group-append>
+                  </b-input-group>
+                </b-form-group>
+              </b-col>
+              <b-col lg="3" sm="6">
+                <b-form-group label="Time:">
+                  <b-input-group>
+                    <b-form-input v-model="form_card.time" type="time" step="60" :state="form_card.time != ''" />
+                    <b-input-group-append>
+                      <b-button
+                        variant="secondary"
+                        @click="form_card.time = form_card_sightings[0].time"
+                        v-b-tooltip.hover.bottom
+                        title="Compute earliest time of all sightings."
+                        ><b-icon icon="arrow-repeat"
+                      /></b-button>
+                    </b-input-group-append>
+                  </b-input-group>
+                </b-form-group>
+              </b-col>
+              <b-col lg="3" sm="6">
+                <b-form-group label="Duration (minutes):">
+                  <b-input-group>
+                    <b-form-input
+                      v-model="form_card.duration"
+                      type="number"
+                      step="1"
+                      min="1"
+                      max="1440"
+                      :state="parseFloat(form_card.duration) > 0 && parseFloat(form_card.duration) <= 1440"
+                    />
+                    <b-input-group-append>
+                      <b-button
+                        variant="secondary"
+                        @click="form_card.duration = form_card_duration"
+                        v-b-tooltip.hover.bottom
+                        title="Compute duration between the first and last sightings."
+                        ><b-icon icon="arrow-repeat"
+                      /></b-button>
+                    </b-input-group-append>
+                  </b-input-group>
+                </b-form-group>
+              </b-col>
+              <b-col lg="3" sm="6">
+                <b-form-group label="Distance (km):">
+                  <b-input-group>
+                    <b-form-input
+                      v-model="form_card.distance"
+                      step="0.1"
+                      min="0"
+                      max="100"
+                      type="number"
+                      :state="parseFloat(form_card.distance) >= 0 && parseFloat(form_card.distance) <= 80"
+                    />
+                    <b-input-group-append>
+                      <b-button
+                        variant="secondary"
+                        v-b-tooltip.hover.bottom
+                        title="Draw your path on the map to compute the distance."
+                      >
+                        <b-icon icon="bezier" />
+                      </b-button>
+                    </b-input-group-append>
+                  </b-input-group>
+                </b-form-group>
+              </b-col>
+              <b-col lg="3" sm="6">
+                Effort:
+                <b-form-checkbox
+                  switch
+                  v-model="form_card.primary_purpose"
+                  v-b-tooltip.hover.html="
+                    'When birding is your <b>primary purpose</b>, you <i>are making an effort</i> to find all the birds around you to the best of your ability.'
+                  "
+                  >Primary Purpose
+                </b-form-checkbox>
+                <b-form-checkbox
+                  switch
+                  v-model="form_card.full_form"
+                  v-b-tooltip.hover.bottom.html="
+                    'In a <b>complete checklist</b>, you <i>report every species</i> you could identify to the best of your ability, by sight and/or sound.'
+                  "
+                >
+                  Complete Checklist
+                </b-form-checkbox>
+              </b-col>
+              <b-col lg="8" sm="12">
+                <b-aspect aspect="3:2">
+                  <l-map class="w-100" ref="map_card" @ready="onMapCardReady">
+                    <l-control position="topright">
+                      <b-button
+                        variant="primary"
+                        v-b-tooltip.hover="'Draw your path to measure distance'"
+                        @click="map_card_polyline.enable()"
+                      >
+                        <b-icon icon="bezier" />
+                      </b-button>
+                    </l-control>
+                    <l-tile-layer
+                      :url="`https://api.mapbox.com/styles/v1/mapbox/${form_card.static_map.style}/tiles/{z}/{x}/{y}?access_token=${mapbox_access_token}`"
+                    />
+                    <l-circle-marker
+                      v-for="s in form_card_sightings"
+                      :key="s.id"
+                      :lat-lng="[s.lat, s.lon]"
+                      :radius="10"
+                      :fillColor="marker_color[s.form_id % marker_color.length]"
+                      :color="marker_color[s.form_id % marker_color.length]"
+                      @click="openPopup(s, 'marker_popup_card')"
+                    >
+                    </l-circle-marker>
+                    <l-marker ref="marker_popup_card" :latLng="popup_latLng">
+                      <l-icon :popup-anchor="[0, 2]" :icon-size="[0, 0]" :icon-url="logo" />
+                      <l-popup>
+                        <b-table bordered small striped hover responsive :items="object2Table(popup_s)" />
+                      </l-popup>
+                    </l-marker>
+                    <l-marker
+                      :lat-lng="[form_card.lat, form_card.lon]"
+                      :draggable="true"
+                      @update:lat-lng="
+                        (latlng) => {
+                          form_card.lat = latlng.lat;
+                          form_card.lon = latlng.lng;
+                        }
+                      "
+                      :zIndexOffset="1000"
+                    >
+                      <IconChecklist :size="24" :fid="form_card.id" />
+                    </l-marker>
+                    <l-polyline :lat-lngs="form_card.path" :color="'brown'" v-if="form_card.path" />
+                  </l-map>
+                </b-aspect>
+              </b-col>
+              <b-col lg="4" sm="6">
+                <b-card bg-variant="light" no-body>
+                  <template #header>
+                    <b-checkbox switch class="text-center" v-model="form_card.static_map.show">
+                      Static map in checklist comment
+                    </b-checkbox>
+                  </template>
+                  <b-card-img :src="staticMapLink(form_card, form_card_sightings)" v-if="form_card.static_map.show" />
+                  <b-card-body v-if="form_card.static_map.show">
+                    <b-form-group>
+                      <b-button-group class="w-100">
+                        <b-button size="sm" @click="makeSnapshot">
+                          <b-icon icon="camera" /> Use current map view
+                        </b-button>
+                        <b-button
+                          size="sm"
+                          @click="form_card.static_map.bounding_box_auto = true"
+                          v-if="!form_card.static_map.bounding_box_auto"
+                          variant="primary"
+                        >
+                          <b-icon icon="arrow-repeat" /> Auto
+                        </b-button>
+                      </b-button-group>
+                    </b-form-group>
+                    <b-form-group label="Tiles: " label-cols-lg="2">
+                      <b-form-select size="sm" v-model="form_card.static_map.style" :options="mapbox_layers" />
+                    </b-form-group>
+                    <b-form-group v-if="false">
+                      <b-input-group size="sm">
+                        <b-input type="number" v-model="form_card.static_map.size[0]" size="sm" />
+                        <b-input-group-addon>
+                          <b-input-group-text> &#215; </b-input-group-text>
+                        </b-input-group-addon>
+                        <b-input type="number" v-model="form_card.static_map.size[1]" />
+                      </b-input-group>
+                    </b-form-group>
+                    <b-form-checkbox switch v-model="form_card.static_map.include_path"> Include path </b-form-checkbox>
+                  </b-card-body>
+                </b-card>
+              </b-col>
+              <b-col lg="12" class="mt-2">
                 <b-form-group>
-                  <template #label> Checklist comment: </template>
-                  <b-form-checkbox switch v-model="form_card.static_map.in_checklist_comment">
-                    Include static map
-                    <b-button size="sm" v-b-modal.modal-card v-if="form_card.static_map.in_checklist_comment">
-                      <b-icon icon="map" />
-                    </b-button>
-                  </b-form-checkbox>
-                  <b-card class="mt-2 bg-light">
-                    <div v-html="checklistComment(form_card, form_card_sightings)"></div>
+                  <template #label>
+                    Species comment template
+                    <b-button-group size="sm">
+                      <b-button v-b-modal.modal-species-comment v-b-tooltip.hover title="Open edit windows">
+                        <b-icon icon="pencil" />
+                      </b-button>
+                      <b-button variant="danger" v-b-tooltip.hover title="Erase comment" @click="eraseComment">
+                        <b-icon icon="trash" />
+                      </b-button>
+                      <b-button
+                        variant="primary"
+                        v-b-tooltip.hover
+                        title="Apply this template to all other checklists and set as default for new."
+                        @click="applyCommentToAll"
+                      >
+                        <b-icon icon="files" />
+                      </b-button>
+                    </b-button-group>
+                  </template>
+                  <b-card class="bg-light">
+                    <div v-html="speciesComment(form_card.species_comment_template, [form_card_sightings[0]])"></div>
                   </b-card>
                 </b-form-group>
+                <b-modal id="modal-species-comment" title="Species comment template" size="lg" hide-footer>
+                  <b-row>
+                    <b-col lg="8">
+                      <p class="mt-2">
+                        You can edit the species comment template using the HTML/JS code below. Use the notation
+                        <code>${ <i>javascript code</i> }</code> to display dynamic information on each species. You can
+                        acess the variable at the species level using <code>${ s.<i>property</i> }</code> where the
+                        properties are listed on the table on the right.
+                      </p>
+                      <b-form-textarea
+                        v-model="form_card.species_comment_template.short"
+                        rows="6"
+                        class="html-editor"
+                      />
+                      <h6 class="mt-4 mb-0">
+                        Preview:
+                        <b-select
+                          size="sm"
+                          class="d-inline"
+                          style="width: 240px"
+                          :options="
+                            form_card_sightings.map((s) => {
+                              return { text: s.common_name, value: s };
+                            })
+                          "
+                          v-model="template_s"
+                        />
+                      </h6>
+                      <b-card class="bg-light">
+                        <div
+                          v-html="speciesComment(form_card.species_comment_template, [template_s])"
+                          class="mr-2 b-2"
+                        ></div>
+                      </b-card>
+                      <h6 class="mt-5">Multiple sightings</h6>
+                      <p>
+                        When a species is recorded multiple time, we add the count and join the comments in a new line.
+                      </p>
+                      <p>
+                        With the current template, you can expect to exceed eBird's limit of characters (8000) with
+                        around
+                        {{
+                          Math.floor(
+                            8000 / (speciesComment(form_card.species_comment_template, [template_s]).length + 5)
+                          )
+                        }}
+                        sightings of the same species.
+                      </p>
+                      <p>
+                        You can use a secondary species comment template active when more than
+                        <b-input
+                          size="sm"
+                          class="d-inline"
+                          style="width: 50px"
+                          type="number"
+                          v-model="form_card.species_comment_template.limit"
+                        />
+                        sightings of the same species are recorded.
+                      </p>
+                      <b-form-textarea v-model="form_card.species_comment_template.long" rows="4" class="html-editor" />
+                      <h6 class="mt-4 mb-0">
+                        Preview for 20 sightings of the same species:
+                        <small>(duplicated for the example here)</small>
+                      </h6>
+                      <b-card class="bg-light">
+                        <div
+                          v-html="speciesComment(form_card.species_comment_template, Array(20).fill(template_s))"
+                        ></div>
+                      </b-card>
+                    </b-col>
+                    <b-col lg="4">
+                      <b-table
+                        bordered
+                        small
+                        striped
+                        v-if="form_card_sightings.length > 0"
+                        :items="object2Table(template_s)"
+                      />
+                    </b-col>
+                  </b-row>
+                </b-modal>
               </b-col>
             </b-row>
           </b-card-body>
         </b-card>
-        <b-modal size="xl" id="modal-card" :title="form_card.location_name" hide-footer>
-          <b-row>
-            <b-col lg="8">
-              <b-form inline>
-                Draw a path (polyline) on the map to compute the distance.
-                <b-input-group class="d-flex">
-                  <template #prepend>
-                    <b-input-group-text><b-icon icon="bezier" /></b-input-group-text>
-                  </template>
-                  <b-form-input readonly v-model="form_card_distance_bezier" />
-                  <b-input-group-append>
-                    <b-button
-                      variant="primary"
-                      @click="
-                        form_card.distance = form_card_distance_bezier ? form_card_distance_bezier : form_card.distance
-                      "
-                      >Apply distance to checklist</b-button
-                    >
-                  </b-input-group-append>
-                </b-input-group>
-              </b-form>
-              <b-aspect aspect="3:2" class="mt-3">
-                <l-map class="w-100" ref="map_card" @ready="onMapCardReady">
-                  <l-control position="topright">
-                    <b-button
-                      variant="primary"
-                      v-b-tooltip.hover="'Draw your path to measure distance'"
-                      @click="map_card_polyline.enable()"
-                    >
-                      <b-icon icon="bezier" />
-                    </b-button>
-                  </l-control>
-                  <l-tile-layer
-                    :url="`https://api.mapbox.com/styles/v1/mapbox/${form_card.static_map.style}/tiles/{z}/{x}/{y}?access_token=${mapbox_access_token}`"
-                  />
-                  <l-circle-marker
-                    v-for="s in form_card_sightings"
-                    :key="s.id"
-                    :lat-lng="[s.lat, s.lon]"
-                    :radius="10"
-                    :fillColor="marker_color[s.form_id % marker_color.length]"
-                    :color="marker_color[s.form_id % marker_color.length]"
-                    @click="openPopup(s, 'marker_popup_card')"
-                  >
-                  </l-circle-marker>
-                  <l-marker ref="marker_popup_card" :latLng="popup_latLng">
-                    <l-icon :popup-anchor="[0, 2]" :icon-size="[0, 0]" :icon-url="logo" />
-                    <l-popup>
-                      <b-table bordered small striped hover responsive :items="object2Table(popup_s)" />
-                    </l-popup>
-                  </l-marker>
-                  <l-marker
-                    :lat-lng="[form_card.lat, form_card.lon]"
-                    :draggable="true"
-                    @update:lat-lng="
-                      (latlng) => {
-                        form_card.lat = latlng.lat;
-                        form_card.lon = latlng.lng;
-                      }
-                    "
-                    :zIndexOffset="1000"
-                  >
-                    <IconChecklist :size="24" :fid="form_card.id" />
-                  </l-marker>
-                  <l-polyline :lat-lngs="form_card.path" :color="'brown'" v-if="form_card.path" />
-                </l-map>
-              </b-aspect>
-            </b-col>
-
-            <b-col lg="4">
-              <b-img :src="staticMapLink(form_card, form_card_sightings)" />
-              <b-card bg-variant="light" class="mt-2">
-                <b-form-group label="Background style: ">
-                  <b-form-select size="sm" v-model="form_card.static_map.style" :options="mapbox_layers" />
-                </b-form-group>
-                <b-form-group label="View:">
-                  <b-button size="sm" @click="makeSnapshot"> <b-icon icon="camera" /> Use current map view </b-button>
-                  <b-form-checkbox
-                    switch
-                    v-model="form_card.static_map.bounding_box_auto"
-                    :disabled="form_card.static_map.bounding_box_auto"
-                  >
-                    Auto-bound
-                  </b-form-checkbox>
-                </b-form-group>
-                <b-form-group v-if="false">
-                  <b-input-group size="sm">
-                    <b-input type="number" v-model="form_card.static_map.size[0]" size="sm" />
-                    <b-input-group-addon>
-                      <b-input-group-text> &#215; </b-input-group-text>
-                    </b-input-group-addon>
-                    <b-input type="number" v-model="form_card.static_map.size[1]" />
-                  </b-input-group>
-                </b-form-group>
-                <b-form-group>
-                  <b-form-checkbox switch v-model="form_card.static_map.include_path" class="mb-1">
-                    Include path in static map
-                  </b-form-checkbox>
-                </b-form-group>
-              </b-card>
-            </b-col>
-          </b-row>
-        </b-modal>
       </b-col>
     </b-row>
 
@@ -925,9 +884,8 @@ export default {
   },
   data() {
     return {
-      // global settings
       skip_intro: false,
-      language: "fr",
+      language: "en",
       static_map: {
         show: true,
         style: "satellite-v9",
@@ -958,7 +916,6 @@ export default {
       map_draw_marker: null,
       map_card_polyline: null,
       form_card: null,
-      form_card_distance_bezier: null,
       maki_icon_list: null,
       template_s: null,
     };
@@ -985,8 +942,16 @@ export default {
       this.map_card_polyline = new L.Draw.Polyline(this.$refs.map_card.mapObject);
       this.$refs.map_card.mapObject.on(L.Draw.Event.CREATED, (e) => {
         if (e.layerType === "polyline") {
-          this.form_card.path = e.layer.getLatLngs().map((l) => [l.lat, l.lng]);
-          this.form_card_distance_bezier = this.distanceFromLatLngs(this.form_card.path);
+          if (
+            confirm(
+              `Do you want to update the path and the distance (${this.distanceFromLatLngs(this.form_card.path)}) of ${
+                this.form_card.location_name
+              }`
+            )
+          ) {
+            this.form_card.path = e.layer.getLatLngs().map((l) => [l.lat, l.lng]);
+            this.form_card.distance = this.distanceFromLatLngs(this.form_card.path);
+          }
         }
       });
       setTimeout(() => {
@@ -1151,6 +1116,7 @@ export default {
   },
   computed: {
     form_card_sightings() {
+      if (!this.form_card) return [];
       const sightings = this.form_card.imported
         ? this.forms_sightings[this.form_card.id - 1]
         : this.sightings.filter((s) => s.form_id == this.form_card.id);
@@ -1184,6 +1150,13 @@ export default {
       });
   },
   watch: {
+    form_card_sightings() {
+      if (this.$refs.map_card) {
+        this.$refs.map_card.mapObject.fitBounds(
+          L.latLngBounds(this.form_card_sightings.map((s) => L.latLng(s.lat, s.lon))).pad(0.05)
+        );
+      }
+    },
     skip_intro() {
       this.$cookie.set("skip_intro", JSON.stringify(this.skip_intro), 365);
     },
