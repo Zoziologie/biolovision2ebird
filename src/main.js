@@ -51,7 +51,7 @@ Vue.mixin({
                 alert('Cannot copy. Try manually.');
             }
         },
-        createForm(f, id) {
+        createForm(f, id, static_map) {
             let species_comment_template = f.species_comment_template || {}
             species_comment_template.long = f.species_comment_template.long || ""
             species_comment_template.short = f.species_comment_template.short || ""
@@ -75,8 +75,8 @@ Vue.mixin({
                 path: f.path || null,
                 path_distance: null,
                 static_map: {
-                    in_checklist_comment: this.static_map_in.show,
-                    style: this.static_map_in.style,
+                    in_checklist_comment: static_map.show,
+                    style: static_map.style,
                     bounding_box_auto: true,
                     bounding_box: null,
                     size: [330, 220],

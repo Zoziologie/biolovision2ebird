@@ -983,7 +983,8 @@ export default {
                   lon: sightings.reduce((a, b) => a + b.lon, 0) / sightings.length,
                   species_comment_template: this.website.species_comment_template,
                 },
-                this.count_forms + 1
+                this.count_forms + 1,
+                this.static_map
               );
               this.forms.push(fnew);
               this.assign_form_id = fnew.id;
@@ -1060,7 +1061,8 @@ export default {
             lon: sightings2.reduce((a, b) => a + b.lon, 0) / sightings2.length,
             species_comment_template: this.website.species_comment_template,
           },
-          this.count_forms + 1
+          this.count_forms + 1,
+          this.static_map
         );
         this.forms.push(fnew);
         this.count_forms++;

@@ -215,7 +215,8 @@ export default {
                 species_comment_template: this.website.species_comment_template,
                 path: path,
               },
-              id + 1
+              id + 1,
+              this.static_map_in
             );
           });
 
