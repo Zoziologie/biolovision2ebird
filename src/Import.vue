@@ -174,8 +174,9 @@ export default {
       reader.onload = (e) => {
         let export_data = {};
         if (this.website.system == "biolovision") {
+          let data;
           try {
-            const data = JSON.parse(reader.result).data;
+            data = JSON.parse(reader.result).data;
           } catch (error) {
             this.loading_file_status = -1;
             this.error_message =
