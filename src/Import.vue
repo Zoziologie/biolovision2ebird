@@ -40,6 +40,7 @@ export default {
       number_imported_sightings: null,
       taxonomic_issues: [],
       clipboard_icon: "clipboard",
+      error_message: "",
     };
   },
   computed: {
@@ -167,12 +168,21 @@ export default {
       reader.readAsText(this.file);
       reader.onerror = (error) => {
         this.loading_file_status = -1;
+        this.error_message = error;
         throw new Error(error);
       };
       reader.onload = (e) => {
         let export_data = {};
         if (this.website.system == "biolovision") {
-          const data = JSON.parse(reader.result).data;
+          try {
+            const data = JSON.parse(reader.result).data;
+          } catch (error) {
+            this.loading_file_status = -1;
+            this.error_message =
+              "Your json file seems invalid, try downloading the file again and check the validity of your file online (e.g. jsonlint.com). " +
+              error;
+            throw new Error(error);
+          }
 
           // Create empty forms and sightings if not presents
           data.forms = data.forms || [];
@@ -299,6 +309,7 @@ export default {
           };
         } else {
           this.loading_file_status = -1;
+          this.error_message = "No correct system";
           throw new Error("No correct system");
         }
 
@@ -425,7 +436,7 @@ export default {
       </b-alert>
       <b-alert v-else-if="loading_file_status == -1" variant="danger" show>
         <b-icon icon="exclamation-triangle" class="mr-2"> </b-icon>
-        <strong>There is an error! </strong>
+        <strong>There is an error! </strong> {{ error_message }}
       </b-alert>
       <b-alert v-if="taxonomic_issues.length > 0" variant="warning" show>
         <b-icon icon="exclamation-triangle" class="mr-1" />
