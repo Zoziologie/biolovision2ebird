@@ -1225,7 +1225,7 @@ export default {
   },
   watch: {
     form_card() {
-      if (this.form_card.hotspots.length == 0) {
+      if (this.form_card && this.form_card.hotspots.length == 0) {
         fetch(
           `https://api.ebird.org/v2/ref/hotspot/geo?lat=${this.form_card.lat}&lng=${this.form_card.lon}&dist=10&fmt=json&key=vcs68p4j67pt`
         )
@@ -1238,7 +1238,7 @@ export default {
       }
     },
     form_card_sightings() {
-      if (this.$refs.map_card) {
+      if (this.form_card_sightings.length > 0 && this.$refs.map_card) {
         this.$refs.map_card.mapObject.fitBounds(
           L.latLngBounds(this.form_card_sightings.map((s) => L.latLng(s.lat, s.lon))).pad(0.05)
         );
