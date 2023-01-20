@@ -706,8 +706,7 @@
         "EN": "mallard",
         "SCI_NAME": "Anas platyrhynchos",
         "PRIMARY_COM_NAME": "Mallard",
-        "en_IOC": "Mallard/Mexican Duck",
-        "SPECIES_CODE": "mallar"
+        "SPECIES_CODE": "mallar3"
     },
     {
         "id": 87,
@@ -2846,8 +2845,7 @@
         "EN": "european green woodpecker",
         "SCI_NAME": "Picus viridis",
         "PRIMARY_COM_NAME": "Eurasian Green Woodpecker",
-        "en_IOC": "European/Iberian Green Woodpecker",
-        "SPECIES_CODE": "grnwoo1"
+        "SPECIES_CODE": "eugwoo2"
     },
     {
         "id": 335,
@@ -5628,5 +5626,23 @@
         "PRIMARY_COM_NAME": "Violet Turaco",
         "en_IOC": "Violet Turaco",
         "SPECIES_CODE": "viotur1"
+    },
+    {
+        "id": "1121",
+        "name": "Tourterelle orientale",
+        "latin_name": "Streptopelia orientalis",
+        "SPECIES_CODE": "ortdov"
+    },
+    {
+        "id": "204",
+        "name": "Talève sultane",
+        "latin_name": "Porphyrio porphyrio",
+        "SPECIES_CODE": "purswa1"
+    },
+    {
+        "id": "1159",
+        "name": "Silber-_oder_Mittelmeer-_oder_Steppenmöwe",
+        "latin_name": "Larus argentatus / cachinnans / michahellis",
+        "SPECIES_CODE": "y00386"
     }
 ]
