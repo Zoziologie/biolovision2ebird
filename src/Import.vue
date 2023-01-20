@@ -114,6 +114,11 @@ export default {
       });
     },
     async checkWebsite(export_data) {
+      // Check if website should be checked
+      if (this.website.osm_level == "world") {
+        return;
+      }
+
       // Check that the website can be validated.
       if (!this.website.osm_level) {
         alert(

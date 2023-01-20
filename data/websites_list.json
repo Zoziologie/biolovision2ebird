@@ -379,7 +379,7 @@
     },
     {
         "category": "French Biolovision",
-        "osm_level": "",
+        "osm_level": "world",
         "osm_region": "",
         "extension": ".json",
         "name": "nature79.org",
@@ -406,7 +406,7 @@
     },
     {
         "category": "Others",
-        "osm_level": "",
+        "osm_level": "world",
         "osm_region": "",
         "extension": ".csv",
         "name": "Birdlasser",
