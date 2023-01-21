@@ -1,9 +1,5 @@
 <script setup>
 import logo from "/logo_w.svg";
-
-//import pinSXFFF from "/pin-s-xfff.png";
-//import markerSoft from "/markers-soft.png";
-
 import marker_color from "/data/marker_color.json";
 </script>
 
@@ -23,14 +19,14 @@ import marker_color from "/data/marker_color.json";
       </b-link>
 
       <b-button size="sm" class="ml-auto my-auto p" v-b-modal.modal-settings variant="light">
-        <b-icon icon="gear-fill" aria-hidden="true"></b-icon> Settings
+        <b-icon icon="gear-fill" aria-hidden="true" /> Settings
       </b-button>
     </b-row>
 
     <b-modal id="modal-settings" title="Global settings" hide-footer>
-      <b-alert show
-        >These settings are saved in your browser's coockies so that they can be re-used in future visit.</b-alert
-      >
+      <b-alert show>
+        These settings are saved in your browser's coockies so that they can be re-used in future visit.
+      </b-alert>
       <b-form-group>
         <b-form-checkbox v-model="skip_intro" switch> Skip introduction on future visit </b-form-checkbox>
       </b-form-group>
@@ -118,7 +114,9 @@ import marker_color from "/data/marker_color.json";
         <h2 class="border-bottom pb-2 mb-3">2. Assign individual sightings to checklists</h2>
       </b-col>
       <template v-if="sightings.length == 0">
-        <b-col><p>The data uploaded does not contain individual sightings. You can go to step 3.</p></b-col>
+        <b-col>
+          <p>The data uploaded does not contain individual sightings. You can go to step 3.</p>
+        </b-col>
       </template>
       <template v-else>
         <b-col lg="6">
@@ -150,7 +148,7 @@ import marker_color from "/data/marker_color.json";
               </b-col>
               <b-col sm="4">
                 <b-button variant="primary" block @click="assignMagic">
-                  <b-icon icon="arrow-repeat" class="mr-1"></b-icon>Magic tool
+                  <b-icon icon="arrow-repeat" class="mr-1" />Magic tool
                 </b-button>
               </b-col>
             </b-row>
@@ -293,8 +291,10 @@ import marker_color from "/data/marker_color.json";
             </template>
             <b-dropdown-item href="#" v-for="f in forms" :key="f.id" @click="form_card = f">
               {{ f.id + ". " + f.location_name }}
-              <b-badge :variant="protocol(f).variant" class="ml-2">{{ protocol(f).letter }} </b-badge
-              ><b-icon icon="check-lg" v-show="f.exportable" class="ml-2" variant="primary" />
+              <b-badge :variant="protocol(f).variant" class="ml-2">
+                {{ protocol(f).letter }}
+              </b-badge>
+              <b-icon icon="check-lg" v-show="f.exportable" class="ml-2" variant="primary" />
             </b-dropdown-item>
           </b-dropdown>
           <b-button
@@ -305,8 +305,9 @@ import marker_color from "/data/marker_color.json";
                 form_card = forms[idx];
               }
             "
-            ><b-icon icon="chevron-right"
-          /></b-button>
+          >
+            <b-icon icon="chevron-right" />
+          </b-button>
         </b-button-group>
       </b-col>
       <b-col lg="3">
@@ -361,8 +362,9 @@ import marker_color from "/data/marker_color.json";
                         variant="secondary"
                         v-b-tooltip.hover
                         title="Select a hotspot from the map below if appropriate."
-                        ><b-icon icon="map"
-                      /></b-button>
+                      >
+                        <b-icon icon="map" />
+                      </b-button>
                     </b-input-group-append>
                   </b-input-group>
                 </b-form-group>
@@ -377,8 +379,9 @@ import marker_color from "/data/marker_color.json";
                         @click="form_card.date = form_card_sightings[0].date"
                         v-b-tooltip.hover
                         title="Compute earliest date of all sightings."
-                        ><b-icon icon="arrow-repeat"
-                      /></b-button>
+                      >
+                        <b-icon icon="arrow-repeat" />
+                      </b-button>
                     </b-input-group-append>
                   </b-input-group>
                 </b-form-group>
@@ -417,8 +420,9 @@ import marker_color from "/data/marker_color.json";
                         @click="form_card.time = form_card_sightings[0].time"
                         v-b-tooltip.hover.bottom
                         title="Compute earliest time of all sightings."
-                        ><b-icon icon="arrow-repeat"
-                      /></b-button>
+                      >
+                        <b-icon icon="arrow-repeat" />
+                      </b-button>
                     </b-input-group-append>
                   </b-input-group>
                 </b-form-group>
@@ -440,8 +444,9 @@ import marker_color from "/data/marker_color.json";
                         @click="form_card.duration = form_card_duration"
                         v-b-tooltip.hover.bottom
                         title="Compute duration between the first and last sightings."
-                        ><b-icon icon="arrow-repeat"
-                      /></b-button>
+                      >
+                        <b-icon icon="arrow-repeat" />
+                      </b-button>
                     </b-input-group-append>
                   </b-input-group>
                 </b-form-group>
@@ -632,7 +637,7 @@ import marker_color from "/data/marker_color.json";
                     </b-button-group>
                   </template>
                   <b-card class="bg-light">
-                    <div v-html="speciesComment(form_card.species_comment_template, [form_card_sightings[0]])"></div>
+                    <div v-html="speciesComment(form_card.species_comment_template, [form_card_sightings[0]])" />
                   </b-card>
                 </b-form-group>
                 <b-modal id="modal-species-comment" title="Species comment template" size="lg" hide-footer>
@@ -667,7 +672,7 @@ import marker_color from "/data/marker_color.json";
                         <div
                           v-html="speciesComment(form_card.species_comment_template, [template_s])"
                           class="mr-2 b-2"
-                        ></div>
+                        />
                       </b-card>
                       <h6 class="mt-5">Multiple sightings</h6>
                       <p>
@@ -700,9 +705,7 @@ import marker_color from "/data/marker_color.json";
                         <small>(duplicated for the example here)</small>
                       </h6>
                       <b-card class="bg-light">
-                        <div
-                          v-html="speciesComment(form_card.species_comment_template, Array(20).fill(template_s))"
-                        ></div>
+                        <div v-html="speciesComment(form_card.species_comment_template, Array(20).fill(template_s))" />
                       </b-card>
                     </b-col>
                     <b-col lg="4">
@@ -733,7 +736,7 @@ import marker_color from "/data/marker_color.json";
           href="https://github.com/Zoziologie/biolovision2ebird/wiki/FAQ"
           target="_blank"
         >
-          <b-icon icon="question-circle-fill" aria-hidden="true"> </b-icon> FAQ</b-link
+          <b-icon icon="question-circle-fill" aria-hidden="true" /> FAQ</b-link
         >
         first, and then submit an issue on
         <b-link
@@ -741,11 +744,11 @@ import marker_color from "/data/marker_color.json";
           href="https://github.com/Zoziologie/Biolovision2eBird/issues"
           target="_blank"
         >
-          <b-icon icon="github" aria-hidden="true"> </b-icon> Github</b-link
+          <b-icon icon="github" aria-hidden="true" /> Github</b-link
         >
         or
         <b-link class="btn btn-sm btn-primary" href="mailto:rafnuss@gmail.com" target="_blank">
-          <b-icon icon="envelope-fill" aria-hidden="true"> </b-icon> Contact me</b-link
+          <b-icon icon="envelope-fill" aria-hidden="true" /> Contact me</b-link
         >
         if necessary.
       </b-col>
@@ -762,6 +765,8 @@ import "leaflet";
 import "leaflet-draw/dist/leaflet.draw-src.js";
 import "leaflet-fullscreen/dist/Leaflet.fullscreen.js";
 import "polyline-encoded/Polyline.encoded.js";
+import "leaflet/dist/images/marker-shadow.png";
+import "leaflet/dist/images/marker-icon.png";
 
 window.type = true; // fix for leaflet draw
 
@@ -1022,9 +1027,9 @@ export default {
         if (e.layerType === "polyline") {
           if (
             confirm(
-              `Do you want to update the path and the distance (${this.distanceFromLatLngs(this.form_card.path)}) of ${
-                this.form_card.location_name
-              }`
+              `Do you want to update the path and the distance ${
+                this.form_card.path ? +"(" + this.distanceFromLatLngs(this.form_card.path) + ")" : ""
+              } of ${this.form_card.location_name}`
             )
           ) {
             this.form_card.path = e.layer.getLatLngs().map((l) => [l.lat, l.lng]);
