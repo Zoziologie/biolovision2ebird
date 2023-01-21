@@ -52,7 +52,7 @@ Vue.mixin({
             }
         },
         distanceFromLatLngs(latlngs) {
-            if (latlngs.length == null) {
+            if (latlngs == null) {
                 return null // if no path were defined before
             }
             if (Array.isArray(latlngs) && !(latlngs[0] instanceof L.LatLng)) {
