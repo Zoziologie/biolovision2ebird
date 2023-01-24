@@ -1676,7 +1676,7 @@
         "SCI_NAME": "Phasianus colchicus",
         "PRIMARY_COM_NAME": "Ring-necked Pheasant",
         "en_IOC": "Common/Green Pheasant",
-        "SPECIES_CODE": "rinphe"
+        "SPECIES_CODE": "rinphe1"
     },
     {
         "id": 192,
@@ -5644,5 +5644,17 @@
         "name": "Silber-_oder_Mittelmeer-_oder_Steppenmöwe",
         "latin_name": "Larus argentatus / cachinnans / michahellis",
         "SPECIES_CODE": "y00386"
+    },
+    {
+        "id": "1600",
+        "name": "Stockente, Bastard, fehlfarben",
+        "latin_name": "Anas platyrhynchos (Bastard)",
+        "SPECIES_CODE": "mallar2"
+    },
+    {
+        "id": "299",
+        "name": "Krabbentaucher",
+        "latin_name": "Alle alle",
+        "SPECIES_CODE": "doveki"
     }
 ]

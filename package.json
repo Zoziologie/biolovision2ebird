@@ -14,7 +14,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src",
-    "compile-species-list": "node compile-species-list.js"
+    "splist": "node compile-species-list.js"
   },
   "dependencies": {
     "@json2csv/plainjs": "^6.1.2",
