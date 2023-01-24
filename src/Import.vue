@@ -268,7 +268,11 @@ export default {
               time: s.Time,
               lat: parseFloat(s.Latitude),
               lon: parseFloat(s.Longitude),
-              location_name: s.Pentad,
+              location_name: s.Pentad
+                ? s.Pentad
+                : s.Fieldsheet
+                ? s.Fieldsheet
+                : "New location " + s.Latitude + "-" + s.Longitude,
               common_name: s["Species primary name"],
               scientific_name: "",
               count: s.Count,
