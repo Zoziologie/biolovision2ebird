@@ -501,12 +501,14 @@
     },
     {
         "id": 63,
-        "latin": "Anser fabalis",
+        "latin": "Anser fabalis / serrirostris",
         "english": "Bean Goose",
-        "EN": "bean goose",
-        "SCI_NAME": "Anser fabalis",
-        "PRIMARY_COM_NAME": "Taiga Bean-Goose",
-        "en_IOC": "Taiga Bean Goose",
+        "SPECIES_CODE": "y00468"
+    },
+    {
+        "id": 64,
+        "latin": "Anser fabalis",
+        "english": "Taiga Bean Goose",
         "SPECIES_CODE": "taibeg1"
     },
     {
@@ -521,13 +523,9 @@
     },
     {
         "id": 66,
-        "latin": "Anser fabalis rossicus",
-        "english": "Bean Goose (A.f.rossicus)",
-        "EN": "bean goose  a f rossicus",
-        "SCI_NAME": "Anser fabalis",
-        "PRIMARY_COM_NAME": "Taiga Bean-Goose",
-        "en_IOC": "Taiga Bean Goose",
-        "SPECIES_CODE": "taibeg1"
+        "latin": "Anser serrirostris",
+        "english": "Tundra Bean Goose",
+        "SPECIES_CODE": "tunbeg1"
     },
     {
         "id": 67,
