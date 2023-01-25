@@ -273,7 +273,7 @@ export default {
                 : s.Fieldsheet
                 ? s.Fieldsheet
                 : "New location " + s.Latitude + "-" + s.Longitude,
-              common_name: s["Species primary name"],
+              common_name: s["Species primary name"] ? s["Species primary name"] : s["Primary language"],
               scientific_name: "",
               count: s.Count,
               count_precision: s["Count Type"] == "Not specified" ? "" : s["Count Type"],
