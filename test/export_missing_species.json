@@ -1,0 +1,164 @@
+{
+    "data": {
+        "sightings": [
+            {
+                "date": {
+                    "@timestamp": "1622757600",
+                    "@notime": "1",
+                    "@offset": "7200",
+                    "@ISO8601": "2021-06-04T00:00:00+02:00",
+                    "#text": "vendredi 4 juin 2021"
+                },
+                "species": {
+                    "@id": "1649",
+                    "sys_order": "2070",
+                    "taxonomy": "1",
+                    "rarity": "rare",
+                    "name": "Indian Yellow-nosed Albatross",
+                    "latin_name": "Thalassarche carteri",
+                    "category": "A"
+                },
+                "place": {
+                    "@id": "9836",
+                    "name": "Sur les Eaux",
+                    "altitude": "2154",
+                    "place_type": "place",
+                    "loc_precision": "0",
+                    "coord_lat": "46.433595940264",
+                    "coord_lon": "7.1859023178037",
+                    "municipality": "Ch\u00e2teau-d'Oex",
+                    "county": "VD",
+                    "country": ""
+                },
+                "observers": [
+                    {
+                        "@id": "11346",
+                        "@uid": "61856",
+                        "@vowa_id": "4035",
+                        "code": "3afd90058a79",
+                        "name": "Rapha\u00ebl Nussbaumer",
+                        "anonymous": "0",
+                        "second_hand": "0",
+                        "traid": "11346",
+                        "id_sighting": "23413585",
+                        "id_universal": "1_23413585",
+                        "timing": {
+                            "@timestamp": "1622804372",
+                            "@notime": "0",
+                            "@offset": "7200",
+                            "@ISO8601": "2021-06-04T12:59:32+02:00",
+                            "#text": "vendredi 4 juin 2021, 12:59:32"
+                        },
+                        "coord_lat": "46.437715",
+                        "coord_lon": "7.186229",
+                        "altitude": "2154",
+                        "atlas_grid_name": "58 14 (Saanen)",
+                        "precision": "precise",
+                        "estimation_code": "EXACT_VALUE",
+                        "count": "7",
+                        "flight_number": "1",
+                        "source": "MOBILE_LIVE",
+                        "insert_date": {
+                            "@timestamp": "1623488681",
+                            "@notime": "0",
+                            "@offset": "7200",
+                            "@ISO8601": "2021-06-12T11:04:41+02:00",
+                            "#text": "samedi 12 juin 2021, 11:04:41"
+                        },
+                        "is_exported": "1",
+                        "export_date": {
+                            "@timestamp": "1624502702",
+                            "@notime": "0",
+                            "@offset": "7200",
+                            "@ISO8601": "2021-06-24T04:45:02+02:00",
+                            "#text": "jeudi 24 juin 2021, 04:45:02"
+                        }
+                    }
+                ]
+            },
+            {
+                "date": {
+                    "@timestamp": "1623448800",
+                    "@notime": "1",
+                    "@offset": "7200",
+                    "@ISO8601": "2021-06-12T00:00:00+02:00",
+                    "#text": "samedi 12 juin 2021"
+                },
+                "species": {
+                    "@id": "11357",
+                    "sys_order": "730",
+                    "taxonomy": "1",
+                    "rarity": "unusual",
+                    "name": "Corvus monedula monedula / soemmeringgii",
+                    "latin_name": "Corvus monedula monedula / soemmeringgii",
+                    "category": "A",
+                    "atlas_13_16": {
+                        "@id": "V",
+                        "#text": "V"
+                    }
+                },
+                "place": {
+                    "@id": "1339",
+                    "name": "Cr\u00eata de Vella",
+                    "altitude": "2406",
+                    "place_type": "place",
+                    "loc_precision": "0",
+                    "coord_lat": "45.959752438253",
+                    "coord_lon": "7.1735146949575",
+                    "municipality": "Liddes",
+                    "county": "VS",
+                    "country": ""
+                },
+                "observers": [
+                    {
+                        "@id": "11346",
+                        "@uid": "61856",
+                        "@vowa_id": "4035",
+                        "code": "3afd90058a79",
+                        "name": "Rapha\u00ebl Nussbaumer",
+                        "anonymous": "0",
+                        "second_hand": "0",
+                        "traid": "11346",
+                        "id_sighting": "23413586",
+                        "id_universal": "1_23413586",
+                        "timing": {
+                            "@timestamp": "1623488666",
+                            "@notime": "0",
+                            "@offset": "7200",
+                            "@ISO8601": "2021-06-12T11:04:26+02:00",
+                            "#text": "samedi 12 juin 2021, 11:04:26"
+                        },
+                        "coord_lat": "45.962004",
+                        "coord_lon": "7.178493",
+                        "altitude": "2406",
+                        "atlas_grid_name": "57 09 (Orsi\u00e8res)",
+                        "precision": "precise",
+                        "estimation_code": "MINIMUM",
+                        "count": "3",
+                        "flight_number": "1",
+                        "source": "MOBILE_LIVE",
+                        "insert_date": {
+                            "@timestamp": "1623488681",
+                            "@notime": "0",
+                            "@offset": "7200",
+                            "@ISO8601": "2021-06-12T11:04:41+02:00",
+                            "#text": "samedi 12 juin 2021, 11:04:41"
+                        },
+                        "is_exported": "1",
+                        "export_date": {
+                            "@timestamp": "1624502702",
+                            "@notime": "0",
+                            "@offset": "7200",
+                            "@ISO8601": "2021-06-24T04:45:02+02:00",
+                            "#text": "jeudi 24 juin 2021, 04:45:02"
+                        },
+                        "atlas_code": {
+                            "@id": "3_2",
+                            "#text": "2"
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}

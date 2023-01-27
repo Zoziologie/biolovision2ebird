@@ -48,7 +48,11 @@ export default {
       return websites_list.filter((w) => w.name == this.website_name)[0];
     },
     taxonomic_issues_stringify() {
-      return JSON.stringify(this.taxonomic_issues, null, 2);
+      return JSON.stringify(
+        this.taxonomic_issues.filter((t) => t.ebird_species_code.length > 0),
+        null,
+        2
+      );
     },
   },
   methods: {
@@ -87,14 +91,22 @@ export default {
         }
 
         let common_name = "";
-        if (biolovision_species_list.hasOwnProperty(s.species["@id"])) {
+        if (
+          biolovision_species_list.hasOwnProperty(s.species["@id"]) &&
+          biolovision_species_list[s.species["@id"]].length > 0
+        ) {
           common_name = biolovision_species_list[s.species["@id"]];
         } else {
           // Return in console species with tax issue
           console.log(s.species);
           common_name = s.species.name;
           if (this.taxonomic_issues.indexOf(s.species)) {
-            this.taxonomic_issues.push(s.species);
+            this.taxonomic_issues.push({
+              id: s.species["@id"],
+              biolovision_common: s.species.name,
+              biolovision_latin: s.species.latin_name,
+              ebird_species_code: "",
+            });
           }
         }
         return this.createSighting({
@@ -448,15 +460,14 @@ export default {
         <b-icon icon="exclamation-triangle" class="mr-2"> </b-icon>
         <strong>There is an error! </strong> {{ error_message }}
       </b-alert>
-      <b-alert v-if="taxonomic_issues.length > 0" variant="warning" show>
+    </b-col>
+    <b-col lg="12" v-if="taxonomic_issues.length > 0">
+      <b-alert variant="warning" show>
         <b-icon icon="exclamation-triangle" class="mr-1" />
         <strong class="me-1">Taxonomic matching issue.</strong>
         <p>
-          We are detecting {{ taxonomic_issues.length }} species with unsuccessful taxonomic match:
-          {{ taxonomic_issues.map((s) => s.common_name).join(", ") }}
-        </p>
-        <p>
-          You can proceed with the import, but you will need to
+          We are detecting {{ taxonomic_issues.length }} species with unsuccessful taxonomic match. You can proceed with
+          the import, but you will need to
           <b-link
             class="alert-link"
             href="https://support.ebird.org/en/support/solutions/articles/48000907878-upload-spreadsheet-data-to-ebird#anchorCleanData"
@@ -466,25 +477,44 @@ export default {
           on the eBird import tool.
         </p>
         <p>
-          Please, copy the code below and paste it
-          <b-link class="alert-link" href="https://github.com/Zoziologie/biolovision2ebird/issues/11" target="_blank"
-            >in a new comment on this Github issue</b-link
-          >
-          so that I can add or correct the taxonomic match.
+          To avoid this issue in the future, we would be grateful if you can search for the corresponding eBird species
+          code (e.g., using the <b-link href="https://ebird.org/map/" target="_blank">eBird map</b-link>):
         </p>
-        <b-input-group>
-          <b-input type="text" v-model="taxonomic_issues_stringify" readonly></b-input>
-          <b-input-group-append>
-            <b-button
-              @click="
-                copyClipboard('\`\`\`\n' + taxonomic_issues_stringify + '\n\`\`\`');
-                clipboard_icon = 'clipboard-check';
-              "
+        <b-container class="bv-example-row">
+          <b-row v-for="t in taxonomic_issues" :key="t.id">
+            <b-col>
+              <strong class="mr-1">{{ t.biolovision_common }}</strong>
+              <small>
+                <i>{{ t.biolovision_latin }}</i></small
+              >
+            </b-col>
+            <b-col>
+              <b-input v-model="t.ebird_species_code" placeholder="Enter the corresponding eBird species code" />
+            </b-col>
+          </b-row>
+        </b-container>
+        <div v-if="taxonomic_issues_stringify.length > 6">
+          <b-input-group class="mt-4 mb-2">
+            <b-input type="text" v-model="taxonomic_issues_stringify" readonly></b-input>
+            <b-input-group-append>
+              <b-button
+                @click="
+                  copyClipboard('\`\`\`\n' + taxonomic_issues_stringify + '\n\`\`\`');
+                  clipboard_icon = 'clipboard-check';
+                "
+              >
+                <b-icon :icon="clipboard_icon" />
+              </b-button>
+            </b-input-group-append>
+          </b-input-group>
+          <p>
+            Please, copy the code above and paste it
+            <b-link class="alert-link" href="https://github.com/Zoziologie/biolovision2ebird/issues/11" target="_blank"
+              >in a new comment on this Github issue</b-link
             >
-              <b-icon :icon="clipboard_icon" />
-            </b-button>
-          </b-input-group-append>
-        </b-input-group>
+            so that I can add or correct the taxonomic match.
+          </p>
+        </div>
       </b-alert>
     </b-col>
   </b-row>
