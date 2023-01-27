@@ -38,7 +38,7 @@ import marker_color from "/data/marker_color.json";
         <b-form-select :options="language_options" v-model="language" />
         <template #description>
           Language used for the taxonomy matching on the import in eBird.
-          <span class="text-danger">Refresh page to make effective.</span>
+          <span class="text-danger">Refresh page to take effect.</span>
         </template>
       </b-form-group>
       <hr />
@@ -103,6 +103,46 @@ import marker_color from "/data/marker_color.json";
           />
         </b-input-group>
       </b-form-group>
+      <hr />
+      <h4>Interactive Map</h4>
+      <p>
+        Viewing the sightings of a checklist on a map is currently not possible on eBird nor biolovision, but sometimes
+        it can be useful to visualize where you saw certain species. For instance, this checklist
+        <b-link href="https://ebird.org/checklist/S88143525">S88143525</b-link> can be viewed as
+        <b-link
+          href="https://zoziologie.raphaelnussbaumer.com/view-geojson/?https%3A%2F%2Fgist.githubusercontent.com%2FRafnuss%2Fae093a0e750e68b2a7f09a4bc7445b0d%2Fraw%2Fe24e3b2f2f5e21fb7573cc8ecce189bd1e7bc823%2Fmont-sur-rolle__515_146_-2021-05-15.geojson"
+          >this interactive map</b-link
+        >.
+      </p>
+      <p>
+        You can easily generate this map with Biolovision2eBird, but the geospatial data must be stored online. I
+        suggest using a
+        <b-link
+          href="https://docs.github.com/en/get-started/writing-on-github/editing-and-sharing-content-with-gists/creating-gists"
+          >public Github gist</b-link
+        >
+        (<b-link href="https://gist.github.com/Rafnuss/65b1cf1a539d4b87ec90c23c395ab216">see previous example</b-link>),
+        which requires to
+        <b-link
+          href="https://docs.github.com/en/enterprise-server@3.4/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token"
+          >create a Github token</b-link
+        >
+        and enter it below:
+      </p>
+      <b-input-group>
+        <b-input
+          type="text"
+          v-model="gitub_token"
+          :state="gitub_token_state"
+          placeholder="Enter your Github token here..."
+        />
+      </b-input-group>
+      <small> Note that you need to select the "gist" scope. </small>
+      <p>
+        Adding a token will enable the button "Add interactive map" in each checklist. Click on each checklist for which
+        you want to create the interactive map. The link of the interactive map will be added on your static map image
+        in the checklist comment on your eBird checklist.
+      </p>
     </b-modal>
 
     <Intro v-if="!skip_intro" @skipIntro="skip_intro = true" />
@@ -599,7 +639,7 @@ import marker_color from "/data/marker_color.json";
                         </b-button>
                       </b-button-group>
                     </b-form-group>
-                    <b-form-group label="Tiles: " label-cols-lg="2">
+                    <b-form-group label="Tiles: " class="mb-0" label-cols-lg="2">
                       <b-form-select size="sm" v-model="form_card.static_map.style" :options="mapbox_layers" />
                     </b-form-group>
                     <b-form-group v-if="false">
@@ -611,7 +651,28 @@ import marker_color from "/data/marker_color.json";
                         <b-input type="number" v-model="form_card.static_map.size[1]" />
                       </b-input-group>
                     </b-form-group>
-                    <b-form-checkbox switch v-model="form_card.static_map.include_path"> Include path </b-form-checkbox>
+                    <b-form-group class="mb-1">
+                      <b-form-checkbox switch v-model="form_card.static_map.include_path">
+                        Include path
+                      </b-form-checkbox>
+                    </b-form-group>
+                    <b-form-group class="mb-1" :v-if="gitub_token_state">
+                      <b-button-group>
+                        <b-button size="sm" @click="createGist"> Add interactive map </b-button>
+                        <b-button
+                          size="sm"
+                          variant="primary"
+                          v-if="form_card.static_map.gist.length > 0"
+                          :href="
+                            'https://zoziologie.raphaelnussbaumer.com/view-geojson/?' +
+                            encodeURIComponent(form_card.static_map.gist)
+                          "
+                          target="_blank"
+                        >
+                          Preview
+                        </b-button>
+                      </b-button-group>
+                    </b-form-group>
                   </b-card-body>
                 </b-card>
               </b-col>
@@ -963,6 +1024,8 @@ export default {
       form_card: null,
       maki_icon_list: null,
       template_s: null,
+      gitub_token: "",
+      gitub_token_state: null,
     };
   },
   methods: {
@@ -998,6 +1061,7 @@ export default {
           bounding_box: null,
           size: [330, 220],
           include_path: true,
+          gist: "",
         },
         hotspots: [],
       };
@@ -1191,6 +1255,75 @@ export default {
         this.form_card.species_comment_template = "";
       }
     },
+    createGist() {
+      const filename =
+        (this.form_card.location_name + "_" + this.form_card.date + "_" + this.form_card.time)
+          .replace(/[^a-z0-9_\-]/gi, "_")
+          .toLowerCase() + ".geojson";
+
+      let data_geojson = this.form_card_sightings.map((s) => {
+        return {
+          type: "Feature",
+          properties: {
+            date: s.date + " " + s.time,
+            specie: s.common_name,
+            latin: s.scientific_name,
+            place: s.location_name,
+            observer: "",
+            count: s.count,
+            comment: s.comment,
+            img: "",
+            id: s.id,
+            "marker-color": "F7D826",
+            "marker-size": "m",
+            "marker-symbol": "1",
+            description: this.speciesComment(this.form_card.species_comment_template, [s]),
+            link: "",
+          },
+          geometry: {
+            type: "Point",
+            coordinates: [s.lon, s.lat],
+          },
+        };
+      });
+      if (this.form_card.path) {
+        data_geojson.push({
+          type: "Feature",
+          properties: {},
+          geometry: {
+            type: "LineString",
+            coordinates: this.form_card.path.map((p) => [p[1], p[0]]),
+          },
+        });
+      }
+      let gist = {
+        description: "",
+        public: true,
+        files: {
+          [filename]: {
+            content: JSON.stringify({
+              type: "FeatureCollection",
+              features: data_geojson,
+            }),
+          },
+        },
+      };
+      fetch("https://api.github.com/gists", {
+        method: "post",
+        headers: new Headers({
+          Authorization: "token " + this.gitub_token,
+        }),
+        body: JSON.stringify(gist),
+      })
+        .then((res) => res.json())
+        .then((res) => {
+          console.log(res);
+          const url = res.files[filename].raw_url;
+          console.log("https://zoziologie.raphaelnussbaumer.com/geojson/?" + encodeURIComponent(url));
+          this.form_card.static_map.gist = url;
+        })
+        .catch((error) => console.error(error));
+    },
   },
   computed: {
     form_card_sightings() {
@@ -1219,6 +1352,7 @@ export default {
     if (JSON.parse(this.$cookie.get("language"))) this.language = JSON.parse(this.$cookie.get("language"));
     if (JSON.parse(this.$cookie.get("global_static_map")))
       this.global_static_map = JSON.parse(this.$cookie.get("global_static_map"));
+    if (this.$cookie.get("gitub_token")) this.gitub_token = this.$cookie.get("gitub_token");
 
     fetch("https://raw.githubusercontent.com/mapbox/maki/main/layouts/all.json")
       .then((response) => {
@@ -1260,6 +1394,31 @@ export default {
         this.$cookie.set("global_static_map", JSON.stringify(this.global_static_map), 365);
       },
       deep: true,
+    },
+    gitub_token() {
+      if (this.gitub_token.length == 0) {
+        this.gitub_token_state = null;
+        return;
+      }
+      fetch("https://api.github.com/users/codertocat", {
+        method: "get",
+        headers: new Headers({
+          Authorization: "token " + this.gitub_token,
+        }),
+      })
+        .then((res) => {
+          const scopes = res.headers.get("x-oauth-scopes");
+          if (scopes && scopes.includes("gist")) {
+            this.$cookie.set("gitub_token", this.gitub_token, 365);
+            this.gitub_token_state = true;
+          } else {
+            this.gitub_token_state = false;
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+          this.gitub_token_state = null;
+        });
     },
   },
 };

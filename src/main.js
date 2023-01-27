@@ -126,16 +126,19 @@ Vue.mixin({
             }
         },
         checklistComment(form, sightings) {
-            return (
-                form.checklist_comment +
-                (form.static_map.show
-                    ? `<img src="${this.staticMapLink(
-                        form,
-                        sightings
-                    )}" style="max-width:300px;width:100%">`
-                    : "") +
-                "<br/><small>Imported with <a href='https://zoziologie.raphaelnussbaumer.com/biolovision2ebird/'>biolovision2eBird</a>.</small>"
-            );
+            let comment = form.checklist_comment
+            if (form.static_map.show) {
+                const img = `<img src="${this.staticMapLink(
+                    form,
+                    sightings
+                )}" style="max-width:300px;width:100%">`
+                if (form.static_map.gist) {
+                    comment += "<a href='" + form.static_map.gist + "'>" + img + "</a>"
+                } else {
+                    comment += img
+                }
+            }
+            return comment + "<br/><small>Imported with <a href='https://zoziologie.raphaelnussbaumer.com/biolovision2ebird/'>biolovision2eBird</a>.</small>"
         },
         staticMapLink(form, sightings) {
 
