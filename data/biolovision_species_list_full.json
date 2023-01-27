@@ -6246,6 +6246,12 @@
         "ebird_species_code": ""
     },
     {
+        "id": 10000,
+        "biolovision_english": "Aucune espèce trouvée",
+        "biolovision_latin": "No aves",
+        "ebird_species_code": "bird1"
+    },
+    {
         "id": 11006,
         "biolovision_english": "Swallow-tailed Kite",
         "biolovision_latin": "Elanoides forficatus",

@@ -1,0 +1,98 @@
+{
+    "data": {
+        "sightings": [],
+        "forms": [
+            {
+                "@id": "265073",
+                "id_form_universal": "1_265073",
+                "time_start": "10:00:00",
+                "time_stop": "10:05:00",
+                "full_form": "1",
+                "version": "0",
+                "lat": "46.964572201148",
+                "lon": "7.4189281829649",
+                "place_type": "place",
+                "sightings": [
+                    {
+                        "date": {
+                            "@timestamp": "1674774000",
+                            "@notime": "1",
+                            "@offset": "3600",
+                            "@ISO8601": "2023-01-27T00:00:00+01:00",
+                            "#text": "vendredi 27 janvier 2023"
+                        },
+                        "species": {
+                            "@id": "10000",
+                            "sys_order": "0",
+                            "taxonomy": "1",
+                            "rarity": "verycommon",
+                            "name": "Aucune esp\u00e8ce trouv\u00e9e",
+                            "latin_name": "No aves",
+                            "category": "C",
+                            "atlas_13_16": {
+                                "#text": ""
+                            },
+                            "id_fauna_europea": {
+                                "#text": "0"
+                            },
+                            "id_cscf": {
+                                "#text": ""
+                            }
+                        },
+                        "place": {
+                            "@id": "22639",
+                            "name": "Bern [598\/201]",
+                            "altitude": "550",
+                            "place_type": "square",
+                            "loc_precision": "0",
+                            "coord_lat": "46.964572201148",
+                            "coord_lon": "7.4189281829649",
+                            "municipality": "Bern",
+                            "county": "BE",
+                            "country": ""
+                        },
+                        "observers": [
+                            {
+                                "@id": "11346",
+                                "@uid": "61856",
+                                "@vowa_id": "4035",
+                                "code": "3afd90058a79",
+                                "name": "Rapha\u00ebl Nussbaumer",
+                                "anonymous": "0",
+                                "second_hand": "0",
+                                "traid": "11346",
+                                "id_sighting": "27240312",
+                                "id_universal": "1_27240312",
+                                "timing": {
+                                    "@timestamp": "1674774000",
+                                    "@notime": "1",
+                                    "@offset": "3600",
+                                    "@ISO8601": "2023-01-27T00:00:00+01:00",
+                                    "#text": "vendredi 27 janvier 2023"
+                                },
+                                "coord_lat": "46.964572201148",
+                                "coord_lon": "7.4189281829649",
+                                "altitude": "550",
+                                "atlas_grid_name": "59 20 (Wohlensee)",
+                                "id_form": "265073",
+                                "id_form_universal": "1_265073",
+                                "precision": "square",
+                                "estimation_code": "EXACT_VALUE",
+                                "count": "0",
+                                "flight_number": "1",
+                                "source": "WEB",
+                                "insert_date": {
+                                    "@timestamp": "1674823287",
+                                    "@notime": "0",
+                                    "@offset": "3600",
+                                    "@ISO8601": "2023-01-27T13:41:27+01:00",
+                                    "#text": "vendredi 27 janvier 2023, 13:41:27"
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}
