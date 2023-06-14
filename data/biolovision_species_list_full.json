@@ -5013,19 +5013,19 @@
         "id": 1342,
         "biolovision_english": "Eastern Subalpine Warbler (ssp. cantillans)",
         "biolovision_latin": "Sylvia cantillans cantillans",
-        "ebird_species_code": ""
+        "ebird_species_code": "easwar1"
     },
     {
         "id": 1343,
-        "biolovision_english": "Moltoni‚Äôs Warbler",
+        "biolovision_english": "Moltoni Warbler",
         "biolovision_latin": "Sylvia subalpina",
-        "ebird_species_code": ""
+        "ebird_species_code": "subwar8"
     },
     {
         "id": 1345,
         "biolovision_english": "Raja Shelduck",
         "biolovision_latin": "Tadorna radjah",
-        "ebird_species_code": ""
+        "ebird_species_code": "radshe1"
     },
     {
         "id": 1346,
