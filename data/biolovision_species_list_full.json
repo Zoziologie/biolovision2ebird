@@ -69,7 +69,7 @@
         "id": 12,
         "biolovision_english": "Great Shearwater",
         "biolovision_latin": "Puffinus gravis",
-        "ebird_species_code": ""
+        "ebird_species_code": "greshe"
     },
     {
         "id": 13,
@@ -4281,13 +4281,13 @@
         "id": 1157,
         "biolovision_english": "Wader, unidentified",
         "biolovision_latin": "Charadriiformes sp. (magna)",
-        "ebird_species_code": ""
+        "ebird_species_code": "shoreb1"
     },
     {
         "id": 1158,
         "biolovision_english": "small unidentified wader",
         "biolovision_latin": "Charadriiformes sp. (pusilli)",
-        "ebird_species_code": ""
+        "ebird_species_code": "shoreb1"
     },
     {
         "id": 1159,
@@ -4515,7 +4515,7 @@
         "id": 1201,
         "biolovision_english": "Kite, unidentified",
         "biolovision_latin": "Milvus sp.",
-        "ebird_species_code": ""
+        "ebird_species_code": "y00611"
     },
     {
         "id": 1202,
@@ -6945,7 +6945,7 @@
         "id": 15244,
         "biolovision_english": "Unidentified Redpoll",
         "biolovision_latin": "Carduelis flammea / hornemanni / cabaret",
-        "ebird_species_code": ""
+        "ebird_species_code": "redpol1"
     },
     {
         "id": 15245,
@@ -6957,13 +6957,13 @@
         "id": 15247,
         "biolovision_english": "Long-eared / Short-eared Owl",
         "biolovision_latin": "Asio otus / flammeus",
-        "ebird_species_code": ""
+        "ebird_species_code": "y00673"
     },
     {
         "id": 15248,
         "biolovision_english": "Pallid / Montagu's Harrier",
         "biolovision_latin": "Circus macrourus / pygargus",
-        "ebird_species_code": ""
+        "ebird_species_code": "y00720"
     },
     {
         "id": 15249,
@@ -7017,13 +7017,13 @@
         "id": 15260,
         "biolovision_english": "Common / Iberian Chiffchaff",
         "biolovision_latin": "Phylloscopus collybita / ibericus",
-        "ebird_species_code": ""
+        "ebird_species_code": "y00813"
     },
     {
         "id": 15267,
         "biolovision_english": "Mediterranean x Black-headed Gull",
         "biolovision_latin": "Larus melanocephalus x Chroicocephalus ridibundus",
-        "ebird_species_code": ""
+        "ebird_species_code": "x00695"
     },
     {
         "id": 15268,
