@@ -31,7 +31,7 @@ Vue.mixin({
             return x ? (Math.round(parseFloat(x) * Math.pow(10, exp)) / Math.pow(10, exp)) : x
         },
         formatDate(date, sep = "-") {
-            date = new Date(date)
+            date = new Date(date + " 00:00")
             return (date.getMonth() > 8 ? date.getMonth() + 1 : "0" + (date.getMonth() + 1)) +
                 sep +
                 (date.getDate() > 9 ? date.getDate() : "0" + date.getDate()) +
