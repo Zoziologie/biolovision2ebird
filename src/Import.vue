@@ -329,6 +329,27 @@ export default {
             long: '${ s.count_precision }${ s.count } ind. - ${ s.time ? " - " + s.time : "" } - ${ s.lat }, ${ s.lon }${ s.comment ? " - " + s.comment : "" }',
             limit: 20,
           };
+        } else if (this.website.system == "biolovision.net") {
+          export_data.sightings = Papa.parse(reader.result, {
+            skipEmptyLines: true,
+            header: true,
+          }).data.map((s) => {
+            return this.createSighting({
+              id: s["Universal observation ID"],
+              form_id: 0,
+              date: s.Date,
+              time: s.Timing,
+              lat: parseFloat(s["Latitude (N)"]),
+              lon: parseFloat(s["Longitude (E)"]),
+              location_name: s.Site,
+              common_name: s.Species,
+              scientific_name: s["Latin name"],
+              count: s["Estimation"] == "seen not counted" ? "x" : s.Number,
+              count_precision: precision_match_observation[s["Estimation"]],
+              comment: s.Comment,
+            });
+          });
+          console.log(export_data.sightings)
         } else {
           this.loading_file_status = -1;
           this.error_message = "No correct system";
@@ -433,6 +454,14 @@ export default {
               >Export data from <strong> Birdlasser</strong>
             </a>
           </b-col>
+        </template>
+        <template v-else-if="website.system == 'biolovision.net'">
+          <p>
+            Export your data from the "All my sightings" page. Select the TXT option.
+          </p>
+          <a href="https://data.biolovision.net/index.php?m_id=31" target="_blank" class="btn btn-primary"
+            >Export data from <strong>{{ website.name }}</strong>
+          </a>
         </template>
       </b-row>
     </b-col>

@@ -82,12 +82,12 @@
     },
     {
         "category": "Main Biolovision",
-        "osm_level": "",
+        "osm_level": "world",
         "osm_region": "",
-        "extension": ".json",
+        "extension": ".txt",
         "name": "biolovision.net",
-        "system": "biolovision",
-        "website": "data.biolovision.net/"
+        "system": "biolovision.net",
+        "website": "https://data.biolovision.net/"
     },
     {
         "category": "French Biolovision",

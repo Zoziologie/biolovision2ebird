@@ -1031,9 +1031,9 @@ export default {
   methods: {
     createForm(f, id) {
       let species_comment_template = f.species_comment_template || {};
-      species_comment_template.long = f.species_comment_template.long || "";
-      species_comment_template.short = f.species_comment_template.short || "";
-      species_comment_template.limit = f.species_comment_template.limit || 5;
+      species_comment_template.long = species_comment_template.long || "";
+      species_comment_template.short = species_comment_template.short || "";
+      species_comment_template.limit = species_comment_template.limit || 5;
       const fnew = {
         id: id, // required
         imported: f.imported || false,
