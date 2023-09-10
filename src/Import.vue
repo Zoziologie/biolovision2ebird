@@ -330,14 +330,16 @@ export default {
             limit: 20,
           };
         } else if (this.website.system == "biolovision.net") {
+          export_data.forms_sightings = [];
           export_data.sightings = Papa.parse(reader.result, {
             skipEmptyLines: true,
             header: true,
           }).data.map((s) => {
+            const date_split = s.Date.split(".");
             return this.createSighting({
               id: s["Universal observation ID"],
               form_id: 0,
-              date: s.Date,
+              date: `${date_split[2]}-${date_split[1]}-${date_split[0]}`,
               time: s.Timing,
               lat: parseFloat(s["Latitude (N)"]),
               lon: parseFloat(s["Longitude (E)"]),
@@ -349,7 +351,6 @@ export default {
               comment: s.Comment,
             });
           });
-          console.log(export_data.sightings)
         } else {
           this.loading_file_status = -1;
           this.error_message = "No correct system";
@@ -457,7 +458,8 @@ export default {
         </template>
         <template v-else-if="website.system == 'biolovision.net'">
           <p>
-            Export your data from the "All my sightings" page. Select the TXT option.
+            Export your data from the "All my sightings" page. Select the TXT option and make sure your page is in
+            english to have the correct txt header.
           </p>
           <a href="https://data.biolovision.net/index.php?m_id=31" target="_blank" class="btn btn-primary"
             >Export data from <strong>{{ website.name }}</strong>
