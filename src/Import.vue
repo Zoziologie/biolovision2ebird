@@ -143,7 +143,7 @@ export default {
       const d = export_data.sightings.length > 0 ? export_data.sightings[0] : export_data.forms_sightings[0][0];
 
       const response = await fetch(
-        `https://nominatim.openstreetmap.org/reverse.php?lat=${d.lat}&lon=${d.lon}&zoom=8&format=jsonv2`
+        `https://nominatim.openstreetmap.org/reverse.php?lat=${d.lat}&lon=${d.lon}&zoom=8&format=jsonv2&accept-language=en`
       );
       const reverse = await response.json();
       if (reverse.address[this.website.osm_level] != this.website.osm_region) {
