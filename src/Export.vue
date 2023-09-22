@@ -144,10 +144,10 @@ export default {
         </p>
         <b-button class="mx-auto" @click="prepare_status = prepareFile()">
           <span v-if="prepare_status == null"><b-icon icon="table" /> Prepare CSV</span>
-          <span v-else-if="prepare_status == 0"
-            ><b-spinner small style="width: 1.3rem; height: 1.3rem" /> Preparing CSV</span
-          >
-          <span v-else><b-icon icon="table" /> Refresh CSV file</span>
+          <span v-else-if="prepare_status == 0">
+            <b-spinner small style="width: 1.3rem; height: 1.3rem" /> Preparing CSV
+          </span>
+          <span v-else> <b-icon icon="table" /> Refresh CSV file</span>
         </b-button>
         <template v-if="prepare_status == 1">
           <hr />
@@ -176,9 +176,18 @@ export default {
       <p>
         Go to
         <a href="http://ebird.org/ebird/import/upload.form?theme=ebird" target="_blank" rel="noopener">eBird Import</a>,
-        choose "eBird Record Format (Extended)", select the csv file on your computer and click on "Import File".
+        choose "eBird Record Format (Extended)", select the CSV file on your computer and click on "Import File".
       </p>
-
+      <b-col class="text-center my-2">
+        <a
+          href="http://ebird.org/ebird/import/upload.form?theme=ebird"
+          target="_blank"
+          rel="noopener"
+          class="btn btn-primary"
+        >
+          Open eBird Import
+        </a>
+      </b-col>
       <p>
         The import process on eBird
         <b-link href="https://github.com/Zoziologie/biolovision2ebird/wiki/FAQ#long-processing-time" target="_blank"
