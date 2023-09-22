@@ -389,6 +389,30 @@ export default {
           </b-select-option-group>
         </b-select>
       </b-form-group>
+      <b-form-group label="Upload the exported file" v-if="website">
+        <b-form-file
+          size="lg"
+          v-model="file"
+          :accept="website.extension"
+          :placeholder="'Click to load your ' + website.extension + ' file'"
+          class="mb-2"
+        />
+      </b-form-group>
+      <b-alert v-if="loading_file_status == 0" variant="warning" show>
+        <b-spinner small variant="warning" class="mr-2"> </b-spinner>
+        <strong class="me-1">Loading data...</strong>
+      </b-alert>
+      <b-alert v-else-if="loading_file_status == 1" variant="success" show>
+        <b-icon icon="check-circle-fill" class="mr-2"> </b-icon>
+        <strong>Data loaded successfully! </strong>
+        {{ number_imported_form }} forms and {{ number_imported_sightings }} individual sightings.
+      </b-alert>
+      <b-alert v-else-if="loading_file_status == -1" variant="danger" show>
+        <b-icon icon="exclamation-triangle" class="mr-2"> </b-icon>
+        <strong>There is an error! </strong> {{ error_message }}
+      </b-alert>
+    </b-col>
+    <b-col lg="6">
       <b-row class="m-3 p-3 text-white rounded shadow-sm bg-secondary" v-if="website">
         <template v-if="website.system == 'biolovision'">
           <p>For Biolovision websites, export your data file as json <b-img :src="jsonIcon" />.</p>
@@ -466,31 +490,6 @@ export default {
           </a>
         </template>
       </b-row>
-    </b-col>
-    <b-col lg="6" v-if="website">
-      <b-form-group label="Upload the exported file">
-        <b-form-file
-          size="lg"
-          v-model="file"
-          :accept="website.extension"
-          :placeholder="'Click to load your ' + website.extension + ' file'"
-          class="mb-2"
-        />
-      </b-form-group>
-
-      <b-alert v-if="loading_file_status == 0" variant="warning" show>
-        <b-spinner small variant="warning" class="mr-2"> </b-spinner>
-        <strong class="me-1">Loading data...</strong>
-      </b-alert>
-      <b-alert v-else-if="loading_file_status == 1" variant="success" show>
-        <b-icon icon="check-circle-fill" class="mr-2"> </b-icon>
-        <strong>Data loaded successfully! </strong>
-        {{ number_imported_form }} forms and {{ number_imported_sightings }} individual sightings.
-      </b-alert>
-      <b-alert v-else-if="loading_file_status == -1" variant="danger" show>
-        <b-icon icon="exclamation-triangle" class="mr-2"> </b-icon>
-        <strong>There is an error! </strong> {{ error_message }}
-      </b-alert>
     </b-col>
     <b-col lg="12" v-if="taxonomic_issues.length > 0">
       <b-alert variant="warning" show>
