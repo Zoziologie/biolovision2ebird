@@ -656,7 +656,7 @@ import marker_color from "/data/marker_color.json";
                         Include path
                       </b-form-checkbox>
                     </b-form-group>
-                    <b-form-group class="mb-1" :v-if="gitub_token_state">
+                    <b-form-group class="mb-1" v-if="gitub_token_state == true">
                       <b-button-group>
                         <b-button size="sm" @click="createGist"> Add interactive map </b-button>
                         <b-button
