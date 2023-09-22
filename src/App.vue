@@ -506,7 +506,7 @@ import marker_color from "/data/marker_color.json";
                       <b-button
                         variant="secondary"
                         v-b-tooltip.hover.bottom
-                        title="Draw your path on the map to compute the distance."
+                        title="Click on the same icon in the map to draw your path and compute the distance."
                       >
                         <b-icon icon="bezier" />
                       </b-button>
@@ -1089,15 +1089,16 @@ export default {
       this.map_card_polyline = new L.Draw.Polyline(this.$refs.map_card.mapObject);
       this.$refs.map_card.mapObject.on(L.Draw.Event.CREATED, (e) => {
         if (e.layerType === "polyline") {
-          if (
-            confirm(
-              `Do you want to update the path and the distance ${
-                this.form_card.path ? +"(" + this.distanceFromLatLngs(this.form_card.path) + ")" : ""
-              } of ${this.form_card.location_name}`
-            )
-          ) {
-            this.form_card.path = e.layer.getLatLngs().map((l) => [l.lat, l.lng]);
-            this.form_card.distance = this.distanceFromLatLngs(this.form_card.path);
+          const new_path = e.layer.getLatLngs().map((l) => [l.lat, l.lng]);
+          const new_distance = this.distanceFromLatLngs(new_path);
+          let msg = this.form_card.path != null ? ` from ${this.distanceFromLatLngs(this.form_card.path)}km` : "";
+          let resp = confirm(`Do you want to update the path and the distance${msg} to ${new_distance}km`);
+          if (resp) {
+            this.form_card.path = new_path;
+            this.form_card.distance = new_distance;
+            // Trick to update the static map
+            this.form_card.static_map.bounding_box_auto = false;
+            this.form_card.static_map.bounding_box_auto = true;
           }
         }
       });
