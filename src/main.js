@@ -11,13 +11,6 @@ Vue.use(VueCookie);
 
 
 Vue.mixin({
-    data() {
-        return {
-            mapbox_access_token:
-                "pk.eyJ1IjoicmFmbnVzcyIsImEiOiJjbGNsNWtyNm01enhnM3hsazNmamQ5dm5hIn0.DonKVX7CLLfMHIZiiSbYnQ"
-
-        }
-    },
     methods: {
         formatNb(x) {
             return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -208,7 +201,7 @@ Vue.mixin({
             }
 
             return `https://api.mapbox.com/styles/v1/mapbox/${form.static_map.style
-                }/static/${path}${markers}/[${form.static_map.bounding_box}]/300x200?access_token=${this.mapbox_access_token}&logo=false`;
+                }/static/${path}${markers}/[${form.static_map.bounding_box}]/300x200?access_token=${form.static_map.mapbox_token}&logo=false`;
         },
         speciesComment(species_comment_template, sightings) {
             if (sightings.length < species_comment_template.limit) {

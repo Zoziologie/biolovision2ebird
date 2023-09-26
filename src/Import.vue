@@ -373,7 +373,7 @@ export default {
 <template>
   <b-row class="my-3 p-3 bg-white rounded shadow-sm">
     <b-col lg="12">
-      <h2 class="border-bottom pb-2 mb-3">1. Generate and load Biolovision data</h2>
+      <h2 class="border-bottom pb-2 mb-3">1. Generate and import Biolovision data</h2>
     </b-col>
     <b-col lg="6">
       <b-form-group label="Select the website from which to import the data">
@@ -389,7 +389,7 @@ export default {
           </b-select-option-group>
         </b-select>
       </b-form-group>
-      <b-form-group label="Upload the exported file" v-if="website">
+      <b-form-group label="Import the exported file" v-if="website">
         <b-form-file
           size="lg"
           v-model="file"

@@ -38,19 +38,37 @@ import marker_color from "/data/marker_color.json";
         <b-form-select :options="language_options" v-model="language" />
         <template #description>
           Language used for the taxonomy matching on the import in eBird.
-          <span class="text-danger">Refresh page to take effect.</span>
+          <b-button size="sm" variant="link" class="text-danger" @click="refreshPage">
+            Refresh page to take effect.
+          </b-button>
         </template>
       </b-form-group>
       <hr />
-      <h4>Static Map</h4>
-      <small class="text-danger">Only apply for new checklists.</small>
+      <h4>Mapbox & static map</h4>
+      <small class="text-danger">Only apply for new import.</small>
+      <b-input-group>
+        <b-input
+          type="text"
+          v-model="mapbox_token"
+          :state="mapbox_token_state"
+          placeholder="Enter your Mapbox token here..."
+        />
+        <p>
+          In order to use mapbox tile and static map, you will need to
+          <b-link href="https://docs.mapbox.com/help/tutorials/get-started-tokens-api/" target="_blank"
+            >create a public token</b-link
+          >
+          with at the scope <code>styles:tiles</code> and paste it below.
+        </p>
+      </b-input-group>
+      <small v-if="mapbox_token_msg" class="text-danger">{{ mapbox_token_msg }}</small>
       <b-form-group>
-        <b-form-checkbox v-model="global_static_map.show" switch>
+        <b-form-checkbox v-model="global_static_map.show" switch :disabled="mapbox_token_state != true">
           Include static map in checklist comment
         </b-form-checkbox>
       </b-form-group>
       <b-form-group label="Background style: " label-cols-lg="4">
-        <b-form-select v-model="global_static_map.style" :options="mapbox_layers" />
+        <b-form-select v-model="global_static_map.style" :options="map_layers.filter((l) => l.mapbox)" />
       </b-form-group>
       <b-form-group label="Path style:" label-cols-lg="4">
         <b-input-group>
@@ -108,10 +126,12 @@ import marker_color from "/data/marker_color.json";
       <p>
         Viewing the sightings of a checklist on a map is currently not possible on eBird nor biolovision, but sometimes
         it can be useful to visualize where you saw certain species. For instance, this checklist
-        <b-link href="https://ebird.org/checklist/S88143525">S88143525</b-link> can be viewed as
+        <b-link href="https://ebird.org/checklist/S88143525" target="_blank">S88143525</b-link> can be viewed as
         <b-link
           href="https://zoziologie.raphaelnussbaumer.com/view-geojson/?https%3A%2F%2Fgist.githubusercontent.com%2FRafnuss%2Fae093a0e750e68b2a7f09a4bc7445b0d%2Fraw%2Fe24e3b2f2f5e21fb7573cc8ecce189bd1e7bc823%2Fmont-sur-rolle__515_146_-2021-05-15.geojson"
-          >this interactive map</b-link
+          target="_blank"
+        >
+          this interactive map </b-link
         >.
       </p>
       <p>
@@ -119,14 +139,19 @@ import marker_color from "/data/marker_color.json";
         suggest using a
         <b-link
           href="https://docs.github.com/en/get-started/writing-on-github/editing-and-sharing-content-with-gists/creating-gists"
-          >public Github gist</b-link
+          target="_blank"
         >
-        (<b-link href="https://gist.github.com/Rafnuss/65b1cf1a539d4b87ec90c23c395ab216">see previous example</b-link>),
-        which requires to
+          public Github gist
+        </b-link>
+        (<b-link href="https://gist.github.com/Rafnuss/65b1cf1a539d4b87ec90c23c395ab216" target="_blank"
+          >see previous example</b-link
+        >), which requires to
         <b-link
           href="https://docs.github.com/en/enterprise-server@3.4/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token"
-          >create a Github token</b-link
+          target="_blank"
         >
+          create a Github token
+        </b-link>
         and enter it below:
       </p>
       <b-input-group>
@@ -255,11 +280,11 @@ import marker_color from "/data/marker_color.json";
 
             <l-control-layers position="topright" />
             <l-tile-layer
-              v-for="(l, id) in mapbox_layers"
+              v-for="(l, id) in map_layers"
               :key="l.text"
               :name="l.text"
-              :visible="id == 1"
-              :url="`https://api.mapbox.com/styles/v1/mapbox/${l.value}/tiles/{z}/{x}/{y}?access_token=${mapbox_access_token}`"
+              :visible="id == 0"
+              :url="l.url"
               layer-type="base"
             />
             <l-circle-marker
@@ -547,7 +572,11 @@ import marker_color from "/data/marker_color.json";
                       </b-button>
                     </l-control>
                     <l-tile-layer
-                      :url="`https://api.mapbox.com/styles/v1/mapbox/${form_card.static_map.style}/tiles/{z}/{x}/{y}?access_token=${mapbox_access_token}`"
+                      :url="
+                        mapbox_token_state
+                          ? `https://api.mapbox.com/styles/v1/mapbox/${form_card.static_map.style}/tiles/{z}/{x}/{y}?access_token=${mapbox_token}`
+                          : map_layers[0].url
+                      "
                     />
                     <l-circle-marker
                       v-for="s in form_card_sightings"
@@ -618,7 +647,12 @@ import marker_color from "/data/marker_color.json";
               <b-col lg="4" sm="6">
                 <b-card bg-variant="light" no-body>
                   <template #header>
-                    <b-checkbox switch class="text-center" v-model="form_card.static_map.show">
+                    <b-checkbox
+                      switch
+                      class="text-center"
+                      v-model="form_card.static_map.show"
+                      :disabled="mapbox_token_state != true"
+                    >
                       Static map in checklist comment
                     </b-checkbox>
                   </template>
@@ -640,7 +674,11 @@ import marker_color from "/data/marker_color.json";
                       </b-button-group>
                     </b-form-group>
                     <b-form-group label="Tiles: " class="mb-0" label-cols-lg="2">
-                      <b-form-select size="sm" v-model="form_card.static_map.style" :options="mapbox_layers" />
+                      <b-form-select
+                        size="sm"
+                        v-model="form_card.static_map.style"
+                        :options="map_layers.filter((l) => l.mapbox)"
+                      />
                     </b-form-group>
                     <b-form-group v-if="false">
                       <b-input-group size="sm">
@@ -831,30 +869,46 @@ import "leaflet/dist/images/marker-icon.png";
 
 window.type = true; // fix for leaflet draw
 
-const mapbox_layers = [
+const map_layers_ini = [
   {
     text: "Satellite",
     value: "satellite-v9",
+    mapbox: true,
   },
   {
     text: "Street",
     value: "streets-v11",
+    mapbox: true,
   },
   {
     text: "Outdoor",
     value: "outdoors-v9",
+    mapbox: true,
   },
   {
     text: "Satellite-Street",
     value: "satellite-streets-v11",
+    mapbox: true,
   },
   {
     text: "Light",
     value: "light-v10",
+    mapbox: true,
   },
   {
     text: "Dark",
     value: "dark-v10",
+    mapbox: true,
+  },
+  {
+    text: "OpenStreetMap",
+    url: `https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png`,
+    mapbox: false,
+  },
+  {
+    text: "Esri Satellite",
+    url: `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}`,
+    mapbox: false,
   },
 ];
 
@@ -993,7 +1047,7 @@ export default {
       skip_intro: false,
       language: "en",
       global_static_map: {
-        show: true,
+        show: false,
         style: "satellite-v9",
         path_style: {
           strokeWidth: "5",
@@ -1026,6 +1080,9 @@ export default {
       template_s: null,
       gitub_token: "",
       gitub_token_state: null,
+      mapbox_token: "",
+      mapbox_token_state: null,
+      mapbox_token_msg: null,
     };
   },
   methods: {
@@ -1054,6 +1111,7 @@ export default {
         path_distance: null,
         static_map: {
           show: this.global_static_map.show,
+          mapbox_token: this.mapbox_token,
           style: this.global_static_map.style,
           path_style: this.global_static_map.path_style,
           marker_style: this.global_static_map.marker_style,
@@ -1325,6 +1383,9 @@ export default {
         })
         .catch((error) => console.error(error));
     },
+    refreshPage() {
+      window.location.reload();
+    },
   },
   computed: {
     form_card_sightings() {
@@ -1347,6 +1408,18 @@ export default {
         return false;
       }
     },
+    map_layers() {
+      if (this.mapbox_token_state) {
+        return map_layers_ini.map((l) => {
+          if (l.mapbox) {
+            l.url = `https://api.mapbox.com/styles/v1/mapbox/${l.value}/tiles/{z}/{x}/{y}?access_token=${this.mapbox_token}`;
+          }
+          return l;
+        });
+      } else {
+        return map_layers_ini.filter((l) => !l.mapbox);
+      }
+    },
   },
   mounted() {
     if (JSON.parse(this.$cookie.get("skip_intro"))) this.skip_intro = JSON.parse(this.$cookie.get("skip_intro"));
@@ -1354,6 +1427,7 @@ export default {
     if (JSON.parse(this.$cookie.get("global_static_map")))
       this.global_static_map = JSON.parse(this.$cookie.get("global_static_map"));
     if (this.$cookie.get("gitub_token")) this.gitub_token = this.$cookie.get("gitub_token");
+    if (this.$cookie.get("mapbox_token")) this.mapbox_token = this.$cookie.get("mapbox_token");
 
     fetch("https://raw.githubusercontent.com/mapbox/maki/main/layouts/all.json")
       .then((response) => {
@@ -1419,6 +1493,37 @@ export default {
         .catch((error) => {
           console.error(error);
           this.gitub_token_state = null;
+        });
+    },
+    mapbox_token() {
+      if (this.mapbox_token.length == 0) {
+        this.mapbox_token_state = null;
+        this.mapbox_token_msg = null;
+        this.global_static_map.show = false;
+        return;
+      }
+      fetch("https://api.mapbox.com/tokens/v2?access_token=" + this.mapbox_token)
+        .then((response) => {
+          return response.json();
+        })
+        .then((data) => {
+          if (data.code == "TokenValid") {
+            //https://api.mapbox.com/scopes/v1/{username}?access_token={access_token} Not working
+            this.mapbox_token_state = true;
+            this.mapbox_token_msg = null;
+            this.global_static_map.show = true;
+            this.$cookie.set("mapbox_token", this.mapbox_token, 365);
+          } else {
+            this.mapbox_token_state = false;
+            this.mapbox_token_msg = data.code;
+            this.global_static_map.show = false;
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+          this.mapbox_token_state = null;
+          this.mapbox_token_msg = null;
+          this.global_static_map.show = false;
         });
     },
   },
