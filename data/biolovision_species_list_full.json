@@ -189,7 +189,7 @@
         "id": 32,
         "biolovision_english": "Cattle Egret",
         "biolovision_latin": "Bubulcus ibis",
-        "ebird_species_code": "categr"
+        "ebird_species_code": "categr1"
     },
     {
         "id": 33,
@@ -879,7 +879,7 @@
         "id": 147,
         "biolovision_english": "Northern Goshawk",
         "biolovision_latin": "Accipiter gentilis",
-        "ebird_species_code": "norgos"
+        "ebird_species_code": "norgos1"
     },
     {
         "id": 148,
@@ -2103,7 +2103,7 @@
         "id": 354,
         "biolovision_english": "Common House Martin",
         "biolovision_latin": "Delichon urbicum",
-        "ebird_species_code": "cohmar1"
+        "ebird_species_code": "comhom1"
     },
     {
         "id": 355,
@@ -4395,7 +4395,7 @@
         "id": 1180,
         "biolovision_english": "Common Chiffchaff (P.c.collybita)",
         "biolovision_latin": "Phylloscopus collybita collybita",
-        "ebird_species_code": ""
+        "ebird_species_code": "grgshr2"
     },
     {
         "id": 1182,
@@ -4407,7 +4407,7 @@
         "id": 1183,
         "biolovision_english": "Great Grey Shrike (L.e.excubitor)",
         "biolovision_latin": "Lanius excubitor excubitor",
-        "ebird_species_code": ""
+        "ebird_species_code": "grgshr2"
     },
     {
         "id": 1184,
@@ -4437,13 +4437,13 @@
         "id": 1188,
         "biolovision_english": "Northern Goshawk / Eurasian Sparrowhawk",
         "biolovision_latin": "Accipiter gentilis / nisus",
-        "ebird_species_code": ""
+        "ebird_species_code": "y00392"
     },
     {
         "id": 1189,
         "biolovision_english": "Montagu's / Hen Harrier",
         "biolovision_latin": "Circus pygargus / cyaneus",
-        "ebird_species_code": ""
+        "ebird_species_code": "y00840"
     },
     {
         "id": 1190,
@@ -6609,7 +6609,7 @@
         "id": 12882,
         "biolovision_english": "Lesser Moorhen",
         "biolovision_latin": "Gallinula angulata",
-        "ebird_species_code": ""
+        "ebird_species_code": "lesmoo1"
     },
     {
         "id": 12929,
@@ -6843,7 +6843,7 @@
         "id": 15219,
         "biolovision_english": "Hybrid Common House Martin x Barn Swallow",
         "biolovision_latin": "Delichon urbicum x Hirundo rustica",
-        "ebird_species_code": ""
+        "ebird_species_code": "x00659"
     },
     {
         "id": 15221,
@@ -6939,7 +6939,7 @@
         "id": 15243,
         "biolovision_english": "Crested / Thekla Lark",
         "biolovision_latin": "Galerida cristata / theklae",
-        "ebird_species_code": ""
+        "ebird_species_code": "y00980"
     },
     {
         "id": 15244,
@@ -7299,7 +7299,7 @@
         "id": 32420,
         "biolovision_english": "Eastern Cattle Egret",
         "biolovision_latin": "Bubulcus coromandus",
-        "ebird_species_code": ""
+        "ebird_species_code": "categr2"
     },
     {
         "id": 32431,
@@ -8331,7 +8331,7 @@
         "id": 38659,
         "biolovision_english": "Muscicapa striata tyrrhenica / balearica",
         "biolovision_latin": "Muscicapa striata tyrrhenica / balearica",
-        "ebird_species_code": ""
+        "ebird_species_code": "spofly3"
     },
     {
         "id": 38736,
@@ -8349,19 +8349,19 @@
         "id": 38796,
         "biolovision_english": "Feral Greylag Goose",
         "biolovision_latin": "Anser anser f. domestica",
-        "ebird_species_code": ""
+        "ebird_species_code": "gragoo1"
     },
     {
         "id": 38928,
         "biolovision_english": "Cory's / Scopoli's Shearwater",
         "biolovision_latin": "Calonectris borealis / diomedea",
-        "ebird_species_code": ""
+        "ebird_species_code": "corshe"
     },
     {
         "id": 38960,
         "biolovision_english": "Long-tailed Tit (A.c.europaeus)",
         "biolovision_latin": "Aegithalos caudatus europaeus",
-        "ebird_species_code": ""
+        "ebird_species_code": "lottit3"
     },
     {
         "id": 38983,
@@ -8379,13 +8379,13 @@
         "id": 38993,
         "biolovision_english": "Peregrine Falcon (F.p.peregrinus)",
         "biolovision_latin": "Falco peregrinus peregrinus",
-        "ebird_species_code": ""
+        "ebird_species_code": "x00399"
     },
     {
         "id": 39061,
         "biolovision_english": "Hybrid Pallid x Hen Harrier",
         "biolovision_latin": "Circus macrourus x cyaneus",
-        "ebird_species_code": ""
+        "ebird_species_code": "x00399"
     },
     {
         "id": 47585,
@@ -8403,13 +8403,13 @@
         "id": 47592,
         "biolovision_english": "Peregrine Falcon (F.p.tundrius / calidus)",
         "biolovision_latin": "Falco peregrinus calidus / tundrius",
-        "ebird_species_code": ""
+        "ebird_species_code": "tupfal1"
     },
     {
         "id": 47594,
         "biolovision_english": "Yelkouan / Balearic Shearwater",
         "biolovision_latin": "Puffinus yelkouan / mauretanicus",
-        "ebird_species_code": ""
+        "ebird_species_code": "medshe1"
     },
     {
         "id": 47615,
@@ -8421,13 +8421,13 @@
         "id": 47896,
         "biolovision_english": "Vulture sp.",
         "biolovision_latin": "Gyps / Aegypius sp.",
-        "ebird_species_code": ""
+        "ebird_species_code": "olwvul1"
     },
     {
         "id": 48421,
         "biolovision_english": "Yellow Wagtail f. xanthophrys",
         "biolovision_latin": "Motacilla flava f. xanthophrys",
-        "ebird_species_code": ""
+        "ebird_species_code": "weywag12"
     },
     {
         "id": 48427,
@@ -8457,13 +8457,13 @@
         "id": 48711,
         "biolovision_english": "Swan x Greylag Goose",
         "biolovision_latin": "Anser cygnoides x anser",
-        "ebird_species_code": ""
+        "ebird_species_code": "x00776"
     },
     {
         "id": 48712,
         "biolovision_english": "Ruddy Shelduck x Egyptian Goose",
         "biolovision_latin": "Tadorna ferruginea x Alopochen aegyptiacus",
-        "ebird_species_code": ""
+        "ebird_species_code": "x00367"
     },
     {
         "id": 48713,
@@ -8535,7 +8535,7 @@
         "id": 49317,
         "biolovision_english": "Richard's / Blyth's Pipit",
         "biolovision_latin": "Anthus richardi / godlewskii",
-        "ebird_species_code": ""
+        "ebird_species_code": "y01013"
     },
     {
         "id": 49361,
@@ -8559,25 +8559,25 @@
         "id": 49401,
         "biolovision_english": "Hybrid Hooded Merganser x Smew",
         "biolovision_latin": "Lophodytes cucullatus x Mergus albellus",
-        "ebird_species_code": ""
+        "ebird_species_code": "x00379"
     },
     {
         "id": 49402,
         "biolovision_english": "Cackling x Barnacle Goose",
         "biolovision_latin": "Branta hutchinsii x leucopsis",
-        "ebird_species_code": ""
+        "ebird_species_code": "x00416"
     },
     {
         "id": 49520,
         "biolovision_english": "Grey x Purple Heron",
         "biolovision_latin": "Ardea cinerea x purpurea",
-        "ebird_species_code": ""
+        "ebird_species_code": "x01050"
     },
     {
         "id": 50506,
         "biolovision_english": "Western / Eastern Yellow Wagtail",
         "biolovision_latin": "Motacilla flava / tschutschensis",
-        "ebird_species_code": ""
+        "ebird_species_code": "y00597"
     },
     {
         "id": 50606,
@@ -8595,13 +8595,13 @@
         "id": 53855,
         "biolovision_english": "Subalpine / Moltoni's Warbler",
         "biolovision_latin": "Sylvia cantillans / subalpina",
-        "ebird_species_code": ""
+        "ebird_species_code": "y00909"
     },
     {
         "id": 54052,
         "biolovision_english": "Hybrid Tufted Duck x Red-crested Pochard",
         "biolovision_latin": "Aythya fuligula x Netta rufina",
-        "ebird_species_code": ""
+        "ebird_species_code": "x00376"
     },
     {
         "id": 54300,
@@ -8613,13 +8613,13 @@
         "id": 54330,
         "biolovision_english": "Eastern Bonelli's Warbler",
         "biolovision_latin": "Phylloscopus bonelli / orientalis",
-        "ebird_species_code": ""
+        "ebird_species_code": "eabwar1"
     },
     {
         "id": 54331,
         "biolovision_english": "Isabelline / Red-tailed Shrike",
         "biolovision_latin": "Lanius isabellinus /phoenicuroides",
-        "ebird_species_code": ""
+        "ebird_species_code": "rutshr1"
     },
     {
         "id": 54413,
@@ -8631,13 +8631,13 @@
         "id": 54414,
         "biolovision_english": "Western Subalpine Warbler",
         "biolovision_latin": "Sylvia cantillans iberiae",
-        "ebird_species_code": ""
+        "ebird_species_code": "subwar6"
     },
     {
         "id": 54696,
         "biolovision_english": "Larus fuscus graellsii / intermedius",
         "biolovision_latin": "Larus fuscus graellsii / intermedius",
-        "ebird_species_code": ""
+        "ebird_species_code": "lbbgul6"
     },
     {
         "id": 54748,
