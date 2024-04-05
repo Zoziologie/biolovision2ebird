@@ -17,12 +17,12 @@ const precision_match_biolovision = {
 };
 
 const precision_match_observation = {
-  unknown: ">",
+  "unknown": ">",
   "seen not counted": "",
   "real count": "=",
-  estimated: "~",
-  extrapolated: "~",
-  abundance: "~",
+  "estimated": "~",
+  "extrapolated": "~",
+  "abundance": "~",
 };
 
 export default {
@@ -140,7 +140,10 @@ export default {
       }
 
       // Check the first sightings available
-      const d = export_data.sightings.length > 0 ? export_data.sightings[0] : export_data.forms_sightings[0][0];
+      const d =
+        export_data.sightings.length > 0
+          ? export_data.sightings[0]
+          : export_data.forms_sightings[0][0];
 
       const response = await fetch(
         `https://nominatim.openstreetmap.org/reverse.php?lat=${d.lat}&lon=${d.lon}&zoom=8&format=jsonv2&accept-language=en`
@@ -160,7 +163,9 @@ export default {
   },
   mounted() {
     this.website_name = this.$cookie.get("website_name");
-    fetch(`https://api.ebird.org/v2/ref/taxonomy/ebird?key=vcs68p4j67pt&fmt=json&locale=${this.language}`)
+    fetch(
+      `https://api.ebird.org/v2/ref/taxonomy/ebird?key=vcs68p4j67pt&fmt=json&locale=${this.language}`
+    )
       .then((response) => {
         return response.json();
       })
@@ -272,26 +277,30 @@ export default {
           export_data.sightings = Papa.parse(reader.result, {
             skipEmptyLines: true,
             header: true,
-          }).data.map((s, id) => {
-            return this.createSighting({
-              id: "s" + id,
-              form_id: 0,
-              date: s.Date.replaceAll("/", "-"),
-              time: s.Time,
-              lat: parseFloat(s.Latitude),
-              lon: parseFloat(s.Longitude),
-              location_name: s.Pentad
-                ? s.Pentad
-                : s.Fieldsheet
-                ? s.Fieldsheet
-                : "New location " + s.Latitude + "-" + s.Longitude,
-              common_name: s["Species primary name"] ? s["Species primary name"] : s["Primary language"],
-              scientific_name: "",
-              count: s.Count,
-              count_precision: s["Count Type"] == "Not specified" ? "" : s["Count Type"],
-              comment: s.Notes,
-            });
-          });
+          })
+            .data.map((s, id) => {
+              return this.createSighting({
+                id: "s" + id,
+                form_id: 0,
+                date: s.Date.replaceAll("/", "-"),
+                time: s.Time,
+                lat: parseFloat(s.Latitude),
+                lon: parseFloat(s.Longitude),
+                location_name: s.Pentad
+                  ? s.Pentad
+                  : s.Fieldsheet
+                    ? s.Fieldsheet
+                    : "New location " + s.Latitude + "-" + s.Longitude,
+                common_name: s["Species primary name"]
+                  ? s["Species primary name"]
+                  : s["Primary language"],
+                scientific_name: "",
+                count: s.Count,
+                count_precision: s["Count Type"] == "Not specified" ? "" : s["Count Type"],
+                comment: s.Notes,
+              });
+            })
+            .sort((a, b) => a.time.localeCompare(b.time));
           this.website.species_comment_template = {
             short:
               '${ s.count_precision }${ s.count } ind. - ${ s.time } - <a href="http://maps.google.com?q=${s.lat},${s.lon}&t=k">${ s.lat }, ${ s.lon }</a>${ s.comment ? " - " + s.comment : "" }',
@@ -378,7 +387,11 @@ export default {
     <b-col lg="6">
       <b-form-group label="Select the website from which to import the data">
         <b-select v-model="website_name" size="lg">
-          <b-select-option-group v-for="cat in new Set(websites_list.map((w) => w.category))" :label="cat" :key="cat">
+          <b-select-option-group
+            v-for="cat in new Set(websites_list.map((w) => w.category))"
+            :label="cat"
+            :key="cat"
+          >
             <b-select-option
               v-for="w in websites_list.filter((wl) => wl.category == cat)"
               :key="w.name"
@@ -451,7 +464,9 @@ export default {
             <a
               :href="`${website.website}index.php?m_id=31&sp_DChoice=${import_query_date}&sp_DFrom=${new Date(
                 import_query_date_range_from
-              ).toLocaleDateString('fr-CH')}&sp_DTo=${new Date(import_query_date_range_to).toLocaleDateString(
+              ).toLocaleDateString('fr-CH')}&sp_DTo=${new Date(
+                import_query_date_range_to
+              ).toLocaleDateString(
                 'fr-CH'
               )}&sp_DOffset=${import_query_date_offset}&sp_SChoice=all&sp_PChoice=all&sp_OnlyMyData=1`"
               target="_blank"
@@ -462,8 +477,8 @@ export default {
         </template>
         <template v-else-if="website.system == 'observation'">
           <p>
-            Export your data from the "Observations" page which can be found in the menu under your name on the top
-            right of the page after you've logged in. Select the CSV option.
+            Export your data from the "Observations" page which can be found in the menu under your
+            name on the top right of the page after you've logged in. Select the CSV option.
           </p>
           <a :href="website.website" target="_blank" class="btn btn-primary"
             >Export data from <strong>{{ website.name }}</strong>
@@ -471,8 +486,8 @@ export default {
         </template>
         <template v-else-if="website.system == 'birdlasser'">
           <p>
-            You can download your Birdlasser data from the app (use "Export (CSV) trip card") or from the website (click
-            on the trip card and "Basic Export" button)
+            You can download your Birdlasser data from the app (use "Export (CSV) trip card") or
+            from the website (click on the trip card and "Basic Export" button)
           </p>
           <b-col lg="12" class="text-center">
             <a href="https://www.birdlasser.com/user/" target="_blank" class="btn btn-primary"
@@ -482,10 +497,13 @@ export default {
         </template>
         <template v-else-if="website.system == 'biolovision.net'">
           <p>
-            Export your data from the "All my sightings" page. Select the TXT option and make sure your page is in
-            english to have the correct txt header.
+            Export your data from the "All my sightings" page. Select the TXT option and make sure
+            your page is in english to have the correct txt header.
           </p>
-          <a href="https://data.biolovision.net/index.php?m_id=31" target="_blank" class="btn btn-primary"
+          <a
+            href="https://data.biolovision.net/index.php?m_id=31"
+            target="_blank"
+            class="btn btn-primary"
             >Export data from <strong>{{ website.name }}</strong>
           </a>
         </template>
@@ -496,8 +514,8 @@ export default {
         <b-icon icon="exclamation-triangle" class="mr-1" />
         <strong class="me-1">Taxonomic matching issue.</strong>
         <p>
-          We are detecting {{ taxonomic_issues.length }} species with unsuccessful taxonomic match. You can proceed with
-          the import, but you will need to
+          We are detecting {{ taxonomic_issues.length }} species with unsuccessful taxonomic match.
+          You can proceed with the import, but you will need to
           <b-link
             class="alert-link"
             href="https://support.ebird.org/en/support/solutions/articles/48000907878-upload-spreadsheet-data-to-ebird#anchorCleanData"
@@ -507,8 +525,9 @@ export default {
           on the eBird import tool.
         </p>
         <p>
-          To avoid this issue in the future, we would be grateful if you can search for the corresponding eBird species
-          code (e.g., using the <b-link href="https://ebird.org/map/" target="_blank">eBird map</b-link>):
+          To avoid this issue in the future, we would be grateful if you can search for the
+          corresponding eBird species code (e.g., using the
+          <b-link href="https://ebird.org/map/" target="_blank">eBird map</b-link>):
         </p>
         <b-container class="bv-example-row">
           <b-row v-for="t in taxonomic_issues" :key="t.id">
@@ -519,7 +538,10 @@ export default {
               >
             </b-col>
             <b-col>
-              <b-input v-model="t.ebird_species_code" placeholder="Enter the corresponding eBird species code" />
+              <b-input
+                v-model="t.ebird_species_code"
+                placeholder="Enter the corresponding eBird species code"
+              />
             </b-col>
           </b-row>
         </b-container>
@@ -539,7 +561,10 @@ export default {
           </b-input-group>
           <p>
             Please, copy the code above and paste it
-            <b-link class="alert-link" href="https://github.com/Zoziologie/biolovision2ebird/issues/11" target="_blank"
+            <b-link
+              class="alert-link"
+              href="https://github.com/Zoziologie/biolovision2ebird/issues/11"
+              target="_blank"
               >in a new comment on this Github issue</b-link
             >
             so that I can add or correct the taxonomic match.

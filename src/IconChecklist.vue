@@ -19,22 +19,22 @@ export default {
       <div
         :style="{
           'background-color': marker_color[fid % marker_color.length],
-          width: size + 'px',
-          height: size + 'px',
-          display: 'block',
-          position: 'relative',
+          'width': size + 'px',
+          'height': size + 'px',
+          'display': 'block',
+          'position': 'relative',
           'border-radius': '3rem 3rem 0',
-          transform: 'rotate(45deg)',
-          border: '1px solid #ffffff',
+          'transform': 'rotate(45deg)',
+          'border': '1px solid #ffffff',
         }"
       ></div>
       <div
         :style="{
-          position: 'absolute',
-          width: size + 'px',
+          'position': 'absolute',
+          'width': size + 'px',
           'text-align': 'center',
           'line-height': size + 'px',
-          color: '#FFFFFF',
+          'color': '#FFFFFF',
         }"
       >
         {{ fid }}
