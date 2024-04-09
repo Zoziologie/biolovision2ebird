@@ -1209,7 +1209,7 @@ export default {
         date: f.date || "",
         time: f.time ? f.time.substring(0, 5) : "",
         duration: f.duration || "",
-        distance: f.distance || "",
+        distance: f.distance == 0 ? 0 : f.distance || "",
         number_observer: f.number_observer || "",
         full_form: f.full_form || false,
         primary_purpose: f.primary_purpose || false,

@@ -244,8 +244,13 @@ export default {
             } else if (f.trace) {
               var wkt = new Wkt.Wkt();
               wkt.read(f.trace);
-              path = wkt.toJson().coordinates.map((c) => [c[1], c[0]]);
-              distance = this.distanceFromLatLngs(path);
+              if (wkt.toJson().coordinates[0].length == 2) {
+                path = wkt.toJson().coordinates.map((c) => [c[1], c[0]]);
+                distance = this.distanceFromLatLngs(path);
+              } else {
+                path = null;
+                distance = 0;
+              }
             }
             const f_out = {
               imported: true,
