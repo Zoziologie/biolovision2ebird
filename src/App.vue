@@ -21,6 +21,16 @@ import marker_color from "/data/marker_color.json";
       <b-button size="sm" class="ml-auto my-auto p" v-b-modal.modal-settings variant="light">
         <b-icon icon="gear-fill" aria-hidden="true" /> Settings
       </b-button>
+
+      <b-button
+        size="sm"
+        class="ml-2 my-auto"
+        variant="light"
+        href="https://github.com/sponsors/Zoziologie"
+        target="_blank"
+      >
+        <b-icon icon="heart-fill" style="color: #bf3989" /> Sponsor
+      </b-button>
     </b-row>
 
     <b-modal id="modal-settings" title="Global settings" hide-footer>
