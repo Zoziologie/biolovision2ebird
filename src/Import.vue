@@ -345,10 +345,19 @@ export default {
           };
         } else if (this.website.system == "biolovision.net") {
           export_data.forms_sightings = [];
-          export_data.sightings = Papa.parse(reader.result, {
+          var d = Papa.parse(reader.result, {
             skipEmptyLines: true,
             header: true,
-          }).data.map((s) => {
+          }).data;
+          if (!d[0]?.hasOwnProperty("Timing")) {
+            this.loading_file_status = -1;
+            this.error_message =
+              "The TXT file header is not recognized. Make sure it was exported in english (EN).";
+            throw new Error(
+              "TXT file is not recognized. Make sure it was exported in english (EN)."
+            );
+          }
+          export_data.sightings = d.map((s) => {
             const date_split = s.Date.split(".");
             return this.createSighting({
               id: s["Universal observation ID"],
