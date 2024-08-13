@@ -10,14 +10,6 @@ import marker_color from "/data/marker_color.json";
         <h1 class="mb-0">Biolovision2eBird</h1>
         <h6>Convert biolovision data to eBird</h6>
       </div>
-      <b-link
-        class="py-3 px-0 px-lg-3 rounded text-white text-decoration-none bg-primary my-auto ml-4"
-        href="https://zoziologie.raphaelnussbaumer.com/"
-      >
-        <span class="mr-1">Powered by</span>
-        <b-img class="me-3" :src="logo" alt="" height="36" />
-      </b-link>
-
       <b-button size="sm" class="ml-auto my-auto p" v-b-modal.modal-settings variant="light">
         <b-icon icon="gear-fill" aria-hidden="true" /> Settings
       </b-button>
@@ -946,27 +938,44 @@ import marker_color from "/data/marker_color.json";
       class="d-flex justify-content-between p-3 my-3 text-white rounded shadow-sm bg-secondary"
     >
       <b-col lg="12">
-        <strong>Any issues or suggestions?</strong> Check the
-        <b-link
-          class="btn btn-sm btn-primary"
-          href="https://github.com/Zoziologie/biolovision2ebird/wiki/FAQ"
-          target="_blank"
-        >
-          <b-icon icon="question-circle-fill" aria-hidden="true" /> FAQ</b-link
-        >
-        first, and then submit an issue on
-        <b-link
-          class="btn btn-sm btn-primary"
-          href="https://github.com/Zoziologie/Biolovision2eBird/issues"
-          target="_blank"
-        >
-          <b-icon icon="github" aria-hidden="true" /> Github</b-link
-        >
-        or
-        <b-link class="btn btn-sm btn-primary" href="mailto:rafnuss@gmail.com" target="_blank">
-          <b-icon icon="envelope-fill" aria-hidden="true" /> Contact me</b-link
-        >
-        if necessary.
+        <p>
+          <strong>Any issues or suggestions?</strong> Check the
+          <b-link
+            class="btn btn-sm btn-primary"
+            href="https://github.com/Zoziologie/biolovision2ebird/wiki/FAQ"
+            target="_blank"
+          >
+            <b-icon icon="question-circle-fill" aria-hidden="true" /> FAQ</b-link
+          >
+          first, and then submit an issue on
+          <b-link
+            class="btn btn-sm btn-primary"
+            href="https://github.com/Zoziologie/Biolovision2eBird/issues"
+            target="_blank"
+          >
+            <b-icon icon="github" aria-hidden="true" /> Github</b-link
+          >
+          or
+          <b-link class="btn btn-sm btn-primary" href="mailto:rafnuss@gmail.com" target="_blank">
+            <b-icon icon="envelope-fill" aria-hidden="true" /> Contact me</b-link
+          >
+          if necessary.
+        </p>
+      </b-col>
+      <b-col>
+        <div class="d-flex justify-content-center align-items-center">
+          <small class="text-muted">
+            Biolovision2eBird v{{ version }} &middot; {{ license }}.
+          </small>
+          <span class="mx-2">Powered by</span>
+          <b-link
+            class="d-flex align-items-center text-decoration-none"
+            href="https://zoziologie.raphaelnussbaumer.com/"
+          >
+            <b-img class="me-2" :src="logo" alt="Zoziologie Logo" height="24" />
+            <span class="text-primary font-weight-bold ml-1">Zoziologie</span>
+          </b-link>
+        </div>
       </b-col>
     </b-row>
   </b-container>
@@ -1161,6 +1170,8 @@ export default {
   },
   data() {
     return {
+      version: __APP_VERSION__,
+      license: __APP_LICENSE__,
       skip_intro: false,
       language: "en",
       global_static_map: {
