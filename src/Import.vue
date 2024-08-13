@@ -362,7 +362,7 @@ export default {
             return this.createSighting({
               id: s["Universal observation ID"],
               form_id: 0,
-              date: `${date_split[1]}-${date_split[2]}-${date_split[0]}`,
+              date: `${date_split[2]}-${date_split[0]}-${date_split[1]}`,
               time: s.Timing,
               lat: parseFloat(s["Latitude (N)"]),
               lon: parseFloat(s["Longitude (E)"]),
