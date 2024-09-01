@@ -63,7 +63,7 @@
     "id": 11,
     "biolovision_english": "Cory's Shearwater",
     "biolovision_latin": "Calonectris borealis",
-    "ebird_species_code": ""
+    "ebird_species_code": "corshe1"
   },
   {
     "id": 12,
@@ -105,13 +105,13 @@
     "id": 18,
     "biolovision_english": "Band-rumped Storm Petrel",
     "biolovision_latin": "Oceanodroma castro",
-    "ebird_species_code": ""
+    "ebird_species_code": "barpet"
   },
   {
     "id": 19,
     "biolovision_english": "Leach's Storm Petrel",
     "biolovision_latin": "Oceanodroma leucorhoa",
-    "ebird_species_code": ""
+    "ebird_species_code": "lcspet"
   },
   {
     "id": 20,
@@ -4353,7 +4353,7 @@
     "id": 1171,
     "biolovision_english": "Western Jackdaw (C.m.spermologus)",
     "biolovision_latin": "Corvus monedula spermologus",
-    "ebird_species_code": ""
+    "ebird_species_code": "eurjac"
   },
   {
     "id": 1172,
@@ -4401,7 +4401,7 @@
     "id": 1182,
     "biolovision_english": "White Wagtail (M.a.alba)",
     "biolovision_latin": "Motacilla alba alba",
-    "ebird_species_code": ""
+    "ebird_species_code": "whiwag1"
   },
   {
     "id": 1183,
@@ -5067,7 +5067,7 @@
     "id": 1355,
     "biolovision_english": "Spotted Flycatcher (M. s. tyrrhenica)",
     "biolovision_latin": "Muscicapa striata tyrrhenica",
-    "ebird_species_code": ""
+    "ebird_species_code": "spofly3"
   },
   {
     "id": 1356,
@@ -5391,13 +5391,13 @@
     "id": 1455,
     "biolovision_english": "Western Black-eared Wheatear",
     "biolovision_latin": "Oenanthe hispanica hispanica",
-    "ebird_species_code": ""
+    "ebird_species_code": "bkewhe1"
   },
   {
     "id": 1456,
     "biolovision_english": "Eastern Black-eared Wheatear",
     "biolovision_latin": "Oenanthe hispanica melanoleuca",
-    "ebird_species_code": ""
+    "ebird_species_code": "bkewhe2"
   },
   {
     "id": 1459,
@@ -5595,7 +5595,7 @@
     "id": 1512,
     "biolovision_english": "European Shag (P.a.desmarestii)",
     "biolovision_latin": "Phalacrocorax aristotelis desmarestii",
-    "ebird_species_code": ""
+    "ebird_species_code": "eursha3"
   },
   {
     "id": 1513,
