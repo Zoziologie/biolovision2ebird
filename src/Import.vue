@@ -369,8 +369,8 @@ export default {
               location_name: s.Site,
               common_name: s.Species,
               scientific_name: s["Latin name"],
-              count: s["Estimation"] == "seen not counted" ? "x" : s.Number,
-              count_precision: precision_match_observation[s["Estimation"]],
+              count: s["Estimation"] == "×" ? "x" : s.Number,
+              count_precision: s["Estimation"],
               comment: s.Comment,
             });
           });
