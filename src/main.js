@@ -245,6 +245,8 @@ Vue.mixin({
   },
 });
 
-new Vue({
+const app = new Vue({
   render: (h) => h(App),
 }).$mount("#app");
+
+window.app = app;

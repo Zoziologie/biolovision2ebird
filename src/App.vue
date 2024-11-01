@@ -1363,9 +1363,22 @@ export default {
       }
     },
     assignMagic() {
+      // Stop if duration is too long
+      if (this.assign_duration > 12 && this.assign_duration != 24) {
+        alert("Duration is too long. Please choose a shorter duration.");
+        return;
+      }
+
+      if (this.assign_distance > 20) {
+        alert("Distance is too long. Please choose a shorter distance.");
+        return;
+      }
+
       let sightings = this.sightings.filter((s) => s.form_id == 0);
+      // Stop if no sightings
       if (sightings.length == 0) {
         alert("There are no sightings to assign. Click on 'Reset' to start again.");
+        return;
       }
       const datetime = sightings.map((s) => new Date(s.date + "T" + s.time));
       var form_id = this.count_forms + 1;
