@@ -39,7 +39,7 @@ Vue.mixin({
     copyClipboard(mytext) {
       try {
         navigator.clipboard.writeText(mytext).then(function (x) {
-          alert("Link copied to clipboard: " + mytext);
+          alert("The followied text had been copied to clipboard: " + mytext);
         });
       } catch {
         alert("Cannot copy. Try manually.");

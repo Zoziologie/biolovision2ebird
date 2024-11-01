@@ -425,8 +425,9 @@ import marker_color from "/data/marker_color.json";
           size="lg"
           v-b-tooltip.hover
           title="Mark as ready to include the checklist in the export file. A checklist cannot be exported if invalid."
-          >Ready for export</b-form-checkbox
         >
+          Ready for export
+        </b-form-checkbox>
       </b-col>
       <b-col lg="12" class="mt-3">
         <b-card no-body>

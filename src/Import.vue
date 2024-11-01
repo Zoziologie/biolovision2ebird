@@ -540,8 +540,9 @@ export default {
         </p>
         <p>
           To avoid this issue in the future, we would be grateful if you can search for the
-          corresponding eBird species code (e.g., using the
-          <b-link href="https://ebird.org/map/" target="_blank">eBird map</b-link>):
+          corresponding eBird species code (e.g. "eutdov" for European Turtle-Dove (Streptopelia
+          turtur)). This can be done by searching the species name using the
+          <b-link href="https://ebird.org/map/" target="_blank">eBird map</b-link>:
         </p>
         <b-container class="bv-example-row">
           <b-row v-for="t in taxonomic_issues" :key="t.id">
