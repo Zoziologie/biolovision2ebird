@@ -1623,7 +1623,7 @@
     "id": 272,
     "biolovision_english": "Herring Gull",
     "biolovision_latin": "Larus argentatus",
-    "ebird_species_code": "hergul"
+    "ebird_species_code": "euhgul1"
   },
   {
     "id": 273,
@@ -2169,7 +2169,7 @@
     "id": 365,
     "biolovision_english": "Spotted Nutcracker",
     "biolovision_latin": "Nucifraga caryocatactes",
-    "ebird_species_code": "eurnut1"
+    "ebird_species_code": "eurnut3"
   },
   {
     "id": 366,
@@ -3825,7 +3825,7 @@
     "id": 1071,
     "biolovision_english": "American Herring Gull",
     "biolovision_latin": "Larus smithsonianus",
-    "ebird_species_code": ""
+    "ebird_species_code": "amhgul1"
   },
   {
     "id": 1072,
