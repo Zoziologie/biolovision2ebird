@@ -1380,22 +1380,32 @@ export default {
         alert("There are no sightings to assign. Click on 'Reset' to start again.");
         return;
       }
-      const datetime = sightings.map((s) => new Date(s.date + "T" + s.time));
+
+      const datetime = sightings.map((s) => {
+        if (s.time == "") {
+          return new Date(s.date);
+        } else {
+          return new Date(s.date + "T" + s.time);
+        }
+      });
+
       var form_id = this.count_forms + 1;
 
       for (var i = 0; i < sightings.length; i++) {
         for (var j = i - 1; j >= 0; j--) {
-          if (Math.abs(datetime[i] - datetime[j]) < this.assign_duration * 60 * 60 * 1000) {
+          if (
+            Math.abs(datetime[i] - datetime[j]) < this.assign_duration * 60 * 60 * 1000 &&
+            datetime[i].getFullYear() === datetime[j].getFullYear() &&
+            datetime[i].getMonth() === datetime[j].getMonth() &&
+            datetime[i].getDate() === datetime[j].getDate()
+          ) {
             var km =
               L.latLng([sightings[j].lat, sightings[j].lon]).distanceTo(
                 L.latLng([sightings[i].lat, sightings[i].lon])
               ) / 1000;
             if (km < this.assign_distance) {
               sightings[i].form_id = sightings[j].form_id;
-              break; // stop loop if within time and distance
             }
-          } else {
-            break; // stop loop if outside of time
           }
         }
         if (sightings[i].form_id == 0) {
