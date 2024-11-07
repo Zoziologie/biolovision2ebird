@@ -1364,13 +1364,27 @@ export default {
     },
     assignMagic() {
       // Stop if duration is too long
-      if (this.assign_duration > 12 && this.assign_duration != 24) {
+      if (this.assign_duration > 8 && this.assign_duration <= 24) {
+        const proceed = confirm(
+          "Duration is longer than recommendations. Do you want to continue anyway?"
+        );
+        if (!proceed) {
+          return; // Stop execution if the user clicks "Cancel"
+        }
+      } else if (this.assign_duration > 24) {
         alert("Duration is too long. Please choose a shorter duration.");
         return;
       }
 
-      if (this.assign_distance > 20) {
-        alert("Distance is too long. Please choose a shorter distance.");
+      if (this.assign_distance > 10) {
+        const proceed = confirm(
+          "Distance is longer than recommendations. Do you want to continue anyway?"
+        );
+        if (!proceed) {
+          return; // Stop execution if the user clicks "Cancel"
+        }
+      } else if (this.assign_distance >= 80) {
+        alert("Duration is too long. Please choose a shorter duration.");
         return;
       }
 
