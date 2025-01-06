@@ -282,30 +282,28 @@ export default {
           export_data.sightings = Papa.parse(reader.result, {
             skipEmptyLines: true,
             header: true,
-          })
-            .data.map((s, id) => {
-              return this.createSighting({
-                id: "s" + id,
-                form_id: 0,
-                date: s.Date.replaceAll("/", "-"),
-                time: s.Time,
-                lat: parseFloat(s.Latitude),
-                lon: parseFloat(s.Longitude),
-                location_name: s.Pentad
-                  ? s.Pentad
-                  : s.Fieldsheet
-                    ? s.Fieldsheet
-                    : "New location " + s.Latitude + "-" + s.Longitude,
-                common_name: s["Species primary name"]
-                  ? s["Species primary name"]
-                  : s["Primary language"],
-                scientific_name: "",
-                count: s.Count,
-                count_precision: s["Count Type"] == "Not specified" ? "" : s["Count Type"],
-                comment: s.Notes,
-              });
-            })
-            .sort((a, b) => a.time.localeCompare(b.time));
+          }).data.map((s, id) => {
+            return this.createSighting({
+              id: "s" + id,
+              form_id: 0,
+              date: s.Date.replaceAll("/", "-"),
+              time: s.Time,
+              lat: parseFloat(s.Latitude),
+              lon: parseFloat(s.Longitude),
+              location_name: s.Pentad
+                ? s.Pentad
+                : s.Fieldsheet
+                  ? s.Fieldsheet
+                  : "New location " + s.Latitude + "-" + s.Longitude,
+              common_name: s["Species primary name"]
+                ? s["Species primary name"]
+                : s["Primary language"],
+              scientific_name: "",
+              count: s.Count,
+              count_precision: s["Count Type"] == "Not specified" ? "" : s["Count Type"],
+              comment: s.Notes,
+            });
+          });
           this.website.species_comment_template = {
             short:
               '${ s.count_precision }${ s.count } ind. - ${ s.time } - <a href="http://maps.google.com?q=${s.lat},${s.lon}&t=k">${ s.lat }, ${ s.lon }</a>${ s.comment ? " - " + s.comment : "" }',
@@ -379,6 +377,8 @@ export default {
           this.error_message = "No correct system";
           throw new Error("No correct system");
         }
+
+        export_data.sightings = export_data.sightings.sort((a, b) => a.time.localeCompare(b.time));
 
         this.number_imported_sightings = export_data.sightings.length;
 
