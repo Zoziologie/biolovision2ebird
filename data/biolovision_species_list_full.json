@@ -4569,13 +4569,13 @@
     "id": 1214,
     "biolovision_english": "Shearwater, unidentified",
     "biolovision_latin": "Puffinus / Calonectris sp.",
-    "ebird_species_code": ""
+    "ebird_species_code": "shearw"
   },
   {
     "id": 1215,
     "biolovision_english": "Sandpiper / Stint, unidentified",
     "biolovision_latin": "Calidris / Limicola / Tryngites sp.",
-    "ebird_species_code": ""
+    "ebird_species_code": "calidr1"
   },
   {
     "id": 1216,
@@ -4605,7 +4605,7 @@
     "id": 1226,
     "biolovision_english": "Hippolais-/Iduna-Warbler, unidentified",
     "biolovision_latin": "Hippolais / Iduna sp.",
-    "ebird_species_code": ""
+    "ebird_species_code": "y00908"
   },
   {
     "id": 1228,
@@ -4623,7 +4623,7 @@
     "id": 1234,
     "biolovision_english": "Bluethroat (L.s.namnetum)",
     "biolovision_latin": "Luscinia svecica namnetum",
-    "ebird_species_code": ""
+    "ebird_species_code": "blueth2"
   },
   {
     "id": 1236,
@@ -4671,7 +4671,7 @@
     "id": 1247,
     "biolovision_english": "Common Chaffinch / Brambling",
     "biolovision_latin": "Fringilla coelebs / montifringilla",
-    "ebird_species_code": ""
+    "ebird_species_code": "y01056"
   },
   {
     "id": 1249,
@@ -4737,7 +4737,7 @@
     "id": 1266,
     "biolovision_english": "Razorbill / Common Murre",
     "biolovision_latin": "Uria aalge / Alca torda",
-    "ebird_species_code": ""
+    "ebird_species_code": "laralc1"
   },
   {
     "id": 1267,
@@ -5908,7 +5908,7 @@
     "id": 1591,
     "biolovision_english": "Red-throated / Black-throated Loon",
     "biolovision_latin": "Gavia stellata / arctica",
-    "ebird_species_code": ""
+    "ebird_species_code": "loon"
   },
   {
     "id": 1592,
@@ -5980,13 +5980,13 @@
     "id": 1603,
     "biolovision_english": "Common / Velvet Scooter",
     "biolovision_latin": "Melanitta nigra / fusca",
-    "ebird_species_code": ""
+    "ebird_species_code": "scoter"
   },
   {
     "id": 1604,
     "biolovision_english": "Red-breasted / Common Merganser",
     "biolovision_latin": "Mergus serrator / merganser",
-    "ebird_species_code": ""
+    "ebird_species_code": "y00224"
   },
   {
     "id": 1605,
@@ -6016,7 +6016,7 @@
     "id": 1609,
     "biolovision_english": "Yellow-legged / Caspian Gull",
     "biolovision_latin": "Larus cachinnans / michahellis",
-    "ebird_species_code": ""
+    "ebird_species_code": "y00724"
   },
   {
     "id": 1613,
@@ -6028,7 +6028,7 @@
     "id": 1615,
     "biolovision_english": "White-throated Dipper (ssp. cinclus)",
     "biolovision_latin": "Cinclus cinclus cinclus",
-    "ebird_species_code": ""
+    "ebird_species_code": "whtdip1"
   },
   {
     "id": 1616,
