@@ -1,10 +1,11 @@
 <script setup>
-import websites_list from "/data/websites_list.json";
+import rawWebsitesList from "/data/websites_list.json";
 import jsonIcon from "/json.png";
 import biolovision_species_list from "/data/biolovision_species_list_short.json";
 </script>
 
 <script>
+const websites_list = rawWebsitesList.sort((a, b) => a.name.localeCompare(b.name));
 import Wkt from "wicket/wicket.js";
 import "leaflet";
 import Papa from "papaparse/papaparse.js";
