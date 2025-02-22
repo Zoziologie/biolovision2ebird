@@ -6,7 +6,7 @@
     "url": "git+https://github.com/Zoziologie/biolovision2ebird.git"
   },
   "private": true,
-  "version": "2.3.8",
+  "version": "2.3.9",
   "license": "GPL-3.0",
   "type": "module",
   "scripts": {
