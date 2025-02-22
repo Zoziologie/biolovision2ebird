@@ -1,13 +1,17 @@
 import fs from "fs";
+import Papa from "papaparse";
 
-const full_species_list = JSON.parse(
-  fs.readFileSync("./data/biolovision_species_list_full.json", "utf8")
-);
+const csvData = fs.readFileSync("./data/biolovision_species_list_full.csv", "utf8");
 
-let species_list = {};
+const parsedData = Papa.parse(csvData, {
+  header: true,
+  skipEmptyLines: true,
+});
 
-full_species_list.forEach((s) => {
-  species_list[s.id] = s.ebird_species_code;
+const species_list = {};
+
+parsedData.data.forEach((row) => {
+  species_list[row.id] = row.ebird_species_code;
 });
 
 fs.writeFileSync(
