@@ -65,7 +65,7 @@
 64,Taiga Bean Goose,Anser fabalis,taibeg1
 65,Pink-footed Goose,Anser brachyrhynchus,pifgoo
 66,Tundra Bean Goose,Anser serrirostris,tunbeg1
-67,Domestic Goose,Anser cf domestica,gragoo1
+67,Domestic Goose,Anser cf domestica,domgoo1
 68,unidentified Goose,Anser sp.,anser1
 69,Bar-headed Goose,Anser indicus,bahgoo
 70,Brant Goose,Branta bernicla,brant
@@ -92,9 +92,9 @@
 91,Cinnamon Teal,Anas cyanoptera,cintea
 92,Garganey,Anas querquedula,gargan
 93,Cape Teal,Anas capensis,captea1
-94,Eurasian Teal,Anas crecca,gnwtea
+94,Eurasian Teal,Anas crecca,egwtea1
 95,Hottentot Teal,Anas hottentota,hottea1
-96,Green-winged Teal,Anas carolinensis,gnwtea
+96,Green-winged Teal,Anas carolinensis,agwtea1
 97,Baikal Teal,Anas formosa,baitea
 98,Yellow-billed Duck,Anas flavirostris,yebtea1
 99,Falcated Duck,Anas falcata,falduc
@@ -396,7 +396,7 @@
 398,Isabelline Wheatear,Oenanthe isabellina,isawhe1
 399,Northern Wheatear,Oenanthe oenanthe,norwhe
 400,Desert Wheatear,Oenanthe deserti,deswhe1
-401,Black-eared Wheatear,Oenanthe hispanica,bkewhe1
+401,Black-eared Wheatear,Oenanthe hispanica,blewhe1
 402,Pied Wheatear,Oenanthe pleschanka,piewhe1
 403,Rufous-tailed Rock Thrush,Monticola saxatilis,rtrthr1
 404,Blue Rock Thrush,Monticola solitarius,burthr
@@ -736,7 +736,7 @@
 1175,Western Rock Nuthatch,Sitta neumayer,rocnut1
 1178,Ring Ouzel (ssp. torquatus),Turdus torquatus torquatus,rinouz2
 1179,Eurasian Reed or Marsh Warbler,Acrocephalus palustris / scirpaceus,y01046
-1180,Common Chiffchaff (P.c.collybita),Phylloscopus collybita collybita,grgshr2
+1180,Common Chiffchaff (P.c.collybita),Phylloscopus collybita collybita,comchi3
 1182,White Wagtail (M.a.alba),Motacilla alba alba,whiwag1
 1183,Great Grey Shrike (L.e.excubitor),Lanius excubitor excubitor,grgshr2
 1184,Long-tailed Shrike,Lanius schach,lotshr1
@@ -890,8 +890,8 @@
 1413,Common Gull (L.c.heinei),Larus canus heinei,mewgul3
 1416,Heuglin's Gull,Larus fuscus heuglini,lbbgul4
 1417,Sooty Tern,Onychoprion fuscatus,sooter1
-1419,Sterne de Cayenne,Thalasseus (sandvicensis) eurygnathus,
-1420,Sterne de Cabot,Thalasseus (sandvicensis) acuflavidus,
+1419,Sterne de Cayenne,Thalasseus (sandvicensis) eurygnathus,santer3
+1420,Sterne de Cabot,Thalasseus (sandvicensis) acuflavidus,santer2
 1424,Barn Owl (T.a.alba),Tyto alba alba,
 1425,Barn Owl (T.a.guttata),Tyto alba guttata,
 1431,White-backed Woodpecker (D.l.leucotos),Dendrocopos leucotos leucotos,
@@ -927,7 +927,7 @@
 1492,Italian x Spanish Sparrow,Passer italiae x hispaniolensis,x00974
 1493,Common Chaffinch (F.c.spodiogenys),Fringilla coelebs spodiogenys,comcha2
 1494,Common Chaffinch (F.c.africana),Fringilla coelebs africana,comcha1
-1496,Eurasian Bullfinch (P.p.pyrrhula),Pyrrhula pyrrhula pyrrhula,eurbul
+1496,Eurasian Bullfinch (P.p.pyrrhula),Pyrrhula pyrrhula pyrrhula,eurbul2
 1499,Cackling Goose,Branta hutchinsii,cacgoo1
 1500,unidentified Bird,,bird1
 1501,Siberian-type Chiffchaff,Phylloscopus collybita ssp.,comchi4
@@ -971,14 +971,14 @@
 1546,Common/Spotless Starling,Sturnus unicolor / vulgaris,
 1547,Song Sparrow,Melospiza melodia,sonspa
 1548,Common Reed Bunting (E.s.witherbyi),Emberiza schoeniclus witherbyi,
-1549,Woodchat x Red-backed Shrike,Lanius senator x collurio,shrike
+1549,Woodchat x Red-backed Shrike,Lanius senator x collurio,x00861
 1550,Chestnut-sided Warbler,Setophaga pensylvanica,chswar
 1551,Red-footed Booby,Sula sula,refboo
 1553,Hybrid Mallard x Northern Pintail,Anas platyrhynchos x acuta,x00628
 1554,Eurasian x American Wigeon,Mareca americana x penelope,
 1555,Hybrid Common Pochard x Tufted Duck,Aythya ferina x fuligula,x00683
 1556,Hybrid Common x Red-crested Pochard,Aythya ferina x Netta rufina,
-1557,Tufted x Ferruginous Duck,Aythya fuligula x nyroca,aythya1
+1557,Tufted x Ferruginous Duck,Aythya fuligula x nyroca,x00839
 1558,Hybrid Tufted Duck x Greater Scaup,Aythya fuligula x marila,x00654
 1559,Puna Ibis,Plegadis ridgwayi,punibi1
 1560,Hybrid Greylag x Canada Goose,Anser anser x Branta canadensis,x00758
@@ -1110,7 +1110,7 @@
 11018,Épervier nain,Microspizias superciliosus,tinhaw1
 11020,Sharp-shinned Hawk,Accipiter striatus,shshaw
 11021,Épervier « brun »,Accipiter groupe striatus / ventralis,
-11023,Épervier bicolore,Accipiter bicolor,
+11023,Épervier bicolore,Accipiter bicolor,bichaw1
 11025,Buse échasse,Geranospiza caerulescens,crahaw
 11027,Buse ardoisée,Buteogallus schistaceus,slchaw2
 11029,Buse à face noire,Leucopternis melanops,blfhaw1
@@ -1166,7 +1166,7 @@
 11163,Savacou huppé,Cochlearius cochlearius,bobher1
 11164,Butor zigzag,Zebrilus undulatus,zigher1
 11165,Butor mirasol,Botaurus pinnatus,pinbit1
-11166,Petit Blongios,Ixobrychus exilis,
+11166,Petit Blongios,Ixobrychus exilis,leabit
 11167,Blongios varié,Ixobrychus involucris,
 11169,Yellow-crowned Night-Heron,Nyctanassa violacea,ycnher
 11175,Cocoi Heron,Ardea cocoi,cocher1
@@ -1192,11 +1192,11 @@
 11252,Engoulevent pauraqué,Nyctidromus albicollis,compau
 11256,Engoulevent roux,Antrostomus rufus,rufnig1
 11259,Engoulevent coré,Hydropsalis cayennensis,whtnig1
-11261,Engoulevent à queue étoilée,Hydropsalis maculicaudus,
+11261,Engoulevent à queue étoilée,Hydropsalis maculicaudus,sptnig1
 11265,Engoulevent de Guyane,Setopagis maculosa,caynig1
 11266,Engoulevent noirâtre,Nyctipolus nigrescens,blanig1
 11269,Engoulevent trifide,Hydropsalis climacocerca,latnig1
-11276,Piranga rouge-sang,Piranga flava haemalea,
+11276,Piranga rouge-sang,Piranga flava haemalea,heptan2
 11277,Summer Tanager,Piranga rubra,sumtan
 11281,Piranga bifascié,Piranga leucoptera,whwtan1
 11293,Granatelle de Pelzeln,Granatellus pelzelni,robcha1
@@ -1209,7 +1209,7 @@
 11310,Grand Urubu,Cathartes melambrotus,gyhvul1
 11311,Black Vulture,Coragyps atratus,blkvul
 11312,Sarcoramphe roi,Sarcoramphus papa,kinvul1
-11314,Vanneau de Cayenne,Vanellus cayanus,
+11314,Vanneau de Cayenne,Vanellus cayanus,pielap1
 11315,Vanneau téro,Vanellus chilensis,soulap1
 11321,Semipalmated Plover,Charadrius semipalmatus,semplo
 11322,Willow Tit,Parus montanus rhenanus / salicarius,wiltit1
@@ -1295,7 +1295,7 @@
 11740,Caracara huppé,Caracara plancus cheriway,crecar1
 11742,Red-throated Caracara,Ibycter americanus,retcar2
 11747,Caracara noir,Daptrius ater,blacar1
-11748,Caracara à tête jaune,Milvago chimachima,
+11748,Caracara à tête jaune,Milvago chimachima,yehcar1
 11754,Faucon des chauves-souris,Falco rufigularis,batfal1
 11755,Faucon orangé,Falco deiroleucus,orbfal1
 11756,Faucon aplomado,Falco femoralis,aplfal
@@ -1321,12 +1321,12 @@
 11908,Synallaxe à ventre blanc,Mazaria propinqua,whbspi1
 11909,Synallaxe de McConnell,Synallaxis macconnelli,mccspi1
 11913,Synallaxe de Cayenne,Synallaxis gujanensis,plcspi1
-11942,Synallaxe ponctué,Cranioleuca gutturata,
+11942,Synallaxe ponctué,Cranioleuca gutturata,spespi1
 11944,Synallaxe à gorge jaune,Certhiaxis cinnamomeus,yecspi2
 11999,Buffy Tuftedcheek,Pseudocolaptes lawrencii,buftuf1
 12003,Anabate des palmiers,Berlepschia rikeri,potpal1
 12017,Anabate rougequeue,Anabacerthia ruficaudata,rutfog1
-12019,Anabate à croupion roux,Philydor erythrocercum,
+12019,Anabate à croupion roux,Philydor erythrocercum,rurfog1
 12025,Anabate flamboyant,Philydor pyrrhodes,crfgle1
 12035,Anabate à gorge fauve,Automolus ochrolaemus,btfgle1
 12036,Anabate olivâtre,Automolus infuscatus,obfgle3
@@ -1401,7 +1401,7 @@
 12317,Goéland des Açores,Larus michahellis atlantis,yelgul2
 12325,Sternula sp.,,sternu1
 12326,Thalasseus sp.,,thalas1
-12327,Sterninae sp.,,
+12327,Sterninae sp.,,tern1
 12328,Least Tern,Sternula antillarum,leater1
 12329,Sterne argentée,Sternula superciliaris,yebter2
 12331,Sterne à gros bec,Phaetusa simplex,labter1
@@ -1432,7 +1432,7 @@
 12481,Paruline des rives,Myiothlypis rivularis,rivwar1
 12483,Pélican brun,Pelecanus occidentalis,brnpel
 12489,Phaéton à bec rouge,Phaethon aethereus,rebtro
-12493,Cormoran vigua,Phalacrocorax brasilianus,
+12493,Cormoran vigua,Phalacrocorax brasilianus,neocor
 12499,Cormorant sp.,Phalacrocorax sp.,cormor1
 12507,Picumne de Buffon,Picumnus exilis,gospic1
 12510,Picumne à ventre blanc,Picumnus spilogaster,whbpic2
@@ -1479,7 +1479,7 @@
 12678,Pétrel de Trindade,Pterodroma arminjoniana,tripet1
 12700,Short-tailed Shearwater,Puffinus tenuirostris,shtshe
 12709,Puffin d'Audubon,Puffinus lherminieri,audshe
-12720,Ara indéterminé,Ara / Diopsittaca / Orthopsittaca sp.,
+12720,Ara indéterminé,Ara / Diopsittaca / Orthopsittaca sp.,larmac1
 12721,"Ara ""rouge"" indéterminé",Ara macao/chloropterus,y00792
 12722,Ara rouge (macao),Ara macao,scamac1
 12723,Ara chloroptère,Ara chloropterus,ragmac1
@@ -1509,18 +1509,18 @@
 12831,Amazone de Dufresne,Amazona dufresniana,blcpar2
 12840,Amazone poudrée,Amazona farinosa,meapar
 12843,Agami trompette,Psophia crepitans,gywtru1
-12847,Râle ocellé,Micropygia schomburgkii,
+12847,Râle ocellé,Micropygia schomburgkii,ocecra1
 12848,Râle gris,Rallus longirostris,manrai1
 12850,Virginia Rail,Rallus limicola,virrai
 12855,Râle des palétuviers,Aramides mangle,liwrai1
 12856,Râle de Cayenne,Aramides cajaneus,gycwor1
 12857,Râle à cou roux,Aramides axillaris,rnwrai1
 12860,Râle concolore,Amaurolimnas concolor,unicra1
-12862,Râle kiolo,Anurolimnas viridis,
+12862,Râle kiolo,Anurolimnas viridis,ruccra1
 12865,Râle brunoir,Laterallus melanophaius,ruscra1
 12867,Râle grêle,Laterallus exilis,grbcra1
 12869,Râle noir,Laterallus jamaicensis,blkrai
-12872,Marouette à sourcils blancs,Porzana flaviventer,
+12872,Marouette à sourcils blancs,Porzana flaviventer,yebcra1
 12874,Râle plombé,Mustelirallus albicollis,astcra1
 12877,Râle à bec peint,Mustelirallus erythrops,pabcra
 12878,Râle tacheté,Pardirallus maculatus,sporai
@@ -1541,7 +1541,7 @@
 12991,Bec-en-ciseaux noir intercedens,Rynchops niger intercedens,blkski3
 12992,Bec-en-ciseaux noir niger,Rynchops niger niger,blkski1
 12995,Bécassine du Pantanal,Gallinago paraguaiae,soasni2
-12997,Bécassine de Wilson / du Pantanal,Gallinago delicata / paraguaiae,
+12997,Bécassine de Wilson / du Pantanal,Gallinago delicata / paraguaiae,y01125
 13000,Bécassine géante,Gallinago undulata,giasni1
 13009,Hudsonian Godwit,Limosa haemastica,hudgod
 13011,Barge marbrée,Limosa fedoa,margod
@@ -1653,7 +1653,7 @@
 13592,Ibis vert,Mesembrinibis cayennensis,greibi1
 13593,Ibis à face nue,Phimosus infuscatus,bafibi1
 13595,Ibis mandore,Theristicus caudatus,bunibi1
-13602,Tinamou indéterminé,Tinamus / Crypturellus sp.,
+13602,Tinamou indéterminé,Tinamus / Crypturellus sp.,tinamo1
 13606,Grand Tinamou,Tinamus major,gretin1
 13608,Tinamou cendré,Crypturellus cinereus,cintin1
 13610,Tinamou soui,Crypturellus soui,littin1
@@ -1837,7 +1837,7 @@
 15200,Colibri indéterminé,Trochilidae sp.,hummin
 15203,Pigeon / Dove sp.,Columbidae sp.,dove1
 15204,Psittacidae sp.,Psittacidae sp.,psitta1
-15210,American Yellow Warbler,Setophaga aestiva,
+15210,American Yellow Warbler,Setophaga aestiva,yelwar1
 15213,Aythya sp.,Aythya sp.,aythya1
 15215,Hybrid Mallard x Red-crested Pochard,Anas platyrhynchos X Netta rufina,x00648
 15216,"Aythya hybrid, unidentified",Aythya sp x Aythya sp.,
@@ -3586,7 +3586,7 @@
 32267,Swinhoe's Pheasant,Lophura swinhoii,swiphe1
 32293,Green Peafowl,Pavo muticus,grepea1
 32295,Pacific Loon,Gavia pacifica,pacloo
-32336,Scopoli's Shearwater,Calonectris diomedea,corshe
+32336,Scopoli's Shearwater,Calonectris diomedea,scoshe1
 32371,Storm's Stork,Ciconia stormi,stosto1
 32378,Black-headed Ibis,Threskiornis melanocephalus,blhibi1
 32380,Straw-necked Ibis,Threskiornis spinicollis,stnibi1
@@ -3602,7 +3602,7 @@
 32484,Crested Honey Buzzard,Pernis ptilorhynchus,orihob2
 32503,Crested Serpent Eagle,Spilornis cheela,crseag1
 32603,Northern Harrier,Circus hudsonius,norhar2
-32605,Yellow-billed Kite,Milvus aegyptius,
+32605,Yellow-billed Kite,Milvus aegyptius,blkkit3
 32610,Bald Eagle,Haliaeetus leucocephalus,baleag
 32611,Steller's Sea Eagle,Haliaeetus pelagicus,stseag
 32686,Slaty-legged Crake,Rallina eurizonoides,sllcra1
@@ -3784,7 +3784,7 @@
 38960,Long-tailed Tit (A.c.europaeus),Aegithalos caudatus europaeus,lottit3
 38983,Rock x Red-legged Partridge,Alectoris graeca x rufa,
 38992,Peregrine Falcon (F.p.peregrinus / calidus),Falco peregrinus peregrinus / calidus,
-38993,Peregrine Falcon (F.p.peregrinus),Falco peregrinus peregrinus,x00399
+38993,Peregrine Falcon (F.p.peregrinus),Falco peregrinus peregrinus,perfal4
 39061,Hybrid Pallid x Hen Harrier,Circus macrourus x cyaneus,x00399
 47585,Greater Scaup x Common Pochard,Aythya ferina x marila,
 47590,Dark-bellied x Black Brant Goose,Branta bernicla bernicla x nigricans,brant2
