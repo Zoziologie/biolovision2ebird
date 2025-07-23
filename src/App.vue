@@ -394,7 +394,11 @@ import marker_color from "/data/marker_color.json";
           </b-button>
           <b-dropdown class="w-100">
             <template #button-content>
-              {{ form_card.id + ". " + form_card.location_name }}
+              {{
+                (form_card.id + ". " + form_card.location_name).length > 60
+                  ? (form_card.id + ". " + form_card.location_name).substring(0, 57) + "..."
+                  : form_card.id + ". " + form_card.location_name
+              }}
             </template>
             <b-dropdown-item href="#" v-for="f in forms" :key="f.id" @click="form_card = f">
               {{ f.id + ". " + f.location_name }}
