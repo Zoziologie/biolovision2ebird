@@ -70,14 +70,14 @@ export default {
         scientific_name: s.scientific_name || "",
         count: s.count || null,
         count_precision: s.count_precision || "",
-        comment: s.comment || "",
+        comment: s.comment ? s.comment.replace(/\r\n/g, "<br>") : "",
       };
     },
     sightingsBiolovisionTransformation(sightings, form_id) {
       return sightings.map((s) => {
         const datetime = s.observers[0].timing["@ISO8601"].split("+")[0];
 
-        let comment = s.observers[0].comment || "";
+        let comment = s.observers[0].comment ? s.observers[0].comment.replace(/\r\n/g, "<br>") : "";
         if (s.observers[0].details) {
           comment += s.observers[0].details
             .map((d) => {
@@ -265,7 +265,7 @@ export default {
               number_observer: null,
               full_form: f.full_form == "1",
               primary_purpose: true,
-              checklist_comment: f.comment || "",
+              checklist_comment: f.comment ? f.comment.replace(/\r\n/g, "<br>") : "",
               species_comment_template: this.website.species_comment_template,
               path: path,
             };
