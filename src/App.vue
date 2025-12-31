@@ -190,7 +190,7 @@ import marker_color from "/data/marker_color.json";
 
     <Intro v-if="!skip_intro" @skipIntro="skip_intro = true" />
 
-    <Import v-else @exportData="importData" @exportForm="createForm" :language="language" />
+    <Import v-else @exportData="importData" :language="language" />
 
     <b-row class="my-3 p-3 bg-white rounded shadow-sm" v-if="count_forms != null">
       <b-col lg="12">
@@ -1261,19 +1261,22 @@ export default {
       return fnew;
     },
     importData(d) {
-      //this.forms = d.forms;
-      this.sightings = d.sightings;
-      this.forms_sightings = d.forms_sightings;
-      this.website = d.website;
+      // Overwrite all imported data/state (no incremental append).
+      this.sightings = d.sightings || [];
+      this.forms_sightings = d.forms_sightings || [];
+      this.website = d.website || null;
+
+      this.forms = [];
+      (d.forms || []).forEach((f, idx) => this.createForm(f, idx + 1));
 
       this.count_forms = this.forms.length;
 
       // Define the default form_card with the latest forms of the list
       this.form_card = this.count_forms > 0 ? this.forms[this.count_forms - 1] : null;
 
-      this.map_sightings_bounds = L.latLngBounds(
-        [...this.sightings, ...this.forms].map((s) => L.latLng(s.lat, s.lon))
-      ).pad(0.05);
+      const points = [...this.sightings, ...this.forms].filter((s) => s?.lat != null && s?.lon != null);
+      this.map_sightings_bounds =
+        points.length > 0 ? L.latLngBounds(points.map((s) => L.latLng(s.lat, s.lon))).pad(0.05) : null;
     },
     async onMapCardReady() {
       await this.$nextTick();

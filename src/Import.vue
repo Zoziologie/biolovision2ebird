@@ -185,17 +185,30 @@ export default {
     website_name() {
       this.$cookie.set("website_name", this.website_name, 365);
     },
-    file() {
+    file(newFile) {
+      if (!newFile) return;
+
+      // Reset import-local state.
+      this.taxonomic_issues = [];
+      this.number_imported_form = 0;
+      this.number_imported_sightings = null;
+      this.error_message = "";
+      this.clipboard_icon = "clipboard";
+
       this.loading_file_status = 0;
       const reader = new FileReader();
-      reader.readAsText(this.file);
+      reader.readAsText(newFile);
       reader.onerror = (error) => {
         this.loading_file_status = -1;
         this.error_message = error;
         throw new Error(error);
       };
       reader.onload = (e) => {
-        let export_data = {};
+        let export_data = {
+          forms: [],
+          sightings: [],
+          forms_sightings: [],
+        };
         if (this.website.system == "biolovision") {
           let data;
           try {
@@ -269,10 +282,10 @@ export default {
               species_comment_template: this.website.species_comment_template,
               path: path,
             };
-            this.$emit("exportForm", f_out, id + 1);
+            export_data.forms.push({ ...f_out, id: id + 1 });
           });
 
-          this.number_imported_form = data.forms.length;
+          this.number_imported_form = export_data.forms.length;
 
           // Convert sightings from the forms, keep them seperate
           export_data.forms_sightings = data.forms.map((f, id) => {
