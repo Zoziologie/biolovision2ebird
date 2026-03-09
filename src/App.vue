@@ -25,6 +25,97 @@ import marker_color from "/data/marker_color.json";
       </b-button>
     </b-row>
 
+    <b-row class="my-3" v-if="show_migration_banner">
+      <b-col lg="12">
+        <section class="migration-banner rounded shadow-sm">
+          <b-button
+            size="sm"
+            variant="link"
+            class="migration-banner__close"
+            @click="closeMigrationBanner"
+          >
+            <b-icon icon="x-lg" aria-hidden="true" />
+            <span class="sr-only">Close migration notice</span>
+          </b-button>
+          <div class="migration-banner__eyebrow">Migration Notice</div>
+          <div class="migration-banner__content">
+            <h2 class="migration-banner__title">New version is available: ornitho2ebird</h2>
+            <div class="migration-banner__paragraph">
+              <b-icon icon="megaphone-fill" aria-hidden="true" class="migration-banner__icon" />
+              <p class="mb-0">
+                We are very pleased to announce that with the support of ornitho and eBird, we are
+                transforming <strong>biolovision2eBird</strong> into <strong>ornitho2ebird</strong>.
+              </p>
+            </div>
+            <div class="migration-banner__paragraph">
+              <b-icon
+                icon="sliders"
+                aria-hidden="true"
+                class="migration-banner__icon migration-banner__icon--settings"
+              />
+              <p class="mb-0">
+                While all options from Biolovision2eBird are still available in the customized mode
+                (<strong>click on Settings</strong>), the basic workflow has been simplified to make
+                the conversion easier.
+              </p>
+            </div>
+            <div class="migration-banner__paragraph">
+              <b-icon icon="stars" aria-hidden="true" class="migration-banner__icon" />
+              <p class="mb-0">
+                In addition, the new app has received a new update: an upgraded web framework (Vue +
+                Vite), better instructions in a dedicated modal, multilingual support, and a more
+                informative export summary.
+              </p>
+            </div>
+            <div class="migration-banner__paragraph">
+              <b-icon icon="chat-dots-fill" aria-hidden="true" class="migration-banner__icon" />
+              <p class="mb-0">
+                ornitho2ebird is still new, and we would love your feedback. Please submit bugs,
+                suggestions, and feature requests on GitHub or by email.
+              </p>
+            </div>
+            <div class="migration-banner__paragraph mb-0">
+              <b-icon icon="archive-fill" aria-hidden="true" class="migration-banner__icon" />
+              <p class="mb-0">
+                This site will remain available at
+                <b-link
+                  href="https://zoziologie.raphaelnussbaumer.com/biolovision2ebird/"
+                  target="_blank"
+                  class="migration-banner__link"
+                >
+                  zoziologie.raphaelnussbaumer.com/biolovision2ebird/
+                </b-link>
+                but it will no longer receive updates.
+              </p>
+            </div>
+          </div>
+          <div class="migration-banner__actions mt-3">
+            <b-link
+              class="btn btn-dark btn-sm migration-banner__button migration-banner__button--primary"
+              href="https://ornitho2ebird.com/"
+              target="_blank"
+            >
+              <b-icon icon="box-arrow-up-right" aria-hidden="true" /> Open ornitho2ebird.com
+            </b-link>
+            <b-link
+              class="btn btn-light btn-sm migration-banner__button"
+              href="https://github.com/Zoziologie/ornitho2ebird/issues"
+              target="_blank"
+            >
+              <b-icon icon="github" aria-hidden="true" /> GitHub issues
+            </b-link>
+            <b-link
+              class="btn btn-outline-light btn-sm migration-banner__button"
+              href="mailto:rafnuss@gmail.com"
+              target="_blank"
+            >
+              <b-icon icon="envelope-fill" aria-hidden="true" /> Email feedback
+            </b-link>
+          </div>
+        </section>
+      </b-col>
+    </b-row>
+
     <b-modal id="modal-settings" title="Global settings" hide-footer>
       <b-alert show>
         These settings are saved in your browser's coockies so that they can be re-used in future
@@ -878,7 +969,7 @@ import marker_color from "/data/marker_color.json";
                             8000 /
                               (speciesComment(form_card.species_comment_template, [template_s])
                                 .length +
-                                5)
+                                5),
                           )
                         }}
                         sightings of the same species.
@@ -908,7 +999,7 @@ import marker_color from "/data/marker_color.json";
                           v-html="
                             speciesComment(
                               form_card.species_comment_template,
-                              Array(20).fill(template_s)
+                              Array(20).fill(template_s),
                             )
                           "
                         />
@@ -955,7 +1046,7 @@ import marker_color from "/data/marker_color.json";
           first, and then submit an issue on
           <b-link
             class="btn btn-sm btn-primary"
-            href="https://github.com/Zoziologie/Biolovision2eBird/issues"
+            href="https://github.com/Zoziologie/ornitho2ebird/issues"
             target="_blank"
           >
             <b-icon icon="github" aria-hidden="true" /> Github</b-link
@@ -1177,6 +1268,7 @@ export default {
     return {
       version: __APP_VERSION__,
       license: __APP_LICENSE__,
+      show_migration_banner: true,
       skip_intro: false,
       language: "en",
       global_static_map: {
@@ -1274,9 +1366,13 @@ export default {
       // Define the default form_card with the latest forms of the list
       this.form_card = this.count_forms > 0 ? this.forms[this.count_forms - 1] : null;
 
-      const points = [...this.sightings, ...this.forms].filter((s) => s?.lat != null && s?.lon != null);
+      const points = [...this.sightings, ...this.forms].filter(
+        (s) => s?.lat != null && s?.lon != null,
+      );
       this.map_sightings_bounds =
-        points.length > 0 ? L.latLngBounds(points.map((s) => L.latLng(s.lat, s.lon))).pad(0.05) : null;
+        points.length > 0
+          ? L.latLngBounds(points.map((s) => L.latLng(s.lat, s.lon))).pad(0.05)
+          : null;
     },
     async onMapCardReady() {
       await this.$nextTick();
@@ -1291,7 +1387,7 @@ export default {
               ? ` from ${this.distanceFromLatLngs(this.form_card.path)}km`
               : "";
           let resp = confirm(
-            `Do you want to update the path and the distance${msg} to ${new_distance}km`
+            `Do you want to update the path and the distance${msg} to ${new_distance}km`,
           );
           if (resp) {
             this.form_card.path = new_path;
@@ -1305,7 +1401,7 @@ export default {
       setTimeout(() => {
         this.$refs.map_card.mapObject.invalidateSize();
         this.$refs.map_card.mapObject.fitBounds(
-          L.latLngBounds(this.form_card_sightings.map((s) => L.latLng(s.lat, s.lon))).pad(0.05)
+          L.latLngBounds(this.form_card_sightings.map((s) => L.latLng(s.lat, s.lon))).pad(0.05),
         );
       }, 100);
     },
@@ -1317,11 +1413,11 @@ export default {
         if (e.layerType === "rectangle") {
           // find sightings inside rectangle
           let sightings = this.sightings.filter((s) =>
-            e.layer.getBounds().contains(L.latLng(s.lat, s.lon))
+            e.layer.getBounds().contains(L.latLng(s.lat, s.lon)),
           );
           if (sightings.length == 0) {
             alert(
-              "You tried to create a checklist with no sightings. Please try again by drawing the rectangle over sightings"
+              "You tried to create a checklist with no sightings. Please try again by drawing the rectangle over sightings",
             );
           } else {
             // create new checklist if necessaary
@@ -1333,7 +1429,7 @@ export default {
                   lon: sightings.reduce((a, b) => a + b.lon, 0) / sightings.length,
                   species_comment_template: this.website.species_comment_template,
                 },
-                this.count_forms + 1
+                this.count_forms + 1,
               );
               this.assign_form_id = fnew.id;
               this.form_card = fnew;
@@ -1373,7 +1469,7 @@ export default {
       // Stop if duration is too long
       if (this.assign_duration > 8 && this.assign_duration <= 24) {
         const proceed = confirm(
-          "Duration is longer than recommendations. Do you want to continue anyway?"
+          "Duration is longer than recommendations. Do you want to continue anyway?",
         );
         if (!proceed) {
           return; // Stop execution if the user clicks "Cancel"
@@ -1385,7 +1481,7 @@ export default {
 
       if (this.assign_distance > 10) {
         const proceed = confirm(
-          "Distance is longer than recommendations. Do you want to continue anyway?"
+          "Distance is longer than recommendations. Do you want to continue anyway?",
         );
         if (!proceed) {
           return; // Stop execution if the user clicks "Cancel"
@@ -1422,7 +1518,7 @@ export default {
           ) {
             var km =
               L.latLng([sightings[j].lat, sightings[j].lon]).distanceTo(
-                L.latLng([sightings[i].lat, sightings[i].lon])
+                L.latLng([sightings[i].lat, sightings[i].lon]),
               ) / 1000;
             if (km < this.assign_distance) {
               sightings[i].form_id = sightings[j].form_id;
@@ -1446,7 +1542,7 @@ export default {
             lon: sightings2.reduce((a, b) => a + b.lon, 0) / sightings2.length,
             species_comment_template: this.website.species_comment_template,
           },
-          this.count_forms + 1
+          this.count_forms + 1,
         );
         this.count_forms++;
         this.assign_form_id = fnew.id;
@@ -1469,7 +1565,7 @@ export default {
             forms.map((f) => f.location_name).join(", ") +
             " to " +
             nb +
-            ". This action cannot be undone."
+            ". This action cannot be undone.",
         )
       ) {
         forms.forEach((f) => (f.number_observer = nb));
@@ -1483,7 +1579,7 @@ export default {
     applyCommentToAll() {
       if (
         confirm(
-          "You are about to apply this template to all other checklists and set it as default for new checklists. This action cannot be undone."
+          "You are about to apply this template to all other checklists and set it as default for new checklists. This action cannot be undone.",
         )
       ) {
         this.forms.forEach((f) => {
@@ -1495,7 +1591,7 @@ export default {
     eraseComment() {
       if (
         confirm(
-          "You are about to erase the content of the species comment. This action cannot be undone."
+          "You are about to erase the content of the species comment. This action cannot be undone.",
         )
       ) {
         this.form_card.species_comment_template = "";
@@ -1566,7 +1662,7 @@ export default {
           console.log(res);
           const url = res.files[filename].raw_url;
           console.log(
-            "https://zoziologie.raphaelnussbaumer.com/geojson/?" + encodeURIComponent(url)
+            "https://zoziologie.raphaelnussbaumer.com/geojson/?" + encodeURIComponent(url),
           );
           this.form_card.static_map.gist = url;
         })
@@ -1574,6 +1670,9 @@ export default {
     },
     refreshPage() {
       window.location.reload();
+    },
+    closeMigrationBanner() {
+      this.show_migration_banner = false;
     },
   },
   computed: {
@@ -1613,6 +1712,8 @@ export default {
     },
   },
   mounted() {
+    if (JSON.parse(this.$cookie.get("show_migration_banner")) !== null)
+      this.show_migration_banner = JSON.parse(this.$cookie.get("show_migration_banner"));
     if (JSON.parse(this.$cookie.get("skip_intro")))
       this.skip_intro = JSON.parse(this.$cookie.get("skip_intro"));
     if (JSON.parse(this.$cookie.get("language")))
@@ -1631,10 +1732,13 @@ export default {
       });
   },
   watch: {
+    show_migration_banner() {
+      this.$cookie.set("show_migration_banner", JSON.stringify(this.show_migration_banner), 365);
+    },
     form_card() {
       if (this.form_card && this.form_card.hotspots.length == 0) {
         fetch(
-          `https://api.ebird.org/v2/ref/hotspot/geo?lat=${this.form_card.lat}&lng=${this.form_card.lon}&dist=10&fmt=json&key=vcs68p4j67pt`
+          `https://api.ebird.org/v2/ref/hotspot/geo?lat=${this.form_card.lat}&lng=${this.form_card.lon}&dist=10&fmt=json&key=vcs68p4j67pt`,
         )
           .then((response) => {
             return response.json();
@@ -1647,7 +1751,7 @@ export default {
     form_card_sightings() {
       if (this.form_card_sightings.length > 0 && this.$refs.map_card) {
         this.$refs.map_card.mapObject.fitBounds(
-          L.latLngBounds(this.form_card_sightings.map((s) => L.latLng(s.lat, s.lon))).pad(0.05)
+          L.latLngBounds(this.form_card_sightings.map((s) => L.latLng(s.lat, s.lon))).pad(0.05),
         );
       }
     },

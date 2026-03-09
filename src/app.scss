@@ -164,3 +164,121 @@ h6,
 .form-control:focus {
   color: #000000;
 }
+
+.migration-banner {
+  position: relative;
+  border: 0.125rem solid rgba(255, 255, 255, 0.2);
+  background:
+    linear-gradient(135deg, #f39c12 0%, #e67e22 55%, #d35400 100%);
+  color: #fff;
+  padding: 1.2rem 1.25rem 1rem;
+}
+
+.migration-banner__close {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  color: #fff;
+  opacity: 0.9;
+}
+
+.migration-banner__close:hover,
+.migration-banner__close:focus {
+  color: #fff;
+  opacity: 1;
+  text-decoration: none;
+}
+
+.migration-banner__eyebrow {
+  display: inline-block;
+  margin-bottom: 0.55rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(44, 62, 80, 0.2);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.migration-banner__title {
+  margin-bottom: 0.6rem;
+  padding-bottom: 0;
+  border-bottom: 0;
+  font-size: 1.55rem;
+}
+
+.migration-banner__content {
+  width: 100%;
+  max-width: none;
+}
+
+.migration-banner__paragraph {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+  gap: 0.625rem;
+  margin-bottom: 0.65rem;
+  line-height: 1.35;
+}
+
+.migration-banner__paragraph p {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.migration-banner__icon {
+  flex: 0 0 auto;
+  margin-top: 0.15rem;
+  font-size: 0.95rem;
+  opacity: 0.95;
+}
+
+.migration-banner__icon--settings {
+  transform: rotate(90deg);
+}
+
+.migration-banner__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+}
+
+.migration-banner__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  white-space: nowrap;
+}
+
+.migration-banner__button--primary {
+  font-weight: 700;
+  box-shadow: 0 0.5rem 1rem rgba(44, 62, 80, 0.18);
+}
+
+.migration-banner__link {
+  color: #fff;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.migration-banner__link--strong {
+  font-size: 1.1rem;
+}
+
+.migration-banner__link:hover {
+  color: #fff3cd;
+}
+
+@media (max-width: 991.98px) {
+  .migration-banner {
+    padding: 1rem 1rem 0.9rem;
+  }
+
+  .migration-banner__paragraph {
+    gap: 0.55rem;
+  }
+}
