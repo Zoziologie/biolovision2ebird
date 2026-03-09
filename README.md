@@ -1,10 +1,12 @@
-# biolovision2eBird
-
-> [!IMPORTANT] > **New version is available: [ornitho2ebird](https://ornitho2ebird.com/)**
+> [!IMPORTANT]
+> **New version is available: [ornitho2ebird](https://ornitho2ebird.com/)**
 >
 > We are very pleased to announce that with the support of ornitho and eBird, we are transforming **biolovision2eBird** into [**ornitho2ebird**](https://ornitho2ebird.com/).
 >
 > This site will remain available at [zoziologie.raphaelnussbaumer.com/biolovision2ebird/](https://zoziologie.raphaelnussbaumer.com/biolovision2ebird/) but it will no longer receive updates.
+> 
+
+# biolovision2eBird
 
 [Biolovision2eBird](https://zoziologie.raphaelnussbaumer.com/biolovision2ebird/) helps you to import your bird sightings from any Biolovision website (e.g. [ornitho.ch](https://www.ornitho.ch/), [faune-alsace](https://www.faune-alsace.org/),...) to [eBird](https://ebird.org/)! It is now also possible to convert data from the Observation websites (e.g., [observation.org](observation.org), [waarneming.nl](https://waarneming.nl/),...) and [Birdlasser](https://www.birdlasser.com/).
 
