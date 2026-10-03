@@ -3,7 +3,9 @@
 >
 > We are very pleased to announce that with the support of ornitho and eBird, we are transforming **biolovision2eBird** into [**ornitho2ebird**](https://ornitho2ebird.com/).
 >
-> This site will remain available at [zoziologie.raphaelnussbaumer.com/biolovision2ebird/](https://zoziologie.raphaelnussbaumer.com/biolovision2ebird/) but it will no longer receive updates.
+> **biolovision2eBird will close on 1 January 2027.** Until then, an entry notice encourages visitors to switch while allowing continued use for the current browser session. From midnight in France on 1 January, new visits to the old URL will automatically redirect to ornitho2ebird. Imports already open are never interrupted.
+>
+> The old app keeps its Google Analytics stream (`G-1YGJHDR2PZ`), separate from ornitho2ebird (`G-TJ2TZSXSBW`). Migration events: `migration_notice_shown`, `migration_switch`, and `migration_continue`.
 > 
 
 # biolovision2eBird
