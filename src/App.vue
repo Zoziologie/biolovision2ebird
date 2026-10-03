@@ -44,6 +44,7 @@ import marker_color from "/data/marker_color.json";
 
     <b-modal
       v-model="show_migration_modal"
+      modal-class="migration-modal"
       title="biolovision2eBird is moving to ornitho2ebird"
       hide-header-close
       no-close-on-backdrop
