@@ -25,96 +25,57 @@ import marker_color from "/data/marker_color.json";
       </b-button>
     </b-row>
 
-    <b-row class="my-3" v-if="show_migration_banner">
-      <b-col lg="12">
-        <section class="migration-banner rounded shadow-sm">
+    <b-alert
+      show
+      variant="warning"
+      class="d-flex flex-wrap align-items-center migration-reminder"
+    >
+      <span
+        >biolovision2eBird will close on <strong>1 January 2027</strong>.</span
+      >
+      <b-link
+        :href="migration_url"
+        @click="trackMigrationSwitch"
+        class="font-weight-bold"
+      >
+        Switch to ornitho2ebird
+      </b-link>
+    </b-alert>
+
+    <b-modal
+      v-model="show_migration_modal"
+      title="biolovision2eBird is moving to ornitho2ebird"
+      hide-header-close
+      no-close-on-backdrop
+      no-close-on-esc
+      centered
+    >
+      <p>This website will close on <strong>1 January 2027</strong>.</p>
+      <p>
+        Please switch to ornitho2ebird for future conversions. It supports the
+        same export files, with a simpler workflow and advanced editing in
+        Customized mode.
+      </p>
+      <p class="mb-0">
+        From 1 January, visits to this website will automatically redirect to
+        ornitho2ebird. Please update your bookmark.
+      </p>
+      <template #modal-footer>
+        <div class="migration-actions w-100">
           <b-button
-            size="sm"
-            variant="link"
-            class="migration-banner__close"
-            @click="closeMigrationBanner"
+            :href="migration_url"
+            variant="primary"
+            block
+            @click="trackMigrationSwitch"
           >
-            <b-icon icon="x-lg" aria-hidden="true" />
-            <span class="sr-only">Close migration notice</span>
+            Go to ornitho2ebird
           </b-button>
-          <div class="migration-banner__eyebrow">Migration Notice</div>
-          <div class="migration-banner__content">
-            <h2 class="migration-banner__title">New version is available: ornitho2ebird</h2>
-            <div class="migration-banner__paragraph">
-              <b-icon icon="megaphone-fill" aria-hidden="true" class="migration-banner__icon" />
-              <p class="mb-0">
-                We are very pleased to announce that with the support of ornitho and eBird, we are
-                transforming <strong>biolovision2eBird</strong> into <strong>ornitho2ebird</strong>.
-              </p>
-            </div>
-            <div class="migration-banner__paragraph">
-              <b-icon
-                icon="sliders"
-                aria-hidden="true"
-                class="migration-banner__icon migration-banner__icon--settings"
-              />
-              <p class="mb-0">
-                While all options from Biolovision2eBird are still available in the customized mode
-                (<strong>click on Settings</strong>), the basic workflow has been simplified to make
-                the conversion easier.
-              </p>
-            </div>
-            <div class="migration-banner__paragraph">
-              <b-icon icon="stars" aria-hidden="true" class="migration-banner__icon" />
-              <p class="mb-0">
-                In addition, the new app has received a new update: an upgraded web framework (Vue +
-                Vite), better instructions in a dedicated modal, multilingual support, and a more
-                informative export summary.
-              </p>
-            </div>
-            <div class="migration-banner__paragraph">
-              <b-icon icon="chat-dots-fill" aria-hidden="true" class="migration-banner__icon" />
-              <p class="mb-0">
-                ornitho2ebird is still new, and we would love your feedback. Please submit bugs,
-                suggestions, and feature requests on GitHub or by email.
-              </p>
-            </div>
-            <div class="migration-banner__paragraph mb-0">
-              <b-icon icon="archive-fill" aria-hidden="true" class="migration-banner__icon" />
-              <p class="mb-0">
-                This site will remain available at
-                <b-link
-                  href="https://zoziologie.raphaelnussbaumer.com/biolovision2ebird/"
-                  target="_blank"
-                  class="migration-banner__link"
-                >
-                  zoziologie.raphaelnussbaumer.com/biolovision2ebird/
-                </b-link>
-                but it will no longer receive updates.
-              </p>
-            </div>
-          </div>
-          <div class="migration-banner__actions mt-3">
-            <b-link
-              class="btn btn-dark btn-sm migration-banner__button migration-banner__button--primary"
-              href="https://ornitho2ebird.com/"
-              target="_blank"
-            >
-              <b-icon icon="box-arrow-up-right" aria-hidden="true" /> Open ornitho2ebird.com
-            </b-link>
-            <b-link
-              class="btn btn-light btn-sm migration-banner__button"
-              href="https://github.com/Zoziologie/ornitho2ebird/issues"
-              target="_blank"
-            >
-              <b-icon icon="github" aria-hidden="true" /> GitHub issues
-            </b-link>
-            <b-link
-              class="btn btn-outline-light btn-sm migration-banner__button"
-              href="mailto:rafnuss@gmail.com"
-              target="_blank"
-            >
-              <b-icon icon="envelope-fill" aria-hidden="true" /> Email feedback
-            </b-link>
-          </div>
-        </section>
-      </b-col>
-    </b-row>
+          <b-button variant="link" block @click="continueMigration">
+            Continue using the old website for now
+          </b-button>
+        </div>
+      </template>
+    </b-modal>
 
     <b-modal id="modal-settings" title="Global settings" hide-footer>
       <b-alert show>
@@ -1268,7 +1229,8 @@ export default {
     return {
       version: __APP_VERSION__,
       license: __APP_LICENSE__,
-      show_migration_banner: true,
+      show_migration_modal: false,
+      migration_url: "https://ornitho2ebird.com/",
       skip_intro: false,
       language: "en",
       global_static_map: {
@@ -1671,8 +1633,13 @@ export default {
     refreshPage() {
       window.location.reload();
     },
-    closeMigrationBanner() {
-      this.show_migration_banner = false;
+    trackMigrationSwitch() {
+      window.gtag?.("event", "migration_switch");
+    },
+    continueMigration() {
+      sessionStorage.setItem("migration_2027_continue", "true");
+      this.show_migration_modal = false;
+      window.gtag?.("event", "migration_continue");
     },
   },
   computed: {
@@ -1712,8 +1679,8 @@ export default {
     },
   },
   mounted() {
-    if (JSON.parse(this.$cookie.get("show_migration_banner")) !== null)
-      this.show_migration_banner = JSON.parse(this.$cookie.get("show_migration_banner"));
+    this.show_migration_modal = sessionStorage.getItem("migration_2027_continue") !== "true";
+    if (this.show_migration_modal) window.gtag?.("event", "migration_notice_shown");
     if (JSON.parse(this.$cookie.get("skip_intro")))
       this.skip_intro = JSON.parse(this.$cookie.get("skip_intro"));
     if (JSON.parse(this.$cookie.get("language")))
@@ -1732,9 +1699,6 @@ export default {
       });
   },
   watch: {
-    show_migration_banner() {
-      this.$cookie.set("show_migration_banner", JSON.stringify(this.show_migration_banner), 365);
-    },
     form_card() {
       if (this.form_card && this.form_card.hotspots.length == 0) {
         fetch(

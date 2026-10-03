@@ -245,8 +245,11 @@ Vue.mixin({
   },
 });
 
-const app = new Vue({
-  render: (h) => h(App),
-}).$mount("#app");
-
-window.app = app;
+// Redirect new visits from midnight in France; an open import is never interrupted.
+if (Date.now() >= Date.parse("2027-01-01T00:00:00+01:00")) {
+  window.location.replace("https://ornitho2ebird.com/");
+} else {
+  window.app = new Vue({
+    render: (h) => h(App),
+  }).$mount("#app");
+}
